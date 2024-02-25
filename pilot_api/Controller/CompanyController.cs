@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using pilot_api.Commands;
 using pilot_api.Queries;
+using ILogger = Serilog.ILogger;
 
 namespace pilot_api.Controller;
 
@@ -17,6 +18,7 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
     }
 
     [HttpGet]
+    [ProducesResponseType(200)]
     public async Task<IActionResult> GetAllCompany()
     {
         var result = await _mediator.Send(new GetCompaniesQuery());
@@ -24,6 +26,7 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
     }
     
     [HttpGet("{companyId}")]
+    [ProducesResponseType(200)]
     public async Task<IActionResult> GetCompany(string companyId)
     {
         var result = await _mediator.Send(new GetCompanyByIdQuery(companyId));
@@ -32,6 +35,7 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
     
         
     [HttpPost]
+    [ProducesResponseType(200)]
     public async Task<IActionResult> AddCompany(string companyName)
     {
         var result = await _mediator.Send(new AddCompanyCommand(companyName));

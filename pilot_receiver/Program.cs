@@ -1,21 +1,10 @@
 using MassTransit;
-using MongoDB.Driver;
-using pilot_api.Repository;
+using pilot_receiver.Consumers;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
-services.AddSingleton<CompanyRepository>();
-
 var configuration = builder.Configuration;
-
-builder.Services.AddSingleton(
-    new MongoClient(configuration.GetConnectionString("MongoDb")
-    ).GetDatabase(configuration["MongoDatabase"]));
 
 services.AddSingleton<Serilog.ILogger>(_ => new LoggerConfiguration()
     .WriteTo.Console()
@@ -25,17 +14,14 @@ services.AddSingleton<Serilog.ILogger>(_ => new LoggerConfiguration()
     .CreateLogger()
 );
 
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
-services.AddControllers();
-services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
-
-services.AddEndpointsApiExplorer();
 
 services.AddMassTransit(x =>
 {
     var rabbitMqConfig = configuration.GetSection("RabbitMQ");
+
+    x.SetKebabCaseEndpointNameFormatter();
+    
+    x.AddConsumer<CompanyCreatedConsumer>();
     
     x.UsingRabbitMq((ctx, cfg) =>
     {
@@ -44,19 +30,21 @@ services.AddMassTransit(x =>
             h.Username(rabbitMqConfig["Username"]);
             h.Password(rabbitMqConfig["Password"]);
         });
+        
+        cfg.ConfigureEndpoints(ctx);
+
+        
+        // cfg.ReceiveEndpoint("message_queue", e =>
+        // {
+        //     e.ConfigureConsumer<CompanyCreatedConsumer>(ctx);
+        // });
     });
 });
 
+// services.AddMassTransitHostedService();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.MapControllers();
-app.UseHttpsRedirection();
+app.MapGet("/", () => "Hello World!");
 
 app.Run();
