@@ -2,7 +2,10 @@
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
+<<<<<<< HEAD
     "launchBrowser": false,
+=======
+>>>>>>> 1065afd5725034b5f265cd530d6164e14270ada9
     "anonymousAuthentication": true,
     "iisExpress": {
       "applicationUrl": "http://localhost:32801",
@@ -13,9 +16,15 @@
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+<<<<<<< HEAD
       "launchBrowser": false,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5253",
+=======
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5252",
+>>>>>>> 1065afd5725034b5f265cd530d6164e14270ada9
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -23,7 +32,11 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+<<<<<<< HEAD
       "launchBrowser": false,
+=======
+      "launchBrowser": true,
+>>>>>>> 1065afd5725034b5f265cd530d6164e14270ada9
       "launchUrl": "swagger",
       "applicationUrl": "https://localhost:7175;http://localhost:5252",
       "environmentVariables": {
@@ -32,7 +45,11 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+<<<<<<< HEAD
       "launchBrowser": false,
+=======
+      "launchBrowser": true,
+>>>>>>> 1065afd5725034b5f265cd530d6164e14270ada9
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

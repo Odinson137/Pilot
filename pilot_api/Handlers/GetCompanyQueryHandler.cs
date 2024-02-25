@@ -16,6 +16,11 @@ public class GetCompanyQueryHandler : IRequestHandler<GetCompanyByIdQuery, Compa
         _logger = logger;
     }
 
+    public GetCompanyQueryHandler(CompanyRepository company)
+    {
+        _company = company;
+    }
+
     public Task<Company> Handle(GetCompanyByIdQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Get company");

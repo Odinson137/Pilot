@@ -15,6 +15,11 @@ public class GetCompaniesQueryHandler : IRequestHandler<GetCompaniesQuery, IColl
         _company = company;
         _logger = logger;
     }
+
+    public GetCompaniesQueryHandler(CompanyRepository company)
+    {
+        _company = company;
+    }
     
     public async Task<ICollection<Company>> Handle(GetCompaniesQuery request, CancellationToken cancellationToken)
     {

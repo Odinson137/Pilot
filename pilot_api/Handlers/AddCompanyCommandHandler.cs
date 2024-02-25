@@ -1,4 +1,3 @@
-﻿using System.Net.Mime;
 using MassTransit;
 using MediatR;
 using pilot_api.Commands;
@@ -14,15 +13,20 @@ public class AddCompanyCommandHandler : IRequestHandler<AddCompanyCommand, Compa
     private readonly ILogger<AddCompanyCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBus _bus;
-    
-    public AddCompanyCommandHandler(CompanyRepository company, 
-        ILogger<AddCompanyCommandHandler> logger, 
+
+    public AddCompanyCommandHandler(CompanyRepository company,
+        ILogger<AddCompanyCommandHandler> logger,
         IPublishEndpoint publishEndpoint, IBus bus)
     {
         _company = company;
         _logger = logger;
         _publishEndpoint = publishEndpoint;
         _bus = bus;
+    }
+
+    public AddCompanyCommandHandler(CompanyRepository company)
+    {
+        _company = company;
     }
 
     public async Task<Company> Handle(AddCompanyCommand request, CancellationToken cancellationToken)
@@ -38,4 +42,3 @@ public class AddCompanyCommandHandler : IRequestHandler<AddCompanyCommand, Compa
         return new Company() { Title = request.CompanyName };
     }
 }
-

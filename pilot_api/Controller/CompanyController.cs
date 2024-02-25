@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using pilot_api.Commands;
 using pilot_api.Queries;
-using ILogger = Serilog.ILogger;
 
 namespace pilot_api.Controller;
 
@@ -25,6 +24,8 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
         return Ok(result);
     }
     
+
+    
     [HttpGet("{companyId}")]
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetCompany(string companyId)
@@ -33,7 +34,6 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
         return Ok(result);
     }
     
-        
     [HttpPost]
     [ProducesResponseType(200)]
     public async Task<IActionResult> AddCompany(string companyName)

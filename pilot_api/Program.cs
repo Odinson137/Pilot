@@ -2,6 +2,8 @@ using MassTransit;
 using MongoDB.Driver;
 using pilot_api.Repository;
 using Serilog;
+using pilot_api.Queries;
+using pilot_api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -32,7 +34,6 @@ services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
 services.AddEndpointsApiExplorer();
-
 services.AddMassTransit(x =>
 {
     var rabbitMqConfig = configuration.GetSection("RabbitMQ");
