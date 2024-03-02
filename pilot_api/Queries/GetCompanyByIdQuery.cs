@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using pilot_api.Models;
+using pilot_api.DTO;
 
 namespace pilot_api.Queries;
 
-public record GetCompanyByIdQuery(string Id) : IRequest<Company>;
+public record GetCompanyByIdQuery(string Id) : IRequest<CompanyDto>;
 

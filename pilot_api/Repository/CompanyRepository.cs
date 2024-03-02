@@ -1,58 +1,41 @@
 ﻿using System.Globalization;
+using AutoMapper;
 using MongoDB.Bson;
+using MongoDB.Driver;
+using pilot_api.DTO;
 using pilot_api.Models;
 
 namespace pilot_api.Repository;
 
 public class CompanyRepository
 {
-    private ICollection<Company> companies { get; set; }
-
-    public CompanyRepository()
+    private readonly IMongoDatabase _mongoDatabase;
+    public CompanyRepository(IMongoDatabase mongoDatabase)
     {
-        companies = new List<Company>()
-        {
-            new()
-            {
-                Title = "Apple",
-            },
-            new()
-            {
-                Title = "Microsoft",
-            },
-            new()
-            {
-                Title = "Amazon",
-            },
-            new ()
-            {
-                Title = "ITechArt"
-            },
-            new ()
-            {
-                Title = "Intel"
-            }
-        };
+        _mongoDatabase = mongoDatabase;
     }
 
-    public async Task<ICollection<Company>> GetCompaniesAsync(CancellationToken cancellationToken)
+    public async Task<ICollection<CompanyDto>> GetCompaniesAsync(CancellationToken cancellationToken)
     {
-        return await Task.FromResult(companies);
+        var companiesCollection = _mongoDatabase.GetCollection<Company>("companies");
+        
+        var companies = await companiesCollection.Find(new BsonDocument())
+            .Project(u => new CompanyDto(u.Id, u.Title, u.Description))
+            .ToListAsync(cancellationToken);
+        
+        return companies;
     }
     
-    public async Task<Company> GetCompany(string id, CancellationToken cancellationToken)
+    public async Task<CompanyDto> GetCompanyAsync(string id, CancellationToken cancellationToken)
     {
-        return await Task.FromResult(companies.First(c => c.Id.ToString() == id));
-    }
-
-    public async Task<Company> GetCompany(ObjectId id)
-    {
-        return await Task.FromResult(companies.First(c => c.Id == id));
-    }
-
-    public Task AddCompanyAsync(Company company)
-    {
-        companies.Add(company);
-        return Task.CompletedTask;
+        var companiesCollection = _mongoDatabase.GetCollection<Company>("companies");
+        
+        var filter = Builders<Company>.Filter.Eq(u => u.Id, id);
+        
+        var company = await companiesCollection.Find(filter)
+            .Project(u => new CompanyDto(u.Id, u.Title, u.Description))
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        return company;
     }
 }

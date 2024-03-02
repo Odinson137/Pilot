@@ -7,15 +7,15 @@ using RabbitMqMessages;
 
 namespace pilot_api.Handlers;
 
-public class AddCompanyCommandHandler : IRequestHandler<AddCompanyCommand, Company>
+public class CompanyCommandHandler : IRequestHandler<AddCompanyCommand, Company>
 {
     private readonly CompanyRepository _company;
-    private readonly ILogger<AddCompanyCommandHandler> _logger;
+    private readonly ILogger<CompanyCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBus _bus;
 
-    public AddCompanyCommandHandler(CompanyRepository company,
-        ILogger<AddCompanyCommandHandler> logger,
+    public CompanyCommandHandler(CompanyRepository company,
+        ILogger<CompanyCommandHandler> logger,
         IPublishEndpoint publishEndpoint, IBus bus)
     {
         _company = company;
@@ -24,7 +24,7 @@ public class AddCompanyCommandHandler : IRequestHandler<AddCompanyCommand, Compa
         _bus = bus;
     }
 
-    public AddCompanyCommandHandler(CompanyRepository company)
+    public CompanyCommandHandler(CompanyRepository company)
     {
         _company = company;
     }

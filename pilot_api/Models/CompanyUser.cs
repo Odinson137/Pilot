@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace pilot_api.Models;
 
-public class User
+public class CompanyUser
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
@@ -12,7 +12,5 @@ public class User
     [Required] [MaxLength(50)] public required string UserName { get; set; } = null!;
     [Required] [MaxLength(50)] public required string Name { get; set; } = null!;
     [Required] [MaxLength(50)] public required string LastName { get; set; } = null!;
-    [Required] [MaxLength(100)] public required string Password { get; set; } = null!;
-    
     public DateTime Timestamp { get; set; } = DateTime.Now;
 }
