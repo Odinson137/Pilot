@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace pilot_api.Models;
 
 public class ProjectTask
 {
-    [Key] [Required] [MaxLength(50)] public required ObjectId Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    [Key] [MaxLength(50)] public string Id { get; } = ObjectId.GenerateNewId().ToString();
     [Required] [MaxLength(50)] public required string Name { get; set; }
     [MaxLength(500)] public string? Description { get; set; }
-    // public ICollection<User>? Users { get; set; }
-    public ObjectId? FileId { get; set; }
+    public File? File { get; set; }
     public DateTime Timestamp { get; set; } = DateTime.Now;
 }

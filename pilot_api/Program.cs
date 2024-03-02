@@ -1,5 +1,9 @@
 using MassTransit;
+using MassTransit.Courier;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using pilot_api.Data;
+using pilot_api.Models;
 using pilot_api.Repository;
 using Serilog;
 using pilot_api.Queries;
@@ -49,6 +53,8 @@ services.AddMassTransit(x =>
 });
 
 var app = builder.Build();
+
+await Seed.Seeding(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
