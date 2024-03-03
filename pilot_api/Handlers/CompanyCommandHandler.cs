@@ -3,7 +3,7 @@ using MediatR;
 using pilot_api.Commands;
 using pilot_api.Models;
 using pilot_api.Repository;
-using RabbitMqMessages;
+using Pilot.Contracts;
 
 namespace pilot_api.Handlers;
 

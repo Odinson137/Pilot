@@ -1,4 +1,4 @@
-﻿namespace RabbitMqMessages;
+﻿namespace Pilot.Contracts;
 
 public interface IMessage
 {
