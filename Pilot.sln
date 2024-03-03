@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pilot_api", "pilot_api\pilot_api.csproj", "{2C250F33-3846-4A08-A9BB-5A66A051B403}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Api", "Pilot.Api\Pilot.Api.csproj", "{2C250F33-3846-4A08-A9BB-5A66A051B403}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pilot_receiver", "pilot_receiver\pilot_receiver.csproj", "{4C5E9F89-1911-4478-87C0-BC5A5A1300E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Receiver", "Pilot.Receiver\Pilot.Receiver.csproj", "{4C5E9F89-1911-4478-87C0-BC5A5A1300E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.Contracts", "Pilot.Contracts\Pilot.Contracts.csproj", "{9CAFA42E-E690-4A52-9515-460F703A542B}"
 EndProject
