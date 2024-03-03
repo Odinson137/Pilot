@@ -3,5 +3,6 @@ obj/
 .idea/
 /packages/
 .vs/
+log.txt
 riderModule.iml
 /_ReSharper.Caches/

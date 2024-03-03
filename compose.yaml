@@ -21,8 +21,8 @@ services:
       retries: 60
 
   pilot_mongo:
+    container_name: pilot-mongodb
     image: mongo
-    restart: always
     ports:
       - 27017:27017
     environment:

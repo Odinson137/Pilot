@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using RabbitMqMessages;
+using Pilot.Contracts;
 
 namespace pilot_receiver.Consumers;
 

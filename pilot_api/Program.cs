@@ -1,35 +1,34 @@
 using MassTransit;
-using MassTransit.Courier;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using pilot_api.Data;
-using pilot_api.Models;
 using pilot_api.Repository;
+using Pilot.Contracts.Services.LogService;
 using Serilog;
-using pilot_api.Queries;
-using pilot_api.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
+var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 services.AddSingleton<CompanyRepository>();
 
-var configuration = builder.Configuration;
-
+var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 builder.Services.AddSingleton(
-    new MongoClient(configuration.GetConnectionString("MongoDb")
-    ).GetDatabase(configuration["MongoDatabase"]));
+    new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
 
-services.AddSingleton<Serilog.ILogger>(_ => new LoggerConfiguration()
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
+    .WriteTo.Logger(lc =>
+    {
+        lc.MinimumLevel.Error();
+        lc.WriteTo.MongoDb(mongoConfiguration);
+    })
     .WriteTo.File(configuration["Logging:LogFiles:Main"]!,
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-    .CreateLogger()
-);
+    .CreateLogger());
 
 services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
