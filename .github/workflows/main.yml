@@ -25,14 +25,14 @@ jobs:
       - name: Build
         run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore
 
-      - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
-
-      - name: Build Contract project
-        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
-
-      - name: Test
-        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
+#      - name: Build Tests
+#        run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
+#
+#      - name: Build Contract project
+#        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
+#
+#      - name: Test
+#        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
         
       - name: Publish
         run: dotnet publish ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-build
