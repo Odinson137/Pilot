@@ -3,9 +3,9 @@ name: Checkout
 on:
   workflow_dispatch:
   push:
-    branches: ["*"]
+    branches: ["**"]
   pull_request:
-    branches: [ "*" ]
+    branches: [ "**" ]
 
 jobs:
   publish:
