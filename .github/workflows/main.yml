@@ -1,0 +1,36 @@
+name: Checkout
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore ./Pilot.sln
+
+      - name: Build
+        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore
+
+      - name: Build Tests
+        run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
+        
+      - name: Publish
+        run: dotnet publish ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-build
+        
