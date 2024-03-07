@@ -1,6 +1,7 @@
 using MassTransit;
 using MongoDB.Driver;
 using Pilot.Api.Data;
+using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Repository;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
@@ -11,7 +12,7 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddSingleton<CompanyRepository>();
+services.AddScoped<ICompany, CompanyRepository>();
 
 var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 builder.Services.AddSingleton(

@@ -12,16 +12,14 @@ public class CompanyCommandHandler : IRequestHandler<AddCompanyCommand, Company>
     private readonly CompanyRepository _company;
     private readonly ILogger<CompanyCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
-    private readonly IBus _bus;
 
     public CompanyCommandHandler(CompanyRepository company,
         ILogger<CompanyCommandHandler> logger,
-        IPublishEndpoint publishEndpoint, IBus bus)
+        IPublishEndpoint publishEndpoint)
     {
         _company = company;
         _logger = logger;
         _publishEndpoint = publishEndpoint;
-        _bus = bus;
     }
 
     public CompanyCommandHandler(CompanyRepository company)

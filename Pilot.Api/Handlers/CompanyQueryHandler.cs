@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Pilot.Api.Models;
 using Pilot.Api.DTO;
+using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Queries;
 using Pilot.Api.Repository;
 
@@ -10,10 +11,10 @@ public class CompanyQueryHandler :
     IRequestHandler<GetCompaniesQuery, ICollection<CompanyDto>>,
     IRequestHandler<GetCompanyByIdQuery, CompanyDto>
 {
-    private readonly CompanyRepository _company;
+    private readonly ICompany _company;
     private readonly ILogger<CompanyQueryHandler> _logger;
 
-    public CompanyQueryHandler(CompanyRepository company, ILogger<CompanyQueryHandler> logger)
+    public CompanyQueryHandler(ICompany company, ILogger<CompanyQueryHandler> logger)
     {
         _company = company;
         _logger = logger;

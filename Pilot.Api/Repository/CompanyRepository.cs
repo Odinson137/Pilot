@@ -3,11 +3,12 @@ using AutoMapper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Pilot.Api.DTO;
+using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Models;
 
 namespace Pilot.Api.Repository;
 
-public class CompanyRepository
+public class CompanyRepository : ICompany
 {
     private readonly IMongoDatabase _mongoDatabase;
     public CompanyRepository(IMongoDatabase mongoDatabase)
