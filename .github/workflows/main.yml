@@ -32,12 +32,12 @@ jobs:
         run: ls -R
 
       - name: Restore API project
-        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json 
+        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
 
       - name: Build API project
         run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
 
-      - name: Restore Contract project
+      - name: Restore Tests project
         run: dotnet restore ./Pilot.Tests/Pilot.Tests.csproj
 
       - name: Build Tests
