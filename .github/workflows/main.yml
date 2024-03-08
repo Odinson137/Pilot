@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Restore All project
-        run: dotnet restore ./Pilot/Pilot.sln --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
+        run: dotnet restore ./Pilot.sln --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
       
 #
 #      - name: Restore Contract project
