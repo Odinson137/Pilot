@@ -18,17 +18,16 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
-
-      - name: Restore All project
-        run: dotnet restore ./Pilot.sln --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
       
-#
-#      - name: Restore Contract project
-#        run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
+      - name: Restore Contract project
+        run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
 
       - name: Build Contract project
         run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
 
+      - name: Restore All project
+        run: dotnet restore ./Pilot.sln --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
+      
 #      - name: List directory contents
 #        run: ls -R
 
