@@ -23,10 +23,10 @@ jobs:
         run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
 
       - name: Build Contract project
-        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release
+        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
 
       - name: Restore API project
-        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/net8.0/Pilot.Contracts.dll
+        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/
 
       - name: Build API project
         run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
