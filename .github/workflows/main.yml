@@ -18,18 +18,20 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
+      
+      - name: Build Contract project
+        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
 
       - name: Restore
-        run: dotnet restore ./Pilot.sln
+        run: dotnet restore ./Pilot.sln --source https://api.nuget.org/v3/index.json --source ./Pilot.Contracts/bin
 
       - name: Build
-        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
 
 #      - name: Build Tests
 #        run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
 #
-#      - name: Build Contract project
-#        run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
+
 #
 #      - name: Test
 #        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
