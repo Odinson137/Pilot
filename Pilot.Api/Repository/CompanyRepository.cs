@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Pilot.Api.DTO;
 using Pilot.Api.Interfaces.Repositories;
-using Pilot.Api.Models;
+using Pilot.Contracts.Models;
 
 namespace Pilot.Api.Repository;
 

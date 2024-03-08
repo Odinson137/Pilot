@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Pilot.Api.Data.Enums;
 
-namespace Pilot.Api.Models;
+namespace Pilot.Contracts.Models;
 
 public class Project
 {

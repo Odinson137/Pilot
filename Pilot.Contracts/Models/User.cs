@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Pilot.Api.Models;
+namespace Pilot.Contracts.Models;
 
 public class User
 {
@@ -13,6 +13,7 @@ public class User
     [Required] [MaxLength(50)] public required string Name { get; set; } = null!;
     [Required] [MaxLength(50)] public required string LastName { get; set; } = null!;
     [Required] [MaxLength(100)] public required string Password { get; set; } = null!;
-    
+    public ICollection<Message>? Messages { get; set; }
+
     public DateTime Timestamp { get; set; } = DateTime.Now;
 }

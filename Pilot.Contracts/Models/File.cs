@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Pilot.Api.Models;
+namespace Pilot.Contracts.Models;
 
 public class File
 {

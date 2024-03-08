@@ -2,7 +2,8 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Pilot.Api.Data.Enums;
-using Pilot.Api.Models;
+using Pilot.Contracts.Data;
+using Pilot.Contracts.Models;
 
 namespace Pilot.Api.Data;
 
@@ -12,7 +13,7 @@ public static class Seed
     {
         var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();
         
-        var userCollection = mongoDatabase.GetCollection<User>("users");
+        var userCollection = mongoDatabase.GetCollection<User>(MongoTable.User);
 
         var userExist = await userCollection.CountDocumentsAsync(FilterDefinition<User>.Empty);
         
@@ -195,8 +196,8 @@ public static class Seed
                 }
             };
 
-            var mongoCompanyCollection = mongoDatabase.GetCollection<Company>("companies");
-            var mongoUserCollection = mongoDatabase.GetCollection<User>("users");
+            var mongoCompanyCollection = mongoDatabase.GetCollection<Company>(MongoTable.Company);
+            var mongoUserCollection = mongoDatabase.GetCollection<User>(MongoTable.User);
 
             
             await mongoCompanyCollection.InsertManyAsync(companies);

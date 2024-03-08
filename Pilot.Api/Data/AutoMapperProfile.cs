@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Pilot.Api.DTO;
-using Pilot.Api.Models;
+using Pilot.Contracts.Models;
 
 namespace Pilot.Api.Data;
 

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Pilot.Api.Models;
 using Pilot.Api.DTO;
 using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Queries;
