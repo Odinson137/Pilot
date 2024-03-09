@@ -10,7 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="ApiTests\IntegrationTests\" />
+      <Folder Include="Api.Tests\IntegrationTests\" />
+      <Folder Include="Receiver.Tests\" />
     </ItemGroup>
 
     <ItemGroup>

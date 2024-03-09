@@ -24,8 +24,6 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
         return Ok(result);
     }
     
-
-    
     [HttpGet("{companyId}")]
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetCompany(string companyId)
@@ -38,7 +36,18 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
     [ProducesResponseType(200)]
     public async Task<IActionResult> AddCompany(string companyName)
     {
-        var result = await _mediator.Send(new AddCompanyCommand(companyName));
-        return Ok(result);
+        throw new Exception("NO USER AUTHENTIFICATION");
+
+        await _mediator.Send(new CompanyCommand(companyName, ""));
+        return Ok("The company will be adding soon");
+    }
+    
+    [HttpPatch]
+    [ProducesResponseType(200)]
+    public async Task<IActionResult> ChangeCompanyTitle(string companyId, string companyName)
+    {
+        throw new Exception("NO USER AUTHENTIFICATION");
+        await _mediator.Send(new CompanyCommand(companyName, ""));
+        return Ok("The company will be adding soon");
     }
 }

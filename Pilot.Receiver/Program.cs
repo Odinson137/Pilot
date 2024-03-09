@@ -52,10 +52,8 @@ services.AddMassTransit(x =>
     });
 });
 
-// services.AddMassTransitHostedService();
-
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Main page!");
 
 app.Run();

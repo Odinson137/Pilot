@@ -25,11 +25,11 @@ jobs:
       - name: Build Contract project
         run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
 
-#      - name: List directory contents
-#        run: ls -R
+      - name: List directory contents
+        run: ls -R
 
       - name: Restore API project
-        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release
+        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
 
       - name: Build API project
         run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
