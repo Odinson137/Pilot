@@ -5,8 +5,8 @@
     &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.ApiTests.UnitTests.CompanyHandlerUnitTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=2c250f33_002D3846_002D4a08_002Da9bb_002D5a66a051b403_0023Pilot_002EApi/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=4c5e9f89_002D1911_002D4478_002D87c0_002Dbc5a5a1300e8_0023Pilot_002EReceiver/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=9fe35c0d_002D4d64_002D4e9e_002D8475_002D29ecb4568d27_0023Pilot_002ETests/@EntryIndexedValue">True</s:Boolean>
+	
+	
+	
 	
 	</wpf:ResourceDictionary>
