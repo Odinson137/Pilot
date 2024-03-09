@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Pilot.Api.Data.Enums;
-using Pilot.Contracts;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages.Company;
 using Pilot.Contracts.Services.LogService;
@@ -13,12 +12,14 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
 {
     private readonly ILogger<CompanyCreatedConsumer> _logger;
     private readonly ICompany _company;
+    private readonly IUser _user;
     private readonly IMessage _message;
-    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message)
+    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUser user)
     {
         _logger = logger;
         _company = company;
         _message = message;
+        _user = user;
     }
 
     public async Task Consume(ConsumeContext<TitleCompany> context)
@@ -37,6 +38,17 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
             return;
         }
 
+        var user = await _user.GetUserByIdAsync(context.Message.UserId);
+
+        if (user == null)
+        {
+            _logger.LogInformation("User not found");
+            await _message.SendMessage("Вы не найдены",
+                $"Вы не можете создать компанию '{context.Message.Title}' потому что вы не существуете в базе",
+                MessagePriority.Error);
+            return;
+        }
+        
         await _company.AddCompanyAsync(new Company
         {
             Title = context.Message.Title,
@@ -45,10 +57,9 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
             {
                 new CompanyUser
                 {
-                    UserName = null,
-                    Name = null,
-                    LastName = null,
-                    Timestamp = default
+                    UserName = user.UserName,
+                    Name = user.Name,
+                    LastName = user.LastName,
                 }
             }
         });
