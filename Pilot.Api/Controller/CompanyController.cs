@@ -1,13 +1,15 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
+using Pilot.Api.Data.ControllerSettings;
 using Pilot.Api.Queries;
 
 namespace Pilot.Api.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
+public class CompanyController : PilotController
 {
     private readonly IMediator _mediator;
 
@@ -33,21 +35,20 @@ public class CompanyController : Microsoft.AspNetCore.Mvc.Controller
     }
     
     [HttpPost]
+    [Authorize]
     [ProducesResponseType(200)]
     public async Task<IActionResult> AddCompany(string companyName)
     {
-        throw new Exception("NO USER AUTHENTIFICATION");
-
-        await _mediator.Send(new CompanyCommand(companyName, ""));
+        await _mediator.Send(new CompanyAddCommand(companyName, UserId));
         return Ok("The company will be adding soon");
     }
     
-    [HttpPatch]
-    [ProducesResponseType(200)]
-    public async Task<IActionResult> ChangeCompanyTitle(string companyId, string companyName)
-    {
-        throw new Exception("NO USER AUTHENTIFICATION");
-        await _mediator.Send(new CompanyCommand(companyName, ""));
-        return Ok("The company will be adding soon");
-    }
+    // [HttpPatch]
+    // [Authorize]
+    // [ProducesResponseType(200)]
+    // public async Task<IActionResult> ChangeCompanyTitle(string companyId, string companyName)
+    // {
+    //     await _mediator.Send(new ChangeCompanyTitleCommand(companyId, companyName, UserId));
+    //     return Ok("The company will be adding soon");
+    // }
 }
