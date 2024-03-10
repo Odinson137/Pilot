@@ -27,8 +27,6 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
         lc.MinimumLevel.Error();
         lc.WriteTo.MongoDb(mongoConfiguration);
     })
-    .WriteTo.File(configuration["Logging:LogFiles:Main"]!,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger());
 
 services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
@@ -54,7 +52,7 @@ services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-await Seed.Seeding(app);
+await app.Seeding();
 
 if (app.Environment.IsDevelopment())
 {

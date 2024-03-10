@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <Folder Include="Api.Tests\IntegrationTests\" />
+      <Folder Include="Identity.Tests\" />
       <Folder Include="Receiver.Tests\" />
     </ItemGroup>
 

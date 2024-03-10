@@ -12,9 +12,9 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
 {
     private readonly ILogger<CompanyCreatedConsumer> _logger;
     private readonly ICompany _company;
-    private readonly IUser _user;
+    private readonly IUserService _user;
     private readonly IMessage _message;
-    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUser user)
+    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUserService user)
     {
         _logger = logger;
         _company = company;
