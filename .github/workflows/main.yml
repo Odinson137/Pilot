@@ -28,6 +28,12 @@ jobs:
 #      - name: List directory contents
 #        run: ls -R
 
+      - name: Restore Identity project
+        run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
+
+      - name: Build Identity project
+        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
+      
       - name: Restore API project
         run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
 
