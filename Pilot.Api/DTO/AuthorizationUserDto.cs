@@ -1,4 +1,4 @@
-﻿namespace Pilot.Receiver.DTO;
+﻿namespace Pilot.Api.DTO;
 
 public class AuthorizationUserDto
 {

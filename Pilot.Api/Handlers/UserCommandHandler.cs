@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Pilot.Api.Commands;
+using Pilot.Contracts.DTO;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 
@@ -9,7 +10,7 @@ public class UserCommandHandler :
     IRequestHandler<UserRegistrationCommand>,
     IRequestHandler<UserAuthorizationCommand, AuthUserDto>
 {
-    private const string Url = "https://localhost:7127";
+    // private const string Url = "https://localhost:7127";
     private readonly ILogger<UserCommandHandler> _logger;
     private readonly HttpClient _httpClient;
     

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
 using Pilot.Api.DTO;
-using Pilot.Receiver.DTO;
 using RegistrationUserDto = Pilot.Api.DTO.RegistrationUserDto;
 
 namespace Pilot.Api.Controller;

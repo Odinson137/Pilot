@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Identity.Data;
 using Pilot.Identity.Interfaces;
@@ -114,5 +115,4 @@ app.MapPost("/Authorization", async (
 
 app.Run();
 
-public record AuthUserDto(string UserId, string Token);
 
