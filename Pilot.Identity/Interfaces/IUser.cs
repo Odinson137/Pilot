@@ -6,5 +6,5 @@ public interface IUser
 {
     public Task RegistrationAsync(User user);
     public Task<bool> IsUserNameExistAsync(string userName);
-    public Task<User?> GetUserAsync(string userId);
+    public Task<User?> GetUserAsync(string userName);
 }

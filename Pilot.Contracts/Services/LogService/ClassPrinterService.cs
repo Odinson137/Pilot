@@ -12,7 +12,11 @@ public static class ClassPrinterService
         this ILogger<T1> logger, 
         T2 logClass)
     {
-        var message = CreateMessage(logClass, new StringBuilder(), typeof(T2));
+        var builder = new StringBuilder();
+        var type = typeof(T2);
+        builder.AppendLine($"{type}:");
+        
+        var message = CreateMessage(logClass, builder, type);
         logger.LogInformation(message.ToString());
     }
 
@@ -30,7 +34,7 @@ public static class ClassPrinterService
 
             builder.Append(tabs);
             
-            if (value != null && value.GetType().IsClass)
+            if (value != null && value.GetType().IsClass && value.GetType() != typeof(string))
             {
                 builder.AppendLine($"{property.Name}");
                 

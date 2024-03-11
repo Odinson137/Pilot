@@ -12,6 +12,7 @@ public class CompanyCommandHandler : IRequestHandler<CompanyAddCommand>
     private readonly ILogger<CompanyCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
 
+
     public CompanyCommandHandler(
         ILogger<CompanyCommandHandler> logger,
         IPublishEndpoint publishEndpoint)

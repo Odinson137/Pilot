@@ -9,9 +9,9 @@ namespace Pilot.Identity.Services;
 
 public class TokenService : IToken
 {
-    private readonly ConfigurationManager _configurationManager;
+    private readonly IConfiguration _configurationManager;
 
-    public TokenService(ConfigurationManager configurationManager)
+    public TokenService(IConfiguration configurationManager)
     {
         _configurationManager = configurationManager;
     }

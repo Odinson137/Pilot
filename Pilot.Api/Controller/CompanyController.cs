@@ -20,35 +20,35 @@ public class CompanyController : PilotController
 
     [HttpGet]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> GetAllCompany()
+    public async Task<IActionResult> GetAllCompany(CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompaniesQuery());
+        var result = await _mediator.Send(new GetCompaniesQuery(), token);
         return Ok(result);
     }
     
     [HttpGet("{companyId}")]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> GetCompany(string companyId)
+    public async Task<IActionResult> GetCompany(string companyId, CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId));
+        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId), token);
         return Ok(result);
     }
     
     [HttpPost]
     [Authorize]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> AddCompany(string companyName)
+    public async Task<IActionResult> AddCompany(string companyName, CancellationToken token)
     {
-        await _mediator.Send(new CompanyAddCommand(companyName, UserId));
+        await _mediator.Send(new CompanyAddCommand(companyName, UserId), token);
         return Ok("The company will be adding soon");
     }
     
-    // [HttpPatch]
-    // [Authorize]
-    // [ProducesResponseType(200)]
-    // public async Task<IActionResult> ChangeCompanyTitle(string companyId, string companyName)
-    // {
-    //     await _mediator.Send(new ChangeCompanyTitleCommand(companyId, companyName, UserId));
-    //     return Ok("The company will be adding soon");
-    // }
+    [HttpPatch]
+    [Authorize]
+    [ProducesResponseType(200)]
+    public async Task<IActionResult> ChangeCompanyTitle(string companyId, string companyName)
+    {
+        await _mediator.Send(new ChangeCompanyTitleCommand(companyId, companyName, UserId));
+        return Ok("The company will be adding soon");
+    }
 }

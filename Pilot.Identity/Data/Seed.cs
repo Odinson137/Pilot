@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 
 namespace Pilot.Identity.Data;
@@ -18,6 +19,8 @@ public static class Seed
             return;
         }
         
+        var passwordCoder = app.ApplicationServices.GetRequiredService<IPasswordCoder>();
+        
         var users = new List<User>()
         {
             new ()
@@ -25,7 +28,7 @@ public static class Seed
                 UserName = "Admin",
                 Name = "Yuri",
                 LastName = "Bury",
-                Password = "123456",
+                Password = passwordCoder.PasswordCode("123456"),
                 Role = Role.Admin,
             },
             new ()
@@ -33,14 +36,14 @@ public static class Seed
                 UserName = "Baget",
                 Name = "Sasha",
                 LastName = "Baginskiy",
-                Password = "123456",
+                Password = passwordCoder.PasswordCode("123456"),
             },
             new ()
             {
                 UserName = "JSCooler",
                 Name = "Yarick",
                 LastName = "Yanovich",
-                Password = "123456",
+                Password = passwordCoder.PasswordCode("123456"),
                 Role = Role.Admin,
             }
         };
