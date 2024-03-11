@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Pilot.Api.Commands;
-using Pilot.Api.Interfaces.Interfaces;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 

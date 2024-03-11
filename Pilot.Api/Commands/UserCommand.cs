@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Pilot.Api.Interfaces.Interfaces;
 
 namespace Pilot.Api.Commands;
 
