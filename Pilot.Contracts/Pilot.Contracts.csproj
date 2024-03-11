@@ -17,4 +17,8 @@
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj" />
+  </ItemGroup>
+
 </Project>
