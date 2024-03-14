@@ -38,10 +38,7 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-services.AddControllers(options =>
-{
-    // options.Filters.Add(new ApiExceptionFilter());
-});
+services.AddControllers();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
@@ -99,3 +96,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.Run();
+
+// public partial class Program {}

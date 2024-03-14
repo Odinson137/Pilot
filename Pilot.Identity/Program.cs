@@ -115,4 +115,4 @@ app.MapPost("/Authorization", async (
 
 app.Run();
 
-
+public partial class Program {}
