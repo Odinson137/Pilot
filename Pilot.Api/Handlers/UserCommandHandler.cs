@@ -10,7 +10,6 @@ public class UserCommandHandler :
     IRequestHandler<UserRegistrationCommand>,
     IRequestHandler<UserAuthorizationCommand, AuthUserDto>
 {
-    // private const string Url = "https://localhost:7127";
     private readonly ILogger<UserCommandHandler> _logger;
     private readonly HttpClient _httpClient;
     

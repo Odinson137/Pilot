@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using MongoDB.Driver;
 using Pilot.Identity.Models;
 using Pilot.Identity.Services;
@@ -57,6 +58,36 @@ public class IdentityTests : BaseIntegrationTest
     }
     
     [Fact]
+    public async Task Registration_UserAlreadyExist_ShouldReturnBadRequest()
+    {
+        // Arrange
+        var userInDb = new User()
+        {
+            UserName = "Test",
+            Name = "Test",
+            LastName = "Test",
+            Password = "Test"
+        };
+        
+        await _collection.InsertOneAsync(userInDb);
+        
+        var user = new RegistrationUserDto()
+        {
+            UserName = "Test",
+            Name = "Test",
+            LastName = "Test",
+            Password = "Test"
+        };
+        
+        // Act
+        var request = await Client.PostAsJsonAsync("Registration", user);
+        
+        // Assert
+        Assert.False(request.IsSuccessStatusCode);
+        Assert.True(request.StatusCode == HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
     public async Task Authorization_CheckUserExist_ShouldReturnOK()
     {
         // Arrange
@@ -82,5 +113,23 @@ public class IdentityTests : BaseIntegrationTest
         
         // Assert
         Assert.True(request.IsSuccessStatusCode);
+    }
+    
+    [Fact]
+    public async Task Authorization_UserIsNotExist_ShouldReturnNotFound()
+    {
+        // Arrange
+        var authUser = new AuthorizationUserDto
+        {
+            UserName = "NotExist",
+            Password = "Test",
+        };
+
+        // Act
+        var request = await Client.PostAsJsonAsync("Authorization", authUser);
+        
+        // Assert
+        Assert.True(!request.IsSuccessStatusCode);
+        Assert.True(request.StatusCode == HttpStatusCode.NotFound);
     }
 }
