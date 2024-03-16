@@ -7,10 +7,11 @@ using Pilot.Contracts.RabbitMqMessages.Company;
 
 namespace Pilot.Api.Handlers;
 
-public class CompanyCommandHandler : IRequestHandler<CompanyCommand>
+public class CompanyCommandHandler : IRequestHandler<CompanyAddCommand>
 {
     private readonly ILogger<CompanyCommandHandler> _logger;
     private readonly IPublishEndpoint _publishEndpoint;
+
 
     public CompanyCommandHandler(
         ILogger<CompanyCommandHandler> logger,
@@ -20,7 +21,7 @@ public class CompanyCommandHandler : IRequestHandler<CompanyCommand>
         _publishEndpoint = publishEndpoint;
     }
 
-    public async Task Handle(CompanyCommand request, CancellationToken cancellationToken)
+    public async Task Handle(CompanyAddCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Add company");
 

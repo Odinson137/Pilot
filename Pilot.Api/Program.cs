@@ -1,8 +1,10 @@
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Repository;
+using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
 
@@ -14,8 +16,13 @@ var configuration = builder.Configuration;
 
 services.AddScoped<ICompany, CompanyRepository>();
 
+services.AddHttpClient("IdentityServer", c =>
+{
+    c.BaseAddress = new Uri("https://localhost:7127");
+});
+
 var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-builder.Services.AddSingleton(
+services.AddSingleton(
     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
 
 builder.Logging.ClearProviders();
@@ -27,13 +34,12 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
         lc.MinimumLevel.Error();
         lc.WriteTo.MongoDb(mongoConfiguration);
     })
-    .WriteTo.File(configuration["Logging:LogFiles:Main"]!,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger());
 
 services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 services.AddControllers();
+
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
@@ -54,7 +60,28 @@ services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-await Seed.Seeding(app);
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<IExceptionHandlerFeature>();
+
+        if (error != null)
+        {
+            context.Response.StatusCode = error.Error switch
+            {
+                BadRequestException => 400,
+                NotFoundException => 404,
+                _ => 500
+            };
+
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(error.Error.Message);
+        }
+    });
+});
+
+await app.Seeding();
 
 if (app.Environment.IsDevelopment())
 {
@@ -65,4 +92,9 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.Run();
+
+// public partial class Program {}

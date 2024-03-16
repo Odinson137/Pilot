@@ -1,0 +1,6 @@
+@Pilot.Identity_HostAddress = http://localhost:5141
+
+GET {{Pilot.Identity_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

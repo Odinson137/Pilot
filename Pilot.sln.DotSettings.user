@@ -1,10 +1,14 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer /&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d74df70e_002D3f9e_002D49f9_002D97f0_002Da4b1b2aad562/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetCompaniesQuery_Handle_GetAllCompany_ShouldReturnOkObjectResult" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f1d5aa41_002De8ae_002D4891_002Db1cf_002D2043fee2a6fe/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetAuthorization" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.ApiTests.UnitTests.CompanyHandlerUnitTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Identity.Tests.IntegrationTests.IdentityTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.ApiTests.UnitTests.UserCommandHandlerUnitTests.UserAuthorizationHandle_SuccessfullyAuthorization_ShouldReturnOkObjectResult&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.ApiTests.UnitTests.UserCommandHandlerUnitTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.UnitTests.UserCommandHandlerUnitTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	
 	
 	
 	
