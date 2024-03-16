@@ -32,10 +32,13 @@ public class IdentityTests : BaseIntegrationTest
             LastName = "Test",
             Password = "Test"
         };
+
+        // очистка всей коллекции
+        await _collection.DeleteManyAsync(FilterDefinition<User>.Empty);
         
         // Act
         var request = await Client.PostAsJsonAsync("Registration", user);
-        
+        var content = await request.Content.ReadAsStringAsync();
         // Assert
         Assert.True(request.IsSuccessStatusCode);
 

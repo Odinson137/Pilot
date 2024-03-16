@@ -13,8 +13,6 @@ namespace Pilot.Tests.Api.Tests.UnitTests;
 
 public class UserCommandHandlerUnitTests
 {
-    // private readonly UserCommandHandler _mockUserCommandHandler;
-    // private readonly Mock<HttpClient> _mockHttpClient;
     private readonly Mock<HttpMessageHandler> _mockHandler;
     private readonly UserCommandHandler _sut;
 
