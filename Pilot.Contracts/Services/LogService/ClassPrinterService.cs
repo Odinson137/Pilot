@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
@@ -14,18 +17,36 @@ public static class ClassPrinterService
     {
         var builder = new StringBuilder();
         var type = typeof(T2);
+        
         builder.AppendLine($"{type}:");
         
-        var message = CreateMessage(logClass, builder, type);
-        logger.LogInformation(message.ToString());
+        CreateMessage(logClass, builder, type);
+
+        logger.LogInformation(builder.ToString());
     }
 
-    private static StringBuilder CreateMessage<T2>(
+    private static void CreateMessage<T2>(
         T2 logClass, 
         StringBuilder builder, 
-        IReflect classType,
+        Type classType,
         string tabs = "")
     {
+        if (typeof(IEnumerable).IsAssignableFrom(classType) || classType.IsArray)
+        {
+            var collection = (ICollection)logClass!;
+
+            builder.AppendLine($"The lenght of collection is {collection.Count}:");
+            
+            foreach (var value in collection)
+            {
+                builder.AppendLine($"New value of {value.GetType()}");
+                CreateMessage(value, builder, value.GetType());
+                builder.AppendLine();
+            }
+
+            return;
+        }
+        
         var properties = classType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
         
         foreach (var property in properties)
@@ -45,7 +66,5 @@ public static class ClassPrinterService
                 builder.AppendLine($"{property.Name} - {value}");
             }
         }
-
-        return builder;
     }
 }

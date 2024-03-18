@@ -23,10 +23,6 @@ public class CompanyCommandHandler : IRequestHandler<CompanyAddCommand>
 
     public async Task Handle(CompanyAddCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Add company");
-
         await _publishEndpoint.Publish(new TitleCompany(request.UserId, request.CompanyName), cancellationToken);
-
-        _logger.LogInformation("The company has been sent");
     }
 }

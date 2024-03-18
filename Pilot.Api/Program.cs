@@ -1,9 +1,12 @@
 using MassTransit;
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
+using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Repository;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
@@ -18,12 +21,18 @@ services.AddScoped<ICompany, CompanyRepository>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
-    c.BaseAddress = new Uri("https://localhost:7127");
+    c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
 });
 
 var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 services.AddSingleton(
     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
+
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = configuration.GetSection("RedisCache").GetValue<string>("ConnectionString");
+    options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
+});
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -36,7 +45,16 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     })
     .CreateLogger());
 
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
+services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    // cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+    // cfg.AddBehavior(typeof(LoggingBehavior<,>));
+});
+
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
 
 services.AddControllers();
 
@@ -48,7 +66,7 @@ services.AddMassTransit(x =>
 {
     var rabbitMqConfig = configuration.GetSection("RabbitMQ");
     
-    x.UsingRabbitMq((ctx, cfg) =>
+    x.UsingRabbitMq((_, cfg) =>
     {
         cfg.Host(rabbitMqConfig["Host"], h =>
         {
@@ -57,6 +75,10 @@ services.AddMassTransit(x =>
         });
     });
 });
+
+services.AddMemoryCache();
+
+services.AddTransient<ISeed, Seed>();
 
 var app = builder.Build();
 
@@ -81,7 +103,7 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-await app.Seeding();
+await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -97,4 +119,8 @@ app.UseAuthorization();
 
 app.Run();
 
-// public partial class Program {}
+namespace Pilot.Api
+{
+    public partial class Program {}
+}
+

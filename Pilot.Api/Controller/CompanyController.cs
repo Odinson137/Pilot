@@ -22,7 +22,7 @@ public class CompanyController : PilotController
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetAllCompany(CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompaniesQuery(), token);
+        var result = await _mediator.Send(new GetCompaniesQuery("all-companies"), token);
         return Ok(result);
     }
     
@@ -30,7 +30,7 @@ public class CompanyController : PilotController
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetCompany(string companyId, CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId), token);
+        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId, $"companyId-{companyId}"), token);
         return Ok(result);
     }
     
@@ -51,4 +51,5 @@ public class CompanyController : PilotController
         await _mediator.Send(new ChangeCompanyTitleCommand(companyId, companyName, UserId));
         return Ok("The company will be adding soon");
     }
+    
 }
