@@ -1,9 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyModel.Resolution;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Models;
 using Xunit;
