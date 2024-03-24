@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Identity.Data;
@@ -40,9 +41,11 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     })
     .CreateLogger());
 
+services.AddTransient<ISeed, Seed>();
+
 var app = builder.Build();
 
-await app.Seeding();
+await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -115,4 +118,7 @@ app.MapPost("/Authorization", async (
 
 app.Run();
 
-public partial class Program {}
+namespace Pilot.Identity
+{
+    public partial class Program {}
+}

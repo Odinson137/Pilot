@@ -23,35 +23,24 @@ public class UserCommandHandler :
     
     public async Task Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("User registration handle");
-        _logger.LogClassInfo(request);
-        
         var response = await _httpClient.PostAsJsonAsync($"Registration", request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             throw new BadRequestException(await response.Content.ReadAsStringAsync(cancellationToken));   
         }
-        
-        _logger.LogInformation("Successfully registration");
     }
 
     public async Task<AuthUserDto> Handle(UserAuthorizationCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("User authorization handle");
-        _logger.LogClassInfo(request);
-        
         var response = await _httpClient.PostAsJsonAsync("Authorization", request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
-            var result = (await response.Content.ReadAsStringAsync(cancellationToken));
+            var result = await response.Content.ReadAsStringAsync(cancellationToken);
             throw new BadRequestException(result);
         }
 
         var content = await response.Content.ReadFromJsonAsync<AuthUserDto>(cancellationToken);
         
-        _logger.LogInformation("Successfully authorization");
-        _logger.LogClassInfo(content);
-
         return content!;
     }
 }

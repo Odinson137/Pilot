@@ -1,15 +1,14 @@
-﻿using System.Collections.Immutable;
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Pilot.Api.Data.Enums;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Models;
 
 namespace Pilot.Api.Data;
 
-public static class Seed
+
+public class Seed : ISeed
 {
-    public static async Task Seeding(this IApplicationBuilder app)
+    public async Task Seeding(IApplicationBuilder app)
     {
         var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();
         

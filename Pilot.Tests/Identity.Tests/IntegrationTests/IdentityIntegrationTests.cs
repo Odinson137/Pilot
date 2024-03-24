@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using MongoDB.Driver;
+using Pilot.Identity.Data;
 using Pilot.Identity.Models;
 using Pilot.Identity.Services;
 using Pilot.Receiver.DTO;
@@ -8,16 +9,16 @@ using Xunit;
 
 namespace Pilot.Tests.Identity.Tests.IntegrationTests;
 
-public class IdentityTests : BaseIntegrationTest
+public class IdentityIntegrationTests : BaseIdentityIntegrationTest
 {
     private readonly IMongoCollection<User> _collection;
     private readonly PasswordCoderService _coderService;
     
-    public IdentityTests(IntegrationTestWebAppFactory factory)
+    public IdentityIntegrationTests(IntegrationIdentityTestWebAppFactory factory)
         : base(factory)
     {
         _coderService = new PasswordCoderService();
-        _collection = MongoDatabase.GetCollection<User>("users");
+        _collection = MongoDatabase.GetCollection<User>(MongoTable.User);
     }
     
     
@@ -38,7 +39,8 @@ public class IdentityTests : BaseIntegrationTest
         
         // Act
         var request = await Client.PostAsJsonAsync("Registration", user);
-        var content = await request.Content.ReadAsStringAsync();
+        var _ = await request.Content.ReadAsStringAsync();
+        
         // Assert
         Assert.True(request.IsSuccessStatusCode);
 

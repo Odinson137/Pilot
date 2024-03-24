@@ -1,12 +1,13 @@
 ﻿using MongoDB.Driver;
+using Pilot.Contracts.Data;
 using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 
 namespace Pilot.Identity.Data;
 
-public static class Seed
+public class Seed : ISeed
 {
-    public static async Task Seeding(this IApplicationBuilder app)
+    public async Task Seeding(IApplicationBuilder app)
     {
         var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();
         

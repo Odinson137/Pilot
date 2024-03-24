@@ -1,14 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
-using Moq;
+﻿using Moq;
 using Pilot.Api.DTO;
 using Pilot.Api.Handlers;
 using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Queries;
-using Pilot.Api.Repository;
 using Xunit;
 
-namespace Pilot.Tests.ApiTests.UnitTests;
+namespace Pilot.Tests.Api.Tests.UnitTests;
 
 public class CompanyHandlerUnitTests
 {
@@ -18,9 +15,8 @@ public class CompanyHandlerUnitTests
     public CompanyHandlerUnitTests()
     {
         _mockCompanyRepository = new Mock<ICompany>();
-        var mockLoggerCompanyQueryHandler = new Mock<ILogger<CompanyQueryHandler>>();
         _mockCompanyQueryHandler =
-            new CompanyQueryHandler(_mockCompanyRepository.Object, mockLoggerCompanyQueryHandler.Object);
+            new CompanyQueryHandler(_mockCompanyRepository.Object);
     }
 
     [Fact]
@@ -28,7 +24,7 @@ public class CompanyHandlerUnitTests
     {
         // Arrange 
 
-        var request = new GetCompaniesQuery();
+        var request = new GetCompaniesQuery("TestCacheKey");
 
         _mockCompanyRepository.Setup(mock => 
                 mock.GetCompaniesAsync(default))
@@ -50,7 +46,7 @@ public class CompanyHandlerUnitTests
         // Arrange 
         
         var companyId = "1";
-        var request = new GetCompanyByIdQuery(companyId);
+        var request = new GetCompanyByIdQuery(companyId, "TestCacheKey");
 
         _mockCompanyRepository.Setup(mock => 
                 mock.GetCompanyAsync(companyId, default))
