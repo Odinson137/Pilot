@@ -1,9 +1,13 @@
+using System.Reflection;
+using System.Text;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
+using Pilot.Api.Handlers;
 using Pilot.Api.Interfaces.Repositories;
 using Pilot.Api.Repository;
 using Pilot.Contracts.Data;
@@ -18,6 +22,7 @@ var configuration = builder.Configuration;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
 services.AddScoped<ICompany, CompanyRepository>();
+services.AddScoped<ICompanyUser, CompanyUserRepository>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
@@ -45,18 +50,12 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     })
     .CreateLogger());
 
+services.AddControllers();
 
-services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    // cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-    // cfg.AddBehavior(typeof(LoggingBehavior<,>));
-});
+services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
-
-services.AddControllers();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
@@ -79,6 +78,22 @@ services.AddMassTransit(x =>
 services.AddMemoryCache();
 
 services.AddTransient<ISeed, Seed>();
+
+services.AddAuthentication()
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false, // TODO
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = 
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Jwt.Key)),
+            ValidIssuer = Jwt.Issuer,
+        };
+    });
 
 var app = builder.Build();
 
@@ -116,6 +131,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.Run();
 

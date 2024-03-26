@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Pilot.Contracts.Data;
 using Pilot.Identity.Data;
 using Pilot.Identity.Interfaces;
 
@@ -9,16 +10,9 @@ namespace Pilot.Identity.Services;
 
 public class TokenService : IToken
 {
-    private readonly IConfiguration _configurationManager;
-
-    public TokenService(IConfiguration configurationManager)
-    {
-        _configurationManager = configurationManager;
-    }
-
     public string GenerateToken(string userId, Role role)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationManager["Jwt:Key"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Jwt.Key));
         var creeds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
@@ -29,8 +23,8 @@ public class TokenService : IToken
         };
 
         var token = new JwtSecurityToken(
-            _configurationManager["Jwt:Issuer"],
-            _configurationManager["Jwt:Issuer"],
+            Jwt.Issuer,
+            Jwt.Issuer,
             claims,
             expires: DateTime.Now.AddDays(1),
             signingCredentials: creeds);

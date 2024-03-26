@@ -1,7 +1,19 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer /&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=58aa1afb_002Df1b2_002D445d_002Db00e_002Dee892f54212e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=74e2a797_002Df1d0_002D4db3_002Da33d_002Da6749be1958e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCompany_WithoutAuthorized_ShouldReturnNonAuthorized" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyUserIntegrationTests.GetCompany_WithoutAuthorized_ShouldReturnNonAuthorized&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyUserIntegrationTests.GetCompany_ReturnAllCompanies_ShouldReturnOK&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyUserIntegrationTests.GetCompany_ReturnAllCompaniesFromCache_ShouldReturnOK&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a0479c53_002D42dc_002D4c88_002Da899_002D66e8552cbcde/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetCompany_ReturnAllCompanies_ShouldReturnOK" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyUserIntegrationTests.GetCompany_ReturnAllCompanies_ShouldReturnOK&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyIntegrationTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.CompanyUserIntegrationTests.GetCompany_ReturnAllCompaniesFromCache_ShouldReturnOK&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	

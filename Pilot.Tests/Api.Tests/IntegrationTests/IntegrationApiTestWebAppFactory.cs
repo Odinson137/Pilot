@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
 using Pilot.Tests.IntegrationBase;
+using Serilog;
 using Testcontainers.MongoDb;
 using Testcontainers.Redis;
 using Xunit;
@@ -29,10 +32,19 @@ public class IntegrationApiTestWebAppFactory : WebApplicationFactory<Pilot.Api.P
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureTestServices(async services =>
+        builder.ConfigureLogging(logger =>
+        {
+            logger.ClearProviders();
+            logger.AddSerilog(new LoggerConfiguration()
+                .WriteTo.Debug()
+                .WriteTo.Console()
+                .CreateLogger());
+        });
+        
+        builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
-            
+
             services.RemoveAll<MongoClient>();
             services.RemoveAll<IDistributedCache>();
 
@@ -58,46 +70,5 @@ public class IntegrationApiTestWebAppFactory : WebApplicationFactory<Pilot.Api.P
     {
         await _redisContainer.StopAsync();
         await _mongoDbContainer.StopAsync();
-    }
-}
-
-public class MongoTestClient : MongoClient
-{
-    public static int Counter { get; set; }
-
-    public MongoTestClient(string connectionString) : base(connectionString)
-    {
-        
-    }
-
-    public new IMongoDatabase GetDatabase(string name, MongoDatabaseSettings settings = null)
-    {
-        Counter++;
-        return base.GetDatabase(name);
-    }
-}
-
-public class MongoDbClient
-{
-    private IMongoClient _client;
-    private IMongoDatabase _database;
-    private int _queryCount;
-
-    public MongoDbClient(string connectionString, string databaseName)
-    {
-        _client = new MongoClient(connectionString);
-        _database = _client.GetDatabase(databaseName);
-        _queryCount = 0;
-    }
-
-    public IMongoCollection<T> GetCollection<T>(string collectionName)
-    {
-        _queryCount++;
-        return _database.GetCollection<T>(collectionName);
-    }
-
-    public int GetQueryCount()
-    {
-        return _queryCount;
     }
 }

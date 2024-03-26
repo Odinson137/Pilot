@@ -13,6 +13,8 @@ public class CompanyController : PilotController
 {
     private readonly IMediator _mediator;
 
+    public static string GetAllCompaniesCache() => "all-companies";
+    public static string GetCompanyCache(string companyId) => $"companyId-{companyId}";
     public CompanyController(IMediator mediator)
     {
         _mediator = mediator;
@@ -22,7 +24,7 @@ public class CompanyController : PilotController
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetAllCompany(CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompaniesQuery("all-companies"), token);
+        var result = await _mediator.Send(new GetCompaniesQuery(GetAllCompaniesCache()), token);
         return Ok(result);
     }
     
@@ -30,7 +32,7 @@ public class CompanyController : PilotController
     [ProducesResponseType(200)]
     public async Task<IActionResult> GetCompany(string companyId, CancellationToken token)
     {
-        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId, $"companyId-{companyId}"), token);
+        var result = await _mediator.Send(new GetCompanyByIdQuery(companyId, GetCompanyCache(companyId)), token);
         return Ok(result);
     }
     

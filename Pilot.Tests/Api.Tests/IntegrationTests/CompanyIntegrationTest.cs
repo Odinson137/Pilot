@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using Pilot.Api.Controller;
+using Pilot.Api.Data;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Models;
 using Xunit;
@@ -20,16 +22,8 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         _redis = ScopeService.ServiceProvider.GetRequiredService<IDistributedCache>();
     }
 
-    private async Task ClearMongoDb()
-    {
-        await _collection.DeleteManyAsync(FilterDefinition<Company>.Empty);
-    }
-    
-    private async Task ClearRedis(string key)
-    {
-        await _redis.RemoveAsync(key);
-
-    }
+    private async Task ClearMongoDb() => await _collection.DeleteManyAsync(FilterDefinition<Company>.Empty);
+    private async Task ClearRedis(string key) => await _redis.RemoveAsync(key);
     
     [Fact]
     public async Task GetCompany_ReturnAllCompanies_ShouldReturnOK()
@@ -54,6 +48,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
             }
         };
 
+        await ClearMongoDb();
         await _collection.InsertManyAsync(companies);
 
         // Act
@@ -92,7 +87,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         };
 
         await ClearMongoDb();
-        await ClearRedis("all-companies");
+        await ClearRedis(CompanyController.GetAllCompaniesCache());
         await _collection.InsertManyAsync(companies);
 
         // Act 
@@ -104,7 +99,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         Assert.True(requestDb.IsSuccessStatusCode);
         Assert.True(requestCache.IsSuccessStatusCode);
         
-        var redisCache = await _redis.GetStringAsync("all-companies");
+        var redisCache = await _redis.GetStringAsync(CompanyController.GetAllCompaniesCache());
         Assert.NotNull(redisCache);
         
         var companiesDb = await requestDb.Content.ReadFromJsonAsync<ICollection<Company>>();
@@ -128,7 +123,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         };
         
         await ClearMongoDb();
-        await ClearRedis($"companyId-{company.Id}");
+        await ClearRedis(CompanyController.GetCompanyCache(company.Id));
         await _collection.InsertOneAsync(company);
 
         // Act
@@ -154,7 +149,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         };
         
         await ClearMongoDb();
-        await ClearRedis($"companyId-{company.Id}");
+        await ClearRedis(CompanyController.GetCompanyCache(company.Id));
         await _collection.InsertOneAsync(company);
 
         // Act

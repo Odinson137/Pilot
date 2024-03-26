@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using Pilot.Tests.Identity.Tests;
+using Pilot.Identity.Data;
+using Pilot.Identity.Services;
 using Xunit;
 
 namespace Pilot.Tests.Api.Tests.IntegrationTests;
@@ -19,5 +20,16 @@ public class BaseApiIntegrationTest : IClassFixture<IntegrationApiTestWebAppFact
         MongoDatabase = ScopeService.ServiceProvider.GetRequiredService<IMongoDatabase>();
 
         Client = factory.CreateClient();
+    }
+
+    protected void Authorize()
+    {
+        var token = new TokenService().GenerateToken("admin", Role.Admin);
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
+
+    protected void UnAuthorize()
+    {
+        Client.DefaultRequestHeaders.Authorization = null;
     }
 }
