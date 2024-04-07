@@ -15,6 +15,12 @@ public static class ClassPrinterService
         this ILogger<T1> logger, 
         T2 logClass)
     {
+        if (logClass == null)
+        {
+            logger.LogInformation("It's null");
+            return;
+        }
+        
         var builder = new StringBuilder();
         var type = typeof(T2);
         

@@ -1,21 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Identity.Data;
+using Pilot.Identity.DTO;
 using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 using Pilot.Identity.Repository;
 using Pilot.Identity.Services;
 using Pilot.Receiver.DTO;
 using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+// var configuration = new ConfigurationBuilder()
+//     .SetBasePath(builder.Environment.ContentRootPath)
+//     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+//     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+//     .AddEnvironmentVariables().Build();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,16 +49,22 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddTransient<ISeed, Seed>();
 
+services.AddCors(options => options.AddPolicy("CorsPolicy",
+    builder =>
+    {
+        builder.WithOrigins("http://pilot_receiver:7010");
+    }));
+
 var app = builder.Build();
 
 await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.UseHttpsRedirection();
 
@@ -112,9 +124,40 @@ app.MapPost("/Authorization", async (
         }
 
         logger.LogInformation("Received authorization form in identity");
+
+        // await redis.SetStringAsync($"session-user-by-id:{user.Id}", JsonConvert.SerializeObject(user));
+        
         return Results.Ok(new AuthUserDto(user.Id, tokenService.GenerateToken(user.Id, user.Role)));
     })
     .WithOpenApi();
+
+app.MapGet("/User", async (
+        IUser userRepository, 
+        ILogger<Program> logger,
+        [FromQuery] string userId) =>
+    {
+        logger.LogInformation("Get user in identity");
+
+        var user = await userRepository.GetUserByIdAsync(userId);
+        logger.LogClassInfo(user);
+        
+        if (user == null)
+        {
+            logger.LogInformation("User not found");
+            return Results.NotFound("User not found");
+        }
+
+        logger.LogInformation("Got user in identity");
+        return Results.Ok(new UserDto()
+        {
+            UserName = user.UserName,
+            LastName = user.LastName,
+            Name = user.Name,
+        });
+    })
+    .WithOpenApi();
+
+app.UseCors("CorsPolicy");
 
 app.Run();
 

@@ -32,4 +32,11 @@ public class UserRepository : IUser
         var user = await _userCollection.Find(filter).FirstOrDefaultAsync();
         return user;
     }
+
+    public async Task<User?> GetUserByIdAsync(string userId)
+    {
+        var filter = Builders<User>.Filter.Eq(c => c.Id, userId);
+        var user = await _userCollection.Find(filter).FirstOrDefaultAsync();
+        return user;
+    }
 }

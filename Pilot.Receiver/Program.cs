@@ -1,13 +1,30 @@
 using MassTransit;
 using MongoDB.Driver;
+using Pilot.Contracts.Data;
 using Pilot.Receiver.Consumers;
 using Pilot.Contracts.Services.LogService;
+using Pilot.Receiver.Data;
+using Pilot.Receiver.Interface;
+using Pilot.Receiver.Repository;
+using Pilot.Receiver.Service;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+
+services.AddScoped<ICompany, CompanyRepository>();
+services.AddScoped<ICompanyUser, CompanyUserRepository>();
+services.AddScoped<IMessage, MessageService>();
+services.AddScoped<IUserService, UserService>();
+
+services.AddHttpClient("IdentityServer", c =>
+{
+    c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
+});
 
 var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 builder.Services.AddSingleton(
@@ -33,6 +50,7 @@ services.AddMassTransit(x =>
     x.SetKebabCaseEndpointNameFormatter();
     
     x.AddConsumer<CompanyCreatedConsumer>();
+    x.AddConsumer<CompanyUserCreatedConsumer>();
     
     x.UsingRabbitMq((ctx, cfg) =>
     {
@@ -43,17 +61,69 @@ services.AddMassTransit(x =>
         });
         
         cfg.ConfigureEndpoints(ctx);
-
-        
-        // cfg.ReceiveEndpoint("message_queue", e =>
-        // {
-        //     e.ConfigureConsumer<CompanyCreatedConsumer>(ctx);
-        // });
     });
 });
 
+services.AddTransient<ISeed, Seed>();
+
 var app = builder.Build();
+
+await app.Services.GetRequiredService<ISeed>().Seeding(app);
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Main page!");
 
+app.MapGet("/Company", async (
+    ILogger<Program> logger, 
+    ICompany company,
+    CancellationToken cancellationToken) =>
+{
+    logger.LogInformation("Get companies");
+
+    var companies = await company.GetCompaniesAsync(cancellationToken);
+    
+    logger.LogInformation("Successfully  getting companies");
+
+    return Results.Ok(companies);
+});
+
+app.MapGet("/Company/{companyId}", async (
+    ILogger<Program> logger, 
+    ICompany companyRepository,
+    string companyId,
+    CancellationToken cancellationToken) =>
+{
+    logger.LogInformation($"Get company by id {companyId}");
+
+    var company = await companyRepository.GetCompanyAsync(companyId, cancellationToken);
+    
+    logger.LogInformation("Successfully  getting companies");
+
+    return Results.Ok(company);
+});
+
+app.MapGet("/CompanyUser/{companyId}", async (
+    ILogger<Program> logger, 
+    ICompany companyRepository,
+    string companyId,
+    CancellationToken cancellationToken) =>
+{
+    logger.LogInformation($"Get all user in company by companyId {companyId}");
+
+    var users = await companyRepository.GetCompanyAsync(companyId, cancellationToken);
+    
+    logger.LogInformation("Successfully getting company users");
+
+    return Results.Ok(users);
+});
+
 app.Run();
+
+namespace Pilot.Receiver
+{
+    public partial class Program {}
+}

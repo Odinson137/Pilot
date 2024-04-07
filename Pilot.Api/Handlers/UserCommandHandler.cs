@@ -10,20 +10,17 @@ public class UserCommandHandler :
     IRequestHandler<UserRegistrationCommand>,
     IRequestHandler<UserAuthorizationCommand, AuthUserDto>
 {
-    private readonly ILogger<UserCommandHandler> _logger;
     private readonly HttpClient _httpClient;
     
     public UserCommandHandler(
-        ILogger<UserCommandHandler> logger, 
         IHttpClientFactory httpClientFactory)
     {
-        _logger = logger;
         _httpClient = httpClientFactory.CreateClient("IdentityServer");
     }
     
     public async Task Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
     {
-        var response = await _httpClient.PostAsJsonAsync($"Registration", request, cancellationToken);
+        var response = await _httpClient.PostAsJsonAsync("Registration", request, cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
             throw new BadRequestException(await response.Content.ReadAsStringAsync(cancellationToken));   

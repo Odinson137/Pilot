@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Pilot.Api.Commands;
 using Pilot.Api.Data.ControllerSettings;
 using Pilot.Api.Queries;
 
@@ -32,9 +33,10 @@ public class CompanyUserController : PilotController
     [Authorize]
     [HttpPost("addUser")]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> AddNewUserToCompany(string userId, string companyId, CancellationToken token)
+    public async Task<IActionResult> AddNewUserToCompany(string addedUserId, string companyId, CancellationToken token)
     {
-        // var result = await _mediator.Send(new GetCompaniesQuery("all-companies"), token);
+        await _mediator.Send(
+            new AddCompanyUserCommand(addedUserId, UserId, companyId), token);
         return Ok();
     }
 }

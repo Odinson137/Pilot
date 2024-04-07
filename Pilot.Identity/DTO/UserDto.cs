@@ -1,4 +1,4 @@
-﻿namespace Pilot.Receiver.DTO;
+﻿namespace Pilot.Identity.DTO;
 
 public class UserDto
 {

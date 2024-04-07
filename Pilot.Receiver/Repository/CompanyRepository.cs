@@ -1,7 +1,10 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using Pilot.Contracts.Data;
-using Pilot.Contracts.Models;
+using Pilot.Contracts.DTO;
+using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
+using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Repository;
 
@@ -14,6 +17,26 @@ public class CompanyRepository : ICompany
         _companyCollection = mongoDatabase.GetCollection<Company>(MongoTable.Company);
     }
 
+    public async Task<ICollection<CompanyDto>> GetCompaniesAsync(CancellationToken cancellationToken)
+    {
+        var companies = await _companyCollection.Find(new BsonDocument())
+            .Project(u => new CompanyDto(u.Id, u.Title, u.Description))
+            .ToListAsync(cancellationToken);
+        
+        return companies;
+    }
+    
+    public async Task<CompanyDto> GetCompanyAsync(string id, CancellationToken cancellationToken)
+    {
+        var filter = Builders<Company>.Filter.Eq(u => u.Id, id);
+        
+        var company = await _companyCollection.Find(filter)
+            .Project(u => new CompanyDto(u.Id, u.Title, u.Description))
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        return company;
+    }
+    
     public async Task<Company?> CheckCompanyTitleExistAsync(string title)
     {
         var filter = Builders<Company>.Filter.Eq(c => c.Title, title);

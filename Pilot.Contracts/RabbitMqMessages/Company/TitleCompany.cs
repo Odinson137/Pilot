@@ -2,8 +2,8 @@
 
 public class TitleCompany
 {
-    public readonly string UserId;
-    public readonly string Title;
+    public string UserId { get; }
+    public string Title { get; }
 
     public TitleCompany(string userId, string title)
     {

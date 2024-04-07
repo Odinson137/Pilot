@@ -4,16 +4,12 @@ using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
-using MongoDB.Driver;
 using Pilot.Api.Behaviors;
-using Pilot.Api.Data;
-using Pilot.Api.Handlers;
-using Pilot.Api.Interfaces.Repositories;
-using Pilot.Api.Repository;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
+using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,17 +17,18 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddScoped<ICompany, CompanyRepository>();
-services.AddScoped<ICompanyUser, CompanyUserRepository>();
+// services.AddScoped<ICompany, >();
+// services.AddScoped<ICompanyUser, CompanyUserRepository>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
     c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
 });
 
-var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-services.AddSingleton(
-    new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
+services.AddHttpClient("ReceiverServer", c =>
+{
+    c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!);
+});
 
 services.AddStackExchangeRedisCache(options =>
 {
@@ -43,11 +40,6 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    .WriteTo.Logger(lc =>
-    {
-        lc.MinimumLevel.Error();
-        lc.WriteTo.MongoDb(mongoConfiguration);
-    })
     .CreateLogger());
 
 services.AddControllers();
@@ -76,8 +68,6 @@ services.AddMassTransit(x =>
 });
 
 services.AddMemoryCache();
-
-services.AddTransient<ISeed, Seed>();
 
 services.AddAuthentication()
     .AddJwtBearer(options =>
@@ -112,19 +102,21 @@ app.UseExceptionHandler(errorApp =>
                 _ => 500
             };
 
+            var logger = app.Services.GetRequiredService<ILogger<IExceptionHandlerFeature>>();
+            
+            logger.LogClassInfo(context);
+            
             context.Response.ContentType = "application/json";
             await context.Response.WriteAsync(error.Error.Message);
         }
     });
 });
 
-await app.Services.GetRequiredService<ISeed>().Seeding(app);
-
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+// }
 
 app.MapControllers();
 app.UseHttpsRedirection();
@@ -132,11 +124,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/", () => "Hello from main app");
 
 app.Run();
-
-namespace Pilot.Api
-{
-    public partial class Program {}
-}
 

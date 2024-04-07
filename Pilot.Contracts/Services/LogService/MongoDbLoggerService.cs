@@ -23,6 +23,7 @@ public static class MongoDbLoggerService
     }
 }
 
+// можно попытаться вынести потом, чтоб это передавалось из вне, соответстуя Dependency Inversion в SOLID 
 class MongoDbSink : ILogEventSink
 {
     private readonly IMongoCollection<MongoLog> _collection;
@@ -56,10 +57,10 @@ class MongoLog
     public string? Stack { get; set; }
     public DateTime DateTime { get; set; } = DateTime.Now;
 
-    public MongoLog(string message, string exeption, string? stack)
+    public MongoLog(string message, string exception, string? stack)
     {
         Message = message;
-        Exeption = exeption;
+        Exeption = exception;
         Stack = stack;
     }
 }

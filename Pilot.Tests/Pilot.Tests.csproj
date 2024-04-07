@@ -7,11 +7,12 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
+      <Folder Include="Api.Tests\IntegrationTests\" />
       <Folder Include="Identity.Tests\UnitTests\" />
-      <Folder Include="Receiver.Tests\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,6 +38,13 @@
     <ItemGroup>
       <ProjectReference Include="..\Pilot.Api\Pilot.Api.csproj" />
       <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj" />
+      <ProjectReference Include="..\Pilot.Receiver\Pilot.Receiver.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

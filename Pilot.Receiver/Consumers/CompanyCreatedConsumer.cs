@@ -1,9 +1,10 @@
 ﻿using MassTransit;
 using Pilot.Api.Data.Enums;
-using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages.Company;
+using Pilot.Contracts.RabbitMqMessages.Message;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
+using Pilot.Receiver.Models;
 using IMessage = Pilot.Receiver.Interface.IMessage;
 
 namespace Pilot.Receiver.Consumers;
@@ -14,6 +15,7 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
     private readonly ICompany _company;
     private readonly IUserService _user;
     private readonly IMessage _message;
+
     public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUserService user)
     {
         _logger = logger;
@@ -32,40 +34,40 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
         if (company == null)
         {
             _logger.LogInformation("Company has already existed");
-            await _message.SendMessage("Ошибка в создании",
-                $"Ошибка при попытке создать компанию с таким названием '{context.Message.Title}'",
-                MessagePriority.Error);
+            await _message.SendMessage(new Message
+                {
+                    Title = "Ошибка в создании",
+                    Description = $"Ошибка при попытке создать компанию с таким названием '{context.Message.Title}'",
+                    UserId = context.Message.UserId,
+                    MessagePriority = MessagePriority.Error
+                });
             return;
         }
 
-        var user = await _user.GetUserByIdAsync(context.Message.UserId);
+        var user = await _user.GetUserByIdAsync(context.Message.UserId, default);
 
-        if (user == null)
-        {
-            _logger.LogInformation("User not found");
-            await _message.SendMessage("Вы не найдены",
-                $"Вы не можете создать компанию '{context.Message.Title}' потому что вы не существуете в базе",
-                MessagePriority.Error);
-            return;
-        }
-        
         await _company.AddCompanyAsync(new Company
         {
             Title = context.Message.Title,
             Description = context.Message.Title,
             CompanyUsers = new List<CompanyUser>()
             {
-                new CompanyUser
+                new()
                 {
                     UserName = user.UserName,
                     Name = user.Name,
                     LastName = user.LastName,
+                    Role = user.CompanyRole,
                 }
             }
         });
         
-        await _message.SendMessage("Create company",
-            $"Создание компании '{context.Message.Title}'",
-            MessagePriority.Default);
+        await _message.SendMessage(new Message
+            {
+                Title = "Create company",
+                Description = $"Создание компании '{context.Message.Title}'",
+                UserId = context.Message.UserId,
+                MessagePriority = MessagePriority.Default
+            });
     }
 }

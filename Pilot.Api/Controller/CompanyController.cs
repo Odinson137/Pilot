@@ -41,7 +41,7 @@ public class CompanyController : PilotController
     [ProducesResponseType(200)]
     public async Task<IActionResult> AddCompany(string companyName, CancellationToken token)
     {
-        await _mediator.Send(new CompanyAddCommand(companyName, UserId), token);
+        await _mediator.Send(new AddCompanyCommand(companyName, UserId), token);
         return Ok("The company will be adding soon");
     }
     

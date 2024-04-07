@@ -4,5 +4,5 @@ namespace Pilot.Receiver.Interface;
 
 public interface IUserService
 {
-    public Task<UserDto?> GetUserByIdAsync(string userId);
+    public Task<UserDto> GetUserByIdAsync(string userId, CancellationToken cancellationToken);
 }

@@ -1,15 +1,74 @@
-version: '3.1'
+version: '3.4'
+
+networks:
+  serverapp:
 
 services:
-#  server:
-#    build:
-#      context: .
-#      target: final
-#    ports:
-#      - 8080:8080
+  pilot-api:
+    container_name: api
+    build:
+      context: .
+      target: final
+      dockerfile: Pilot.Api/Dockerfile
+    ports:
+      - 7010:8080
+    depends_on:
+      pilot-mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - serverapp
+
+  pilot-identity:
+    container_name: identity
+    build:
+      context: .
+      target: final
+      dockerfile: Pilot.Identity/Dockerfile
+    ports:
+      - 7020:8080
+    depends_on:
+      - pilot-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - serverapp
+
+  pilot-messenger:
+    container_name: messenger
+    build:
+      context: .
+      target: final
+      dockerfile: Pilot.Messenger/Dockerfile
+    ports:
+      - 7030:8080
+    depends_on:
+      - pilot-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - serverapp
+
+  pilot-receiver:
+    container_name: receiver
+    build:
+      context: .
+      target: final
+      dockerfile: Pilot.Receiver/Dockerfile
+    ports:
+      - 7040:8080
+    depends_on:
+      - pilot-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+    networks:
+      - serverapp
 
   rabbitmq:
-    container_name: pilot-rabbitmq
+    container_name: rabbitmq
     image: rabbitmq:3-management
     ports:
       - 5672:5672
@@ -19,9 +78,11 @@ services:
       interval: 3s
       timeout: 10s
       retries: 60
+    networks:
+      - serverapp
 
-  pilot_mongo:
-    container_name: pilot-mongodb
+  pilot-mongo:
+    container_name: mongo
     image: mongo
     ports:
       - 27017:27017
@@ -29,9 +90,19 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
       ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    healthcheck:    
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      - serverapp
 
   redis:
-    container_name: pilot-redis
+    container_name: redis
     image: redis
     ports:
       - 6379:6379
+    networks:
+      - serverapp
