@@ -1,16 +1,16 @@
 ﻿using MassTransit;
 using MediatR;
-using Pilot.Api.Commands;
 using Pilot.Contracts.RabbitMqMessages.CompanyUser;
 
-namespace Pilot.Api.Handlers;
+namespace Pilot.Api.Handlers.CompanyUserHandlers;
 
-public class CompanyUserCommandHandler : 
-    IRequestHandler<AddCompanyUserCommand>
+public record AddCompanyUserCommand(string UserId, string AuthorId, string CompanyId) : IRequest;
+
+public class AddCompanyUserCommandHandler : IRequestHandler<AddCompanyUserCommand>
 {
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public CompanyUserCommandHandler(IPublishEndpoint publishEndpoint)
+    public AddCompanyUserCommandHandler(IPublishEndpoint publishEndpoint)
     {
         _publishEndpoint = publishEndpoint;
     }

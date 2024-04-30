@@ -1,32 +1,21 @@
 ﻿using MediatR;
-using Pilot.Api.Commands;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Services.LogService;
 
-namespace Pilot.Api.Handlers;
+namespace Pilot.Api.Handlers.UserHandlers;
+public record UserAuthorizationCommand(string UserName, string Password) : IRequest<AuthUserDto>;
 
-public class UserCommandHandler : 
-    IRequestHandler<UserRegistrationCommand>,
+public class UserAuthorizationCommandHandler : 
     IRequestHandler<UserAuthorizationCommand, AuthUserDto>
 {
     private readonly HttpClient _httpClient;
     
-    public UserCommandHandler(
+    public UserAuthorizationCommandHandler(
         IHttpClientFactory httpClientFactory)
     {
         _httpClient = httpClientFactory.CreateClient("IdentityServer");
     }
     
-    public async Task Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.PostAsJsonAsync("Registration", request, cancellationToken);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new BadRequestException(await response.Content.ReadAsStringAsync(cancellationToken));   
-        }
-    }
-
     public async Task<AuthUserDto> Handle(UserAuthorizationCommand request, CancellationToken cancellationToken)
     {
         var response = await _httpClient.PostAsJsonAsync("Authorization", request, cancellationToken);

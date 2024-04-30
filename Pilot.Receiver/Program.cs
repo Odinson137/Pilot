@@ -1,6 +1,9 @@
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.DTO;
+using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Receiver.Consumers;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Data;
@@ -70,8 +73,34 @@ var app = builder.Build();
 
 await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
+
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<IExceptionHandlerFeature>();
+
+        if (error != null)
+        {
+            context.Response.StatusCode = error.Error switch
+            {
+                BadRequestException => 400,
+                NotFoundException => 404,
+                _ => 500
+            };
+
+            var logger = app.Services.GetRequiredService<ILogger<IExceptionHandlerFeature>>();
+            
+            logger.LogClassInfo(context);
+            
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(error.Error.Message);
+        }
+    });
+});
 
 app.UseHttpsRedirection();
 
@@ -120,6 +149,39 @@ app.MapGet("/CompanyUser/{companyId}", async (
 
     return Results.Ok(users);
 });
+
+app.MapGet("/Project/{companyId}", async (
+    ILogger<Program> logger, 
+    IProject projectRepository,
+    string companyId,
+    CancellationToken cancellationToken) =>
+{
+    logger.LogInformation($"Get all projects in company by companyId {companyId}");
+
+    var users = await projectRepository.GetCompanyProjectsAsync(companyId, cancellationToken);
+    
+    logger.LogInformation("Successfully getting company projects");
+
+    return Results.Ok(users);
+});
+
+app.MapGet("/Project/{companyId}/{projectId}", async (
+    ILogger<Program> logger, 
+    IProject projectRepository,
+    string companyId,
+    string projectId,
+    CancellationToken cancellationToken) =>
+{
+    logger.LogInformation($"Get project in company by companyId {companyId} and by projectId {projectId}");
+
+    var users = await projectRepository.GetCompanyProjectByIdAsync(companyId, projectId, cancellationToken);
+    
+    logger.LogInformation("Successfully getting project");
+
+    return Results.Ok(users);
+});
+
+
 
 app.Run();
 

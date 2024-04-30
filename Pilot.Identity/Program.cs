@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services.LogService;
@@ -49,11 +52,11 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddTransient<ISeed, Seed>();
 
-services.AddCors(options => options.AddPolicy("CorsPolicy",
-    builder =>
-    {
-        builder.WithOrigins("http://pilot_receiver:7010");
-    }));
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = configuration.GetSection("RedisCache").GetValue<string>("ConnectionString");
+    options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
+});
 
 var app = builder.Build();
 
@@ -105,6 +108,7 @@ app.MapPost("/Authorization", async (
         IToken tokenService,
         ILogger<Program> logger,
         IPasswordCoder passwordService,
+        IDistributedCache redis,
         [FromBody] AuthorizationUserDto userDto) =>
     {
         logger.LogInformation("Receive authorization form in identity");
@@ -125,7 +129,7 @@ app.MapPost("/Authorization", async (
 
         logger.LogInformation("Received authorization form in identity");
 
-        // await redis.SetStringAsync($"session-user-by-id:{user.Id}", JsonConvert.SerializeObject(user));
+        await redis.SetStringAsync($"user-session:{user.Id}", JsonConvert.SerializeObject(user));
         
         return Results.Ok(new AuthUserDto(user.Id, tokenService.GenerateToken(user.Id, user.Role)));
     })
@@ -134,10 +138,25 @@ app.MapPost("/Authorization", async (
 app.MapGet("/User", async (
         IUser userRepository, 
         ILogger<Program> logger,
+        IDistributedCache redis,
         [FromQuery] string userId) =>
     {
         logger.LogInformation("Get user in identity");
 
+        var userCache = await redis.GetStringAsync($"user-session:{userId}");
+
+        if (!userCache.IsNullOrEmpty())
+        {
+            logger.LogInformation("User is located in the session");
+            
+            var userFromCache = JsonConvert.DeserializeObject<User>(userCache!);
+            logger.LogClassInfo(userFromCache);
+
+            return Results.Ok(userFromCache);
+        }
+        
+        logger.LogInformation("User is taken from db");
+        
         var user = await userRepository.GetUserByIdAsync(userId);
         logger.LogClassInfo(user);
         
@@ -156,8 +175,6 @@ app.MapGet("/User", async (
         });
     })
     .WithOpenApi();
-
-app.UseCors("CorsPolicy");
 
 app.Run();
 

@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Pilot.Api.Commands;
 using Pilot.Api.Data.ControllerSettings;
-using Pilot.Api.Queries;
+using Pilot.Api.Handlers.CompanyUserHandlers;
 
 namespace Pilot.Api.Controller;
 

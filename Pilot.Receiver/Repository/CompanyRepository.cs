@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
@@ -26,7 +25,7 @@ public class CompanyRepository : ICompany
         return companies;
     }
     
-    public async Task<CompanyDto> GetCompanyAsync(string id, CancellationToken cancellationToken)
+    public async Task<CompanyDto?> GetCompanyAsync(string id, CancellationToken cancellationToken)
     {
         var filter = Builders<Company>.Filter.Eq(u => u.Id, id);
         

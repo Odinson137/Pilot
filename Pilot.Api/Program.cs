@@ -5,11 +5,12 @@ using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Pilot.Api.Behaviors;
+using Pilot.Api.Interfaces.Services;
+using Pilot.Api.Services;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
-using ILogger = Serilog.ILogger;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -17,8 +18,7 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-// services.AddScoped<ICompany, >();
-// services.AddScoped<ICompanyUser, CompanyUserRepository>();
+services.AddScoped<IQueryService, QueryService>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
@@ -48,6 +48,7 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutin
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+// services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueriesBehavior<,>));
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
