@@ -16,14 +16,14 @@ public class TokenService : IToken
         _configurationManager = configurationManager;
     }
 
-    public string GenerateToken(string userId, Role role)
+    public string GenerateToken(int userId, Role role)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationManager["Jwt:Key"]!));
         var creeds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>
         {
-            new (JwtRegisteredClaimNames.Sub, userId),
+            new (JwtRegisteredClaimNames.Sub, userId.ToString()),
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new (ClaimTypes.Role, role.ToString())
         };

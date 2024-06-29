@@ -1,16 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.Models;
 
-public class ProjectTask
+public class ProjectTask : BaseModel
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    [Key] [MaxLength(50)] public string Id { get; } = ObjectId.GenerateNewId().ToString();
     [Required] [MaxLength(50)] public required string Name { get; set; }
+    
     [MaxLength(500)] public string? Description { get; set; }
+
+    [Required] public Project Project { get; set; } = null!;
+    
+    [Required] public CompanyUser CompanyUser { get; set; } = null!;
+     
     public File? File { get; set; }
+    
     public DateTime Timestamp { get; set; } = DateTime.Now;
 }

@@ -4,12 +4,13 @@ using Microsoft.AspNetCore.Diagnostics;
 using MongoDB.Driver;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
-using Pilot.Api.Interfaces.Repositories;
-using Pilot.Api.Repository;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Models;
 using Pilot.Contracts.Services.LogService;
 using Serilog;
+using File = Pilot.Contracts.Models.File;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -17,7 +18,14 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddScoped<ICompany, CompanyRepository>();
+services.AddScoped<IBaseSelectRepository<Company>, BaseRepository<Company>>();
+services.AddScoped<IBaseSelectRepository<CompanyUser>, BaseRepository<CompanyUser>>();
+services.AddScoped<IBaseSelectRepository<File>, BaseRepository<File>>();
+services.AddScoped<IBaseSelectRepository<HistoryAction>, BaseRepository<HistoryAction>>();
+services.AddScoped<IBaseSelectRepository<Message>, BaseRepository<Message>>();
+services.AddScoped<IBaseSelectRepository<Project>, BaseRepository<Project>>();
+services.AddScoped<IBaseSelectRepository<ProjectTask>, BaseRepository<ProjectTask>>();
+services.AddScoped<IBaseSelectRepository<Team>, BaseRepository<Team>>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
@@ -79,6 +87,8 @@ services.AddMassTransit(x =>
 services.AddMemoryCache();
 
 services.AddTransient<ISeed, Seed>();
+
+services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 

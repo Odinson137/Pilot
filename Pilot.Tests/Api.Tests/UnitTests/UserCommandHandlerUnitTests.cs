@@ -34,7 +34,7 @@ public class UserCommandHandlerUnitTests
         // Arrange
         var request = new UserAuthorizationCommand("testuser", "testpassword");
 
-        var expectedResponse = new AuthUserDto("123", "testtoken");
+        var expectedResponse = new AuthUserDto(123, "testtoken");
         var httpResponse = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
         {
             Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(expectedResponse))

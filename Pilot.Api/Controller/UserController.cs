@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
 using Pilot.Api.DTO;
+using Pilot.Contracts.DTO;
 using RegistrationUserDto = Pilot.Api.DTO.RegistrationUserDto;
 
 namespace Pilot.Api.Controller;

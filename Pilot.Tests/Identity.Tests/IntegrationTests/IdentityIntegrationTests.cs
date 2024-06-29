@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using MongoDB.Driver;
+using Pilot.Api.DTO;
+using Pilot.Contracts.DTO;
 using Pilot.Identity.Data;
 using Pilot.Identity.Models;
 using Pilot.Identity.Services;

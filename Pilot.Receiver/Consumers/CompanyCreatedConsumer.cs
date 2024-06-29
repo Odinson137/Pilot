@@ -1,14 +1,15 @@
 ﻿using MassTransit;
 using Pilot.Api.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
-using Pilot.Contracts.RabbitMqMessages.Company;
+using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
 using IMessage = Pilot.Receiver.Interface.IMessage;
 
 namespace Pilot.Receiver.Consumers;
 
-public class CompanyCreatedConsumer : IConsumer<TitleCompany>
+public class CompanyCreatedConsumer : IConsumer<BaseCommandMessage<CompanyDto>>
 {
     private readonly ILogger<CompanyCreatedConsumer> _logger;
     private readonly ICompany _company;
@@ -22,18 +23,18 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
         _user = user;
     }
 
-    public async Task Consume(ConsumeContext<TitleCompany> context)
+    public async Task Consume(ConsumeContext<BaseCommandMessage<CompanyDto>> context)
     {
         _logger.LogInformation("Company create consume");
         _logger.LogClassInfo(context.Message);
 
-        var company = await _company.CheckCompanyTitleExistAsync(context.Message.Title);
+        var companyTitleExist = await _company.CheckCompanyTitleExistAsync(context.Message.Value.Title);
 
-        if (company == null)
+        if (companyTitleExist)
         {
             _logger.LogInformation("Company has already existed");
             await _message.SendMessage("Ошибка в создании",
-                $"Ошибка при попытке создать компанию с таким названием '{context.Message.Title}'",
+                $"Ошибка при попытке создать компанию с таким названием '{context.Message.Value.Title}'",
                 MessagePriority.Error);
             return;
         }
@@ -44,18 +45,18 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
         {
             _logger.LogInformation("User not found");
             await _message.SendMessage("Вы не найдены",
-                $"Вы не можете создать компанию '{context.Message.Title}' потому что вы не существуете в базе",
+                $"Вы не можете создать компанию '{context.Message.Value.Title}' потому что вы не существуете в базе",
                 MessagePriority.Error);
             return;
         }
         
-        await _company.AddCompanyAsync(new Company
+        await _company.AddNewValueAsync(new Company
         {
-            Title = context.Message.Title,
-            Description = context.Message.Title,
-            CompanyUsers = new List<CompanyUser>()
+            Title = context.Message.Value.Title,
+            Description = context.Message.Value.Title,
+            CompanyUsers = new List<CompanyUser>
             {
-                new CompanyUser
+                new()
                 {
                     UserName = user.UserName,
                     Name = user.Name,
@@ -63,9 +64,11 @@ public class CompanyCreatedConsumer : IConsumer<TitleCompany>
                 }
             }
         });
+
+        await _company.SaveAsync();
         
         await _message.SendMessage("Create company",
-            $"Создание компании '{context.Message.Title}'",
+            $"Создание компании '{context.Message.Value.Title}'",
             MessagePriority.Default);
     }
 }

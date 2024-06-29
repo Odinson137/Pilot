@@ -1,10 +1,9 @@
-﻿using Pilot.Contracts.Models;
+﻿using Pilot.Contracts.Base;
+using Pilot.Contracts.Models;
 
 namespace Pilot.Receiver.Interface;
 
-public interface ICompany
+public interface ICompany : IBaseRepository<Company>
 {
-    public Task<Company?> CheckCompanyTitleExistAsync(string title);
-    public Task AddCompanyAsync(Company company);
-    public Task ChangeCompanyTitleAsync(string companyId, string companyTitle);
+    public Task<bool> CheckCompanyTitleExistAsync(string title);
 }

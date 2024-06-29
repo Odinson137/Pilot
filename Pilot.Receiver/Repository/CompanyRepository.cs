@@ -1,35 +1,15 @@
-﻿using MongoDB.Driver;
-using Pilot.Contracts.Data;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Models;
 using Pilot.Receiver.Interface;
 
 namespace Pilot.Receiver.Repository;
 
-public class CompanyRepository : ICompany
+public class CompanyRepository(DbContext context, MapperConfiguration configuration) : BaseRepository<Company>(context, configuration), ICompany
 {
-    private readonly IMongoCollection<Company> _companyCollection;
-
-    public CompanyRepository(IMongoDatabase mongoDatabase)
+    public async Task<bool> CheckCompanyTitleExistAsync(string title)
     {
-        _companyCollection = mongoDatabase.GetCollection<Company>(MongoTable.Company);
-    }
-
-    public async Task<Company?> CheckCompanyTitleExistAsync(string title)
-    {
-        var filter = Builders<Company>.Filter.Eq(c => c.Title, title);
-        var company = await _companyCollection.Find(filter).FirstOrDefaultAsync();
-        return company;
-    }
-
-    public async Task AddCompanyAsync(Company company)
-    {
-        await _companyCollection.InsertOneAsync(company);
-    }
-
-    public async Task ChangeCompanyTitleAsync(string companyId, string companyTitle)
-    {
-        var searchFilter = Builders<Company>.Filter.Eq(c => c.Id, companyId);
-        var updateFilter = Builders<Company>.Update.Rename(c => c.Id, companyId);
-        await _companyCollection.FindOneAndUpdateAsync(searchFilter, updateFilter);
+        return await DbSet.AnyAsync(c => c.Title == title);
     }
 }

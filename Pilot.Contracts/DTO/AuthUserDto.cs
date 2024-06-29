@@ -1,3 +1,3 @@
 ﻿namespace Pilot.Contracts.DTO;
 
-public record AuthUserDto(string UserId, string Token);
+public record AuthUserDto(int UserId, string Token);

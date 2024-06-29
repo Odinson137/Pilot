@@ -1,35 +1,20 @@
-﻿using MongoDB.Driver;
-using Pilot.Identity.Data;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Base;
 using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 
 namespace Pilot.Identity.Repository;
 
-public class UserRepository : IUser
+public class UserRepository(DbContext context, MapperConfiguration configuration) : BaseRepository<User>(context, configuration), IUser
 {
-    private readonly IMongoCollection<User> _userCollection;
-
-    public UserRepository(IMongoDatabase mongo)
-    {
-        _userCollection = mongo.GetCollection<User>(MongoTable.User);
-    }
-
-    public async Task RegistrationAsync(User user)
-    {
-        await _userCollection.InsertOneAsync(user);
-    }
-
     public async Task<bool> IsUserNameExistAsync(string userName)
     {
-        var filter = Builders<User>.Filter.Eq(c => c.UserName, userName);
-        var isExist = await _userCollection.Find(filter).AnyAsync();
-        return isExist;
+        return await DbSet.AnyAsync(c => c.Name == userName);
     }
 
-    public async Task<User?> GetUserAsync(string userName)
+    public async Task<User?> GetByNameAsync(string userName)
     {
-        var filter = Builders<User>.Filter.Eq(c => c.UserName, userName);
-        var user = await _userCollection.Find(filter).FirstOrDefaultAsync();
-        return user;
+        return await DbSet.FirstOrDefaultAsync(c => c.UserName == userName);
     }
 }
