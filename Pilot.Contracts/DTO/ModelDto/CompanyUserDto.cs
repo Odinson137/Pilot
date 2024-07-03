@@ -2,7 +2,7 @@
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class CompanyUserDto : BaseUser
+public class CompanyUserDto : BaseUserDto
 {
     public BaseDto? Company { get; set; }
     

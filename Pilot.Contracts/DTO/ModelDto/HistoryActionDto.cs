@@ -3,7 +3,7 @@ using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class HistoryActionDto : BaseModel
+public class HistoryActionDto : BaseDto
 {
     public required BaseModel CompanyUser { get; set; }
     public required BaseModel ProjectTask { get; set; }

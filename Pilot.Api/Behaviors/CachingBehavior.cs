@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using Pilot.Contracts.Base;
 
 namespace Pilot.Api.Behaviors;
 
-public interface ICacheableMediatrQuery
+public interface ICacheableMediatrQuery 
 {
+    public BaseFilter? Filter { get; set; }
     string CacheKey { get; }
     // TimeSpan? SlidingExpiration { get; }
 }
@@ -26,7 +28,8 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         RequestHandlerDelegate<TResponse> next, 
         CancellationToken cancellationToken)
     {
-        var data = await _cache.GetStringAsync(request.CacheKey, cancellationToken);
+        var cashKey = request.CacheKey;
+        var data = await _cache.GetStringAsync(cashKey, cancellationToken);
         if (data != null)
         {
             _logger.LogInformation("From cache");
@@ -37,7 +40,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         _logger.LogInformation("No cache");
         var response = await next.Invoke();
         await _cache.SetStringAsync(
-            request.CacheKey, 
+            cashKey, 
             JsonConvert.SerializeObject(response),
             cancellationToken).ConfigureAwait(false);
         return response;

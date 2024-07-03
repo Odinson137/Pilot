@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>true</InvariantGlobalization>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,11 +42,16 @@
       <Folder Include="Data\Logs\" />
       <Folder Include="Interfaces\Services\" />
       <Folder Include="Repository\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

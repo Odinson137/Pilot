@@ -1,4 +1,4 @@
-﻿namespace Pilot.Api.DTO;
+﻿namespace Pilot.Contracts.DTO;
 
 public class RegistrationUserDto
 {

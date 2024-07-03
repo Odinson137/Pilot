@@ -3,7 +3,7 @@ using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class ProjectDto : BaseModel
+public class ProjectDto : BaseDto
 {
     public required string Name { get; set; }
     

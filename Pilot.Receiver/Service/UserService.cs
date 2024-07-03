@@ -1,13 +1,13 @@
-﻿using Pilot.Receiver.DTO;
+﻿using Pilot.Contracts.Base;
+using Pilot.Identity.Models;
 using Pilot.Receiver.Interface;
 
 namespace Pilot.Receiver.Service;
 
-public class UserService : IUserService
+public class UserService : BaseHttpService, IUserService
 {
-    public Task<UserDto?> GetUserByIdAsync(string userId)
+    public UserService(ILogger<UserService> logger, IHttpClientFactory httpClientFactory) 
+        : base(logger, httpClientFactory, nameof(UserModel))
     {
-        throw new NotImplementedException(); // сделать здесь отправку данных на Identity сервис 
-
     }
 }

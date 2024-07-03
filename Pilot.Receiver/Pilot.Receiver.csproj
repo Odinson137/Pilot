@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,11 +22,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
+      <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Folder Include="Data\Logs\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

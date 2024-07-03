@@ -1,13 +1,7 @@
 ﻿namespace Pilot.Contracts.RabbitMqMessages;
 
-public class BaseCommandMessage<TDto>
+public record BaseCommandMessage<TDto>(TDto Value, string UserId)
 {
-    public BaseCommandMessage(TDto value, string userId)
-    {
-        Value = value;
-        UserId = userId;
-    }
-
-    public TDto Value { get; set; }
-    public string UserId { get; set; }
+    public TDto Value { get; set; } = Value;
+    public string UserId { get; set; } = UserId;
 }

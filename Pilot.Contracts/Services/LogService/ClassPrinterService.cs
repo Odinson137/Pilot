@@ -13,9 +13,14 @@ public static class ClassPrinterService
 {
     public static void LogClassInfo<T1, T2>(
         this ILogger<T1> logger, 
-        T2 logClass)
+        T2? logClass)
     {
         var builder = new StringBuilder();
+        if (logClass == null)
+        {
+            logger.LogInformation("Empty");
+            return;
+        }
         var type = typeof(T2);
         
         builder.AppendLine($"{type}:");
@@ -35,7 +40,7 @@ public static class ClassPrinterService
         {
             var collection = (ICollection)logClass!;
 
-            builder.AppendLine($"The lenght of collection is {collection.Count}:");
+            builder.AppendLine($"The length of collection is {collection.Count}:");
             
             foreach (var value in collection)
             {

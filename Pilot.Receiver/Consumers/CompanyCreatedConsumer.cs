@@ -1,15 +1,17 @@
 ﻿using MassTransit;
 using Pilot.Api.Data.Enums;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
+using Pilot.Receiver.DTO;
 using Pilot.Receiver.Interface;
 using IMessage = Pilot.Receiver.Interface.IMessage;
 
 namespace Pilot.Receiver.Consumers;
 
-public class CompanyCreatedConsumer : IConsumer<BaseCommandMessage<CompanyDto>>
+public class CompanyCreatedConsumer : IConsumer<CreateCommandMessage<CompanyDto>>
 {
     private readonly ILogger<CompanyCreatedConsumer> _logger;
     private readonly ICompany _company;
@@ -23,11 +25,12 @@ public class CompanyCreatedConsumer : IConsumer<BaseCommandMessage<CompanyDto>>
         _user = user;
     }
 
-    public async Task Consume(ConsumeContext<BaseCommandMessage<CompanyDto>> context)
+    public async Task Consume(ConsumeContext<CreateCommandMessage<CompanyDto>> context)
     {
         _logger.LogInformation("Company create consume");
         _logger.LogClassInfo(context.Message);
 
+        // TODO СОЗДАТЬ СВОЙ АТРИБУТ ДЛЯ ЭТОЙ ПРОВЕРКИ
         var companyTitleExist = await _company.CheckCompanyTitleExistAsync(context.Message.Value.Title);
 
         if (companyTitleExist)
@@ -39,7 +42,7 @@ public class CompanyCreatedConsumer : IConsumer<BaseCommandMessage<CompanyDto>>
             return;
         }
 
-        var user = await _user.GetUserByIdAsync(context.Message.UserId);
+        var user = await _user.SendGetOneMessage<UserDto>($"api/User/{context.Message.UserId}", default);
 
         if (user == null)
         {
@@ -69,6 +72,6 @@ public class CompanyCreatedConsumer : IConsumer<BaseCommandMessage<CompanyDto>>
         
         await _message.SendMessage("Create company",
             $"Создание компании '{context.Message.Value.Title}'",
-            MessagePriority.Default);
+            MessagePriority.Success);
     }
 }

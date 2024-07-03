@@ -2,7 +2,7 @@
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class FileDto : BaseModel
+public class FileDto : BaseDto
 {
     public required string Url { get; set; }
     public required string Type { get; set; }

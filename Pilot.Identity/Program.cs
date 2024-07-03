@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Pilot.Api.DTO;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Identity.Data;
+using Pilot.Identity.DTO;
 using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 using Pilot.Identity.Repository;
@@ -20,9 +19,10 @@ var configuration = builder.Configuration;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddMySql<DataContext>(
+services.AddDbContext<DataContext>(option => option.UseMySql(
     configuration.GetSection("MySqlDatabase").GetConnectionString("ConnectionString"),
     new MySqlServerVersion(new Version())
+    )
 );
 
 services.AddTransient<IToken, TokenService>();
@@ -40,11 +40,15 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     })
     .CreateLogger());
 
-services.AddTransient<ISeed, Seed>();
+// services.AddTransient<ISeed, Seed>();
+
+services.AddAutoMapper(typeof(AutoMapperProfile));
+
+services.AddControllers();
 
 var app = builder.Build();
 
-await app.Services.GetRequiredService<ISeed>().Seeding(app);
+// await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -53,6 +57,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Это сервис для работы с пользователями");
@@ -71,7 +76,7 @@ app.MapPost("/Registration", async (
             return Results.BadRequest("This username is already taken");
         }
         
-        var newUser = new User
+        var newUser = new UserModel
         {
             UserName = registrationUser.UserName,
             Name = registrationUser.Name,
@@ -79,8 +84,10 @@ app.MapPost("/Registration", async (
             Password = passwordService.PasswordCode(registrationUser.Password)
         };
 
-        await user.AddNewValueAsync(newUser, default);
+        await user.AddNewValueAsync(newUser);
 
+        await user.SaveAsync();
+        
         logger.LogInformation("Received registration form in identity");
 
         return Results.Ok();
@@ -112,6 +119,43 @@ app.MapPost("/Authorization", async (
 
         logger.LogInformation("Received authorization form in identity");
         return Results.Ok(new AuthUserDto(user.Id, tokenService.GenerateToken(user.Id, user.Role)));
+    })
+    .WithOpenApi();
+
+app.MapPut("/Change", async (
+        IUser userRepository, 
+        ILogger<Program> logger,
+        IPasswordCoder passwordService,
+        [FromBody] UpdateUserDto userDto) =>
+    {
+        logger.LogInformation("Receive change form in identity");
+
+        var user = await userRepository.GetByIdAsync(userDto.Id);
+
+        if (user == null)
+        {
+            logger.LogInformation("User not found");
+            return Results.NotFound("User not found");
+        }
+
+        if (!string.IsNullOrEmpty(userDto.Password))
+        {
+            logger.LogInformation("Passwords change");
+            
+            if (user.Password != passwordService.PasswordCode(userDto.OldPassword))
+            {
+                logger.LogInformation("Passwords aren't match");
+                return Results.BadRequest("Passwords aren't match");
+            }
+
+            user.Password = passwordService.PasswordCode(userDto.Password);
+        }
+
+        user.Name = user.Name;
+        user.LastName = user.LastName;
+
+        logger.LogInformation("Received change user form in identity");
+        return Results.Ok();
     })
     .WithOpenApi();
 

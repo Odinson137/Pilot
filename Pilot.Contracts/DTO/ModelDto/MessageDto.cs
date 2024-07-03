@@ -1,9 +1,10 @@
 ﻿using Pilot.Api.Data.Enums;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class MessageDto : BaseModel
+public class MessageDto : BaseDto
 {
     public required string Title { get; set; }
     public string? Description { get; set; }

@@ -1,9 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
-using Pilot.Api.DTO;
 using Pilot.Contracts.DTO;
-using RegistrationUserDto = Pilot.Api.DTO.RegistrationUserDto;
 
 namespace Pilot.Api.Controller;
 
@@ -23,8 +21,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> RegistrationUser(RegistrationUserDto userDto, CancellationToken token)
     {
-        await _mediator.Send(new UserRegistrationCommand(
-                userDto.UserName, userDto.Name, userDto.LastName, userDto.Password), token);
+        await _mediator.Send(new UserRegistrationCommand(userDto), token);
         return Ok();
     }
     
@@ -35,7 +32,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> AuthorizationUser(AuthorizationUserDto userDto, CancellationToken token)
     {
         var content = 
-            await _mediator.Send(new UserAuthorizationCommand(userDto.UserName, userDto.Password), token);
+            await _mediator.Send(new UserAuthorizationCommand(userDto), token);
         return Ok(content);
     }
 }

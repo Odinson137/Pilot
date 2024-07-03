@@ -1,42 +1,50 @@
 using MassTransit;
-using MongoDB.Driver;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Models;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
+using Pilot.Api.Data;
+using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Receiver.Consumers;
-using Pilot.Contracts.Services.LogService;
+using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
+using Pilot.Receiver.Service;
 using Serilog;
-using File = Pilot.Contracts.Models.File;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddScoped<ICompany, CompanyRepository>();
-services.AddScoped<IBaseRepository<CompanyUser>, BaseRepository<CompanyUser>>();
-services.AddScoped<IBaseRepository<File>, BaseRepository<File>>();
-services.AddScoped<IBaseRepository<HistoryAction>, BaseRepository<HistoryAction>>();
-services.AddScoped<IBaseRepository<Message>, BaseRepository<Message>>();
-services.AddScoped<IBaseRepository<Project>, BaseRepository<Project>>();
-services.AddScoped<IBaseRepository<ProjectTask>, BaseRepository<ProjectTask>>();
-services.AddScoped<IBaseRepository<Team>, BaseRepository<Team>>();
+services.AddScoped<ICompanyUser, CompanyUserRepository>();
+services.AddScoped<IFile, FileRepository>();
+services.AddScoped<IHistoryAction, HistoryActionRepository>();
+services.AddScoped<IMessage, MessageRepository>();
+services.AddScoped<IProject, ProjectRepository>();
+services.AddScoped<IProjectTask, ProjectTaskRepository>();
+services.AddScoped<ITeam, TeamRepository>();
 
-var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-builder.Services.AddSingleton(
-    new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
+services.AddScoped<IUserService, UserService>();
+
+// var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
+// builder.Services.AddSingleton(
+//     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
+//
+
+services.AddDbContext<DataContext>(option => option.UseMySql(
+        configuration.GetSection("MySqlDatabase").GetConnectionString("ConnectionString"),
+        new MySqlServerVersion(new Version())
+    )
+);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    .WriteTo.Logger(lc =>
-    {
-        lc.MinimumLevel.Error();
-        lc.WriteTo.MongoDb(mongoConfiguration);
-    })
-    .WriteTo.File(configuration["Logging:LogFiles:Main"]!,
-        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+    // .WriteTo.Logger(lc =>
+    // {
+    //     lc.MinimumLevel.Error();
+    //     lc.WriteTo.MongoDb(mongoConfiguration);
+    // })
     .CreateLogger());
 
 services.AddMassTransit(x =>
@@ -65,8 +73,51 @@ services.AddMassTransit(x =>
     });
 });
 
+services.AddAutoMapper(typeof(AutoMapperProfile));
+
+services.AddHttpClient("IdentityServer", c =>
+{
+    c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
+});
+
+services.AddEndpointsApiExplorer();
+services.AddSwaggerGen();
+
+services.AddControllers();
+
 var app = builder.Build();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var error = context.Features.Get<IExceptionHandlerFeature>();
+
+        if (error != null)
+        {
+            context.Response.StatusCode = error.Error switch
+            {
+                BadRequestException => 400,
+                NotFoundException => 404,
+                _ => 500
+            };
+
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(error.Error.Message);
+        }
+    });
+});
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.MapGet("/", () => "Main page!");
+
+app.MapControllers();
+app.UseHttpsRedirection();
 
 app.Run();

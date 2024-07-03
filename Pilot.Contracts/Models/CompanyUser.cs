@@ -2,7 +2,7 @@
 
 namespace Pilot.Contracts.Models;
 
-public class CompanyUser : BaseUser
+public class CompanyUser : BaseUserModel
 {
     public Company? Company { get; set; }
     

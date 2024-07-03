@@ -4,9 +4,9 @@ using Pilot.Identity.Data;
 
 namespace Pilot.Identity.Models;
 
-public class User : BaseUser
+public class UserModel : BaseUserModel
 {
-    [Required] [MaxLength(100)] public required string Password { get; init; }
+    [Required] [MaxLength(100)] public required string Password { get; set; }
     [Required] [MaxLength(100)] public Role Role { get; init; } = Role.User;
 
     // public ICollection<Message>? Messages { get; set; }

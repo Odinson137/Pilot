@@ -1,16 +1,12 @@
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
-using MongoDB.Driver;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
-using Pilot.Contracts.Base;
+using Pilot.Api.Services;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Models;
-using Pilot.Contracts.Services.LogService;
 using Serilog;
-using File = Pilot.Contracts.Models.File;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -18,23 +14,31 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddScoped<IBaseSelectRepository<Company>, BaseRepository<Company>>();
-services.AddScoped<IBaseSelectRepository<CompanyUser>, BaseRepository<CompanyUser>>();
-services.AddScoped<IBaseSelectRepository<File>, BaseRepository<File>>();
-services.AddScoped<IBaseSelectRepository<HistoryAction>, BaseRepository<HistoryAction>>();
-services.AddScoped<IBaseSelectRepository<Message>, BaseRepository<Message>>();
-services.AddScoped<IBaseSelectRepository<Project>, BaseRepository<Project>>();
-services.AddScoped<IBaseSelectRepository<ProjectTask>, BaseRepository<ProjectTask>>();
-services.AddScoped<IBaseSelectRepository<Team>, BaseRepository<Team>>();
+// services.AddScoped<IBaseSelectRepository<Company>, BaseRepository<Company>>();
+// services.AddScoped<IBaseSelectRepository<CompanyUser>, BaseRepository<CompanyUser>>();
+// services.AddScoped<IBaseSelectRepository<File>, BaseRepository<File>>();
+// services.AddScoped<IBaseSelectRepository<HistoryAction>, BaseRepository<HistoryAction>>();
+// services.AddScoped<IBaseSelectRepository<Message>, BaseRepository<Message>>();
+// services.AddScoped<IBaseSelectRepository<Project>, BaseRepository<Project>>();
+// services.AddScoped<IBaseSelectRepository<ProjectTask>, BaseRepository<ProjectTask>>();
+// services.AddScoped<IBaseSelectRepository<Team>, BaseRepository<Team>>();
 
 services.AddHttpClient("IdentityServer", c =>
 {
     c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
 });
 
-var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-services.AddSingleton(
-    new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
+services.AddHttpClient("ReceiverServer", c =>
+{
+    c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!);
+});
+
+services.AddScoped<IHttpIdentityService, HttpIdentityService>();
+services.AddScoped<IHttpReceiverService, HttpReceiverService>();
+
+// var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
+// services.AddSingleton(
+//     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
 
 services.AddStackExchangeRedisCache(options =>
 {
@@ -46,11 +50,11 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    .WriteTo.Logger(lc =>
-    {
-        lc.MinimumLevel.Error();
-        lc.WriteTo.MongoDb(mongoConfiguration);
-    })
+    // .WriteTo.Logger(lc =>
+    // {
+    //     lc.MinimumLevel.Error();
+    //     lc.WriteTo.MongoDb(mongoConfiguration);
+    // })
     .CreateLogger());
 
 
@@ -63,6 +67,9 @@ services.AddMediatR(cfg =>
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryListHandling<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryOneHandling<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
 
 services.AddControllers();
 
@@ -84,11 +91,7 @@ services.AddMassTransit(x =>
     });
 });
 
-services.AddMemoryCache();
-
 services.AddTransient<ISeed, Seed>();
-
-services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 

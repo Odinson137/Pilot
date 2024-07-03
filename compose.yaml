@@ -1,12 +1,36 @@
-version: '3.1'
+version: '3.8'
 
 services:
-#  server:
-#    build:
-#      context: .
-#      target: final
-#    ports:
-#      - 8080:8080
+  api_server:
+    container_name: api-server
+    build:
+      context: .
+      dockerfile: Pilot.Api/Dockerfile
+    ports:
+      - 8010:8080
+    depends_on:
+      receiver_server:
+        condition: service_started
+
+  identity_server:
+    build:
+      context: .
+      dockerfile: Pilot.Identity/Dockerfile
+    ports:
+      - 8020:8080
+    depends_on:
+      pilot_identity_mysql:
+        condition: service_healthy
+        
+  receiver_server:
+    build:
+      context: .
+      dockerfile: Pilot.Receiver/Dockerfile
+    ports:
+      - 8030:8080
+    depends_on:
+      pilot_mysql:
+        condition: service_healthy
 
   rabbitmq:
     container_name: pilot-rabbitmq
@@ -14,11 +38,6 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    healthcheck:
-      test: rabbitmq-diagnostics -q listeners
-      interval: 3s
-      timeout: 10s
-      retries: 60
 
   pilot_mongo:
     container_name: pilot-mongodb
@@ -36,18 +55,28 @@ services:
     ports:
       - 6379:6379
 
-  pilot-mysql:
+  pilot_identity_mysql:
+    container_name: pilot-identity-mysql
+    image: mysql:8.0
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: PilotIdentityDb
+      MYSQL_ROOT_PASSWORD: 12345678
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      
+  pilot_mysql:
     container_name: pilot-mysql
     image: mysql:8.0
     ports:
-      - 3306:3306
+      - "3309:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: pilotdb
-      MYSQL_USER: pilotuser
-      MYSQL_PASSWORD: pilotpassword
+      MYSQL_DATABASE: PilotDb
+      MYSQL_ROOT_PASSWORD: 12345678
     healthcheck:
-      test: mysqladmin ping -hlocalhost -uroot -prootpassword
-      interval: 10s
-      retries: 5
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 10s
+      retries: 10

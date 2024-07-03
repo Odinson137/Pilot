@@ -1,26 +1,24 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using MongoDB.Driver;
-using Pilot.Api.DTO;
 using Pilot.Contracts.DTO;
 using Pilot.Identity.Data;
 using Pilot.Identity.Models;
 using Pilot.Identity.Services;
-using Pilot.Receiver.DTO;
 using Xunit;
 
 namespace Pilot.Tests.Identity.Tests.IntegrationTests;
 
 public class IdentityIntegrationTests : BaseIdentityIntegrationTest
 {
-    private readonly IMongoCollection<User> _collection;
+    private readonly IMongoCollection<UserModel> _collection;
     private readonly PasswordCoderService _coderService;
     
     public IdentityIntegrationTests(IntegrationIdentityTestWebAppFactory factory)
         : base(factory)
     {
         _coderService = new PasswordCoderService();
-        _collection = MongoDatabase.GetCollection<User>(MongoTable.User);
+        _collection = MongoDatabase.GetCollection<UserModel>(MongoTable.User);
     }
     
     
@@ -37,7 +35,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         };
 
         // очистка всей коллекции
-        await _collection.DeleteManyAsync(FilterDefinition<User>.Empty);
+        await _collection.DeleteManyAsync(FilterDefinition<UserModel>.Empty);
         
         // Act
         var request = await Client.PostAsJsonAsync("Registration", user);
@@ -46,9 +44,9 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         // Assert
         Assert.True(request.IsSuccessStatusCode);
 
-        var filter = Builders<User>.Filter.Eq(x => x.UserName, user.UserName);
+        var filter = Builders<UserModel>.Filter.Eq(x => x.UserName, user.UserName);
         
-        var select = Builders<User>.Projection.Expression(x => new RegistrationUserDto
+        var select = Builders<UserModel>.Projection.Expression(x => new RegistrationUserDto
         {
             UserName = x.UserName,
             Name = x.Name,
@@ -68,7 +66,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
     public async Task Registration_UserAlreadyExist_ShouldReturnBadRequest()
     {
         // Arrange
-        var userInDb = new User()
+        var userInDb = new UserModel()
         {
             UserName = "Test",
             Name = "Test",
@@ -99,7 +97,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
     {
         // Arrange
         var pass = "Test";
-        var user = new User()
+        var user = new UserModel()
         {
             UserName = $"Test+{Guid.NewGuid()}",
             Name = "Test",

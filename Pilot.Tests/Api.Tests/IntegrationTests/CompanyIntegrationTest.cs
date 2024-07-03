@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Xunit;
 
@@ -62,7 +63,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         // Assert
         Assert.True(request.IsSuccessStatusCode);
 
-        var companiesDb = await request.Content.ReadFromJsonAsync<ICollection<Company>>();
+        var companiesDb = await request.Content.ReadFromJsonAsync<ICollection<CompanyDto>>();
         
         Assert.NotNull(companiesDb);
         Assert.True(companiesDb.Count == 3);
@@ -107,7 +108,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         var redisCache = await _redis.GetStringAsync("all-companies");
         Assert.NotNull(redisCache);
         
-        var companiesDb = await requestDb.Content.ReadFromJsonAsync<ICollection<Company>>();
+        var companiesDb = await requestDb.Content.ReadFromJsonAsync<ICollection<CompanyDto>>();
 
         var companiesStringDb = await requestDb.Content.ReadAsStringAsync();
         var companiesStringCache = await requestCache.Content.ReadAsStringAsync();
@@ -137,7 +138,7 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         // Assert
         Assert.True(request.IsSuccessStatusCode);
 
-        var companiesDb = await request.Content.ReadFromJsonAsync<Company>();
+        var companiesDb = await request.Content.ReadFromJsonAsync<CompanyDto>();
         
         Assert.NotNull(companiesDb);
         Assert.True(companiesDb.Title == company.Title);
@@ -166,8 +167,8 @@ public class CompanyIntegrationTest : BaseApiIntegrationTest
         Assert.True(requestFromDb.IsSuccessStatusCode);
         Assert.True(requestFromCache.IsSuccessStatusCode);
 
-        var companiesDb = await requestFromDb.Content.ReadFromJsonAsync<Company>();
-        var companiesCache = await requestFromCache.Content.ReadFromJsonAsync<Company>();
+        var companiesDb = await requestFromDb.Content.ReadFromJsonAsync<CompanyDto>();
+        var companiesCache = await requestFromCache.Content.ReadFromJsonAsync<CompanyDto>();
         
         Assert.NotNull(companiesDb);
         Assert.NotNull(companiesCache);

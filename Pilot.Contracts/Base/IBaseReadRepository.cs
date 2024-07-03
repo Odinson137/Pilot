@@ -1,6 +1,6 @@
 ﻿namespace Pilot.Contracts.Base;
 
-public interface IBaseSelectRepository<T>
+public interface IBaseReadRepository<T>
 {
     public Task<T?> GetByIdAsync(int id, CancellationToken token = default);
     public Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseId;

@@ -2,7 +2,7 @@
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-public class ProjectTaskDto : BaseModel
+public class ProjectTaskDto : BaseDto
 {
     public required string Name { get; set; }
     
