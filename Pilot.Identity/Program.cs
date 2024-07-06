@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
-using Pilot.Contracts.Services.LogService;
+using Pilot.Contracts.Services;
 using Pilot.Identity.Data;
 using Pilot.Identity.DTO;
 using Pilot.Identity.Interfaces;
@@ -19,12 +20,6 @@ var configuration = builder.Configuration;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddDbContext<DataContext>(option => option.UseMySql(
-    configuration.GetSection("MySqlDatabase").GetConnectionString("ConnectionString"),
-    new MySqlServerVersion(new Version())
-    )
-);
-
 services.AddTransient<IToken, TokenService>();
 services.AddTransient<IPasswordCoder, PasswordCoderService>();
 services.AddScoped<IUser, UserRepository>();
@@ -33,18 +28,26 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    .WriteTo.Logger(lc =>
-    {
-        lc.MinimumLevel.Error();
-        lc.WriteTo.MongoDb(configuration.GetSection("MongoDatabase").Get<MongoConfig>()!);
-    })
+    // .WriteTo.Logger(lc =>
+    // {
+    //     lc.MinimumLevel.Error();
+    //     lc.WriteTo.MongoDb(configuration.GetSection("MongoDatabase").Get<MongoConfig>()!);
+    // })
     .CreateLogger());
 
-// services.AddTransient<ISeed, Seed>();
+services.AddTransient<ISeed, Seed>();
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddControllers();
+
+services.AddDbContext<DataContext>(option => option.UseMySql(
+        configuration.GetConnection("MySql:ConnectionString"),
+        new MySqlServerVersion(new Version(8, 0, 11))
+    )
+    .EnableSensitiveDataLogging()
+    .EnableDetailedErrors()
+);
 
 var app = builder.Build();
 

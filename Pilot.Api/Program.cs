@@ -6,22 +6,17 @@ using Pilot.Api.Data;
 using Pilot.Api.Services;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-// services.AddScoped<IBaseSelectRepository<Company>, BaseRepository<Company>>();
-// services.AddScoped<IBaseSelectRepository<CompanyUser>, BaseRepository<CompanyUser>>();
-// services.AddScoped<IBaseSelectRepository<File>, BaseRepository<File>>();
-// services.AddScoped<IBaseSelectRepository<HistoryAction>, BaseRepository<HistoryAction>>();
-// services.AddScoped<IBaseSelectRepository<Message>, BaseRepository<Message>>();
-// services.AddScoped<IBaseSelectRepository<Project>, BaseRepository<Project>>();
-// services.AddScoped<IBaseSelectRepository<ProjectTask>, BaseRepository<ProjectTask>>();
-// services.AddScoped<IBaseSelectRepository<Team>, BaseRepository<Team>>();
+// services.Configure<RabbitMqConfigure>(configuration.GetSection("RabbitMQ"));
 
 services.AddHttpClient("IdentityServer", c =>
 {
@@ -42,7 +37,7 @@ services.AddScoped<IHttpReceiverService, HttpReceiverService>();
 
 services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = configuration.GetSection("RedisCache").GetValue<string>("ConnectionString");
+    options.Configuration = configuration.GetConnection("RedisCache:ConnectionString");
     options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
 });
 
@@ -79,15 +74,9 @@ services.AddSwaggerGen();
 services.AddEndpointsApiExplorer();
 services.AddMassTransit(x =>
 {
-    var rabbitMqConfig = configuration.GetSection("RabbitMQ");
-    
     x.UsingRabbitMq((_, cfg) =>
     {
-        cfg.Host(rabbitMqConfig["Host"], h =>
-        {
-            h.Username(rabbitMqConfig["Username"]);
-            h.Password(rabbitMqConfig["Password"]);
-        });
+        cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));
     });
 });
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Api.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
@@ -28,13 +29,7 @@ services.AddScoped<IUserService, UserService>();
 // var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 // builder.Services.AddSingleton(
 //     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
-//
 
-services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration.GetSection("MySqlDatabase").GetConnectionString("ConnectionString"),
-        new MySqlServerVersion(new Version())
-    )
-);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -47,31 +42,29 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     // })
     .CreateLogger());
 
+
 services.AddMassTransit(x =>
 {
-    var rabbitMqConfig = configuration.GetSection("RabbitMQ");
-
     x.SetKebabCaseEndpointNameFormatter();
-    
+
     x.AddConsumer<CompanyCreatedConsumer>();
-    
+
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host(rabbitMqConfig["Host"], h =>
-        {
-            h.Username(rabbitMqConfig["Username"]);
-            h.Password(rabbitMqConfig["Password"]);
-        });
-        
+        cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));
         cfg.ConfigureEndpoints(ctx);
-
-        
-        // cfg.ReceiveEndpoint("message_queue", e =>
-        // {
-        //     e.ConfigureConsumer<CompanyCreatedConsumer>(ctx);
-        // });
     });
 });
+
+var a = configuration.GetConnection("MySql:ConnectionString");
+
+services.AddDbContext<DataContext>(option => option.UseMySql(
+        configuration.GetConnection("MySql:ConnectionString"),
+        new MySqlServerVersion(new Version(8, 0, 11))
+    )
+    .EnableSensitiveDataLogging()
+    .EnableDetailedErrors()
+);
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -121,3 +114,10 @@ app.MapControllers();
 app.UseHttpsRedirection();
 
 app.Run();
+
+namespace Pilot.Receiver
+{
+    public class Program
+    {
+    }
+}
