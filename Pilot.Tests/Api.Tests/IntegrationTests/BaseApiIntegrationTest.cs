@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Pilot.Contracts.Data;
 using Pilot.Tests.Api.Tests.IntegrationTests.Factories;
 using Xunit;
 
@@ -15,8 +16,7 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
     protected BaseApiIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory)
     {
         // Порядок важен для правильной инициализации подключений к сервисам
-        ApiClient = apiFactory.CreateClient();
-
+        
         var receiverScopeService = receiverFactory.Services.CreateScope();
         ReceiverContext = receiverScopeService.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
         ReceiverClient = receiverFactory.CreateClient();
@@ -24,5 +24,10 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
         var identityScopeService = identityFactory.Services.CreateScope();
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         IdentityClient = identityFactory.CreateClient();
+
+        HttpSingleTone.Init.HttpClients["ReceiverServer"] = ReceiverClient;
+        HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
+        
+        ApiClient = apiFactory.CreateClient();
     }
 }

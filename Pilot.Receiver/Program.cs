@@ -56,8 +56,6 @@ services.AddMassTransit(x =>
     });
 });
 
-var a = configuration.GetConnection("MySql:ConnectionString");
-
 services.AddDbContext<DataContext>(option => option.UseMySql(
         configuration.GetConnection("MySql:ConnectionString"),
         new MySqlServerVersion(new Version(8, 0, 11))

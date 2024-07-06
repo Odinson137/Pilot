@@ -81,6 +81,7 @@ services.AddMassTransit(x =>
 });
 
 services.AddTransient<ISeed, Seed>();
+services.AddTransient<IToken, TokenService>();
 
 var app = builder.Build();
 

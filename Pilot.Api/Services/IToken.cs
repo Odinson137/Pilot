@@ -1,6 +1,7 @@
-﻿using Pilot.Identity.Data;
 
-namespace Pilot.Identity.Interfaces;
+using Pilot.Contracts.Data.Enums;
+
+namespace Pilot.Api.Services;
 
 public interface IToken
 {

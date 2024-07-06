@@ -2,10 +2,10 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using Pilot.Identity.Data;
-using Pilot.Identity.Interfaces;
+using Pilot.Contracts.Data.Enums;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
-namespace Pilot.Identity.Services;
+namespace Pilot.Api.Services;
 
 public class TokenService : IToken
 {
@@ -32,7 +32,7 @@ public class TokenService : IToken
             _configurationManager["Jwt:Issuer"],
             _configurationManager["Jwt:Issuer"],
             claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: DateTime.Now.AddYears(999),
             signingCredentials: creeds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

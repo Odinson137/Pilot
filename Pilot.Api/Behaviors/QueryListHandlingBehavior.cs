@@ -27,7 +27,6 @@ public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest
         _logger.LogInformation($"Query list handling {typeof(TRequest).Name}");
 
         var result = await _httpService.SendGetMessage<TResponse>(request.Url, null, cancellationToken);
-        // var response = await next();
         
         _logger.LogInformation($"Query list handed {typeof(TRequest).Name}");
         return result;

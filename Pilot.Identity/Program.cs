@@ -20,7 +20,6 @@ var configuration = builder.Configuration;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddTransient<IToken, TokenService>();
 services.AddTransient<IPasswordCoder, PasswordCoderService>();
 services.AddScoped<IUser, UserRepository>();
 
@@ -42,7 +41,7 @@ services.AddAutoMapper(typeof(AutoMapperProfile));
 services.AddControllers();
 
 services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration.GetConnection("MySql:ConnectionString"),
+        configuration.GetConnection("MySqlIdentity:ConnectionString"),
         new MySqlServerVersion(new Version(8, 0, 11))
     )
     .EnableSensitiveDataLogging()
@@ -99,7 +98,6 @@ app.MapPost("/Registration", async (
 
 app.MapPost("/Authorization", async (
         IUser userRepository, 
-        IToken tokenService,
         ILogger<Program> logger,
         IPasswordCoder passwordService,
         [FromBody] AuthorizationUserDto userDto) =>
@@ -121,7 +119,7 @@ app.MapPost("/Authorization", async (
         }
 
         logger.LogInformation("Received authorization form in identity");
-        return Results.Ok(new AuthUserDto(user.Id, tokenService.GenerateToken(user.Id, user.Role)));
+        return Results.Ok(new AuthUserRoleDto(user.Id, user.Role));
     })
     .WithOpenApi();
 

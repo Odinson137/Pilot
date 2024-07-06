@@ -1,4 +1,4 @@
-﻿namespace Pilot.Identity.Data;
+﻿namespace Pilot.Contracts.Data.Enums;
 
 public enum Role
 {
