@@ -21,13 +21,12 @@ public class ApiTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Progr
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("MySql:ConnectionString", _mySqlContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable("MySqlIdentity:ConnectionString", _mySqlContainer.GetConnectionString());
 
         builder.ConfigureTestServices(async services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
-            services.RemoveAll<IDistributedCache>();
         });
     }
 

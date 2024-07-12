@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 
@@ -16,7 +17,9 @@ public class BaseHttpService : IBaseHttpService
         string clientName)
     {
         Logger = logger;
-        HttpClient = httpClientFactory.CreateClient(clientName);
+        HttpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test" 
+            ? HttpSingleTone.Init.HttpClients[clientName] 
+            : httpClientFactory.CreateClient(clientName);
     }
     
     public async Task<TOut> SendGetMessage<TOut>(string url, BaseFilter? filter, CancellationToken token)

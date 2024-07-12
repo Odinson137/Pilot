@@ -17,7 +17,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     private readonly IDistributedCache  _cache;
     private readonly ILogger<CachingBehavior<TRequest, TResponse>> _logger;
     
-    public CachingBehavior(IDistributedCache  cache, ILogger<CachingBehavior<TRequest, TResponse>> logger)
+    public CachingBehavior(IDistributedCache cache, ILogger<CachingBehavior<TRequest, TResponse>> logger)
     {
         _cache = cache;
         _logger = logger;

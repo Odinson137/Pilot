@@ -10,11 +10,13 @@ public class UserCommandHandler :
     IRequestHandler<UserAuthorizationCommand, AuthUserDto> 
 {
     private readonly IHttpIdentityService _httpService;
+    private readonly IToken _token;
     
     public UserCommandHandler(
-        IHttpIdentityService httpService)
+        IHttpIdentityService httpService, IToken token)
     {
         _httpService = httpService;
+        _token = token;
     }
     
     public async Task Handle(UserRegistrationCommand request, CancellationToken cancellationToken)
@@ -24,7 +26,10 @@ public class UserCommandHandler :
 
     public async Task<AuthUserDto> Handle(UserAuthorizationCommand request, CancellationToken cancellationToken)
     {
-        return await _httpService.SendPostMessage<AuthUserDto, AuthorizationUserDto>("Authorization", request.UserDto,
+        var authUser = await _httpService.SendPostMessage<AuthUserRoleDto, AuthorizationUserDto>("Authorization", request.UserDto,
             cancellationToken);
+        var token = _token.GenerateToken(authUser.UserId, authUser.Role);
+        var user = new AuthUserDto(authUser.UserId, token);
+        return user;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Pilot.Api.Data.Enums;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;

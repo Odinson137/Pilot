@@ -1,10 +1,11 @@
+using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Api.Data;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
-using Pilot.Receiver.Consumers;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -47,7 +48,8 @@ services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddConsumer<CompanyCreatedConsumer>();
+    x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
+    // x.AddConsumer<CompanyCreatedConsumer>();
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
@@ -55,8 +57,6 @@ services.AddMassTransit(x =>
         cfg.ConfigureEndpoints(ctx);
     });
 });
-
-var a = configuration.GetConnection("MySql:ConnectionString");
 
 services.AddDbContext<DataContext>(option => option.UseMySql(
         configuration.GetConnection("MySql:ConnectionString"),

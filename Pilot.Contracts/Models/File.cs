@@ -6,5 +6,5 @@ namespace Pilot.Contracts.Models;
 public class File : BaseModel
 {
     [Required] [MaxLength(50)] public required string Url { get; set; }
-    [Required] [MaxLength(10)] public required string Type { get; set; }
+    [Required] [MaxLength(20)] public required string Type { get; set; }
 }
