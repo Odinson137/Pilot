@@ -5,7 +5,7 @@ namespace Pilot.Contracts.Models;
 
 public class Company : BaseModel
 {
-    [Required] [MaxLength(50)] public required string Title { get; init; } = null!;
+    [Required] [MaxLength(50)] public string Title { get; init; } = null!;
     [MaxLength(500)] public string? Description { get; init; }
     
     public ICollection<Project> Projects { get; set; } = new List<Project>();

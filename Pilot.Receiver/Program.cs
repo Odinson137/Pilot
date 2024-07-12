@@ -1,7 +1,9 @@
+using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Api.Data;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers;
@@ -15,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddScoped<IBaseRepository<BaseModel>, BaseRepository<BaseModel>>();
 services.AddScoped<ICompany, CompanyRepository>();
 services.AddScoped<ICompanyUser, CompanyUserRepository>();
 services.AddScoped<IFile, FileRepository>();
@@ -47,7 +50,8 @@ services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddConsumer<CompanyCreatedConsumer>();
+    x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
+    // x.AddConsumer<CompanyCreatedConsumer>();
 
     x.UsingRabbitMq((ctx, cfg) =>
     {

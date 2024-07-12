@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
 using Pilot.Tests.IntegrationBase;
-using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 using Xunit;
 

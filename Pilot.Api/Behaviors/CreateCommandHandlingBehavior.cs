@@ -5,8 +5,6 @@ using Pilot.Contracts.RabbitMqMessages;
 
 namespace Pilot.Api.Behaviors;
 
-// public interface ICreateCommandHandling : IBaseCommand;
-
 public class CreateCommandHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IBaseCommand
 {
     private readonly ILogger<CreateCommandHandling<TRequest, TResponse>> _logger;

@@ -1,12 +1,14 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Pilot.Api.Services;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Models;
 using Pilot.Identity.Models;
 using Pilot.Tests.Api.Tests.IntegrationTests.Factories;
+using Pilot.Tests.IntegrationBase;
 using Xunit;
 
 namespace Pilot.Tests.Api.Tests.IntegrationTests;
@@ -33,48 +35,70 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
         
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
-    
-    [Fact]
-    public async void TestTest3()
+
+    public static IEnumerable<object[]> ModelData
     {
-        var result = await ReceiverClient.GetAsync("api/Company");
-        Assert.True(result.IsSuccessStatusCode);
+        get
+        {
+            var baseModelType = typeof(BaseModel);
+            var assembly = Assembly.GetAssembly(baseModelType);
+
+            var modelTypes = assembly?.GetTypes()
+                .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(baseModelType))
+                .Select(c => new object[] { c })
+                .ToList();
+
+            return modelTypes!;
+        }
     }
     
-    [Fact]
+    [Theory]
     [TestBeforeAfter]
-    public async void TestTest()
+    [MemberData(nameof(ModelData))]
+    public async void GetAllValuesTest_ReturnOk(Type type, int count = 2)
     {
         #region Arrange
+
+        var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
         
-        var company = new Company
-        {
-            Title = "Test",
-            Description = "Test Description",
-            CompanyUsers = new List<CompanyUser>
-            {
-                new()
-                {
-                    UserName = "Test user name",
-                    Name = "Test name",
-                    LastName = "Test LastName",
-                    Timestamp = DateTime.Now
-                }
-            }
-        };
-        
-        await ReceiverContext.AddAsync(company);
+        await ReceiverContext.AddRangeAsync(values);
         await ReceiverContext.SaveChangesAsync();
         
         #endregion
 
         // Act
-        var result = await ApiClient.GetAsync("api/Company");
+        var result = await ApiClient.GetAsync($"api/{type.Name}");
         
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<CompanyDto>>();
+        var content = await result.Content.ReadFromJsonAsync<ICollection<BaseDto>>();
         Assert.NotNull(content);
-        Assert.True(content.Count == 1);
+        Assert.True(content.Count >= count);
+    }
+    
+    [Theory]
+    [TestBeforeAfter]
+    [MemberData(nameof(ModelData))]
+    public async void GetValue_ReturnOk(Type type, int count = 1)
+    {
+        #region Arrange
+
+        var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
+        
+        await ReceiverContext.AddRangeAsync(values);
+        await ReceiverContext.SaveChangesAsync();
+
+        var id = values.First().Id;
+        
+        #endregion
+
+        // Act
+        var result = await ApiClient.GetAsync($"api/{type.Name}/{id}");
+        
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<BaseDto>();
+        Assert.NotNull(content);
+        Assert.Equal(id, content.Id);
     }
 }

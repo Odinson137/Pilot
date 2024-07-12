@@ -2,6 +2,7 @@
 using System.Reflection;
 using Xunit.Sdk;
 
+namespace Pilot.Tests.IntegrationBase;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 public class TestBeforeAfter : BeforeAfterTestAttribute
