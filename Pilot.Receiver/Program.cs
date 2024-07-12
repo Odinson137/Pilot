@@ -6,7 +6,6 @@ using Pilot.Api.Data;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
-using Pilot.Receiver.Consumers;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -17,7 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.AddScoped<IBaseRepository<BaseModel>, BaseRepository<BaseModel>>();
 services.AddScoped<ICompany, CompanyRepository>();
 services.AddScoped<ICompanyUser, CompanyUserRepository>();
 services.AddScoped<IFile, FileRepository>();
