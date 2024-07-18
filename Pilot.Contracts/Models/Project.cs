@@ -17,6 +17,4 @@ public class Project : BaseModel
     public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
     
     public ProjectStatus ProjectStatus { get; set; } 
-    
-    public DateTime Timestamp { get; set; } = DateTime.Now; 
 }

@@ -1,18 +1,17 @@
-﻿using Pilot.Contracts.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
 public class ProjectTaskDto : BaseDto
 {
-    public required string Name { get; set; }
+    [Required] [MaxLength(50)] public required string Name { get; set; }
     
-    public string? Description { get; set; }
+    [MaxLength(500)] public string? Description { get; set; }
 
-    public BaseDto Project { get; set; } = null!;
+    [Required] public BaseDto Project { get; set; } = null!;
     
-    public BaseDto CompanyUserDto { get; set; } = null!;
+    [Required] public BaseDto CompanyUserDto { get; set; } = null!;
      
     public BaseDto? File { get; set; }
-    
-    public DateTime Timestamp { get; set; } = DateTime.Now;
 }

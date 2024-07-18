@@ -11,6 +11,4 @@ public class CompanyUser : BaseUserModel
     public Team? Team { get; set; }
 
     public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
-    
-    public DateTime Timestamp { get; set; } = DateTime.Now;
 }

@@ -4,6 +4,7 @@ using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
+using Pilot.Contracts.Validation;
 using Pilot.Receiver.DTO;
 using Pilot.Receiver.Interface;
 using IMessage = Pilot.Receiver.Interface.IMessage;
@@ -29,18 +30,17 @@ public class CompanyCreatedConsumer : IConsumer<CreateCommandMessage<CompanyDto>
         _logger.LogInformation("Company create consume");
         _logger.LogClassInfo(context.Message);
 
-        // TODO СОЗДАТЬ СВОЙ АТРИБУТ ДЛЯ ЭТОЙ ПРОВЕРКИ
-        var companyTitleExist = await _company.CheckCompanyTitleExistAsync(context.Message.Value.Title);
+        var isValidate = await _company.Validate(context.Message.Value);
 
-        if (companyTitleExist)
+        // TODO СОЗДАТЬ ОТДЕЛЬНЫЙ СЕРВИС ДЛЯ ЭТОГО
+        if (isValidate.IsNotSuccessfully)
         {
             _logger.LogInformation("Company has already existed");
-            await _message.SendMessage("Ошибка в создании",
-                $"Ошибка при попытке создать компанию с таким названием '{context.Message.Value.Title}'",
-                MessagePriority.Error);
+            await _message.SendMessage("Ошибка в создании", isValidate.Error, MessagePriority.Error);
             return;
         }
 
+        // TODO ЗАСУНУТЬ В НОВЫЙ СЕРВИС ВАЛИДАЦИИ И ЭТО
         var user = await _user.SendGetOneMessage<UserDto>($"api/User/{context.Message.UserId}", default);
 
         if (user == null)

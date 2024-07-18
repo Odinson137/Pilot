@@ -1,12 +1,16 @@
 ﻿
+using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Validation.ValidationAttributes;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
 public class CompanyDto : BaseDto
 {
+    [Required] [MaxLength(50)] [CheckNameExist]
     public required string Title { get; init; }
 
+    [MaxLength(500)] 
     public string? Description { get; init; }
 
     public ICollection<BaseDto> Projects { get; init; } = new List<BaseDto>();

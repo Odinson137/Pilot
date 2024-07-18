@@ -14,6 +14,4 @@ public class ProjectTask : BaseModel
     [Required] public CompanyUser CompanyUser { get; set; } = null!;
      
     public File? File { get; set; }
-    
-    public DateTime Timestamp { get; set; } = DateTime.Now;
 }

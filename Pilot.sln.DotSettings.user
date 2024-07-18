@@ -22,14 +22,22 @@
     &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest.TestTest(type: typeof(Pilot.Contracts.Models.HistoryAction), count: 2)&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	
-	
-	
-	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bac83e0d_002D3ab8_002D4dd3_002Dad8f_002Ddb22f9cf1233/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestTest #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a4cfe8e7_002D9e7d_002D4d22_002D83b2_002D56cb994fa3b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bac83e0d_002D3ab8_002D4dd3_002Dad8f_002Ddb22f9cf1233/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fef816f4_002Dedfb_002D4a39_002Da2c6_002Ddf526e389db8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=ASPNETCORE_005FENVIRONMENT/@EntryIndexedValue">Test</s:String>

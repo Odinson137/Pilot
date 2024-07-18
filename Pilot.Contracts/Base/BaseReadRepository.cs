@@ -7,8 +7,8 @@ namespace Pilot.Contracts.Base;
 public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseReadRepository<T>
     where T : BaseId
 {
-    protected readonly DbSet<T> DbSet = context.Set<T>();
-    
+    public DbSet<T> DbSet { get; } = context.Set<T>();
+
     public async Task<T?> GetByIdAsync(int id, CancellationToken token = default)
     {
         return await DbSet.FirstOrDefaultAsync(c => c.Id == id, token);

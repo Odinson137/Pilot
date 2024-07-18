@@ -25,8 +25,5 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper) : Bas
         _context.Remove(value);
     }
 
-    public DbContext GetContext()
-    {
-        return _context;
-    }
+    public DbContext GetContext => _context;
 }

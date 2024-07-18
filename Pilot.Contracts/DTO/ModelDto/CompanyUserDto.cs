@@ -11,6 +11,4 @@ public class CompanyUserDto : BaseUserDto
     public BaseDto? Team { get; set; }
 
     public ICollection<BaseDto> Tasks { get; set; } = new List<BaseDto>();
-    
-    public DateTime Timestamp { get; set; }
 }
