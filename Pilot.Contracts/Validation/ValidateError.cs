@@ -1,9 +1,9 @@
 ﻿namespace Pilot.Contracts.Validation;
 
-public class AttributeError
+public class ValidateError
 {
     public bool IsSuccessfully { get; }
-    public bool IsNotSuccessfully { get; }
+    public bool IsNotSuccessfully => !IsSuccessfully;
 
     private readonly string? _error;
     public string Error
@@ -19,12 +19,11 @@ public class AttributeError
         }
     }
 
-    public AttributeError(string value)
+    public ValidateError(string value)
     {
         _error = value;
         IsSuccessfully = false;
-        IsNotSuccessfully = true;
     }
 
-    public AttributeError() { }
+    public ValidateError() { }
 }

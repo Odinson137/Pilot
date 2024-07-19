@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Pilot.Contracts.Models;
 using Pilot.Identity.DTO;
 using Pilot.Identity.Interfaces;
 

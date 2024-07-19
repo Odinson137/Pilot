@@ -2,8 +2,6 @@ using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using Pilot.Api.Data;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Data;
@@ -66,8 +64,15 @@ services.AddDbContext<DataContext>(option => option.UseMySql(
     .EnableDetailedErrors()
 );
 
+services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = configuration.GetConnection("RedisCache:ConnectionString");
+    options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
+});
+
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
+// TODO обобщить
 services.AddHttpClient("IdentityServer", c =>
 {
     c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);

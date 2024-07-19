@@ -17,7 +17,6 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="8.0.3" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.3" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.4.0" />
         <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.4.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
@@ -28,7 +27,6 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="5.0.1-dev-00972" />
-        <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.4.0" />
         <PackageReference Include="xunit.assert" Version="2.7.0" />

@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.Validation;
@@ -19,7 +20,8 @@ public static class Validation
     //     return new AttributeError();
     // }
     
-    public static async Task<AttributeError> Validate<T1, T2>(this IBaseReadRepository<T1> context, T2 model) where T1 : BaseModel where T2 : BaseDto
+    public static async Task<ValidateError> Validate<T1, T2>(this DbSet<T1> context, T2 model) 
+        where T1 : BaseModel where T2 : BaseDto
     {
         var validationType = typeof(IValidationAttribute);
         var assembly = Assembly.GetAssembly(validationType);
@@ -49,6 +51,12 @@ public static class Validation
             }
         }
 
-        return new AttributeError();
+        return new ValidateError();
+    }
+    
+    public static Task<ValidateError> Validate<T1, T2>(this IBaseReadRepository<T1> context, T2 model) 
+        where T1 : BaseModel where T2 : BaseDto
+    {
+        return Validate(context.DbSet, model);
     }
 }

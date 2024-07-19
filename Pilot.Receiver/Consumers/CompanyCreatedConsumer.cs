@@ -4,8 +4,6 @@ using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
-using Pilot.Contracts.Validation;
-using Pilot.Receiver.DTO;
 using Pilot.Receiver.Interface;
 using IMessage = Pilot.Receiver.Interface.IMessage;
 
@@ -17,12 +15,14 @@ public class CompanyCreatedConsumer : IConsumer<CreateCommandMessage<CompanyDto>
     private readonly ICompany _company;
     private readonly IUserService _user;
     private readonly IMessage _message;
-    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUserService user)
+    private readonly IValidateService _validator;
+    public CompanyCreatedConsumer(ILogger<CompanyCreatedConsumer> logger, ICompany company, IMessage message, IUserService user, IValidateService validate)
     {
         _logger = logger;
         _company = company;
         _message = message;
         _user = user;
+        _validator = validate;
     }
 
     public async Task Consume(ConsumeContext<CreateCommandMessage<CompanyDto>> context)
@@ -30,27 +30,9 @@ public class CompanyCreatedConsumer : IConsumer<CreateCommandMessage<CompanyDto>
         _logger.LogInformation("Company create consume");
         _logger.LogClassInfo(context.Message);
 
-        var isValidate = await _company.Validate(context.Message.Value);
+        await _validator.Validate<Company, CompanyDto>(context.Message.Value, context.Message.UserId);
 
-        // TODO СОЗДАТЬ ОТДЕЛЬНЫЙ СЕРВИС ДЛЯ ЭТОГО
-        if (isValidate.IsNotSuccessfully)
-        {
-            _logger.LogInformation("Company has already existed");
-            await _message.SendMessage("Ошибка в создании", isValidate.Error, MessagePriority.Error);
-            return;
-        }
-
-        // TODO ЗАСУНУТЬ В НОВЫЙ СЕРВИС ВАЛИДАЦИИ И ЭТО
-        var user = await _user.SendGetOneMessage<UserDto>($"api/User/{context.Message.UserId}", default);
-
-        if (user == null)
-        {
-            _logger.LogInformation("User not found");
-            await _message.SendMessage("Вы не найдены",
-                $"Вы не можете создать компанию '{context.Message.Value.Title}' потому что вы не существуете в базе",
-                MessagePriority.Error);
-            return;
-        }
+        var user = (await _user.GetUserByIdAsync(context.Message.UserId))!;
         
         await _company.AddNewValueAsync(new Company
         {
@@ -69,8 +51,8 @@ public class CompanyCreatedConsumer : IConsumer<CreateCommandMessage<CompanyDto>
 
         await _company.SaveAsync();
         
-        await _message.SendMessage("Create company",
-            $"Создание компании '{context.Message.Value.Title}'",
+        await _message.SendMessage("Компания создана!",
+            $"Успешное создание компании с названием '{context.Message.Value.Title}'",
             MessagePriority.Success);
     }
 }
