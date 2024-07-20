@@ -2,41 +2,20 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer /&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0767a151_002Db9bf_002D401f_002D96b5_002Dae2c0cd30276/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest(type: typeof(Pilot.Contracts.Models.HistoryAction), count: 2) #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest.TestTest(type: typeof(Pilot.Contracts.Models.HistoryAction), count: 2)&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6cc32049_002De931_002D44ab_002Dba6a_002Dcc9fc3e251b0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6d87fa72_002D97a3_002D4b9f_002Db35e_002D821fe2ce75e1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9c710d30_002D9582_002D4301_002Db6f1_002D17ae6d5ceac3/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest(type: typeof(Pilot.Contracts.Models.HistoryAction), count: 2)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest.TestTest(type: typeof(Pilot.Contracts.Models.HistoryAction), count: 2)&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a4cfe8e7_002D9e7d_002D4d22_002D83b2_002D56cb994fa3b6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=164bbe14_002D571d_002D4aa8_002Db5f5_002D7319a9583dde/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	
 	
 	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bac83e0d_002D3ab8_002D4dd3_002Dad8f_002Ddb22f9cf1233/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="TestTest #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::9FE35C0D-4D64-4E9E-8475-29ECB4568D27::net8.0::Pilot.Tests.Api.Tests.IntegrationTests.BaseModelIntegrationTest.TestTest&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fef816f4_002Dedfb_002D4a39_002Da2c6_002Ddf526e389db8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	
+	
+	
+	
+	
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fef816f4_002Dedfb_002D4a39_002Da2c6_002Ddf526e389db8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	

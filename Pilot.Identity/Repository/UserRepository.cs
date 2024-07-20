@@ -7,14 +7,14 @@ using Pilot.Identity.Models;
 
 namespace Pilot.Identity.Repository;
 
-public class UserRepository(DataContext context, IMapper mapper) : BaseRepository<UserModel>(context, mapper), IUser
+public class UserRepository(DataContext context, IMapper mapper) : BaseRepository<User>(context, mapper), IUser
 {
     public async Task<bool> IsUserNameExistAsync(string userName)
     {
         return await DbSet.AnyAsync(c => c.Name == userName);
     }
 
-    public async Task<UserModel?> GetByNameAsync(string userName)
+    public async Task<User?> GetByNameAsync(string userName)
     {
         return await DbSet.FirstOrDefaultAsync(c => c.UserName == userName);
     }

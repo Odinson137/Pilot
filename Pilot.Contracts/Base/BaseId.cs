@@ -2,7 +2,7 @@
 
 public class BaseId
 {
-    public virtual int Id { get; init; }
+    public virtual int Id { get; set; }
     
     public virtual DateTime CreateAt { get; set; }
     

@@ -3,5 +3,5 @@
 public interface IBaseCommand : IBaseUrl
 {
     public object ValueDto { get; init; }
-    public string UserId { get; init; }
+    public int UserId { get; init; }
 }

@@ -8,7 +8,7 @@ namespace Pilot.Contracts.DTO.ModelDto;
 public class CompanyDto : BaseDto
 {
     [Required] [MaxLength(50)] [CheckNameExist]
-    public required string Title { get; init; }
+    public required string Title { get; set; }
 
     [MaxLength(500)] 
     public string? Description { get; init; }

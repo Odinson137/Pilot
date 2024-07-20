@@ -2,7 +2,7 @@
 
 public class ValidateError
 {
-    public bool IsSuccessfully { get; }
+    public bool IsSuccessfully { get; } = true;
     public bool IsNotSuccessfully => !IsSuccessfully;
 
     private readonly string? _error;

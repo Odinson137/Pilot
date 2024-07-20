@@ -12,7 +12,7 @@ namespace Pilot.Api.Data.ControllerSettings;
 public abstract class PilotController<T, TDto>(IMediator mediator) : ControllerBase where TDto : BaseDto
 {
     protected readonly IMediator Mediator = mediator;
-    protected string UserId => User.Identities.First().Claims.First().Value;
+    protected int UserId => int.Parse(User.Identities.First().Claims.First().Value);
 
     [HttpHead]
     [ProducesResponseType(200)]
@@ -44,7 +44,7 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : ControllerB
     [ProducesResponseType(400)]
     public virtual async Task<IActionResult> AddValue(TDto valueDto, CancellationToken token)
     {
-        await Mediator.Send(new AddValueCommand<TDto>(valueDto, "UserId"), token);
+        await Mediator.Send(new AddValueCommand<TDto>(valueDto, UserId), token);
         return Ok($"The {nameof(T)} will be adding soon");
     }
     

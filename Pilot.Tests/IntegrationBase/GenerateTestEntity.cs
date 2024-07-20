@@ -7,6 +7,38 @@ namespace Pilot.Tests.IntegrationBase;
 
 public static class GenerateTestEntity
 {
+    public static ICollection<BaseDto> CreateDtEntities(Type type, int listDepth = 1, int count = 1, int listElementCount = 3)
+    {
+        var collection = new List<BaseDto>();
+        for (var i = 0; i < count; i++)
+        {
+            var entity = (BaseDto)CreateEntity(Activator.CreateInstance(type)!, type, listDepth, listElementCount);
+            collection.Add(entity);
+        }
+        
+        return collection;
+    }
+    
+    /// <summary>
+    /// Create data transfer entities
+    /// </summary>
+    /// <param name="listDepth">Глубина создания дочерний сущностей</param>
+    /// <param name="count">Количество создаваемых сущсостей</param>
+    /// <param name="listElementCount">Количество элементов в коллекциях</param>
+    /// <typeparam name="TDto">Сущность передчи данных, не модель базы данных</typeparam>
+    /// <returns></returns>
+    public static ICollection<TDto> CreateDtEntities<TDto>(int listDepth = 1, int count = 1, int listElementCount = 3)
+    {
+        var collection = new List<TDto>();
+        for (var i = 0; i < count; i++)
+        {
+            var entity = (TDto)CreateEntity(Activator.CreateInstance<TDto>()!, typeof(TDto), listDepth, listElementCount);
+            collection.Add(entity);
+        }
+        
+        return collection;
+    }
+    
     public static ICollection<BaseModel> CreateEntities(Type type, int listDepth = 1, int count = 1, int listElementCount = 3)
     {
         var collection = new List<BaseModel>();
@@ -18,6 +50,7 @@ public static class GenerateTestEntity
         
         return collection;
     }
+    
     public static ICollection<T> CreateEntities<T>(int listDepth = 1, int count = 1, int listElementCount = 3)
     {
         var collection = new List<T>();

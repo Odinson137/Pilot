@@ -1,4 +1,4 @@
-﻿namespace Pilot.Contracts.Base;
+﻿namespace Pilot.Api.Base;
 
 public record BaseQuery
 {

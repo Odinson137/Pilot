@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
+using Pilot.Receiver.Consumers;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -22,6 +23,8 @@ services.AddScoped<IMessage, MessageRepository>();
 services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
+
+services.AddScoped<IValidateService, ValidateService>();
 
 services.AddScoped<IUserService, UserService>();
 
@@ -46,8 +49,8 @@ services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
-    // x.AddConsumer<CompanyCreatedConsumer>();
+    // x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
+    x.AddConsumer<CompanyCreatedConsumer>();
 
     x.UsingRabbitMq((ctx, cfg) =>
     {

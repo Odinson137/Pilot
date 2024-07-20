@@ -24,7 +24,7 @@ public class QueryOneHandling<TRequest, TResponse> : IPipelineBehavior<TRequest,
     {
         _logger.LogInformation($"Query one handling {typeof(TRequest).Name}");
 
-        var result = await _httpService.SendGetMessage<TResponse>(request.Url, null, cancellationToken);
+        var result = await _httpService.SendGetMessages<TResponse>(request.Url, null, cancellationToken);
         
         _logger.LogInformation($"Query one handed {typeof(TRequest).Name}");
         return result;

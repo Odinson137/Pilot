@@ -78,7 +78,7 @@ app.MapPost("/Registration", async (
             return Results.BadRequest("This username is already taken");
         }
         
-        var newUser = new UserModel
+        var newUser = new User
         {
             UserName = registrationUser.UserName,
             Name = registrationUser.Name,

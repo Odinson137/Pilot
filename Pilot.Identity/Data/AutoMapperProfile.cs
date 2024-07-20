@@ -12,9 +12,9 @@ public class AutoMapperProfile : Profile
     {
         CreateMap<BaseModel, BaseDto>();
         
-        CreateMap<UserModel, UserDto>();
-        CreateMap<UserDto, UserModel>();
+        CreateMap<User, UserDto>();
+        CreateMap<UserDto, User>();
         
-        CreateMap<UserModel, UserModel>();
+        CreateMap<User, User>();
     }   
 }

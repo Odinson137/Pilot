@@ -1,3 +1,3 @@
 ﻿namespace Pilot.Contracts.RabbitMqMessages;
 
-public record CreateCommandMessage<TDto>(TDto Value, string UserId) : BaseCommandMessage<TDto>(Value, UserId);
+public record CreateCommandMessage<TDto>(TDto Value, int UserId) : BaseCommandMessage<TDto>(Value, UserId);

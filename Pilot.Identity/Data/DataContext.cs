@@ -7,7 +7,7 @@ namespace Pilot.Identity.Data;
 
 public sealed class DataContext : DbContext
 {
-    public DbSet<UserModel> Users { get; set; }
+    public DbSet<User> Users { get; set; }
 
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {

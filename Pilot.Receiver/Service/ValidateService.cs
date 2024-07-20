@@ -1,7 +1,6 @@
 ﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Models;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Contracts.Validation;
 using Pilot.Receiver.Data;
@@ -24,26 +23,27 @@ public class ValidateService : IValidateService
         _context = context;
     }
 
-    public async Task<ValidateError> Validate<T, TDto>(TDto model, string userId) where T : BaseModel where TDto : BaseDto
+    public async Task<ValidateError> Validate<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
+        
+        var user = await _user.GetValueByIdAsync(userId);
+
+        // по логике, это условие всегда должно быть положительным, если в системе всё хорошо
+        if (user == null)
+        {
+            _logger.LogError("User not found");
+            throw new NotFoundException("User not found");
+        }
         
         var isValidate = await _context.Set<T>().Validate(model);
 
         if (isValidate.IsNotSuccessfully)
         {
-            _logger.LogInformation("Company has already existed");
+            _logger.LogError($"{typeof(T).Name} has already existed");
             await _message.SendMessage("Ошибка в создании", isValidate.Error, MessagePriority.Error);
-            throw new BadRequestException("Company has already existed");
-        }
-        
-        var user = await _user.GetUserByIdAsync(userId);
-
-        if (user == null)
-        {
-            _logger.LogInformation("User not found");
-            throw new NotFoundException("User not found");
+            throw new BadRequestException($"{typeof(T).Name} has already existed");
         }
         
         _logger.LogInformation($"End validate model of {typeof(T).Name}");

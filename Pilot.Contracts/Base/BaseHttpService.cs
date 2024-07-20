@@ -6,7 +6,7 @@ using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Contracts.Base;
 
-public class BaseHttpService : IBaseHttpService
+public abstract class BaseHttpService : IBaseHttpService
 {
     protected readonly ILogger<BaseHttpService> Logger;
     protected readonly HttpClient HttpClient;
@@ -22,7 +22,7 @@ public class BaseHttpService : IBaseHttpService
             : httpClientFactory.CreateClient(clientName);
     }
     
-    public async Task<TOut> SendGetMessage<TOut>(string url, BaseFilter? filter, CancellationToken token)
+    public async Task<TOut> SendGetMessages<TOut>(string url, BaseFilter? filter, CancellationToken token)
     {
         Logger.LogInformation($"Send message to {url}");
         var response = await HttpClient.GetAsync(url, token);
@@ -40,7 +40,7 @@ public class BaseHttpService : IBaseHttpService
         return content;
     }
 
-    public async Task<TOut?> SendGetOneMessage<TOut>(string url, CancellationToken token)
+    public async Task<TOut?> SendGetMessage<TOut>(string url, CancellationToken token)
     {
         Logger.LogInformation($"Send message to {url}");
         var response = await HttpClient.GetAsync(url, token);

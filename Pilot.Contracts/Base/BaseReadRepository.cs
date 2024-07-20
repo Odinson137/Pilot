@@ -14,6 +14,12 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         return await DbSet.FirstOrDefaultAsync(c => c.Id == id, token);
     }
     
+    public async Task<T?> GetRequiredByIdAsync(int id, CancellationToken token = default)
+    {
+        var value = await GetByIdAsync(id, token);
+        return value ?? throw new NullReferenceException("Сущность по id не найдена");
+    }
+    
     public async Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseId
     {
         return await DbSet.ProjectTo<TOut>(mapper.ConfigurationProvider).FirstOrDefaultAsync(c => c.Id == id, token);
