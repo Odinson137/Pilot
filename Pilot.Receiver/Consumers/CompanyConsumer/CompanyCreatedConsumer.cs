@@ -9,13 +9,13 @@ using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Interface;
 using IMessage = Pilot.Receiver.Interface.IMessage;
 
-namespace Pilot.Receiver.Consumers;
+namespace Pilot.Receiver.Consumers.CompanyConsumer;
 
 public class CompanyCreatedConsumer(
     ILogger<CompanyCreatedConsumer> logger,
     ICompany company,
     IMessage message,
-    IValidateService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<Company, CompanyDto>(logger, company, message, validate, mapper, companyUser)
@@ -29,7 +29,7 @@ public class CompanyCreatedConsumer(
 
         var companyUser = await CompanyUser.GetByIdAsync(context.Message.UserId);
         
-        await Repository.AddNewValueAsync(new Company
+        await Repository.AddValueToContextAsync(new Company
         {
             Title = context.Message.Value.Title,
             Description = context.Message.Value.Title,

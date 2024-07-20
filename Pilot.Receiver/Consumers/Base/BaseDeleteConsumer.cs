@@ -12,7 +12,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     ILogger<BaseDeleteConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessage message,
-    IValidateService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : IConsumer<DeleteCommandMessage<TDto>>
@@ -23,7 +23,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     protected readonly IBaseRepository<T> Repository = repository;
     protected  readonly ICompanyUser CompanyUser = companyUser;
     protected  readonly IMessage Message = message;
-    protected readonly IValidateService Validator = validate;
+    protected readonly IValidatorService Validator = validate;
     protected  readonly IMapper Mapper = mapper;
 
     public virtual async Task Consume(ConsumeContext<DeleteCommandMessage<TDto>> context)

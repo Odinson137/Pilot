@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers;
+using Pilot.Receiver.Consumers.CompanyConsumer;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -24,7 +25,7 @@ services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
 
-services.AddScoped<IValidateService, ValidateService>();
+services.AddScoped<IValidatorService, ValidatorService>();
 
 services.AddScoped<IUserService, UserService>();
 

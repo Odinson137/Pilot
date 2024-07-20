@@ -61,18 +61,18 @@ public static class Validation
         
         var type = typeof(T);
 
-        var fields = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
         
-        foreach (var field in fields)
+        foreach (var property in properties)
         {
-            var foundAttributes = field.GetCustomAttributes()
+            var foundAttributes = property.GetCustomAttributes()
                 .Where(c => customAttributes.Contains(c.GetType()))
                 .Select(c => (IValidationAttribute)c)
                 .ToList();
 
             foreach (var foundAttribute in foundAttributes)
             {
-                var attributeError = await foundAttribute.IsValid(field, model, context);
+                var attributeError = await foundAttribute.IsValid(property, model, context);
                 if (attributeError.IsNotSuccessfully)
                 {
                     return attributeError;

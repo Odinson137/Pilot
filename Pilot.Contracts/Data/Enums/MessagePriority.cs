@@ -11,4 +11,5 @@ public enum MessagePriority
     Create = 16,
     Update = 32,
     Delete = 64,
+    Validate = 128,
 }

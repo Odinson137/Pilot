@@ -86,7 +86,7 @@ app.MapPost("/Registration", async (
             Password = passwordService.PasswordCode(registrationUser.Password)
         };
 
-        await user.AddNewValueAsync(newUser);
+        await user.AddValueToContextAsync(newUser);
 
         await user.SaveAsync();
         

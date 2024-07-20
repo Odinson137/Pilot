@@ -8,13 +8,13 @@ using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Interface;
 
-namespace Pilot.Receiver.Consumers;
+namespace Pilot.Receiver.Consumers.CompanyConsumer;
 
 public class CompanyUpdatedConsumer(
     ILogger<CompanyUpdatedConsumer> logger,
     ICompany company,
     IMessage message,
-    IValidateService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseUpdateConsumer<Company, CompanyDto>(logger, company, message, validate, mapper, companyUser)
@@ -25,8 +25,6 @@ public class CompanyUpdatedConsumer(
         Logger.LogClassInfo(context.Message);
 
         await Validator.Validate<Company, CompanyDto>(context.Message.Value, context.Message.UserId);
-
-        // var companyUser = await CompanyUser.GetByIdAsync(context.Message.UserId);
         
         var model = Mapper.Map<Company>(context.Message.Value);
         
@@ -34,8 +32,8 @@ public class CompanyUpdatedConsumer(
 
         await Repository.SaveAsync();
         
-        await Message.SendMessage("Успешное создание!",
-            $"Успешное создание сущности {nameof(Company)}'",
+        await Message.SendMessage("Успешное обновление!",
+            $"Успешное обновление сущности {nameof(Company)}'",
             MessagePriority.Success | MessagePriority.Update);
     }
 }

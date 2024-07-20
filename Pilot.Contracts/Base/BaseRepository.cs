@@ -9,7 +9,7 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper) : Bas
 {
     private readonly DbContext _context = context;
 
-    public async Task<T> AddNewValueAsync(T value, CancellationToken token = default)
+    public async Task<T> AddValueToContextAsync(T value, CancellationToken token = default)
     {
         await DbSet.AddAsync(value, token);
         return value;

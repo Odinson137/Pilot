@@ -121,13 +121,19 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
 
         await PublishEndpoint.Publish(new CreateCommandMessage<CompanyDto>(value, _admin.Id));
 
-        await Task.Delay(5000);
-        
         // Assert
+        await Wait();
 
         var result = await ReceiverContext.Companies.Where(c => c.Title == value.Title).FirstOrDefaultAsync();
 
         Assert.NotNull(result);
         Assert.True(result.Title == value.Title);
+    }
+
+    // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
+    // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
+    private async Task Wait()
+    {
+        for (var i = 0; i < 20; i++) await Task.Delay(200);
     }
 }

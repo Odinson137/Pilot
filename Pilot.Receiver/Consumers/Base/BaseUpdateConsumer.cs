@@ -12,7 +12,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     ILogger<BaseUpdateConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessage message,
-    IValidateService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : IConsumer<UpdateCommandMessage<TDto>>
@@ -23,7 +23,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     protected readonly IBaseRepository<T> Repository = repository;
     protected  readonly ICompanyUser CompanyUser = companyUser;
     protected  readonly IMessage Message = message;
-    protected readonly IValidateService Validator = validate;
+    protected readonly IValidatorService Validator = validate;
     protected  readonly IMapper Mapper = mapper;
 
     public virtual async Task Consume(ConsumeContext<UpdateCommandMessage<TDto>> context)
@@ -33,16 +33,14 @@ public abstract class BaseUpdateConsumer<T, TDto>(
 
         await Validator.Validate<T, TDto>(context.Message.Value, context.Message.UserId);
 
-        // var companyUser = await CompanyUser.GetByIdAsync(context.Message.UserId);
-        
         var model = Mapper.Map<T>(context.Message.Value);
         
-        await Repository.GetContext.AddAsync(model);
+        await Repository.AddValueToContextAsync(model);
 
         await Repository.SaveAsync();
         
-        await Message.SendMessage("Успешное создание!",
-            $"Успешное создание сущности {typeof(T).Name}'",
+        await Message.SendMessage("Успешное обновление!",
+            $"Успешное обновление сущности {typeof(T).Name}'",
             MessagePriority.Success | MessagePriority.Update);
     }
 }
