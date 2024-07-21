@@ -25,8 +25,8 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         IdentityClient = identityFactory.CreateClient();
 
-        HttpSingleTone.Init.HttpClients["ReceiverServer"] = ReceiverClient;
-        HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
+        HttpSingleTone.Init.HttpClients["Api.ReceiverServer"] = ReceiverClient;
+        HttpSingleTone.Init.HttpClients["Api.IdentityServer"] = IdentityClient;
         
         ApiClient = apiFactory.CreateClient();
     }

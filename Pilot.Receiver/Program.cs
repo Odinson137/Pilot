@@ -1,10 +1,8 @@
-using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
-using Pilot.Receiver.Consumers;
 using Pilot.Receiver.Consumers.CompanyConsumer;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
@@ -126,7 +124,6 @@ app.Run();
 
 namespace Pilot.Receiver
 {
-    public class Program
-    {
-    }
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program;
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Services;
 using Pilot.Tests.IntegrationBase;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
@@ -26,13 +27,17 @@ namespace Pilot.Tests.Receiver.Tests.IntegrationTests.Factories
         private readonly RedisContainer _redisContainer = new RedisBuilder()
             .WithImage("redis:latest")
             .Build();
+
+        private const string ProjectTestName = "Receiver";
         
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            builder.UseSetting("ENVIRONMENT", ProjectTestName);
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-            Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString", _rabbitContainer.GetConnectionString());
-            Environment.SetEnvironmentVariable("MySql:ConnectionString", _mySqlContainer.GetConnectionString());
-            Environment.SetEnvironmentVariable("RedisCache:ConnectionString", _redisContainer.GetConnectionString());
+            
+            Environment.SetEnvironmentVariable($"{ProjectTestName}.RabbitMQ:ConnectionString", _rabbitContainer.GetConnectionString());
+            Environment.SetEnvironmentVariable($"{ProjectTestName}.MySql:ConnectionString", _mySqlContainer.GetConnectionString());
+            Environment.SetEnvironmentVariable($"{ProjectTestName}.RedisCache:ConnectionString", _redisContainer.GetConnectionString());
             
             builder.ConfigureTestServices(async services =>
             {

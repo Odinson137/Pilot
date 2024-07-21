@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;

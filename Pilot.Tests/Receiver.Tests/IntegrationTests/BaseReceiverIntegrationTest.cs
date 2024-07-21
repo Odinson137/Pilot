@@ -28,6 +28,6 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         IdentityClient = identityFactory.CreateClient();
 
-        HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
+        HttpSingleTone.Init.HttpClients["Receiver.IdentityServer"] = IdentityClient;
     }
 }

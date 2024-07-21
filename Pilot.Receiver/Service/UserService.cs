@@ -7,8 +7,8 @@ namespace Pilot.Receiver.Service;
 
 public class UserService : ModelService<UserDto>, IUserService
 {
-    public UserService(ILogger<UserService> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache) 
-        : base(logger, httpClientFactory, cache, "IdentityServer")
+    public UserService(ILogger<UserService> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, IConfiguration configuration) 
+        : base(logger, httpClientFactory, cache, configuration,"IdentityServer")
     {
     }
 }

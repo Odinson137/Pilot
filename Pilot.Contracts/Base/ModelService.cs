@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Pilot.Contracts.Services.LogService;
@@ -10,8 +11,8 @@ public abstract class ModelService<TDto> : BaseHttpService, IModelService<TDto> 
     private readonly ILogger<ModelService<TDto>> _logger;
     private readonly IDistributedCache _cache;
     
-    public ModelService(ILogger<ModelService<TDto>> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, string clientName) 
-        : base(logger, httpClientFactory, clientName)
+    public ModelService(ILogger<ModelService<TDto>> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, IConfiguration configuration, string clientName) 
+        : base(logger, httpClientFactory, configuration, clientName)
     {
         _logger = logger;
         _cache = cache;

@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
@@ -10,15 +11,18 @@ public abstract class BaseHttpService : IBaseHttpService
 {
     protected readonly ILogger<BaseHttpService> Logger;
     protected readonly HttpClient HttpClient;
+    protected readonly IConfiguration Сonfiguration;
 
     protected BaseHttpService(
         ILogger<BaseHttpService> logger, 
         IHttpClientFactory httpClientFactory,
+        IConfiguration сonfiguration,
         string clientName)
     {
         Logger = logger;
+        Сonfiguration = сonfiguration;
         HttpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test" 
-            ? HttpSingleTone.Init.HttpClients[clientName] 
+            ? HttpSingleTone.Init.HttpClients[$"{Сonfiguration.GetValue<string>("ENVIRONMENT")}.{clientName}"] 
             : httpClientFactory.CreateClient(clientName);
     }
     

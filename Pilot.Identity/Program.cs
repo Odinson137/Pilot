@@ -164,5 +164,6 @@ app.Run();
 
 namespace Pilot.Identity
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public partial class Program {}
 }

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Services;
 using Pilot.Tests.IntegrationBase;
 using Testcontainers.MySql;
 using Xunit;
@@ -18,9 +19,14 @@ public class ApiTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Progr
         .WithDatabase("TestPilotIdentityDb")
         .Build();
     
+    private const string ProjectTestName = "Api";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        Environment.SetEnvironmentVariable("MySqlIdentity:ConnectionString", _mySqlContainer.GetConnectionString());
+        builder.UseSetting("ENVIRONMENT", ProjectTestName);
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+        
+        Environment.SetEnvironmentVariable($"{ProjectTestName}.MySqlIdentity:ConnectionString", _mySqlContainer.GetConnectionString());
 
         builder.ConfigureTestServices(async services =>
         {

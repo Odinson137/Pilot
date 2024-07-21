@@ -23,10 +23,14 @@ public class ApiTestApiFactory : WebApplicationFactory<Pilot.Api.Program>, IAsyn
         .WithImage("redis:latest")
         .Build();
     
+    private const string ProjectTestName = "Api";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("ENVIRONMENT", ProjectTestName);
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-        Environment.SetEnvironmentVariable("RedisCache:ConnectionString", _redisContainer.GetConnectionString());
+        
+        Environment.SetEnvironmentVariable($"{ProjectTestName}.RedisCache:ConnectionString", _redisContainer.GetConnectionString());
 
         builder.ConfigureTestServices(async services =>
         {

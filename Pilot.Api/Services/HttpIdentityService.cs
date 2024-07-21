@@ -6,8 +6,8 @@ namespace Pilot.Api.Services;
 
 public class HttpIdentityService : BaseHttpService, IHttpIdentityService
 {
-    public HttpIdentityService(ILogger<HttpIdentityService> logger, IHttpClientFactory httpClientFactory) 
-        : base(logger, httpClientFactory, "IdentityServer")
+    public HttpIdentityService(ILogger<HttpIdentityService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration) 
+        : base(logger, httpClientFactory, configuration, "IdentityServer")
     {
     }
 
