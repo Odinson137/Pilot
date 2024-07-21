@@ -18,7 +18,6 @@ namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
 public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
 {
     private readonly User _admin;
-    private readonly CompanyUser _companyUserAdmin;
     
     public BaseModelReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
@@ -33,17 +32,6 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
 
         IdentityContext.Add(_admin);
         IdentityContext.SaveChanges();
-        
-        _companyUserAdmin = new CompanyUser
-        {
-            Id = _admin.Id,
-            UserName = "Admin",
-            Name = "AdminName",
-            LastName = "AdminLastName",
-        };
-
-        ReceiverContext.Add(_companyUserAdmin);
-        ReceiverContext.SaveChanges();
     }
 
     public static IEnumerable<object[]> ModelData
@@ -60,6 +48,13 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
 
             return modelTypes!;
         }
+    }
+    
+    // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
+    // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
+    private async Task Wait()
+    {
+        for (var i = 0; i < 20; i++) await Task.Delay(200);
     }
     
     [Theory]
@@ -118,11 +113,17 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
     {
         #region Arrange
 
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+
+        await IdentityContext.AddRangeAsync(user);
+        await IdentityContext.SaveChangesAsync();
+        
         var value = GenerateTestEntity.CreateEntities<CompanyDto>(count: 1).First();
         value.Title = Guid.NewGuid().ToString();
         
         var companyUser = GenerateTestEntity.CreateDtEntities<CompanyUser>(count: 1).First();
-
+        companyUser.Id = user.Id;
+        
         await ReceiverContext.AddAsync(companyUser);
         await ReceiverContext.SaveChangesAsync();
         
@@ -140,13 +141,6 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
         Assert.NotNull(result);
         Assert.True(result.Title == value.Title);
     }
-
-    // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
-    // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
-    private async Task Wait()
-    {
-        for (var i = 0; i < 20; i++) await Task.Delay(200);
-    }
     
     [Fact]
     [TestBeforeAfter]
@@ -154,10 +148,16 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
     {
         #region Arrange
 
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+
+        await IdentityContext.AddRangeAsync(user);
+        await IdentityContext.SaveChangesAsync();
+        
         var value = GenerateTestEntity.CreateEntities<Company>(count: 1).First();
         
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1).First();
-
+        companyUser.Id = user.Id;
+        
         value.CompanyUsers = new List<CompanyUser> {companyUser};
 
         await ReceiverContext.AddAsync(value);
