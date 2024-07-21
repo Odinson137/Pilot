@@ -49,7 +49,8 @@ services.AddMassTransit(x =>
     x.SetKebabCaseEndpointNameFormatter();
 
     // x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
-    x.AddConsumer<CompanyCreatedConsumer>();
+    x.AddConsumer(typeof(CompanyCreatedConsumer));
+    x.AddConsumer(typeof(CompanyUpdatedConsumer));
 
     x.UsingRabbitMq((ctx, cfg) =>
     {

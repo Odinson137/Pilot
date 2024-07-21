@@ -11,6 +11,8 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
     protected readonly HttpClient ReceiverClient;
     protected readonly HttpClient IdentityClient;
     protected readonly Pilot.Receiver.Data.DataContext ReceiverContext;
+    protected readonly Pilot.Receiver.Data.DataContext AssertReceiverContext;
+    protected readonly IServiceScope ReceiverScope;
     protected readonly Pilot.Identity.Data.DataContext IdentityContext;
     
     protected readonly IPublishEndpoint PublishEndpoint;
@@ -19,10 +21,11 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
     {
         // Порядок важен для правильной инициализации подключений к сервисам
         
-        var receiverScopeService = receiverFactory.Services.CreateScope();
-        ReceiverContext = receiverScopeService.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
+        ReceiverScope = receiverFactory.Services.CreateScope();
+        ReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
+        AssertReceiverContext = receiverFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
         ReceiverClient = receiverFactory.CreateClient();
-        PublishEndpoint = receiverScopeService.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        PublishEndpoint = ReceiverScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
         
         var identityScopeService = identityFactory.Services.CreateScope();
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();

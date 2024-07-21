@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.RabbitMqMessages;
@@ -34,10 +35,16 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         await Validator.Validate<T, TDto>(context.Message.Value, context.Message.UserId);
 
         var model = Mapper.Map<T>(context.Message.Value);
+
+        await Validator.UpdateValidate(model);
+        model.ChangeAt = DateTime.Now;
         
-        await Repository.AddValueToContextAsync(model);
+        Repository.GetContext.Attach(model);
+        Repository.GetContext.Entry(model).State = EntityState.Modified;
 
         await Repository.SaveAsync();
+
+        var asd = await Repository.GetContext.Set<T>().ToListAsync();
         
         await Message.SendMessage("Успешное обновление!",
             $"Успешное обновление сущности {typeof(T).Name}'",

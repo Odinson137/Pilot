@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Json;
 using System.Reflection;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
@@ -16,6 +18,7 @@ namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
 public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
 {
     private readonly User _admin;
+    private readonly CompanyUser _companyUserAdmin;
     
     public BaseModelReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
@@ -26,11 +29,21 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
             LastName = "AdminLastName",
             Password = "12345678",
             Role = Role.Admin,
-            Timestamp = DateTime.Now
         };
 
         IdentityContext.Add(_admin);
         IdentityContext.SaveChanges();
+        
+        _companyUserAdmin = new CompanyUser
+        {
+            Id = _admin.Id,
+            UserName = "Admin",
+            Name = "AdminName",
+            LastName = "AdminLastName",
+        };
+
+        ReceiverContext.Add(_companyUserAdmin);
+        ReceiverContext.SaveChanges();
     }
 
     public static IEnumerable<object[]> ModelData
@@ -105,11 +118,10 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
     {
         #region Arrange
 
-        var value = GenerateTestEntity.CreateDtEntities<CompanyDto>(count: 1).First();
+        var value = GenerateTestEntity.CreateEntities<CompanyDto>(count: 1).First();
         value.Title = Guid.NewGuid().ToString();
         
         var companyUser = GenerateTestEntity.CreateDtEntities<CompanyUser>(count: 1).First();
-        companyUser.Id = _admin.Id;
 
         await ReceiverContext.AddAsync(companyUser);
         await ReceiverContext.SaveChangesAsync();
@@ -134,5 +146,41 @@ public class BaseModelReceiverIntegrationTest : BaseReceiverIntegrationTest
     private async Task Wait()
     {
         for (var i = 0; i < 20; i++) await Task.Delay(200);
+    }
+    
+    [Fact]
+    [TestBeforeAfter]
+    public async void UpdateModelTest_ReturnOk()
+    {
+        #region Arrange
+
+        var value = GenerateTestEntity.CreateEntities<Company>(count: 1).First();
+        
+        var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1).First();
+
+        value.CompanyUsers = new List<CompanyUser> {companyUser};
+
+        await ReceiverContext.AddAsync(value);
+        await ReceiverContext.SaveChangesAsync();
+
+        var mapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
+        var valueDto = mapper.Map<CompanyDto>(value);
+        
+        // Как-то редактируем модель
+        valueDto.Title = Guid.NewGuid().ToString();
+        
+        #endregion
+
+        // Act
+
+        await PublishEndpoint.Publish(new UpdateCommandMessage<CompanyDto>(valueDto, _admin.Id));
+
+        // Assert
+        await Wait();
+        
+        var result = await AssertReceiverContext.Companies.Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.NotNull(result);
+        Assert.True(result.Title == valueDto.Title);
     }
 }

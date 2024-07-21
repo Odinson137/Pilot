@@ -6,7 +6,7 @@ namespace Pilot.Contracts.DTO.ModelDto;
 
 public class ProjectDto : BaseDto
 {
-    [Required] [MaxLength(100)] public required string Name { get; set; }
+    [Required] [MaxLength(100)] public string Name { get; set; } = null!;
     
     [MaxLength(500)] public string? Description { get; set; }
     

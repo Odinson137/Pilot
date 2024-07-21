@@ -29,7 +29,7 @@ public class ValidatorService : IValidatorService
         _context = context;
     }
 
-    public async Task<ValidateError> Validate<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
+    public async Task Validate<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
@@ -61,10 +61,9 @@ public class ValidatorService : IValidatorService
         }
         
         _logger.LogInformation($"End validate model of {typeof(T).Name}");
-        return new ValidateError();
     }
 
-    public async Task<ValidateError> UpdateValidate<T>(T model) where T : BaseModel
+    public async Task UpdateValidate<T>(T model) where T : BaseModel
     {
         _logger.LogInformation($"Start update validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
@@ -82,7 +81,7 @@ public class ValidatorService : IValidatorService
                 var value = property.GetValue(model);
                 if (value == null) continue;
 
-                var subModel = await GetSubEntity(property, value);
+                var subModel = await GetSubEntity(propertyType, property, value);
 
                 property.SetValue(model, subModel);
             }
@@ -99,7 +98,7 @@ public class ValidatorService : IValidatorService
 
                     foreach (var item in collection)
                     {
-                        var subModel = await GetSubEntity(property, (BaseModel)item);
+                        var subModel = await GetSubEntity(elementType, property, (BaseModel)item);
                         updatedCollection!.Add(subModel);
                     }
 
@@ -107,13 +106,11 @@ public class ValidatorService : IValidatorService
                 }
             }
         }
-
-        return new ValidateError();
     }
 
-    private async Task<object> GetSubEntity(PropertyInfo property, object value)
+    private async Task<object> GetSubEntity(Type propertyType, PropertyInfo property, object value)
     {
-        var subModel = await _context.FindAsync(property.PropertyType, ((BaseModel)value).Id);
+        var subModel = await _context.FindAsync(propertyType, ((BaseModel)value).Id);
 
         if (subModel != null) return subModel;
         

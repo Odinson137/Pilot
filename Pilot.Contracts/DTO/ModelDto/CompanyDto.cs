@@ -17,5 +17,5 @@ public class CompanyDto : BaseDto
     
     public ICollection<BaseDto> Teams { get; init; } = new List<BaseDto>();
     
-    public ICollection<BaseDto> CompanyUsers { get; init; } = new List<BaseDto>();
+    public ICollection<BaseDto> CompanyUsers { get; set; } = new List<BaseDto>();
 }

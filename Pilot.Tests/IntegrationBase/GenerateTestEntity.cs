@@ -25,7 +25,7 @@ public static class GenerateTestEntity
     /// <param name="listDepth">Глубина создания дочерний сущностей</param>
     /// <param name="count">Количество создаваемых сущсостей</param>
     /// <param name="listElementCount">Количество элементов в коллекциях</param>
-    /// <typeparam name="TDto">Сущность передчи данных, не модель базы данных</typeparam>
+    /// <typeparam name="TDto">Сущность</typeparam>
     /// <returns></returns>
     public static ICollection<TDto> CreateDtEntities<TDto>(int listDepth = 1, int count = 1, int listElementCount = 3)
     {
@@ -51,6 +51,14 @@ public static class GenerateTestEntity
         return collection;
     }
     
+    /// <summary>
+    /// Create entities
+    /// </summary>
+    /// <param name="listDepth">Глубина создания дочерний сущностей</param>
+    /// <param name="count">Количество создаваемых сущсостей</param>
+    /// <param name="listElementCount">Количество элементов в коллекциях</param>
+    /// <typeparam name="T">Сущность</typeparam>
+    /// <returns></returns>
     public static ICollection<T> CreateEntities<T>(int listDepth = 1, int count = 1, int listElementCount = 3)
     {
         var collection = new List<T>();

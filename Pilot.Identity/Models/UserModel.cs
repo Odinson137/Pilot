@@ -11,6 +11,4 @@ public class User : BaseUserModel
     [Required] [MaxLength(100)] public Role Role { get; init; } = Role.User;
 
     // public ICollection<Message>? Messages { get; set; }
-    
-    public DateTime Timestamp { get; init; } = DateTime.Now;
 }

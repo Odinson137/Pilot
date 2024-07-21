@@ -23,7 +23,6 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
             LastName = "AdminLastName",
             Password = "12345678",
             Role = Role.Admin,
-            Timestamp = DateTime.Now
         };
 
         IdentityContext.Add(admin);

@@ -6,9 +6,9 @@ namespace Pilot.Contracts.Models;
 
 public class HistoryAction : BaseModel
 {
-    [Required] public required CompanyUser CompanyUser { get; set; }
+    [Required] public CompanyUser CompanyUser { get; set; } = null!;
+
+    [Required] public ProjectTask ProjectTask { get; set; } = null!;
     
-    [Required] public required ProjectTask ProjectTask { get; set; }
-    
-    [Required] public required ActionState ActionState { get; set; }
+    [Required] public ActionState ActionState { get; set; }
 }

@@ -5,9 +5,9 @@ namespace Pilot.Contracts.Models;
 
 public class Team : BaseModel
 {
-    [Required] [MaxLength(50)] public required string Name { get; set; }
-    
-    [Required] [MaxLength(500)] public required string Description { get; set; }
+    [Required] [MaxLength(50)] public string Name { get; set; } = null!;
+
+    [Required] [MaxLength(500)] public string Description { get; set; } = null!;
     
     public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
     
