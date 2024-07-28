@@ -1,0 +1,6 @@
+@Pilot.Messanger_HostAddress = http://localhost:5172
+
+GET {{Pilot.Messanger_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
