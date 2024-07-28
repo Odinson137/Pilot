@@ -3,7 +3,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
