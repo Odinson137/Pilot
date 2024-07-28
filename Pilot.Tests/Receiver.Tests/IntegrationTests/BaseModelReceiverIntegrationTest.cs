@@ -61,17 +61,20 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         return user;
     }
 
-    protected async Task<CompanyUser> CreateCompanyUser(User? user = null)
+    protected async Task<CompanyUser> CreateCompanyUser()
     {
-        user ??= await CreateUser();
-        user.UserName = Guid.NewGuid().ToString();
-        
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
-        companyUser.Id = user.Id;
         companyUser.UserName = Guid.NewGuid().ToString();
         
         await ReceiverContext.AddAsync(companyUser);
         await ReceiverContext.SaveChangesAsync();
+        
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+        user.Id = companyUser.Id;
+        
+        await IdentityContext.AddRangeAsync(user);
+        await IdentityContext.SaveChangesAsync();
+        
         return companyUser;
     }
 
