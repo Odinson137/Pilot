@@ -1,6 +1,6 @@
 ﻿using Pilot.Contracts.Base;
 
-namespace Pilot.Contracts.Models;
+namespace Pilot.Contracts.DTO.ModelDto;
 
 public class UserDto : BaseUserDto
 {

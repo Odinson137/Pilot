@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Reflection;
-using MassTransit.Internals;
 using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver.Linq;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.Services.LogService;
@@ -16,12 +15,12 @@ namespace Pilot.Receiver.Service;
 
 public class ValidatorService : IValidatorService
 {
-    private readonly IMessage _message;
+    private readonly IMessageService _message;
     private readonly IUserService _user;
     private readonly ILogger<ValidateError> _logger;
     private readonly DataContext _context;
 
-    public ValidatorService(IMessage message, IUserService user, ILogger<ValidateError> logger, DataContext context)
+    public ValidatorService(IMessageService message, IUserService user, ILogger<ValidateError> logger, DataContext context)
     {
         _message = message;
         _user = user;
@@ -29,11 +28,34 @@ public class ValidatorService : IValidatorService
         _context = context;
     }
 
-    public async Task Validate<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
+    public async Task ValidateAsync<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
+
+        await UserValidateAsync(userId);
+
+        await DefaultValidateAsync<T, TDto>(model);
+
+        await CompanyUserValidateAsync<T>(userId);
         
+        _logger.LogInformation($"End validate model of {typeof(T).Name}");
+    }
+    
+    public async Task ValidateWithoutDefaultAsync<T, TDto>(TDto model, int userId) where T : BaseModel where TDto : BaseDto
+    {
+        _logger.LogInformation($"Start validate model of {typeof(T).Name}");
+        _logger.LogClassInfo(model);
+
+        await UserValidateAsync(userId);
+
+        await CompanyUserValidateAsync<T>(userId);
+        
+        _logger.LogInformation($"End validate model of {typeof(T).Name}");
+    }
+
+    private async Task UserValidateAsync(int userId)
+    {
         var user = await _user.GetValueByIdAsync(userId);
 
         // по логике, это условие всегда должно быть положительным, если система консистентна, иначе она не допустит появлению не связанных данных
@@ -42,28 +64,51 @@ public class ValidatorService : IValidatorService
             _logger.LogError("User not found");
             throw new NotFoundException("User not found");
         }
-        
-        var companyUser = await _context.Set<CompanyUser>().Where(c => c.Id == userId).AnyAsync();
-        if (!companyUser) // Позже добавить ещё проверку на роль пользователя
-        {
-            _logger.LogError($"Company user is not found");
-            await _message.SendMessage("Ошибка валидации", "Данный пользователь не найден. Попробуйте позже", MessagePriority.Error | MessagePriority.Validate);
-            throw new NotFoundException($"{typeof(T).Name} has already existed");
-        }
-        
+    }
+
+    private async Task DefaultValidateAsync<T, TDto>(TDto model) where T : BaseModel where TDto : BaseDto
+    {
         var isValidate = await _context.Set<T>().Validate(model);
 
         if (isValidate.IsNotSuccessfully)
         {
             _logger.LogError($"{typeof(T).Name} has already existed");
-            await _message.SendMessage("Ошибка валидации", isValidate.Error, MessagePriority.Error | MessagePriority.Validate);
+            
+            var message = new MessageDto
+            {
+                Title = "Ошибка валидации",
+                Description = isValidate.Error,
+                MessagePriority = MessagePriority.Error | MessagePriority.Validate,
+                EntityType = typeof(T).Name,
+                EntityId = model.Id
+            };
+            
+            await _message.SendMessage(message);
             throw new BadRequestException($"{typeof(T).Name} has already existed");
         }
-        
-        _logger.LogInformation($"End validate model of {typeof(T).Name}");
     }
 
-    public async Task UpdateValidate<T>(T model) where T : BaseModel
+    private async Task CompanyUserValidateAsync<T>(int userId)
+    {
+        var companyUser = await _context.Set<CompanyUser>().Where(c => c.Id == userId).AnyAsync();
+        if (!companyUser) // Позже добавить ещё проверку на роль пользователя
+        {
+            _logger.LogError("Company user is not found");
+            
+            var message = new MessageDto
+            {
+                Title = "Ошибка валидации",
+                Description = "Данный пользователь в компании не найден. Пройдите регистрацию или попробуйте позже",
+                MessagePriority = MessagePriority.Error | MessagePriority.Validate,
+                EntityType = typeof(T).Name,
+            };
+            
+            await _message.SendMessage(message);
+            throw new NotFoundException($"{typeof(T).Name} has no exist");
+        }
+    }
+
+    public async Task UpdateValidateAsync<T>(T model) where T : BaseModel
     {
         _logger.LogInformation($"Start update validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
@@ -108,17 +153,49 @@ public class ValidatorService : IValidatorService
         }
     }
 
+    public async Task DeleteValidateAsync<T>(T model) where T : BaseModel
+    {
+        _logger.LogInformation($"Start delete validate model of {typeof(T).Name}");
+        _logger.LogClassInfo(model);
+
+        var anyModelExist = await _context.Set<T>().AnyAsync(c => c.Id == model.Id);
+        if (!anyModelExist)
+        {
+            _logger.LogError($"Value '{typeof(T).Name}' with Id = {model.Id} is not exist");
+        
+            var message = new MessageDto
+            {
+                Title = "Невозможно удалить",
+                Description =  $"При попытке удалить значение {typeof(T).Name}' с Id = {model.Id} произошла ошибка: сущность не была найдена",
+                MessagePriority = MessagePriority.Error | MessagePriority.Delete | MessagePriority.Validate,
+                EntityType = typeof(T).Name,
+                EntityId = model.Id
+            };
+            
+            await _message.SendMessage(message);
+        } 
+    }
+
     private async Task<object> GetSubEntity(Type propertyType, PropertyInfo property, object value)
     {
-        var subModel = await _context.FindAsync(propertyType, ((BaseModel)value).Id);
+        var valueId = ((BaseModel)value).Id;
+        var subModel = await _context.FindAsync(propertyType, valueId);
 
         if (subModel != null) return subModel;
         
         _logger.LogError(
             $"Property {property.PropertyType.Name} - {property.Name} has BAD id that is not contained in db");
-        await _message.SendMessage("Ошибка связанной сущности", 
-            "Вы пытаетесь добавить/обновить значение, которое не существует",
-            MessagePriority.Error | MessagePriority.Update | MessagePriority.Validate);
+        
+        var message = new MessageDto
+        {
+            Title = "Ошибка связанной сущности",
+            Description =  $"Вы пытаетесь добавить/обновить значение ({property.PropertyType.Name} - {property.Name}), которое не существует",
+            MessagePriority = MessagePriority.Error | MessagePriority.Update | MessagePriority.Validate,
+            EntityType = propertyType.ToString(),
+            EntityId = valueId
+        };
+            
+        await _message.SendMessage(message);
 
         throw new NotFoundException(
             $"Property {property.PropertyType.Name} - {property.Name} has BAD id that is not contained in db");

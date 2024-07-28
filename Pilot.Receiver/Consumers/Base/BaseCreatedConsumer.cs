@@ -2,6 +2,8 @@
 using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
@@ -11,7 +13,7 @@ namespace Pilot.Receiver.Consumers.Base;
 public abstract class BaseCreatedConsumer<T, TDto>(
     ILogger<BaseCreatedConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
-    IMessage message,
+    IMessageService message,
     IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
@@ -22,7 +24,7 @@ public abstract class BaseCreatedConsumer<T, TDto>(
     protected readonly ILogger<BaseCreatedConsumer<T, TDto>> Logger = logger;
     protected readonly IBaseRepository<T> Repository = repository;
     protected  readonly ICompanyUser CompanyUser = companyUser;
-    protected  readonly IMessage Message = message;
+    protected  readonly IMessageService MessageService = message;
     protected readonly IValidatorService Validator = validate;
     protected  readonly IMapper Mapper = mapper;
 
@@ -31,18 +33,28 @@ public abstract class BaseCreatedConsumer<T, TDto>(
         Logger.LogInformation($"{typeof(T).Name} create consume");
         Logger.LogClassInfo(context.Message);
 
-        await Validator.Validate<T, TDto>(context.Message.Value, context.Message.UserId);
+        await Validator.ValidateAsync<T, TDto>(context.Message.Value, context.Message.UserId);
 
-        var companyUser = await CompanyUser.GetByIdAsync(context.Message.UserId);
-        
         var model = Mapper.Map<T>(context.Message.Value);
+        
+        if (model is IAddCompanyUser addingUserModel)
+        {
+            var companyUser = await CompanyUser.GetRequiredByIdAsync(context.Message.UserId);
+            addingUserModel.AddCompanyUser(companyUser);
+        }
         
         await Repository.AddValueToContextAsync(model);
 
         await Repository.SaveAsync();
         
-        await Message.SendMessage("Успешное создание!",
-            $"Успешное создание сущности {typeof(T).Name}'",
-            MessagePriority.Success | MessagePriority.Create);
+        var message = new MessageDto
+        {
+            Title = "Успешное создание!",
+            Description = $"Успешное создание сущности '{typeof(T).Name}'",
+            MessagePriority = MessagePriority.Success | MessagePriority.Create,
+            EntityType = typeof(T).Name
+        };
+
+        await MessageService.SendMessage(message);
     }
 }

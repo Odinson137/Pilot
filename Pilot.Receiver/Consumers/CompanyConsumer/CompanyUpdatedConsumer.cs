@@ -13,27 +13,9 @@ namespace Pilot.Receiver.Consumers.CompanyConsumer;
 public class CompanyUpdatedConsumer(
     ILogger<CompanyUpdatedConsumer> logger,
     ICompany company,
-    IMessage message,
+    IMessageService message,
     IValidatorService validate,
-    IMapper mapper,
-    ICompanyUser companyUser)
-    : BaseUpdateConsumer<Company, CompanyDto>(logger, company, message, validate, mapper, companyUser)
+    IMapper mapper)
+    : BaseUpdateConsumer<Company, CompanyDto>(logger, company, message, validate, mapper)
 {
-    // public override async Task Consume(ConsumeContext<UpdateCommandMessage<CompanyDto>> context)
-    // {
-    //     Logger.LogInformation($"{nameof(Company)} update consume");
-    //     Logger.LogClassInfo(context.Message);
-    //
-    //     await Validator.Validate<Company, CompanyDto>(context.Message.Value, context.Message.UserId);
-    //     
-    //     var model = Mapper.Map<Company>(context.Message.Value);
-    //     
-    //     await Repository.GetContext.AddAsync(model);
-    //
-    //     await Repository.SaveAsync();
-    //     
-    //     await Message.SendMessage("Успешное обновление!",
-    //         $"Успешное обновление сущности {nameof(Company)}'",
-    //         MessagePriority.Success | MessagePriority.Update);
-    // }
 }

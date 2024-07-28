@@ -1,6 +1,6 @@
-﻿using MassTransit;
-using MediatR;
+﻿using MediatR;
 using Pilot.Api.Data;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.RabbitMqMessages;
 
 namespace Pilot.Api.Behaviors;
@@ -8,12 +8,12 @@ namespace Pilot.Api.Behaviors;
 public class CreateCommandHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IBaseCommand
 {
     private readonly ILogger<CreateCommandHandling<TRequest, TResponse>> _logger;
-    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IBaseMassTransitService _massTransitService;
 
-    public CreateCommandHandling(ILogger<CreateCommandHandling<TRequest, TResponse>> logger, IPublishEndpoint publishEndpoint)
+    public CreateCommandHandling(ILogger<CreateCommandHandling<TRequest, TResponse>> logger, IBaseMassTransitService massTransitService)
     {
         _logger = logger;
-        _publishEndpoint = publishEndpoint;
+        _massTransitService = massTransitService;
     }
     
     public async Task<TResponse> Handle(
@@ -23,7 +23,8 @@ public class CreateCommandHandling<TRequest, TResponse> : IPipelineBehavior<TReq
     {
         _logger.LogInformation($"Create command handling {typeof(TRequest).Name}");
 
-        await _publishEndpoint.Publish(new CreateCommandMessage<TResponse>((TResponse)request.ValueDto, request.UserId), cancellationToken);
+        await _massTransitService.Publish(
+            new CreateCommandMessage<TResponse>((TResponse)request.ValueDto, request.UserId), cancellationToken);
         // var response = await next();
         
         _logger.LogInformation($"Create command handled {typeof(TRequest).Name}");

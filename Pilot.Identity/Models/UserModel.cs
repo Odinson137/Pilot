@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Identity.Data;
 
 namespace Pilot.Identity.Models;
 

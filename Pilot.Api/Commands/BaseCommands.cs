@@ -33,13 +33,13 @@ public record UpdateValueCommand<TDto> : BaseQuery, IRequest<TDto>, IBaseCommand
     public string Url { get; init; }
 }
 
-public record DeleteValueCommand<TBaseDto> : BaseQuery, IRequest<TBaseDto>, IBaseCommand where TBaseDto : BaseDto
+public record DeleteValueCommand<TDto> : BaseQuery, IRequest<TDto>, IBaseCommand where TDto : BaseDto
 {
-    public DeleteValueCommand(TBaseDto ValueDto, int UserId)
+    public DeleteValueCommand(TDto ValueDto, int UserId)
     {
         this.ValueDto = ValueDto;
         this.UserId = UserId;
-        Url = $"api/{GetModelName<TBaseDto>()}/{ValueDto.Id}";
+        Url = $"api/{GetModelName<TDto>()}/{ValueDto.Id}";
     }
 
     public object ValueDto { get; init; }

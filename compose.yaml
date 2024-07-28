@@ -32,6 +32,16 @@ services:
       pilot_mysql:
         condition: service_healthy
 
+  messenger_server:
+    build:
+      context: .
+      dockerfile: Pilot.Messenger/Dockerfile
+    ports:
+      - 8040:8080
+    depends_on:
+      pilot_messenger_mysql:
+        condition: service_healthy
+
   rabbitmq:
     container_name: pilot-rabbitmq
     image: rabbitmq:3-management
@@ -78,5 +88,18 @@ services:
       MYSQL_ROOT_PASSWORD: 12345678
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+      
+  pilot_messenger_mysql:
+    container_name: pilot-mysql
+    image: mysql:8.0
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_DATABASE: PilotMessengerDb
+      MYSQL_ROOT_PASSWORD: 12345678
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
       timeout: 10s
       retries: 10

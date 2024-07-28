@@ -24,6 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
       <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj" />
+      <ProjectReference Include="..\Pilot.Messenger\Pilot.Messenger.csproj" />
     </ItemGroup>
 
     <ItemGroup>

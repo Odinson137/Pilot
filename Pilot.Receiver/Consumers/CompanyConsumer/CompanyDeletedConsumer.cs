@@ -9,14 +9,11 @@ namespace Pilot.Receiver.Consumers.CompanyConsumer;
 public class CompanyDeletedConsumer(
     ILogger<CompanyDeletedConsumer> logger,
     ICompany company,
-    IMessage message,
+    IMessageService message,
     IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseDeleteConsumer<Company, CompanyDto>(logger, company, message, validate, mapper, companyUser)
 {
-    // public override async Task Consume(ConsumeContext<DeleteCommandMessage<CompanyDto>> context)
-    // {
-    //
-    // }
+
 }

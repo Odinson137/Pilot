@@ -11,6 +11,7 @@
 
     <ItemGroup>
       <Folder Include="Identity.Tests\UnitTests\" />
+      <Folder Include="Messenger.Tests\" />
     </ItemGroup>
 
     <ItemGroup>

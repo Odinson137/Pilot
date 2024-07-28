@@ -1,9 +1,11 @@
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers.CompanyConsumer;
+using Pilot.Receiver.Consumers.CompanyUserConsumer;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -18,7 +20,7 @@ services.AddScoped<ICompany, CompanyRepository>();
 services.AddScoped<ICompanyUser, CompanyUserRepository>();
 services.AddScoped<IFile, FileRepository>();
 services.AddScoped<IHistoryAction, HistoryActionRepository>();
-services.AddScoped<IMessage, MessageRepository>();
+services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
@@ -26,6 +28,7 @@ services.AddScoped<ITeam, TeamRepository>();
 services.AddScoped<IValidatorService, ValidatorService>();
 
 services.AddScoped<IUserService, UserService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 // var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 // builder.Services.AddSingleton(
@@ -51,7 +54,12 @@ services.AddMassTransit(x =>
     // x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
     x.AddConsumer(typeof(CompanyCreatedConsumer));
     x.AddConsumer(typeof(CompanyUpdatedConsumer));
+    x.AddConsumer(typeof(CompanyDeletedConsumer));
 
+    x.AddConsumer(typeof(CompanyUserCreatedConsumer));
+    x.AddConsumer(typeof(CompanyUserUpdatedConsumer));
+    x.AddConsumer(typeof(CompanyUserDeletedConsumer));
+    
     x.UsingRabbitMq((ctx, cfg) =>
     {
         cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));

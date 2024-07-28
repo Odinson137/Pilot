@@ -13,7 +13,6 @@ public sealed class DataContext : DbContext
     public DbSet<CompanyUser> CompanyUsers { get; set; }
     public DbSet<ProjectTask> ProjectTasks { get; set; }
     public DbSet<File> Files { get; set; }
-    public DbSet<Message> Messages { get; set; }
     public DbSet<HistoryAction> HistoryActions { get; set; }
     public DbSet<Team> Teams { get; set; }
         
@@ -24,13 +23,5 @@ public sealed class DataContext : DbContext
             if (!databaseCreator.CanConnect()) databaseCreator.Create();
             if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
         }
-    }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // optionsBuilder.UseMySql(
-        //     "server=pilot_mysql;user=root;password=12345678;database=PilotDb;",
-        //     new MySqlServerVersion(new Version(8, 0, 11))
-        // );
     }
 }

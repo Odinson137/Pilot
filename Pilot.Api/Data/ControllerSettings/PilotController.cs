@@ -64,9 +64,9 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : ControllerB
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public virtual async Task<IActionResult> DeleteValue(BaseDto valueDto) // достаточно в модели передать id
+    public virtual async Task<IActionResult> DeleteValue(TDto valueDto) // достаточно в модели передать id
     {
-        await Mediator.Send(new DeleteValueCommand<BaseDto>(valueDto, UserId));
+        await Mediator.Send(new DeleteValueCommand<TDto>(valueDto, UserId));
         return Ok($"The {nameof(T)} will delete soon");
     }
 }

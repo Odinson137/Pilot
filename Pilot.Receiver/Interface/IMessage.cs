@@ -1,11 +1,8 @@
-﻿using Pilot.Api.Data.Enums;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Models;
+﻿using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.Receiver.Interface;
 
-public interface IMessage : IBaseRepository<Message>
+public interface IMessageService
 {
-    public Task SendMessage(string title, string desc, MessagePriority priority);
+    public Task SendMessage(MessageDto message);
 }

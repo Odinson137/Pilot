@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Services;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
@@ -27,6 +28,7 @@ services.AddHttpClient("ReceiverServer", c =>
 
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IHttpReceiverService, HttpReceiverService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 // var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
 // services.AddSingleton(
@@ -62,6 +64,8 @@ services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryListHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryOneHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UpdateCommandHandling<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DeleteCommandHandling<,>));
 
 services.AddControllers();
 
@@ -121,7 +125,6 @@ app.Run();
 
 namespace Pilot.Api
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public partial class Program;
 }
 
