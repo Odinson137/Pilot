@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: TestForest Dashboard
+        uses: test-summary/action@v2.4
+      
       - name: Setup .Net
         uses: actions/setup-dotnet@v3
         with:
