@@ -18,9 +18,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - name: Build & test
-        run: dotnet test --configuration Release --logger GitHubActions
       
       - name: Restore Contract project
         run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
@@ -56,7 +53,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build --logger GitHubActions
         
       - name: Publish
         run: dotnet publish ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-build
