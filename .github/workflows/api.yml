@@ -55,4 +55,4 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build --logger GitHubActions
+        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build
