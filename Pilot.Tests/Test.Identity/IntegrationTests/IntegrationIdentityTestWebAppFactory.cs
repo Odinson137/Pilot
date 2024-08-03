@@ -31,11 +31,8 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
-            
-            // services.AddTransient<ISeed, TestSeed>();
-
-            var mongoDb = services.RemoveAll<MongoClient>();
-            var mySqlDb = services.RemoveAll<DataContext>();
+            services.RemoveAll<MongoClient>();
+            services.RemoveAll<DataContext>();
             services.AddMySql<DataContext>(
                 _mySqlContainer.GetConnectionString(),
                 new MySqlServerVersion(new Version()));
