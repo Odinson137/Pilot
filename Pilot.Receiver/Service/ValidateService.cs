@@ -72,7 +72,7 @@ public class ValidatorService : IValidatorService
 
         if (isValidate.IsNotSuccessfully)
         {
-            _logger.LogError($"{typeof(T).Name} has already existed");
+            _logger.LogError($"{typeof(T).Name} has error: \n{isValidate.Error}");
             
             var message = new MessageDto
             {
@@ -84,7 +84,7 @@ public class ValidatorService : IValidatorService
             };
             
             await _message.SendMessage(message);
-            throw new BadRequestException($"{typeof(T).Name} has already existed");
+            throw new BadRequestException($"{isValidate.Error}");
         }
     }
 

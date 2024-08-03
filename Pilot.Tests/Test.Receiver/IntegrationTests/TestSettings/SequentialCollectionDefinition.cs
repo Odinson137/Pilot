@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace Test.Base.IntegrationBase;
+﻿namespace Test.Receiver.IntegrationTests.TestSettings;
 
 [CollectionDefinition("SequentialCollection", DisableParallelization = true)]
 public class SequentialCollectionDefinition : ICollectionFixture<TestFixture>

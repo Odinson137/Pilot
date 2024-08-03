@@ -1,9 +1,11 @@
+using System.Reflection;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
+using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Consumers.CompanyConsumer;
 using Pilot.Receiver.Consumers.CompanyUserConsumer;
 using Pilot.Receiver.Data;
@@ -51,14 +53,18 @@ services.AddMassTransit(x =>
 {
     x.SetKebabCaseEndpointNameFormatter();
 
-    // x.AddConsumers(Assembly.GetAssembly(typeof(IConsumer)));
-    x.AddConsumer(typeof(CompanyCreatedConsumer));
-    x.AddConsumer(typeof(CompanyUpdatedConsumer));
-    x.AddConsumer(typeof(CompanyDeletedConsumer));
+    var baseModelType = typeof(BaseCreatedConsumer<,>);
+    var assembly = Assembly.GetAssembly(baseModelType);
 
-    x.AddConsumer(typeof(CompanyUserCreatedConsumer));
-    x.AddConsumer(typeof(CompanyUserUpdatedConsumer));
-    x.AddConsumer(typeof(CompanyUserDeletedConsumer));
+    var consumers = assembly!.GetTypes()
+        .Where(t => t is { IsClass: true, IsAbstract: false } && t.Name.Contains("Consumer"))
+        .Select(c => c)
+        .ToList();
+
+    foreach (var consumer in consumers)
+    {
+        x.AddConsumer(consumer);
+    }
     
     x.UsingRabbitMq((ctx, cfg) =>
     {

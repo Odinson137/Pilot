@@ -80,7 +80,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
     public async Task Wait()
     {
-        for (var i = 0; i < 30; i++) await Task.Delay(200);
+        for (var i = 0; i < 40; i++) await Task.Delay(100);
     }
     
     [Fact]
