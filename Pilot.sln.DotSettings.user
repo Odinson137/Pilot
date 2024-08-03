@@ -3,6 +3,18 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
 	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7fa60e6_002Dc5b6_002D489c_002Dba06_002Dcfbc695ae1c0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Api" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" /&gt;&#xD;
+    &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Receiver" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Receiver&amp;gt;" /&gt;&#xD;
+    &lt;TestAncestor&gt;&#xD;
+      &lt;TestId&gt;xUnit::ABE7D6AA-AEED-4A52-AB27-7982B20D37F5::net8.0::TestProject1.UnitTest1.Test1&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::2B106996-D4D7-49FC-A2B0-E143AE6474B6::net8.0::Test.Api.IntegrationTests.BaseModelIntegrationTest&lt;/TestId&gt;&#xD;
+      &lt;TestId&gt;xUnit::1173FC02-EF9A-4BE5-A4E2-13B558BA02CC::net8.0::Test.Identity.UnitTest1&lt;/TestId&gt;&#xD;
+    &lt;/TestAncestor&gt;&#xD;
+  &lt;/Or&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
 	
 	
 	

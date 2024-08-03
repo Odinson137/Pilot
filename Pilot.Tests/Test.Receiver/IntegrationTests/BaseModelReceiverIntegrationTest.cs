@@ -9,7 +9,6 @@ using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Identity.Models;
 using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
-using Xunit;
 
 namespace Test.Receiver.IntegrationTests;
 

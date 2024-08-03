@@ -8,7 +8,6 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Models;
 using Test.Api.IntegrationTests.Factories;
 using Test.Base.IntegrationBase;
-using Xunit;
 
 namespace Test.Api.IntegrationTests;
 

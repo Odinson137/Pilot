@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Data;
 using Test.Receiver.IntegrationTests.Factories;
-using Xunit;
 
 namespace Test.Receiver.IntegrationTests;
 

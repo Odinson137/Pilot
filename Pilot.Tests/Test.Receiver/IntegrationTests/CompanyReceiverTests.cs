@@ -4,7 +4,6 @@ using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
 using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
-using Xunit;
 
 namespace Test.Receiver.IntegrationTests;
 

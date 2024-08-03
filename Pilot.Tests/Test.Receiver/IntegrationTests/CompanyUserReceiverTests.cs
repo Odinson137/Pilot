@@ -5,7 +5,6 @@ using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
 using Test.Receiver.IntegrationTests.Factories;
-using Xunit;
 
 namespace Test.Receiver.IntegrationTests;
 
