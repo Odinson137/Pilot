@@ -1,10 +1,10 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Data;
-using Pilot.Tests.Receiver.Tests.IntegrationTests.Factories;
+using Test.Receiver.IntegrationTests.Factories;
 using Xunit;
 
-namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
+namespace Test.Receiver.IntegrationTests;
 
 public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFactory>, IClassFixture<ReceiverTestIdentityFactory>
 {
@@ -23,7 +23,7 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
         
         ReceiverScope = receiverFactory.Services.CreateScope();
         ReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
-        AssertReceiverContext = receiverFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
+        AssertReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
         ReceiverClient = receiverFactory.CreateClient();
         PublishEndpoint = ReceiverScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
         

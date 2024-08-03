@@ -4,21 +4,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
-using Pilot.Tests.IntegrationBase;
+using Test.Base.IntegrationBase;
 using Testcontainers.Redis;
 using Xunit;
 
-namespace Pilot.Tests.Api.Tests.IntegrationTests.Factories;
+namespace Test.Api.IntegrationTests.Factories;
 
 public class ApiTestApiFactory : WebApplicationFactory<Pilot.Api.Program>, IAsyncLifetime
 {
-    //
-    // private readonly MongoDbContainer _mongoDbContainer = new MongoDbBuilder()
-    //     .WithImage("mongo:latest")
-    //     .WithUsername("root")
-    //     .WithPassword("example")
-    //     .Build();
-
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")
         .Build();
@@ -32,23 +25,21 @@ public class ApiTestApiFactory : WebApplicationFactory<Pilot.Api.Program>, IAsyn
         
         Environment.SetEnvironmentVariable($"{ProjectTestName}.RedisCache:ConnectionString", _redisContainer.GetConnectionString());
 
-        builder.ConfigureTestServices(async services =>
+        builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
         });
     }
 
+
     public async Task InitializeAsync()
     {
         await _redisContainer.StartAsync();
-        // await _mongoDbContainer.StartAsync();
-
     }
 
     public new async Task DisposeAsync()
     {
         await _redisContainer.StopAsync();
-        // await _mongoDbContainer.StopAsync();
     }
 }

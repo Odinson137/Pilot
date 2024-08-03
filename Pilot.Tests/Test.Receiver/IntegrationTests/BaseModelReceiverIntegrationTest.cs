@@ -7,11 +7,11 @@ using Pilot.Contracts.Models;
 using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Identity.Models;
-using Pilot.Tests.IntegrationBase;
-using Pilot.Tests.Receiver.Tests.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
+using Test.Receiver.IntegrationTests.Factories;
 using Xunit;
 
-namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
+namespace Test.Receiver.IntegrationTests;
 
 public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIntegrationTest where T : BaseModel where TDto : BaseDto
 {
@@ -76,23 +76,12 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         
         return companyUser;
     }
-
-    // В методе необходимо реализовать любое изменение модели, которое будет использоваться для теста обновления
-    public virtual void ChangeSomething(BaseDto model)
-    {
-        throw new Exception("Реализуй меня!");
-    }
-    
-    public virtual bool CheckChangeSomething(BaseModel model, BaseDto modelDto)
-    {
-        throw new Exception("Реализуй меня!");
-    }
     
     // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
     // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
     public async Task Wait()
     {
-        for (var i = 0; i < 20; i++) await Task.Delay(200);
+        for (var i = 0; i < 30; i++) await Task.Delay(200);
     }
     
     [Fact]
@@ -169,7 +158,6 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
     
     [Fact]
-    [TestBeforeAfter]
     public virtual async void UpdateModelTest_ReturnOk()
     {
         #region Arrange

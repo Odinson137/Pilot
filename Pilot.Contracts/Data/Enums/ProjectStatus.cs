@@ -1,4 +1,4 @@
-﻿namespace Pilot.Api.Data.Enums;
+﻿namespace Pilot.Contracts.Data.Enums;
 
 public enum ProjectStatus
 {

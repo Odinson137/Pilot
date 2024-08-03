@@ -1,4 +1,4 @@
-name: Checkout
+name: Gateway
 
 on:
   workflow_dispatch:
@@ -47,11 +47,17 @@ jobs:
       - name: Build API project
         run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
 
+      - name: Restore Base test project
+        run: dotnet restore ./Pilot.Tests/Test.Base/Pilot.Contracts.csproj
+
+      - name: Build Base test  project
+        run: dotnet build ./Pilot.Tests/Test.Base/Pilot.Contracts.csproj --configuration Release --no-restore
+
       - name: Restore Tests project
-        run: dotnet restore ./Pilot.Tests/Pilot.Tests.csproj
+        run: dotnet restore ./Pilot.Tests/Test.Api/Pilot.Tests.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Api/Pilot.Tests.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build --logger GitHubActions
+        run: dotnet test ./Pilot.Tests/Test.Api/Pilot.Tests.csproj --configuration Release --no-build --logger GitHubActions

@@ -4,21 +4,20 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
-using Pilot.Contracts.Services;
-using Pilot.Tests.IntegrationBase;
+using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Xunit;
 
-namespace Pilot.Tests.Receiver.Tests.IntegrationTests.Factories;
+namespace Test.Api.IntegrationTests.Factories;
 
-public class ReceiverTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
+public class ApiTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
 {
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
         .WithDatabase("TestPilotIdentityDb")
         .Build();
     
-    private const string ProjectTestName = "Receiver";
+    private const string ProjectTestName = "Api";
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -27,7 +26,7 @@ public class ReceiverTestIdentityFactory : WebApplicationFactory<Pilot.Identity.
         
         Environment.SetEnvironmentVariable($"{ProjectTestName}.MySqlIdentity:ConnectionString", _mySqlContainer.GetConnectionString());
 
-        builder.ConfigureTestServices(async services =>
+        builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();

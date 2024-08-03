@@ -8,9 +8,8 @@ using MongoDB.Driver;
 using Pilot.Contracts.Data;
 using Pilot.Identity.Data;
 using Testcontainers.MySql;
-using Xunit;
 
-namespace Pilot.Tests.Identity.Tests.IntegrationTests;
+namespace Test.Identity.IntegrationTests;
 
 public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
 {
@@ -29,7 +28,7 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureTestServices(async services =>
+        builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             
@@ -38,7 +37,7 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
             var mongoDb = services.RemoveAll<MongoClient>();
             var mySqlDb = services.RemoveAll<DataContext>();
             services.AddMySql<DataContext>(
-                "server=pilot_mysql;user=root;password=12345678;database=PilotIdentityDb;",
+                _mySqlContainer.GetConnectionString(),
                 new MySqlServerVersion(new Version()));
         });
     }

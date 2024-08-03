@@ -1,5 +1,4 @@
 ﻿using MongoDB.Driver;
-using Pilot.Api.Data.Enums;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Models;
 

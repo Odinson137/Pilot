@@ -1,16 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
-using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
-using Pilot.Tests.IntegrationBase;
-using Pilot.Tests.Receiver.Tests.IntegrationTests.Factories;
+using Test.Receiver.IntegrationTests.Factories;
 using Xunit;
 
-namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
+namespace Test.Receiver.IntegrationTests;
 
 public class CompanyUserReceiverTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
@@ -19,18 +16,7 @@ public class CompanyUserReceiverTests : BaseModelReceiverIntegrationTest<Company
     {
     }
 
-    public override void ChangeSomething(BaseDto model)
-    {
-        ((CompanyUserDto)model).UserName = Guid.NewGuid().ToString();
-    }
-    
-    public override bool CheckChangeSomething(BaseModel model, BaseDto modelDto)
-    {
-        return ((CompanyUser)model).Name == ((CompanyUserDto)modelDto).Name;
-    }
-    
     [Fact]
-    [TestBeforeAfter]
     public override async void UpdateModelTest_ReturnOk()
     {
         #region Arrange

@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
-using Pilot.Tests.IntegrationBase;
-using Pilot.Tests.Receiver.Tests.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
+using Test.Receiver.IntegrationTests.Factories;
 using Xunit;
 
-namespace Pilot.Tests.Receiver.Tests.IntegrationTests;
+namespace Test.Receiver.IntegrationTests;
 
 public class CompanyReceiverTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
 {
@@ -16,16 +15,6 @@ public class CompanyReceiverTests : BaseModelReceiverIntegrationTest<Company, Co
     {
     }
 
-    public override void ChangeSomething(BaseDto model)
-    {
-        ((CompanyDto)model).Title = Guid.NewGuid().ToString();
-    }
-    
-    public override bool CheckChangeSomething(BaseModel model, BaseDto modelDto)
-    {
-        return ((Company)model).Title == ((CompanyDto)modelDto).Title;
-    }
-    
     [Fact]
     public override async void CreateModel_ReturnOk()
     {

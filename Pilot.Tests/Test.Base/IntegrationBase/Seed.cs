@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Pilot.Contracts.Data;
 
-namespace Pilot.Tests.IntegrationBase;
+namespace Test.Base.IntegrationBase;
 
 public class TestSeed : ISeed
 {

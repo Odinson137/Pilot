@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Pilot.Contracts.Base;
 
-namespace Pilot.Tests.IntegrationBase;
+namespace Test.Base.IntegrationBase;
 
 public static class GenerateTestEntity
 {

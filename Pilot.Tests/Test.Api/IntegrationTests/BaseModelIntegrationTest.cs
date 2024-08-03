@@ -6,11 +6,11 @@ using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Models;
-using Pilot.Tests.Api.Tests.IntegrationTests.Factories;
-using Pilot.Tests.IntegrationBase;
+using Test.Api.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
 using Xunit;
 
-namespace Pilot.Tests.Api.Tests.IntegrationTests;
+namespace Test.Api.IntegrationTests;
 
 public class BaseModelIntegrationTest : BaseApiIntegrationTest
 {
@@ -51,9 +51,8 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
     }
     
     [Theory]
-    [TestBeforeAfter]
     [MemberData(nameof(ModelData))]
-    public async void GetAllValuesTest_ReturnOk(Type type, int count = 2)
+    public async Task GetAllValuesTest_ReturnOk(Type type, int count = 2)
     {
         #region Arrange
 
@@ -75,9 +74,8 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
     }
     
     [Theory]
-    [TestBeforeAfter]
     [MemberData(nameof(ModelData))]
-    public async void GetValue_ReturnOk(Type type, int count = 1)
+    public async Task GetValue_ReturnOk(Type type, int count = 1)
     {
         #region Arrange
 

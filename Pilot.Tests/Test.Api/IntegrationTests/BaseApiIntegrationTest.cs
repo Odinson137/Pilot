@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Data;
-using Pilot.Tests.Api.Tests.IntegrationTests.Factories;
+using Test.Api.IntegrationTests.Factories;
 using Xunit;
 
-namespace Pilot.Tests.Api.Tests.IntegrationTests;
+namespace Test.Api.IntegrationTests;
 
 public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFixture<ApiTestReceiverFactory>, IClassFixture<ApiTestIdentityFactory>
 {

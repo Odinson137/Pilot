@@ -1,25 +1,23 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
-using Pilot.Contracts.Services;
-using Pilot.Tests.IntegrationBase;
+using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Xunit;
 
-namespace Pilot.Tests.Api.Tests.IntegrationTests.Factories;
+namespace Test.Receiver.IntegrationTests.Factories;
 
-public class ApiTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
+public class ReceiverTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
 {
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
         .WithDatabase("TestPilotIdentityDb")
         .Build();
     
-    private const string ProjectTestName = "Api";
+    private const string ProjectTestName = "Receiver";
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

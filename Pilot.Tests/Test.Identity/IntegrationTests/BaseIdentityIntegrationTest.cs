@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
-using Xunit;
 
-namespace Pilot.Tests.Identity.Tests.IntegrationTests;
+namespace Test.Identity.IntegrationTests;
 
 public class BaseIdentityIntegrationTest : IClassFixture<IntegrationIdentityTestWebAppFactory>
 {
