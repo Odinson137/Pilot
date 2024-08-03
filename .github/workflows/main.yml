@@ -54,7 +54,3 @@ jobs:
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build --logger GitHubActions
-        
-      - name: Publish
-        run: dotnet publish ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-build
-        
