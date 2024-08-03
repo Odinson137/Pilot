@@ -15,11 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup .Net
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      
       - name: Restore Contract project
         run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
 
