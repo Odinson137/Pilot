@@ -12,12 +12,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Setup .Net
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
+
+      - name: Build & test
+        run: dotnet test --configuration Release --logger GitHubActions
       
       - name: Restore Contract project
         run: dotnet restore ./Pilot.Contracts/Pilot.Contracts.csproj
@@ -54,9 +57,6 @@ jobs:
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Pilot.Tests.csproj --configuration Release --no-build
-        
-      - name: TestForest Dashboard
-        uses: test-summary/action@v2.4
         
       - name: Publish
         run: dotnet publish ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-build
