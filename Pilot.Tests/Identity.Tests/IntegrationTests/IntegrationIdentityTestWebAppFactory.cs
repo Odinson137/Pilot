@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
 using Pilot.Identity.Data;
-using Pilot.Tests.IntegrationBase;
-using Testcontainers.MongoDb;
 using Testcontainers.MySql;
 using Xunit;
 
@@ -50,7 +48,7 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
         await _mySqlContainer.StartAsync();
     }
 
-    public async Task DisposeAsync()
+    public new async Task DisposeAsync()
     {
         await _mySqlContainer.StopAsync();
     }

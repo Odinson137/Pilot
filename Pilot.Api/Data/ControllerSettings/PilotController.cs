@@ -18,7 +18,7 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : ControllerB
     [ProducesResponseType(200)]
     public virtual async Task<IActionResult> GetAllValuesCount(CancellationToken token)
     {
-        // var result = await Mediator.Send(new GetValuesQuery<TDto>(skip, take), token);
+        var result = await Mediator.Send(new GetValueByIdQuery<TDto>(1), token);
         return Ok(1);
     }
     
