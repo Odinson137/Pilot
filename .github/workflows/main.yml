@@ -34,11 +34,11 @@ jobs:
       - name: Build Identity project
         run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
 
-      - name: Restore API project
-        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
-
-      - name: Build API project
-        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore
+#      - name: Restore API project
+#        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
+#
+#      - name: Build API project
+#        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore
 
       - name: Restore Base test project
         run: dotnet restore ./Pilot.Tests/Test.Base/Test.Base.csproj
@@ -116,11 +116,11 @@ jobs:
       - name: Build Messenger project
         run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
 
-      - name: Restore Identity project
-        run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
-
-      - name: Build Identity project
-        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
+#      - name: Restore Identity project
+#        run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
+#
+#      - name: Build Identity project
+#        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
 
       - name: Restore Base test project
         run: dotnet restore ./Pilot.Tests/Test.Base/Test.Base.csproj

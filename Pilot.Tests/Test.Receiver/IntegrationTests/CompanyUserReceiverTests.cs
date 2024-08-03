@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
+using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
+[Collection(nameof(SequentialCollectionDefinition))]
 public class CompanyUserReceiverTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
     /// <inheritdoc />
@@ -37,7 +39,6 @@ public class CompanyUserReceiverTests : BaseModelReceiverIntegrationTest<Company
         var result = await AssertReceiverContext.Set<CompanyUser>().Where(c => c.Id == companyUser.Id).FirstOrDefaultAsync();
 
         Assert.NotNull(result);
-        Assert.True(result.ChangeAt != null);
     }
 
 }

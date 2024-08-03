@@ -7,6 +7,7 @@ using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
+[Collection(nameof(SequentialCollectionDefinition))]
 public class CompanyReceiverTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
 {
     /// <inheritdoc />

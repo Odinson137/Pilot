@@ -1,8 +1,8 @@
 using Xunit.Abstractions;
 
-namespace Test.Receiver;
+namespace Test.Messenger;
 
-public class UnitTest(ITestOutputHelper testOutputHelper)
+public class UnitTest1(ITestOutputHelper testOutputHelper)
 {
     [Fact]
     public void Test1()
