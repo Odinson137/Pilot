@@ -1,4 +1,4 @@
-name: Gateway
+name: Identity
 
 on:
   workflow_dispatch:
@@ -21,9 +21,6 @@ jobs:
       - name: Build Contract project
         run: dotnet build ./Pilot.Contracts/Pilot.Contracts.csproj --configuration Release --no-restore
 
-#      - name: List directory contents
-#        run: ls -R
-
       - name: Restore Messenger project
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
 
@@ -35,12 +32,6 @@ jobs:
 
       - name: Build Identity project
         run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
-      
-      - name: Restore API project
-        run: dotnet restore ./Pilot.Api/Pilot.Api.csproj --source https://api.nuget.org/v3/index.json --source ../Pilot.Contracts/bin/Release/
-
-      - name: Build API project
-        run: dotnet build ./Pilot.Api/Pilot.Api.csproj --configuration Release --no-restore 
 
       - name: Restore Base test project
         run: dotnet restore ./Pilot.Tests/Test.Base/Test.Base.csproj
@@ -49,10 +40,10 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-restore
 
       - name: Restore Tests project
-        run: dotnet restore ./Pilot.Tests/Test.Api/Test.Api.csproj
+        run: dotnet restore ./Pilot.Tests/Test.Identity/Test.Identity.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-build
