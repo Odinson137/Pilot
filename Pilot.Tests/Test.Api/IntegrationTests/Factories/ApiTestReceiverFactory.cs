@@ -7,7 +7,6 @@ using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
-using Xunit;
 
 namespace Test.Api.IntegrationTests.Factories
 {

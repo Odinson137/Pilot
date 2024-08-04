@@ -25,6 +25,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Pilot.Api\Pilot.Api.csproj" />
       <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
+      <ProjectReference Include="..\..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
       <ProjectReference Include="..\..\Pilot.Identity\Pilot.Identity.csproj" />
       <ProjectReference Include="..\..\Pilot.Messenger\Pilot.Messenger.csproj" />
       <ProjectReference Include="..\..\Pilot.Receiver\Pilot.Receiver.csproj" />

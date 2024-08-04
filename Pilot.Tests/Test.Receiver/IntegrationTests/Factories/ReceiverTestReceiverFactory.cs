@@ -8,7 +8,6 @@ using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
-using Xunit;
 
 namespace Test.Receiver.IntegrationTests.Factories
 {

@@ -28,6 +28,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
+      <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
       <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsController\Pilot.SqrsController.csproj" />
     </ItemGroup>
 

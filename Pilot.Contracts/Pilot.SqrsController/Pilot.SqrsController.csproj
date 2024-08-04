@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
+      <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
     </ItemGroup>
 
 </Project>

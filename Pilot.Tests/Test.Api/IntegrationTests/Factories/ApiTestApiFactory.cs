@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.Redis;
-using Xunit;
 
 namespace Test.Api.IntegrationTests.Factories;
 
