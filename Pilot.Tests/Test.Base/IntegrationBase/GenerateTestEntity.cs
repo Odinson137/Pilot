@@ -1,44 +1,13 @@
 ﻿using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 
 namespace Test.Base.IntegrationBase;
 
 public static class GenerateTestEntity
 {
-    public static ICollection<BaseDto> CreateDtEntities(Type type, int listDepth = 1, int count = 1, int listElementCount = 3)
-    {
-        var collection = new List<BaseDto>();
-        for (var i = 0; i < count; i++)
-        {
-            var entity = (BaseDto)CreateEntity(Activator.CreateInstance(type)!, type, listDepth, listElementCount);
-            collection.Add(entity);
-        }
-        
-        return collection;
-    }
-    
-    /// <summary>
-    /// Create data transfer entities
-    /// </summary>
-    /// <param name="listDepth">Глубина создания дочерний сущностей</param>
-    /// <param name="count">Количество создаваемых сущсостей</param>
-    /// <param name="listElementCount">Количество элементов в коллекциях</param>
-    /// <typeparam name="TDto">Сущность</typeparam>
-    /// <returns></returns>
-    public static ICollection<TDto> CreateDtEntities<TDto>(int listDepth = 1, int count = 1, int listElementCount = 3)
-    {
-        var collection = new List<TDto>();
-        for (var i = 0; i < count; i++)
-        {
-            var entity = (TDto)CreateEntity(Activator.CreateInstance<TDto>()!, typeof(TDto), listDepth, listElementCount);
-            collection.Add(entity);
-        }
-        
-        return collection;
-    }
-    
     public static ICollection<BaseModel> CreateEntities(Type type, int listDepth = 1, int count = 1, int listElementCount = 3)
     {
         var collection = new List<BaseModel>();
@@ -55,7 +24,7 @@ public static class GenerateTestEntity
     /// Create entities
     /// </summary>
     /// <param name="listDepth">Глубина создания дочерний сущностей</param>
-    /// <param name="count">Количество создаваемых сущсостей</param>
+    /// <param name="count">Количество создаваемых сущностей</param>
     /// <param name="listElementCount">Количество элементов в коллекциях</param>
     /// <typeparam name="T">Сущность</typeparam>
     /// <returns></returns>
@@ -72,6 +41,11 @@ public static class GenerateTestEntity
         return collection;
     }
 
+    public static ICollection<T> FillChildren<T, TDto>(TDto model, DbContext context) where T : BaseModel where TDto : BaseDto
+    {
+        throw new Exception("Реализовать метод");
+    }
+    
     private static object CreateEntity(object entity, Type type, int listDepth, int listElementCount)
     {
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);

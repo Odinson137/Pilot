@@ -4,17 +4,13 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers.Base;
-using Pilot.Receiver.Consumers.CompanyConsumer;
-using Pilot.Receiver.Consumers.CompanyUserConsumer;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
 using Pilot.Receiver.Service;
 using Serilog;
-using UserService = Pilot.Contracts.Services.UserService;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

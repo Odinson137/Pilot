@@ -14,7 +14,7 @@ public class HistoryActionDeletedConsumer(
     IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
-    : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate, mapper, companyUser)
+    : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate, mapper)
 {
 
 }

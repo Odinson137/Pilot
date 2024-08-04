@@ -11,7 +11,7 @@ public class ProjectTaskDto : BaseDto
 
     [Required] public BaseDto Project { get; set; } = null!;
     
-    [Required] public BaseDto CompanyUserDto { get; set; } = null!;
+    [Required] public BaseDto CompanyUser { get; set; } = null!;
      
     public BaseDto? File { get; set; }
 }

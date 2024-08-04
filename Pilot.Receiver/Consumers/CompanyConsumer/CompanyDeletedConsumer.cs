@@ -13,7 +13,7 @@ public class CompanyDeletedConsumer(
     IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
-    : BaseDeleteConsumer<Company, CompanyDto>(logger, company, message, validate, mapper, companyUser)
+    : BaseDeleteConsumer<Company, CompanyDto>(logger, company, message, validate, mapper)
 {
 
 }

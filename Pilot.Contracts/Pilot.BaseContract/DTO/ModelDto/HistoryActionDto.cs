@@ -7,10 +7,10 @@ namespace Pilot.Contracts.DTO.ModelDto;
 public class HistoryActionDto : BaseDto
 {
     [Required] 
-    public required BaseId CompanyUser { get; set; }
+    public required BaseDto CompanyUser { get; set; }
     
     [Required] 
-    public required BaseId ProjectTask { get; set; }
+    public required BaseDto ProjectTask { get; set; }
     
     [Required] 
     public required ActionState ActionState { get; set; }

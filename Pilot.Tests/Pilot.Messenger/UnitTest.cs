@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace Test.Messenger;
+namespace Pilot.Messenger;
 
 public class UnitTest1(ITestOutputHelper testOutputHelper)
 {

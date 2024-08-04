@@ -4,6 +4,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.RabbitMqMessages;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
 
@@ -14,15 +15,13 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     IBaseRepository<T> repository,
     IMessageService messageService,
     IValidatorService validate,
-    IMapper mapper,
-    ICompanyUser companyUser)
+    IMapper mapper)
     : IConsumer<DeleteCommandMessage<TDto>>
     where T : BaseModel
     where TDto : BaseDto
 {
     protected readonly ILogger<BaseDeleteConsumer<T, TDto>> Logger = logger;
     protected readonly IBaseRepository<T> Repository = repository;
-    protected readonly ICompanyUser CompanyUser = companyUser;
     protected readonly IMessageService MessageService = messageService;
     protected readonly IValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
@@ -45,9 +44,9 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         var message = new MessageDto
         {
             Title = "Успешное удаление!",
-            Description =  $"Успешное удаление сущности {typeof(T).Name}'",
+            Description =  $"Успешное удаление сущности {nameof(T)}'",
             MessagePriority = MessagePriority.Success | MessagePriority.Delete,
-            EntityType = typeof(T).ToString(),
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };
             
         await MessageService.SendMessage(message);

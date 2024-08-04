@@ -5,6 +5,7 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
 
@@ -52,7 +53,7 @@ public abstract class BaseCreatedConsumer<T, TDto>(
             Title = "Успешное создание!",
             Description = $"Успешное создание сущности '{typeof(T).Name}'",
             MessagePriority = MessagePriority.Success | MessagePriority.Create,
-            EntityType = typeof(T).Name
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };
 
         await MessageService.SendMessage(message);

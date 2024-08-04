@@ -7,6 +7,7 @@ using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Models;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Contracts.Validation;
 using Pilot.Receiver.Data;
@@ -80,7 +81,7 @@ public class ValidatorService : IValidatorService
                 Title = "Ошибка валидации",
                 Description = isValidate.Error,
                 MessagePriority = MessagePriority.Error | MessagePriority.Validate,
-                EntityType = typeof(T).Name,
+                EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
                 EntityId = model.Id
             };
             
@@ -89,7 +90,7 @@ public class ValidatorService : IValidatorService
         }
     }
 
-    private async Task CompanyUserValidateAsync<T>(int userId)
+    private async Task CompanyUserValidateAsync<T>(int userId) where T : BaseModel
     {
         var companyUser = await _context.Set<CompanyUser>().Where(c => c.Id == userId).AnyAsync();
         if (!companyUser) // Позже добавить ещё проверку на роль пользователя
@@ -101,7 +102,7 @@ public class ValidatorService : IValidatorService
                 Title = "Ошибка валидации",
                 Description = "Данный пользователь в компании не найден. Пройдите регистрацию или попробуйте позже",
                 MessagePriority = MessagePriority.Error | MessagePriority.Validate,
-                EntityType = typeof(T).Name,
+                EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
             };
             
             await _message.SendMessage(message);
@@ -169,7 +170,7 @@ public class ValidatorService : IValidatorService
                 Title = "Невозможно удалить",
                 Description =  $"При попытке удалить значение {typeof(T).Name}' с Id = {model.Id} произошла ошибка: сущность не была найдена",
                 MessagePriority = MessagePriority.Error | MessagePriority.Delete | MessagePriority.Validate,
-                EntityType = typeof(T).Name,
+                EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
                 EntityId = model.Id
             };
             
@@ -192,7 +193,7 @@ public class ValidatorService : IValidatorService
             Title = "Ошибка связанной сущности",
             Description =  $"Вы пытаетесь добавить/обновить значение ({property.PropertyType.Name} - {property.Name}), которое не существует",
             MessagePriority = MessagePriority.Error | MessagePriority.Update | MessagePriority.Validate,
-            EntityType = propertyType.ToString(),
+            EntityType = PilotEnumExtensions.GetModelEnumValue(propertyType.Name),
             EntityId = valueId
         };
             

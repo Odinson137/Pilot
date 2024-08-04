@@ -13,7 +13,7 @@ public class FileDeletedConsumer(
     IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
-    : BaseDeleteConsumer<File, FileDto>(logger, fileRepository, message, validate, mapper, companyUser)
+    : BaseDeleteConsumer<File, FileDto>(logger, fileRepository, message, validate, mapper)
 {
 
 }

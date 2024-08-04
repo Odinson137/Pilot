@@ -5,6 +5,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.RabbitMqMessages;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
 
@@ -50,7 +51,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
             Title = "Успешное обновление!",
             Description = $"Успешное обновление сущности {typeof(T).Name}'",
             MessagePriority = MessagePriority.Success | MessagePriority.Update,
-            EntityType = typeof(TDto).ToString(),
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
             EntityId = model.Id
         };
 
