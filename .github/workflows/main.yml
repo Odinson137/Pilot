@@ -103,6 +103,12 @@ jobs:
       - name: Build Identity project
         run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
 
+      - name: Restore Messenger project
+        run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
+
+      - name: Build Messenger project
+        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+
       - name: Restore Tests project
         run: dotnet restore ./Pilot.Tests/Test.Receiver/Test.Receiver.csproj
 

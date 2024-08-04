@@ -1,13 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO;
 
 namespace Pilot.Api.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : ControllerBase
+public class UserController : BaseController
 {
     private readonly IMediator _mediator;
 
