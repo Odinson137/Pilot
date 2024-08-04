@@ -23,10 +23,10 @@ public abstract class BaseCreatedConsumer<T, TDto>(
 {
     protected readonly ILogger<BaseCreatedConsumer<T, TDto>> Logger = logger;
     protected readonly IBaseRepository<T> Repository = repository;
-    protected  readonly ICompanyUser CompanyUser = companyUser;
-    protected  readonly IMessageService MessageService = message;
+    protected readonly ICompanyUser CompanyUser = companyUser;
+    protected readonly IMessageService MessageService = message;
     protected readonly IValidatorService Validator = validate;
-    protected  readonly IMapper Mapper = mapper;
+    protected readonly IMapper Mapper = mapper;
 
     public virtual async Task Consume(ConsumeContext<CreateCommandMessage<TDto>> context)
     {

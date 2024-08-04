@@ -8,6 +8,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
+using Pilot.SqrsController.Behaviors;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,8 +56,6 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    // cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-    // cfg.AddBehavior(typeof(LoggingBehavior<,>));
 });
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));

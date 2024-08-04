@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
+      <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
     </ItemGroup>
 
     <ItemGroup>

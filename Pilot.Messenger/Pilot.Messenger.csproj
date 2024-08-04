@@ -20,11 +20,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Commands\" />
+      <Folder Include="Consumers\" />
       <Folder Include="Data\" />
+      <Folder Include="Handlers\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.Contracts.csproj" />
+      <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
+      <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsController\Pilot.SqrsController.csproj" />
     </ItemGroup>
 
 </Project>

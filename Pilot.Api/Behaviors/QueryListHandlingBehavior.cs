@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using Pilot.Api.Services;
+using Pilot.SqrsController.Interfaces;
+using Pilot.SqrsController.Queries;
 
 namespace Pilot.Api.Behaviors;
-
-public interface IQueryListHandling
-{
-    string Url { get; }
-}
 
 public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling
 {

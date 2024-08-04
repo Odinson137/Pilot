@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using Pilot.Api.Data;
 using Pilot.Api.Services;
+using Pilot.SqrsController.Interfaces;
+using Pilot.SqrsController.Queries;
 
 namespace Pilot.Api.Behaviors;
-
-public interface IQueryOneHandling : IBaseUrl;
 
 public class QueryOneHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryOneHandling
 {

@@ -6,13 +6,12 @@ using File = Pilot.Contracts.Models.File;
 
 namespace Pilot.Receiver.Consumers.FileConsumer;
 
-public class CompanyUserUpdatedConsumer(
-    ILogger<CompanyUserUpdatedConsumer> logger,
+public class FileUpdatedConsumer(
+    ILogger<FileUpdatedConsumer> logger,
     IFile fileRepository,
     IMessageService message,
     IValidatorService validate,
-    IMapper mapper,
-    ICompanyUser companyUser)
+    IMapper mapper)
     : BaseUpdateConsumer<File, FileDto>(logger, fileRepository, message, validate, mapper)
 {
 }

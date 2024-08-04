@@ -6,10 +6,10 @@ using File = Pilot.Contracts.Models.File;
 namespace Test.Receiver.IntegrationTests;
 
 [Collection(nameof(SequentialCollectionDefinition))]
-public class FileReceiverTests : BaseModelReceiverIntegrationTest<File, FileDto>
+public class FileTests : BaseModelReceiverIntegrationTest<File, FileDto>
 {
     /// <inheritdoc />
-    public FileReceiverTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
+    public FileTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
     }
 }

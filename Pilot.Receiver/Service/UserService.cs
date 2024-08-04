@@ -1,15 +1,13 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Models;
-using Pilot.Receiver.Interface;
+using Pilot.Contracts.Interfaces;
 
 namespace Pilot.Receiver.Service;
 
-public class UserService : ModelService<UserDto>, IUserService
-{
-    public UserService(ILogger<UserService> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, IConfiguration configuration) 
-        : base(logger, httpClientFactory, cache, configuration,"IdentityServer")
-    {
-    }
-}
+public class UserService(
+    ILogger<UserService> logger,
+    IHttpClientFactory httpClientFactory,
+    IDistributedCache cache,
+    IConfiguration configuration)
+    : ModelService<UserDto>(logger, httpClientFactory, cache, configuration, "IdentityServer"), IUserService;

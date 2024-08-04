@@ -9,10 +9,10 @@ using Test.Receiver.IntegrationTests.TestSettings;
 namespace Test.Receiver.IntegrationTests;
 
 [Collection(nameof(SequentialCollectionDefinition))]
-public class CompanyReceiverTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
+public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
 {
     /// <inheritdoc />
-    public CompanyReceiverTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
+    public CompanyTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
     }
 

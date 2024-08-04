@@ -5,6 +5,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Contracts.Validation;

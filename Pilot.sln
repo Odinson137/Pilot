@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Receiver", "Pilot.Rec
 		{9CAFA42E-E690-4A52-9515-460F703A542B} = {9CAFA42E-E690-4A52-9515-460F703A542B}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Contracts", "Pilot.Contracts\Pilot.Contracts.csproj", "{9CAFA42E-E690-4A52-9515-460F703A542B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.BaseContract", "Pilot.BaseContract\Pilot.BaseContract.csproj", "{9CAFA42E-E690-4A52-9515-460F703A542B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.Identity", "Pilot.Identity\Pilot.Identity.csproj", "{F0632566-4226-41E1-AA13-F502FF9BAD17}"
 EndProject
@@ -30,6 +30,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Api", "Pilot.Tests\Test.Api\Test.Api.csproj", "{3FDF7F7B-66DA-452F-8404-D28BCD642E5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Messenger", "Pilot.Tests\Test.Messenger\Test.Messenger.csproj", "{DBD1002B-6AD5-484A-9BBD-B10BB0E82068}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pilot.Contracts", "Pilot.Contracts", "{F1E9EF87-7CBB-4022-8909-1BB3600A3B98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.SqrsController", "Pilot.Contracts\Pilot.SqrsController\Pilot.SqrsController.csproj", "{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +81,10 @@ Global
 		{DBD1002B-6AD5-484A-9BBD-B10BB0E82068}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBD1002B-6AD5-484A-9BBD-B10BB0E82068}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBD1002B-6AD5-484A-9BBD-B10BB0E82068}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,5 +98,7 @@ Global
 		{1173FC02-EF9A-4BE5-A4E2-13B558BA02CC} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
 		{3FDF7F7B-66DA-452F-8404-D28BCD642E5F} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
 		{DBD1002B-6AD5-484A-9BBD-B10BB0E82068} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
+		{31E6D6AD-7C60-4A9A-ACC3-DB3EE54327B0} = {F1E9EF87-7CBB-4022-8909-1BB3600A3B98}
+		{9CAFA42E-E690-4A52-9515-460F703A542B} = {F1E9EF87-7CBB-4022-8909-1BB3600A3B98}
 	EndGlobalSection
 EndGlobal
