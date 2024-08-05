@@ -3,11 +3,21 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Models;
+using Pilot.Contracts.Models.ModelHelpers;
 
 namespace Test.Base.IntegrationBase;
 
 public static class GenerateTestEntity
 {
+    /// <summary>
+    /// Create entities
+    /// </summary>
+    /// <param name="type">Тип сущности</param>
+    /// <param name="listDepth">Глубина создания дочерний сущностей</param>
+    /// <param name="count">Количество создаваемых сущностей</param>
+    /// <param name="listElementCount">Количество элементов в коллекциях</param>
+    /// <returns></returns>
     public static ICollection<BaseModel> CreateEntities(Type type, int listDepth = 1, int count = 1, int listElementCount = 3)
     {
         var collection = new List<BaseModel>();
@@ -41,9 +51,26 @@ public static class GenerateTestEntity
         return collection;
     }
 
-    public static ICollection<T> FillChildren<T, TDto>(TDto model, DbContext context) where T : BaseModel where TDto : BaseDto
+    public static async Task FillChildren<T>(T model, DbContext context) where T : BaseModel
     {
-        throw new Exception("Реализовать метод");
+        var type = typeof(T);
+        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var property in properties)
+        {
+            if (property.PropertyType.IsClass && property.PropertyType != typeof(CompanyUser))
+            {
+                var childModel = property.GetValue(model) ?? throw new NullReferenceException("Дочерний объект не найден");
+                await context.AddAsync(childModel);
+            }
+            else if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+            {
+                var childrenCollectionModel = property.GetValue(model) ?? throw new NullReferenceException("Дочерняя коллекция не найдена");
+                await context.AddRangeAsync(childrenCollectionModel);
+            } 
+        }
+
+        await context.SaveChangesAsync();
     }
     
     private static object CreateEntity(object entity, Type type, int listDepth, int listElementCount)

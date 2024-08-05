@@ -37,6 +37,8 @@ public abstract class BaseCreatedConsumer<T, TDto>(
         await Validator.ValidateAsync<T, TDto>(context.Message.Value, context.Message.UserId);
 
         var model = Mapper.Map<T>(context.Message.Value);
+
+        await Validator.FillValidateAsync(model);
         
         if (model is IAddCompanyUser addingUserModel)
         {

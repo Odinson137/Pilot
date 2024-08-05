@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Json;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.Models.ModelHelpers;
@@ -20,34 +18,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     
     public BaseModelReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
-        // Admin = new User
-        // {
-        //     UserName = $"Admin-{Guid.NewGuid()}",
-        //     Name = "AdminName",
-        //     LastName = "AdminLastName",
-        //     Password = "12345678",
-        //     Role = Role.Admin
-        // };
-        //
-        // IdentityContext.Add(Admin);
-        // IdentityContext.SaveChanges();
     }
-
-    // public static IEnumerable<object[]> ModelData
-    // {
-    //     get
-    //     {
-    //         var baseModelType = typeof(BaseModel);
-    //         var assembly = Assembly.GetAssembly(baseModelType);
-    //
-    //         var modelTypes = assembly?.GetTypes()
-    //             .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(baseModelType))
-    //             .Select(c => new object[] { c })
-    //             .ToList();
-    //
-    //         return modelTypes!;
-    //     }
-    // }
 
     protected virtual async Task<User> CreateUser()
     {
@@ -77,10 +48,10 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
     
     // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
-    // А ещё нормально использовать debug, имея в запасе 20 кликов в нём
+    // А ещё нормально использовать debug, имея в запасе i кликов в нём
     public async Task Wait()
     {
-        for (var i = 0; i < 40; i++) await Task.Delay(100);
+        for (var i = 0; i < 40; i++) await Task.Delay(50);
     }
     
     [Fact]
@@ -139,8 +110,11 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         
         var companyUser = await CreateCompanyUser();
         
-        var value = GenerateTestEntity.CreateEntities<TDto>(count: 1, listDepth: 0).First();
-        value.CreateAt = DateTime.Now;
+        var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+        
+        await GenerateTestEntity.FillChildren(valueModel, ReceiverContext);
+
+        var value = ReceiverMapper.Map<TDto>(valueModel);
         
         #endregion
 
@@ -173,8 +147,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         await ReceiverContext.AddAsync(value);
         await ReceiverContext.SaveChangesAsync();
 
-        var mapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
-        var valueDto = mapper.Map<TDto>(value);
+        var valueDto = ReceiverMapper.Map<TDto>(value);
         
         #endregion
 

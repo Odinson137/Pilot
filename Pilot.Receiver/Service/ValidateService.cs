@@ -110,9 +110,9 @@ public class ValidatorService : IValidatorService
         }
     }
 
-    public async Task UpdateValidateAsync<T>(T model) where T : BaseModel
+    public async Task FillValidateAsync<T>(T model) where T : BaseModel
     {
-        _logger.LogInformation($"Start update validate model of {typeof(T).Name}");
+        _logger.LogInformation($"Start fill validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
 
         var type = typeof(T);
@@ -146,6 +146,8 @@ public class ValidatorService : IValidatorService
                     foreach (var item in collection)
                     {
                         var subModel = await GetSubEntity(elementType, property, (BaseModel)item);
+                        if (subModel == null) continue;
+                        
                         updatedCollection!.Add(subModel);
                     }
 
@@ -178,9 +180,11 @@ public class ValidatorService : IValidatorService
         } 
     }
 
-    private async Task<object> GetSubEntity(Type propertyType, PropertyInfo property, object value)
+    private async ValueTask<object?> GetSubEntity(Type propertyType, PropertyInfo property, object value)
     {
         var valueId = ((BaseModel)value).Id;
+        if (valueId == 0) return null;
+        
         var subModel = await _context.FindAsync(propertyType, valueId);
 
         if (subModel != null) return subModel;

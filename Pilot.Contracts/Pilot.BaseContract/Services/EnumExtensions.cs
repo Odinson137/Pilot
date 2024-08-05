@@ -33,6 +33,6 @@ public static class PilotEnumExtensions
     }
     public static ModelType GetModelEnumValue<T>() where T : BaseModel
     {
-        return GetModelEnumValue(nameof(T));
+        return GetModelEnumValue(typeof(T).Name);
     }
 }

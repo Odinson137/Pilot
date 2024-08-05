@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using AutoMapper;
+using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Data;
 using Test.Receiver.IntegrationTests.Factories;
@@ -13,7 +14,8 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
     protected readonly Pilot.Receiver.Data.DataContext AssertReceiverContext;
     protected readonly IServiceScope ReceiverScope;
     protected readonly Pilot.Identity.Data.DataContext IdentityContext;
-    
+    protected IMapper ReceiverMapper;
+
     protected readonly IPublishEndpoint PublishEndpoint;
 
     protected BaseReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory)
@@ -30,6 +32,8 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         IdentityClient = identityFactory.CreateClient();
 
+        ReceiverMapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
+        
         HttpSingleTone.Init.HttpClients["Receiver.IdentityServer"] = IdentityClient;
     }
 }
