@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.SqrsController", "Pil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.BaseContract", "Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj", "{1DB789EA-452A-4EFD-9A72-965BE960974D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.Messenger", "Pilot.Tests\Pilot.Messenger\Pilot.Messenger.csproj", "{496F0FE3-F3F8-4154-B5D1-D68615EFE56C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Messenger", "Pilot.Tests\Test.Messenger\Test.Messenger.csproj", "{496F0FE3-F3F8-4154-B5D1-D68615EFE56C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
