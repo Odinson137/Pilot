@@ -58,16 +58,27 @@ public static class GenerateTestEntity
 
         foreach (var property in properties)
         {
-            if (property.PropertyType.IsClass && property.PropertyType != typeof(CompanyUser))
+            var modelType = property.PropertyType;
+            var value = property.GetValue(model);
+            if (value == null) continue;
+            
+            if (property.PropertyType.IsClass && modelType.IsSubclassOf(typeof(BaseModel)) && modelType != typeof(CompanyUser))
             {
-                var childModel = property.GetValue(model) ?? throw new NullReferenceException("Дочерний объект не найден");
+                var childModel = value ?? throw new NullReferenceException("Дочерний объект не найден");
                 await context.AddAsync(childModel);
             }
-            else if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType))
+            else if (typeof(IEnumerable).IsAssignableFrom(modelType) && modelType != typeof(string) && modelType.GetGenericArguments().First().IsSubclassOf(typeof(BaseModel)))
             {
-                var childrenCollectionModel = property.GetValue(model) ?? throw new NullReferenceException("Дочерняя коллекция не найдена");
+                if (value is IEnumerable enumerable)
+                {
+                    var enumerator = enumerable.GetEnumerator();
+                    using var enumerator1 = enumerator as IDisposable;
+                    if (!enumerator.MoveNext()) continue;
+                }
+
+                var childrenCollectionModel = value ?? throw new NullReferenceException("Дочерняя коллекция не найдена");
                 await context.AddRangeAsync(childrenCollectionModel);
-            } 
+            }
         }
 
         await context.SaveChangesAsync();
