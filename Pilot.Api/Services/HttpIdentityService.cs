@@ -4,13 +4,12 @@ using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Api.Services;
 
-public class HttpIdentityService : BaseHttpService, IHttpIdentityService
+public class HttpIdentityService(
+    ILogger<HttpIdentityService> logger,
+    IHttpClientFactory httpClientFactory,
+    IConfiguration configuration)
+    : BaseHttpService(logger, httpClientFactory, configuration), IHttpIdentityService
 {
-    public HttpIdentityService(ILogger<HttpIdentityService> logger, IHttpClientFactory httpClientFactory, IConfiguration configuration) 
-        : base(logger, httpClientFactory, configuration, "IdentityServer")
-    {
-    }
-
     public async Task<TOut> SendPostMessage<TOut, TMessage>(string url, TMessage message, CancellationToken token)
     {
         Logger.LogInformation($"Post message to {url}");
@@ -28,5 +27,16 @@ public class HttpIdentityService : BaseHttpService, IHttpIdentityService
         }
 
         return content;
+    }
+    
+    public async Task SendPostMessage<TMessage>(string url, TMessage message, CancellationToken token)
+    {
+        Logger.LogInformation($"Post message to {url}");
+        Logger.LogClassInfo(message);
+        var response = await HttpClient.PostAsJsonAsync(url, message, cancellationToken: token);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
+        }
     }
 }

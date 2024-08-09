@@ -5,9 +5,7 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=15e1110d_002D246a_002D4a78_002Dbe1d_002Dd701ebb6d8e1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e9db5ecf_002D86b7_002D4349_002D812d_002D32f3419e7dc7/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Pilot.Tests&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
+	
 	
 	
 	

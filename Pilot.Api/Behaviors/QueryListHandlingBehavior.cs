@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using Pilot.Api.Services;
+using Pilot.Contracts.Base;
 using Pilot.SqrsController.Interfaces;
-using Pilot.SqrsController.Queries;
 
 namespace Pilot.Api.Behaviors;
 
-public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling
+public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling where TResponse : BaseDto
 {
     private readonly ILogger<QueryListHandling<TRequest, TResponse>> _logger;
     private readonly IHttpReceiverService _httpService;

@@ -14,7 +14,7 @@ public abstract class ModelService<TDto> : BaseHttpService, IModelService<TDto> 
     private readonly string _modelName = BaseExpendMethods.GetModelName<TDto>();
     
     public ModelService(ILogger<ModelService<TDto>> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, IConfiguration configuration, string clientName) 
-        : base(logger, httpClientFactory, configuration, clientName)
+        : base(logger, httpClientFactory, configuration)
     {
         _logger = logger;
         _cache = cache;

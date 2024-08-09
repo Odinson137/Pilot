@@ -1,7 +1,10 @@
-﻿using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Attributes;
+using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
+[FromService(ServiceName.ReceiverServer)]
 public class CompanyUserDto : BaseUserDto
 {
     public BaseDto? Company { get; set; }

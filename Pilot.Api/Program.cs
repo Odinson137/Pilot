@@ -6,6 +6,7 @@ using Pilot.Api.Data;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
 using Pilot.SqrsController.Behaviors;
@@ -17,14 +18,19 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddHttpClient("IdentityServer", c =>
+services.AddHttpClient(ServiceName.IdentityServer.ToString(), c =>
 {
     c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
 });
 
-services.AddHttpClient("ReceiverServer", c =>
+services.AddHttpClient(ServiceName.ReceiverServer.ToString(), c =>
 {
     c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!);
+});
+
+services.AddHttpClient(ServiceName.MessengerServer.ToString(), c =>
+{
+    c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!);
 });
 
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
