@@ -5,10 +5,10 @@ namespace Pilot.Contracts.Services;
 
 public static class HttpNameService
 {
-    public static string GetHttpClientName<T>()
+    public static string GetHttpClientName(Type type)
     {
-        var type = typeof(T);
-        if (type != typeof(BaseDto))
+        var baseType = typeof(BaseDto);
+        if (!type.IsSubclassOf(baseType))
             throw new System.Exception("Пока не реализовано. И не известно: будет ли вообще реализовано");
 
         var attribute = type.GetCustomAttributes(false).OfType<FromServiceAttribute>().SingleOrDefault();
@@ -20,8 +20,8 @@ public static class HttpNameService
 
     }
     
-    public static string GetHttpClientName<T>(T _)
+    public static string GetHttpClientName<T>()
     {
-        return GetHttpClientName<T>();
+        return GetHttpClientName(typeof(T));
     }
 }
