@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.SqrsController.Interfaces;
 
@@ -10,7 +9,7 @@ public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest
     private readonly ILogger<QueryListHandling<TRequest, TResponse>> _logger;
     private readonly IBaseHttpService _httpService;
 
-    public QueryListHandling(ILogger<QueryListHandling<TRequest, TResponse>> logger, IHttpReceiverService httpService)
+    public QueryListHandling(ILogger<QueryListHandling<TRequest, TResponse>> logger, IBaseHttpService httpService)
     {
         _logger = logger;
         _httpService = httpService;
