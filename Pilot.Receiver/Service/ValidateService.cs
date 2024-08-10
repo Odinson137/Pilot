@@ -1,15 +1,15 @@
 ﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Models;
 using Pilot.Contracts.Validation;
 using Pilot.Receiver.Data;
+using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Service;
 
 public class ValidatorService(
     IMessageService message,
     IUserService user,
-    ILogger<ValidateError> logger,
+    ILogger<ValidatorService> logger,
     DataContext context)
     : BaseValidateService<CompanyUser>(message, user, logger, context)
 {

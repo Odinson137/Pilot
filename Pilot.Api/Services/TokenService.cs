@@ -32,7 +32,7 @@ public class TokenService : IToken
             _configurationManager["Jwt:Issuer"],
             _configurationManager["Jwt:Issuer"],
             claims,
-            expires: DateTime.Now.AddYears(999),
+            expires: DateTime.Now.AddYears(999), // Вопросы безопасности во время создания этого проекта меня не волнуют
             signingCredentials: creeds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

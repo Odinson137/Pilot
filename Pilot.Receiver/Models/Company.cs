@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Models.ModelHelpers;
+using Pilot.Receiver.Models.ModelHelpers;
 
-namespace Pilot.Contracts.Models;
+namespace Pilot.Receiver.Models;
 
 public class Company : BaseModel, IAddCompanyUser
 {

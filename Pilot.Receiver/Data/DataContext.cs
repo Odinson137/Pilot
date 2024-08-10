@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using Pilot.Contracts.Models;
-using File = Pilot.Contracts.Models.File;
+using Pilot.Receiver.Models;
+using File = Pilot.Receiver.Models.File;
 
 namespace Pilot.Receiver.Data;
 

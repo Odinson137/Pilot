@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Models;
+using Pilot.Receiver.Models;
 
 namespace Test.Base.IntegrationBase;
 

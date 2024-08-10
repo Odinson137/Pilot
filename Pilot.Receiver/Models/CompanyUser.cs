@@ -1,6 +1,6 @@
 ﻿using Pilot.Contracts.Base;
 
-namespace Pilot.Contracts.Models;
+namespace Pilot.Receiver.Models;
 
 public class CompanyUser : BaseUserModel
 {
@@ -10,5 +10,5 @@ public class CompanyUser : BaseUserModel
     
     public Team? Team { get; set; }
 
-    public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
+    public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
 }

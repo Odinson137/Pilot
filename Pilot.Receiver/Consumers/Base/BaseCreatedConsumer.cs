@@ -4,11 +4,11 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
+using Pilot.Receiver.Models.ModelHelpers;
 
 namespace Pilot.Receiver.Consumers.Base;
 

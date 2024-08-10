@@ -9,18 +9,10 @@ namespace Pilot.SqrsController.Controller;
 
 [ApiController]
 [Route("api/[controller]")]
-public abstract class PilotController<T, TDto>(IMediator mediator) : BaseController where TDto : BaseDto
+public abstract class PilotController<TDto>(IMediator mediator) : BaseController where TDto : BaseDto
 {
     protected readonly IMediator Mediator = mediator;
 
-    [HttpHead]
-    [ProducesResponseType(200)]
-    public virtual async Task<IActionResult> GetAllValuesCount(CancellationToken token)
-    {
-        var result = await Mediator.Send(new GetValueByIdQuery<TDto>(1), token);
-        return Ok(1);
-    }
-    
     [HttpGet]
     [ProducesResponseType(200)]
     public virtual async Task<IActionResult> GetAllValues(CancellationToken token, int skip = 0, int take = 50)
@@ -44,7 +36,7 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : BaseControl
     public virtual async Task<IActionResult> AddValue(TDto valueDto, CancellationToken token)
     {
         await Mediator.Send(new AddValueCommand<TDto>(valueDto, UserId), token);
-        return Ok($"The {nameof(T)} will be adding soon");
+        return Ok($"The {nameof(TDto)} will be adding soon");
     }
     
     [HttpPut]
@@ -55,7 +47,7 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : BaseControl
     public virtual async Task<IActionResult> UpdateValue(TDto valueDto)
     {
         await Mediator.Send(new UpdateValueCommand<TDto>(valueDto, UserId));
-        return Ok($"The {nameof(T)} will edit soon");
+        return Ok($"The {nameof(TDto)} will edit soon");
     }
     
     [HttpDelete]
@@ -66,6 +58,6 @@ public abstract class PilotController<T, TDto>(IMediator mediator) : BaseControl
     public virtual async Task<IActionResult> DeleteValue(TDto valueDto) // достаточно в модели передать id
     {
         await Mediator.Send(new DeleteValueCommand<TDto>(valueDto, UserId));
-        return Ok($"The {nameof(T)} will delete soon");
+        return Ok($"The {nameof(TDto)} will delete soon");
     }
 }

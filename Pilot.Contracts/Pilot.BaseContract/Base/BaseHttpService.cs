@@ -41,7 +41,7 @@ public class BaseHttpService(
     
         var clientName = HttpNameService.GetHttpClientName(valueType);
         
-        // Для тестов. По другому не придумал, как в микросервисы дебажить, а Debug в тестах я люблю
+        // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
             ? HttpSingleTone.Init.HttpClients[
                 $"{сonfiguration.GetValue<string>("ENVIRONMENT")}.{clientName}"]
@@ -69,7 +69,7 @@ public class BaseHttpService(
         return content;
     }
 
-    public async Task<TOut?> SendGetMessage<TOut>(string url, CancellationToken token)
+    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token)
     {
         Logger.LogInformation($"Send message to {url}");
         

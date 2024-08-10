@@ -2,7 +2,7 @@
 using Pilot.Contracts.Base;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
-using File = Pilot.Contracts.Models.File;
+using File = Pilot.Receiver.Models.File;
 
 namespace Pilot.Receiver.Repository;
 

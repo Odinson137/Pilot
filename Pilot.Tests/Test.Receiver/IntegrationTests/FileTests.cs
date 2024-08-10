@@ -1,7 +1,7 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
 using Test.Receiver.IntegrationTests.Factories;
 using Test.Receiver.IntegrationTests.TestSettings;
-using File = Pilot.Contracts.Models.File;
+using File = Pilot.Receiver.Models.File;
 
 namespace Test.Receiver.IntegrationTests;
 

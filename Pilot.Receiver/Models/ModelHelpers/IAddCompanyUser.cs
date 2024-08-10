@@ -1,4 +1,4 @@
-﻿namespace Pilot.Contracts.Models.ModelHelpers;
+﻿namespace Pilot.Receiver.Models.ModelHelpers;
 
 public interface IAddCompanyUser
 {

@@ -1,6 +1,8 @@
 using MediatR;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
+using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interface;
 using Pilot.Messenger.Repository;
 using Pilot.Messenger.Services;
@@ -10,8 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddScoped<IMessageRepository, MessageRepository>();
+services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddUserService();
+
+services.AddSignalR();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -35,4 +40,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapHub<NotificationHub>("/notificationhub");
+app.MapHub<ChatHub>("/chatHub");
+
 app.UseHttpsRedirection();
+
+app.Run();

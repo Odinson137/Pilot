@@ -34,8 +34,7 @@ services.AddHttpClient(ServiceName.MessengerServer.ToString(), c =>
 });
 
 services.AddScoped<IBaseHttpService, BaseHttpService>();
-// services.AddScoped<IHttpIdentityService, HttpIdentityService>();
-// services.AddScoped<IHttpReceiverService, HttpReceiverService>();
+services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 // var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;

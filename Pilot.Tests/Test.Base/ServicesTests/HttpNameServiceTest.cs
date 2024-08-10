@@ -34,5 +34,4 @@ public class HttpNameServiceTest
         // Assert
         Assert.NotNull(httpClientName);
     }
-
 }

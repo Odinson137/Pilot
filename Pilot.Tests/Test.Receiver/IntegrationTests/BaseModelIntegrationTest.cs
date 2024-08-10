@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Models;
-using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Identity.Models;
+using Pilot.Receiver.Models;
+using Pilot.Receiver.Models.ModelHelpers;
 using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 

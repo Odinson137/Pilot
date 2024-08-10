@@ -25,7 +25,7 @@ public abstract class ModelService<TDto> : BaseHttpService, IModelService<TDto> 
         
         var cacheValue = await _cache.GetStringAsync($"{_modelName}-{valueId}", token);
         
-        TDto? valueDto;
+        TDto valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
             _logger.LogInformation("Get value from cache");

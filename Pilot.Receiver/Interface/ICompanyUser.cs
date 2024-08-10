@@ -1,5 +1,5 @@
 ﻿using Pilot.Contracts.Base;
-using Pilot.Contracts.Models;
+using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Interface;
 

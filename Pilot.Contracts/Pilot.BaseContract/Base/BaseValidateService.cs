@@ -16,10 +16,10 @@ public abstract class BaseValidateService<TLocalUser> : IBaseValidatorService wh
 {
     private readonly IMessageService _message;
     private readonly IUserService _user;
-    private readonly ILogger<ValidateError> _logger;
+    private readonly ILogger<BaseValidateService<TLocalUser>> _logger;
     private readonly DbContext _context;
 
-    public BaseValidateService(IMessageService message, IUserService user, ILogger<ValidateError> logger, DbContext context)
+    public BaseValidateService(IMessageService message, IUserService user, ILogger<BaseValidateService<TLocalUser>> logger, DbContext context)
     {
         _message = message;
         _user = user;
@@ -28,7 +28,7 @@ public abstract class BaseValidateService<TLocalUser> : IBaseValidatorService wh
     }
 
     public async Task ValidateAsync<T, TDto>(TDto model, int userId, 
-        bool canUserValidate = true, bool canDefaultValidate = true, bool canCompanyUserValidate = true) 
+        bool canUserValidate = true, bool canDefaultValidate = true, bool canLocalUserValidate = true) 
         where T : BaseModel where TDto : BaseDto
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
@@ -40,7 +40,7 @@ public abstract class BaseValidateService<TLocalUser> : IBaseValidatorService wh
         if (canDefaultValidate)
             await DefaultValidateAsync<T, TDto>(model);
 
-        if (canCompanyUserValidate)
+        if (canLocalUserValidate)
             await LocalUserValidateAsync<T>(userId);
         
         _logger.LogInformation($"End validate model of {typeof(T).Name}");
@@ -85,12 +85,12 @@ public abstract class BaseValidateService<TLocalUser> : IBaseValidatorService wh
         var companyUser = await _context.Set<TLocalUser>().Where(c => c.Id == userId).AnyAsync();
         if (!companyUser) // Позже добавить ещё проверку на роль пользователя
         {
-            _logger.LogError("Company user is not found");
+            _logger.LogError("User is not found");
             
             var message = new MessageDto
             {
                 Title = "Ошибка валидации",
-                Description = "Данный пользователь в компании не найден. Пройдите регистрацию или попробуйте позже",
+                Description = "Данный пользователь не найден. Пройдите регистрацию или попробуйте позже",
                 MessagePriority = MessagePriority.Error | MessagePriority.Validate,
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
             };

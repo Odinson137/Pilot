@@ -7,5 +7,5 @@ namespace Pilot.Api.Base;
 
 [ApiController]
 [Route("api/[controller]")]
-public abstract class GatewayController<T, TDto>(IMediator mediator) : PilotController<T, TDto>(mediator)
+public abstract class GatewayController<TDto>(IMediator mediator) : PilotController<TDto>(mediator)
     where TDto : BaseDto;

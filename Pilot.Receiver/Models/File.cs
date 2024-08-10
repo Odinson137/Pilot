@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
 
-namespace Pilot.Contracts.Models;
+namespace Pilot.Receiver.Models;
 
 public class File : BaseModel
 {

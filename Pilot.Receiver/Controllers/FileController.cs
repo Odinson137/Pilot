@@ -1,6 +1,6 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Receiver.Interface;
-using File = Pilot.Contracts.Models.File;
+using File = Pilot.Receiver.Models.File;
 
 namespace Pilot.Receiver.Controllers;
 
