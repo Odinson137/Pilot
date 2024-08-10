@@ -141,7 +141,7 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build
 
-  qodana:
+  CodeQuality:
     runs-on: ubuntu-latest
     permissions:
       contents: write
