@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Models;
@@ -11,7 +12,7 @@ public class CompanyCreatedConsumer(
     ILogger<CompanyCreatedConsumer> logger,
     ICompany company,
     IMessageService messageService,
-    IValidatorService validate,
+    IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<Company, CompanyDto>(logger, company, messageService, validate, mapper, companyUser)

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Consumers.Base;
@@ -11,7 +12,7 @@ public class FileCreatedConsumer(
     ILogger<FileCreatedConsumer> logger,
     IFile fileRepository,
     IMessageService messageService,
-    IValidatorService validate,
+    IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<File, FileDto>(logger, fileRepository, messageService, validate, mapper, companyUser)

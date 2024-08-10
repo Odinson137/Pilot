@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Consumers.Base;
@@ -11,7 +12,7 @@ public class FileDeletedConsumer(
     ILogger<FileDeletedConsumer> logger,
     IFile fileRepository,
     IMessageService message,
-    IValidatorService validate,
+    IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseDeleteConsumer<File, FileDto>(logger, fileRepository, message, validate, mapper)

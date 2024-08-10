@@ -8,7 +8,6 @@ using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
-using Pilot.Receiver.Interface;
 
 namespace Pilot.Receiver.Consumers.Base;
 
@@ -16,7 +15,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     ILogger<BaseUpdateConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessageService message,
-    IValidatorService validate,
+    IBaseValidatorService validate,
     IMapper mapper)
     : IConsumer<UpdateCommandMessage<TDto>>
     where T : BaseModel
@@ -25,7 +24,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     protected readonly ILogger<BaseUpdateConsumer<T, TDto>> Logger = logger;
     protected readonly IBaseRepository<T> Repository = repository;
     protected readonly IMessageService Message = message;
-    protected readonly IValidatorService Validator = validate;
+    protected readonly IBaseValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
 
     public virtual async Task Consume(ConsumeContext<UpdateCommandMessage<TDto>> context)

@@ -16,7 +16,7 @@ public abstract class BaseCreatedConsumer<T, TDto>(
     ILogger<BaseCreatedConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessageService message,
-    IValidatorService validate,
+    IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : IConsumer<CreateCommandMessage<TDto>>
@@ -27,7 +27,7 @@ public abstract class BaseCreatedConsumer<T, TDto>(
     protected readonly IBaseRepository<T> Repository = repository;
     protected readonly ICompanyUser CompanyUser = companyUser;
     protected readonly IMessageService MessageService = message;
-    protected readonly IValidatorService Validator = validate;
+    protected readonly IBaseValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
 
     public virtual async Task Consume(ConsumeContext<CreateCommandMessage<TDto>> context)

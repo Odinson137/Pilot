@@ -9,7 +9,7 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;
 
-public abstract class BaseHttpService(
+public class BaseHttpService(
     ILogger<BaseHttpService> logger,
     IHttpClientFactory httpClientFactory,
     IConfiguration сonfiguration)

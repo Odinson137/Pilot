@@ -12,6 +12,7 @@ using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
 using Pilot.Receiver.Service;
 using Serilog;
+using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
