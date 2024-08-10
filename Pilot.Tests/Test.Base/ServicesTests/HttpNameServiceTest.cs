@@ -8,7 +8,6 @@ namespace Test.Base.ServicesTests;
 [TestSubject(typeof(HttpNameService))]
 public class HttpNameServiceTest
 {
-    
     public static IEnumerable<object[]> ModelData
     {
         get

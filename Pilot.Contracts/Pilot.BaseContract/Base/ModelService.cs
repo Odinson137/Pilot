@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Contracts.Base;

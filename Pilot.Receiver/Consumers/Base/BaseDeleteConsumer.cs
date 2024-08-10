@@ -3,6 +3,7 @@ using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
@@ -31,7 +32,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         Logger.LogInformation($"{typeof(T).Name} delete consume");
         Logger.LogClassInfo(context.Message);
 
-        await Validator.ValidateWithoutDefaultAsync<T, TDto>(context.Message.Value, context.Message.UserId);
+        await Validator.ValidateAsync<T, TDto>(context.Message.Value, context.Message.UserId, canDefaultValidate: false);
         
         var model = Mapper.Map<T>(context.Message.Value);
         

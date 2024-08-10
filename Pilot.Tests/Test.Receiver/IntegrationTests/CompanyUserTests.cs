@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Models;
 using Pilot.Contracts.RabbitMqMessages;
-using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 using Test.Receiver.IntegrationTests.TestSettings;
 

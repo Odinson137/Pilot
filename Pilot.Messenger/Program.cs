@@ -1,10 +1,16 @@
 using MediatR;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Services;
+using Pilot.Messenger.Interface;
+using Pilot.Messenger.Repository;
+using Pilot.Messenger.Services;
 using Pilot.SqrsController.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
+services.AddScoped<IMessageRepository, MessageRepository>();
+services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddUserService();
 
 // Add services to the container.

@@ -4,8 +4,9 @@ namespace Pilot.Identity.Data;
 
 public class Seed : ISeed
 {
-    public async Task Seeding(IApplicationBuilder app)
+    public Task Seeding(IApplicationBuilder app)
     {
+        return Task.CompletedTask;
         // var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();
         //
         // var userCollection = mongoDatabase.GetCollection<User>(MongoTable.User);

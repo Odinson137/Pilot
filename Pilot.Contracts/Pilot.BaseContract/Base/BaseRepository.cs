@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Pilot.Contracts.Exception.ProjectExceptions;
 
 namespace Pilot.Contracts.Base;
 

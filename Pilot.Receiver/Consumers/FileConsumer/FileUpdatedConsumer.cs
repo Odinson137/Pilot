@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Interface;
 using File = Pilot.Contracts.Models.File;

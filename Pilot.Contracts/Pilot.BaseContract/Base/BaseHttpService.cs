@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,15 @@ public abstract class BaseHttpService(
     {
         if (_httpClient != null) throw new DataException("HttpClient уже и так инициализирован");
         
-        var clientName = HttpNameService.GetHttpClientName<TOut>();
+        var valueType = typeof(TOut);
+        if (typeof(IEnumerable).IsAssignableFrom(valueType) && valueType.IsGenericType)
+        {
+            valueType = valueType.GetGenericArguments().First();
+        }
+    
+        var clientName = HttpNameService.GetHttpClientName(valueType);
+        
+        // Для тестов. По другому не придумал, как в микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
             ? HttpSingleTone.Init.HttpClients[
                 $"{сonfiguration.GetValue<string>("ENVIRONMENT")}.{clientName}"]
@@ -48,7 +57,7 @@ public abstract class BaseHttpService(
         var response = await HttpClient.GetAsync(url, token);
         if (!response.IsSuccessStatusCode)
         {
-            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
+            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
         }
 
         var content = await response.Content.ReadFromJsonAsync<TOut>(token);

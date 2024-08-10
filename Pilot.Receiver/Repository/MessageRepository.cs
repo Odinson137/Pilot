@@ -1,7 +1,6 @@
-﻿
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Interface;
+using Pilot.Contracts.Interfaces;
 
 namespace Pilot.Receiver.Repository;
 

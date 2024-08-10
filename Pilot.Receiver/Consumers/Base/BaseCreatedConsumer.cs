@@ -3,6 +3,7 @@ using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Models.ModelHelpers;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;

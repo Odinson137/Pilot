@@ -1,14 +1,14 @@
 ﻿using MediatR;
 using Pilot.Api.Services;
+using Pilot.Contracts.Base;
 using Pilot.SqrsController.Interfaces;
-using Pilot.SqrsController.Queries;
 
 namespace Pilot.Api.Behaviors;
 
 public class QueryOneHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryOneHandling
 {
     private readonly ILogger<QueryOneHandling<TRequest, TResponse>> _logger;
-    private readonly IHttpReceiverService _httpService;
+    private readonly IBaseHttpService _httpService;
 
     public QueryOneHandling(ILogger<QueryOneHandling<TRequest, TResponse>> logger, IHttpReceiverService httpService)
     {

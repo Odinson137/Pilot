@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Models;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Interface;
@@ -12,7 +13,4 @@ public class CompanyUserDeletedConsumer(
     IMessageService message,
     IValidatorService validate,
     IMapper mapper)
-    : BaseDeleteConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, message, validate, mapper)
-{
-
-}
+    : BaseDeleteConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, message, validate, mapper);

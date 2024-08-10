@@ -1,6 +1,4 @@
-﻿using Pilot.SqrsController.Commands;
-
-namespace Pilot.SqrsController.Interfaces;
+﻿namespace Pilot.SqrsController.Interfaces;
 
 public interface IBaseCommand : IBaseUrl
 {

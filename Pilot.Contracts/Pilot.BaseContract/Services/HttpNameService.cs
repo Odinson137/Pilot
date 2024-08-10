@@ -17,7 +17,6 @@ public static class HttpNameService
             throw new System.Exception("Добавь этой сущности аттрибут, к какому именно сервису она относится");
         
         return attribute.ServiceName.ToString();
-
     }
     
     public static string GetHttpClientName<T>()

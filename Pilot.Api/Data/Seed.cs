@@ -1,14 +1,13 @@
-﻿using MongoDB.Driver;
-using Pilot.Contracts.Data;
-using Pilot.Contracts.Models;
+﻿using Pilot.Contracts.Data;
 
 namespace Pilot.Api.Data;
 
 
 public class Seed : ISeed
 {
-    public async Task Seeding(IApplicationBuilder app)
+    public Task Seeding(IApplicationBuilder app)
     {
+        return Task.CompletedTask;
         // var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();
         //
         // var companyCollection = mongoDatabase.GetCollection<Company>(MongoTable.Company);

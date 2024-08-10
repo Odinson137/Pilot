@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Data;
@@ -25,7 +26,7 @@ services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
 
-services.AddScoped<IValidatorService, ValidatorService>();
+services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddUserService();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();

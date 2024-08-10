@@ -8,7 +8,7 @@ namespace Pilot.Api.Behaviors;
 public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling where TResponse : BaseDto
 {
     private readonly ILogger<QueryListHandling<TRequest, TResponse>> _logger;
-    private readonly IHttpReceiverService _httpService;
+    private readonly IBaseHttpService _httpService;
 
     public QueryListHandling(ILogger<QueryListHandling<TRequest, TResponse>> logger, IHttpReceiverService httpService)
     {

@@ -21,7 +21,6 @@
 
     <ItemGroup>
       <Folder Include="Commands\" />
-      <Folder Include="Consumers\" />
       <Folder Include="Handlers\" />
     </ItemGroup>
 

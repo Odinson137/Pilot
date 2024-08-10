@@ -14,7 +14,7 @@ public class MessageDto : BaseDto
     
     [Required] public BaseDto User { get; set; } = null!;
     
-    public MessagePriority MessagePriority { get; set; }
+    [Required] public MessagePriority MessagePriority { get; set; }
     
     public ModelType? EntityType { get; set; }
     

@@ -1,6 +1,6 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
 
-namespace Pilot.Receiver.Interface;
+namespace Pilot.Contracts.Interfaces;
 
 public interface IMessageService
 {

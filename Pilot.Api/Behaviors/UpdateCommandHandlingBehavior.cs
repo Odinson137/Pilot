@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Pilot.Api.Data;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.SqrsController.Interfaces;

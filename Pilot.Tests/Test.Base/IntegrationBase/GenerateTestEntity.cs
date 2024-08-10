@@ -4,7 +4,6 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Models;
-using Pilot.Contracts.Models.ModelHelpers;
 
 namespace Test.Base.IntegrationBase;
 
