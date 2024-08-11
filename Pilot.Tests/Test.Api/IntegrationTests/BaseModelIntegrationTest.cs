@@ -10,6 +10,7 @@ using Test.Base.IntegrationBase;
 
 namespace Test.Api.IntegrationTests;
 
+[Collection(nameof(SequentialCollectionDefinition))]
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest where T : BaseModel where TDto : BaseDto
 {
     public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory)
