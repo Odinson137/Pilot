@@ -9,7 +9,6 @@ using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
-[Collection(nameof(SequentialCollectionDefinition))]
 public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
     /// <inheritdoc />

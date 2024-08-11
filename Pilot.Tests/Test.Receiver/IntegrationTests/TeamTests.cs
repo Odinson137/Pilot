@@ -5,7 +5,6 @@ using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
-[Collection(nameof(SequentialCollectionDefinition))]
 public class TeamTests : BaseModelReceiverIntegrationTest<Team, TeamDto>
 {
     /// <inheritdoc />

@@ -5,7 +5,6 @@ using Test.Base.IntegrationBase;
 
 namespace Test.Api.IntegrationTests;
 
-[Collection(nameof(SequentialCollectionDefinition))]
 public class TeamTests : BaseModelIntegrationTest<Team, TeamDto>
 {
     /// <inheritdoc />

@@ -5,7 +5,6 @@ using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
-[Collection(nameof(SequentialCollectionDefinition))]
 public class HistoryActionTests : BaseModelReceiverIntegrationTest<HistoryAction, HistoryActionDto>
 {
     /// <inheritdoc />

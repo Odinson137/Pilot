@@ -5,7 +5,6 @@ using File = Pilot.Receiver.Models.File;
 
 namespace Test.Receiver.IntegrationTests;
 
-[Collection(nameof(SequentialCollectionDefinition))]
 public class FileTests : BaseModelReceiverIntegrationTest<File, FileDto>
 {
     /// <inheritdoc />
