@@ -1,5 +1,4 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
-using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 using File = Pilot.Receiver.Models.File;
 

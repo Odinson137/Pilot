@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using MassTransit;
-using Microsoft.AspNetCore.SignalR;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
-using Pilot.Messenger.Hubs;
 
 namespace Pilot.Messenger.Consumers.Base;
 
