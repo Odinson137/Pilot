@@ -1,9 +1,11 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
 using Test.Api.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
 using File = Pilot.Receiver.Models.File;
 
 namespace Test.Api.IntegrationTests;
 
+[Collection(nameof(SequentialCollectionDefinition))]
 public class FileTests : BaseModelIntegrationTest<File, FileDto>
 {
     /// <inheritdoc />
