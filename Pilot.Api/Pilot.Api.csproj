@@ -38,6 +38,7 @@
 
     <ItemGroup>
       <Folder Include="Data\Logs\" />
+      <Folder Include="Interfaces\" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,6 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;
@@ -11,13 +10,13 @@ using Test.Base.IntegrationBase;
 
 namespace Test.Api.IntegrationTests;
 
-public class BaseModelIntegrationTest : BaseApiIntegrationTest
+public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest where T : BaseModel where TDto : BaseDto
 {
     public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory)
     {
         var admin = new User
         {
-            UserName = "Admin",
+            UserName = $"Admin-{Guid.NewGuid()}",
             Name = "AdminName",
             LastName = "AdminLastName",
             Password = "12345678",
@@ -32,29 +31,15 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
         
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
-
-    public static IEnumerable<object[]> ModelData
-    {
-        get
-        {
-            var baseModelType = typeof(BaseModel);
-            var assembly = Assembly.GetAssembly(baseModelType);
-
-            var modelTypes = assembly?.GetTypes()
-                .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(baseModelType))
-                .Select(c => new object[] { c })
-                .ToList();
-
-            return modelTypes!;
-        }
-    }
     
-    [Theory]
-    [MemberData(nameof(ModelData))]
-    public async Task GetAllValuesTest_ReturnOk(Type type, int count = 2)
+    [Fact]
+    public async Task GetAllValuesTest_ReturnOk()
     {
         #region Arrange
 
+        var type = typeof(T);
+        const int count = 2;
+        
         var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
         
         await ReceiverContext.AddRangeAsync(values);
@@ -72,12 +57,14 @@ public class BaseModelIntegrationTest : BaseApiIntegrationTest
         Assert.True(content.Count >= count);
     }
     
-    [Theory]
-    [MemberData(nameof(ModelData))]
-    public async Task GetValue_ReturnOk(Type type, int count = 1)
+    [Fact]
+    public async Task GetValue_ReturnOk()
     {
         #region Arrange
 
+        var type = typeof(T);
+        const int count = 2;
+        
         var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
         
         await ReceiverContext.AddRangeAsync(values);

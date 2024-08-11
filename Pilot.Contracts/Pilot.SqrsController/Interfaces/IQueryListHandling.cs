@@ -1,6 +1,3 @@
 ﻿namespace Pilot.SqrsController.Interfaces;
 
-public interface IQueryListHandling
-{
-    string Url { get; }
-}
+public interface IQueryListHandling : IBaseUrl;

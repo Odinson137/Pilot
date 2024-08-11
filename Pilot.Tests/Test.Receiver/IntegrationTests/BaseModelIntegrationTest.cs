@@ -10,6 +10,7 @@ using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
 
+[Collection(nameof(SequentialCollectionDefinition))]
 public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIntegrationTest where T : BaseModel where TDto : BaseDto
 {
     // public readonly User Admin;

@@ -1,4 +1,4 @@
-﻿namespace Test.Receiver.IntegrationTests.TestSettings;
+﻿namespace Test.Base.IntegrationBase;
 
 public class TestFixture
 {

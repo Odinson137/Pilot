@@ -4,7 +4,7 @@ using Pilot.SqrsController.Interfaces;
 
 namespace Pilot.Api.Behaviors;
 
-public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling where TResponse : BaseDto
+public class QueryListHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IQueryListHandling
 {
     private readonly ILogger<QueryListHandling<TRequest, TResponse>> _logger;
     private readonly IBaseHttpService _httpService;
