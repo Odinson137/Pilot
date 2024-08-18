@@ -32,20 +32,17 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
 
     public async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
     {
-        var query = await DbSet
+        var query = DbSet
             .Skip(filter.Skip)
             .Take(filter.Take)
             .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
-            .ProjectTo<TOut>(mapper.ConfigurationProvider)
-            .ToListAsync(token);
+            .ProjectTo<TOut>(mapper.ConfigurationProvider);
 
-        return query;
-
-        // if (filter.Ids != null)
-        // {
-        //     query = (IOrderedQueryable<TOut>)query.Where(c => filter.Ids.Contains(c.Id));
-        // }
-        //
-        // return await query.ToListAsync(token);
+        if (filter.Ids != null)
+        {
+            query = (IOrderedQueryable<TOut>)query.Where(c => filter.Ids.Contains(c.Id));
+        }
+        
+        return await query.ToListAsync(token);
     }
 }
