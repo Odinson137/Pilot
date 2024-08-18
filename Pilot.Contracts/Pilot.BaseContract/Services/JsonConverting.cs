@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Web;
+using Newtonsoft.Json;
 
 namespace Pilot.Contracts.Services;
 
@@ -22,5 +23,14 @@ public static class JsonConverting
     public static T FromJson<T>(this string data)
     {
         return JsonConvert.DeserializeObject<T>(data)!;
+    }
+    
+    public static string ToQueryString(this object obj)
+    {
+        var properties = from p in obj.GetType().GetProperties()
+            where p.GetValue(obj, null) != null
+            select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null)?.ToString());
+
+        return "?" + string.Join("&", properties.ToArray());
     }
 }

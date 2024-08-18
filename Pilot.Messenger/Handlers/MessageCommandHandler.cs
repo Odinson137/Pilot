@@ -1,8 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
-using Pilot.Messenger.Interfaces;
-
-namespace Pilot.Messenger.Handlers;
+﻿namespace Pilot.Messenger.Handlers;
 
 // public class MessageCommandHandler :
 //     IRequestHandler<?>

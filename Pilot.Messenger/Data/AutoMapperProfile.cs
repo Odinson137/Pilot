@@ -13,7 +13,6 @@ public class AutoMapperProfile : Profile
         CreateMap<BaseDto, BaseModel>();
 
         Mapping<Message, MessageDto>();
-        Mapping<BaseModel, MessageUserDto>();
     }
 
     private void Mapping<T, TDto>() where T : BaseModel, new() where TDto : BaseDto

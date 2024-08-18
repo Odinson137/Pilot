@@ -15,8 +15,8 @@ public record GetValueByIdQuery<TDto>(int Id)
     public string Url => $"api/{GetModelName<TDto>()}/{Id}";
 }
 
-public record GetValuesQuery<TDto> : BaseQuery, IRequest<ICollection<TDto>>, ICacheableListMediatrQuery, IQueryListHandling
-    where TDto : BaseDto
+public record GetValuesQuery<TDto> 
+    : BaseQuery, IRequest<ICollection<TDto>>, ICacheableListMediatrQuery, IQueryListHandling where TDto : BaseDto
 {
     public GetValuesQuery(BaseFilter filter)
     {

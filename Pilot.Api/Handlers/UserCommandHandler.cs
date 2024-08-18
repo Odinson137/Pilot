@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Pilot.Api.Commands;
 using Pilot.Api.Interfaces;
-using Pilot.Api.Services;
 using Pilot.Contracts.DTO;
 
 namespace Pilot.Api.Handlers;

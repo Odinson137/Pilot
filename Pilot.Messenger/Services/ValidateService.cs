@@ -1,7 +1,6 @@
 ﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.Interfaces;
 using Pilot.Messenger.Data;
-using Pilot.Messenger.Models;
 
 namespace Pilot.Messenger.Services;
 

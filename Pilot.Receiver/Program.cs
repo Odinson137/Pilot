@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Services;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Data;
@@ -65,13 +64,13 @@ services.AddMassTransit(x =>
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
-        cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));
+        cfg.Host(configuration["RabbitMQ:ConnectionString"]);
         cfg.ConfigureEndpoints(ctx);
     });
 });
 
 services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration.GetConnection("MySql:ConnectionString"),
+        configuration["MySql:ConnectionString"],
         new MySqlServerVersion(new Version(8, 0, 11))
     )
     .EnableSensitiveDataLogging()

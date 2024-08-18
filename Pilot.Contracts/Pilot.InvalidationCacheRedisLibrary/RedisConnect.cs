@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Services;
 using Pilot.InvalidationCacheRedisLibrary.Services;
 using StackExchange.Redis;
 
@@ -13,7 +12,7 @@ public static class RedisConnect
 
     public static async Task AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
-        var redis = configuration.GetConnection("RedisCache:ConnectionString")!;
+        var redis = configuration["RedisCache:ConnectionString"]!;
 
         services.AddStackExchangeRedisCache(options =>
         {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Receiver.Controllers;
@@ -12,8 +13,9 @@ public abstract class BaseReadOnlyController<T, TDto>(
 {
     [HttpGet]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> GetAllValues(BaseFilter filter, CancellationToken token)
+    public async Task<IActionResult> GetAllValues([FromQuery] string? value, CancellationToken token)
     {
+        var filter = value?.FromJson<BaseFilter>() ?? new BaseFilter();
         var result = await repository.GetValuesAsync<TDto>(filter, token);
         logger.LogClassInfo(result);
         return Ok(result);

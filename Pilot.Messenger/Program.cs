@@ -1,9 +1,7 @@
 using MediatR;
 using MediatR.NotificationPublishers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Services;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;

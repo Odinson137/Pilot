@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
@@ -11,9 +10,11 @@ public class ModelService : BaseHttpService, IModelService
     private readonly IRedisService _redis;
     private readonly ILogger<ModelService> _logger;
 
-    public ModelService(ILogger<ModelService> logger, IHttpClientFactory httpClientFactory,
-        IRedisService redis, IConfiguration configuration)
-        : base(logger, httpClientFactory, configuration)
+    public ModelService(
+        ILogger<ModelService> logger, 
+        IHttpClientFactory httpClientFactory,
+        IRedisService redis)
+        : base(logger, httpClientFactory)
     {
         _logger = logger;
         _redis = redis;
@@ -43,20 +44,20 @@ public class ModelService : BaseHttpService, IModelService
         return valueDto;
     }
 
-    public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter? filter, CancellationToken token = default) where TDto : BaseDto
+    public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter filter, CancellationToken token = default) where TDto : BaseDto
     {
         _logger.LogInformation($"Getting values list");
         _logger.LogClassInfo(filter);
         
         var modelName = BaseExpendMethods.GetModelName<TDto>();
 
-        var cacheValue = await _redis.GetValueAsync($"{modelName}-{filter?.Skip}-{filter?.Take}");
+        var cacheValue = await _redis.GetValuesAsync<TDto>(filter.Key);
 
         ICollection<TDto> valueDto;
-        if (cacheValue.IsNull)
+        if (cacheValue == null)
         {
             _logger.LogInformation("Get values from db");
-            valueDto = await SendGetMessages<TDto>($"api/{modelName}", filter, default);
+            valueDto = await SendGetMessages<TDto>($"api/{modelName}?value={filter}", token);
         }
         else
         {

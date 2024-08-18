@@ -20,29 +20,32 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         return value ?? throw new NullReferenceException("Сущность по id не найдена");
     }
 
-    public async Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseId
+    public async Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseDto
     {
         return await DbSet.ProjectTo<TOut>(mapper.ConfigurationProvider).FirstOrDefaultAsync(c => c.Id == id, token);
     }
 
-    public async Task<ICollection<T>> GetValuesAsync(BaseFilter filter, CancellationToken token = default)
-    {
-        return await GetValuesAsync<T>(filter, token);
-    }
+    // public async Task<ICollection<T>> GetValuesAsync(BaseFilter filter, CancellationToken token = default)
+    // {
+    //     return await GetValuesAsync<T>(filter, token);
+    // }
 
-    public async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseId
+    public async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
     {
-        var query = DbSet
+        var query = await DbSet
             .Skip(filter.Skip)
             .Take(filter.Take)
             .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
-            .ProjectTo<TOut>(mapper.ConfigurationProvider);
+            .ProjectTo<TOut>(mapper.ConfigurationProvider)
+            .ToListAsync(token);
 
-        if (filter.Ids != null)
-        {
-            query = query.Where(c => filter.Ids.Contains(c.Id));
-        }
-        
-        return await query.ToListAsync(token);
+        return query;
+
+        // if (filter.Ids != null)
+        // {
+        //     query = (IOrderedQueryable<TOut>)query.Where(c => filter.Ids.Contains(c.Id));
+        // }
+        //
+        // return await query.ToListAsync(token);
     }
 }

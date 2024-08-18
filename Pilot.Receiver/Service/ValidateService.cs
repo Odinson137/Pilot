@@ -1,7 +1,6 @@
 ﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Data;
-using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Service;
 

@@ -9,11 +9,9 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Services;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Serilog;
-using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -30,6 +28,7 @@ services.AddHttpClient(ServiceName.ReceiverServer.ToString(),
 services.AddHttpClient(ServiceName.MessengerServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!); });
 
+services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
@@ -54,10 +53,10 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 
+services.AddQueryHandlers(typeof(BaseDto).Assembly);
+
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingOneBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingListBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryListHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryOneHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UpdateCommandHandling<,>));
@@ -71,7 +70,7 @@ services.AddSwaggerGen();
 services.AddEndpointsApiExplorer();
 services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((_, cfg) => { cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString")); });
+    x.UsingRabbitMq((_, cfg) => { cfg.Host(configuration["RabbitMQ:ConnectionString"]); });
 });
 
 services.AddTransient<ISeed, Seed>();

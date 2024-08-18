@@ -2,7 +2,7 @@
 
 public interface IBaseHttpService
 {
-    public Task<ICollection<TOut>> SendGetMessages<TOut>(string url, BaseFilter? filter, CancellationToken token);
+    public Task<ICollection<TOut>> SendGetMessages<TOut>(string url, CancellationToken token);
 
     public Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token);
 

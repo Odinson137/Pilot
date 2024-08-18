@@ -1,4 +1,7 @@
-﻿namespace Pilot.Contracts.Base;
+﻿using System.Text.Json.Serialization;
+using Pilot.Contracts.Services;
+
+namespace Pilot.Contracts.Base;
 
 public struct BaseFilter(int skip, int take)
 {
@@ -18,4 +21,10 @@ public struct BaseFilter(int skip, int take)
     public string? SortMember { get; set; }
     
     public string? SortAscending { get; set; }
+
+    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
+    public string Key => GetHashCode().ToString();
+    
+    public override string ToString() => this.ToJson();
 }

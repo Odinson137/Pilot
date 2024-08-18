@@ -27,6 +27,4 @@ public enum ModelType
 
     [Description(nameof(HistoryActionDto))]
     HistoryAction = 8,
-
-    [Description(nameof(MessageUserDto))] MessageUser = 9
 }

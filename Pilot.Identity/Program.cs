@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
-using Pilot.Contracts.Services;
 using Pilot.Identity.Data;
 using Pilot.Identity.DTO;
 using Pilot.Identity.Interfaces;
@@ -44,7 +43,7 @@ services.AddAutoMapper(typeof(AutoMapperProfile));
 services.AddControllers();
 
 services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration.GetConnection("MySqlIdentity:ConnectionString"),
+        configuration["MySqlIdentity:ConnectionString"],
         new MySqlServerVersion(new Version(8, 0, 11))
     )
     .EnableSensitiveDataLogging()

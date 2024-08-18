@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Data;
+﻿using System.Data;
 using System.Net.Http.Json;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ProjectExceptions;
@@ -11,8 +9,7 @@ namespace Pilot.Contracts.Base;
 
 public class BaseHttpService(
     ILogger<BaseHttpService> logger,
-    IHttpClientFactory httpClientFactory,
-    IConfiguration сonfiguration)
+    IHttpClientFactory httpClientFactory)
     : IBaseHttpService
 {
     protected readonly ILogger<BaseHttpService> Logger = logger;
@@ -30,7 +27,7 @@ public class BaseHttpService(
         }
     }
 
-    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string url, BaseFilter? filter, CancellationToken token)
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string url, CancellationToken token)
     {
         Logger.LogInformation($"Send message to {url}");
 

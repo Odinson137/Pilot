@@ -7,9 +7,8 @@ namespace Pilot.Api.Services;
 
 public class HttpIdentityService(
     ILogger<HttpIdentityService> logger,
-    IHttpClientFactory httpClientFactory,
-    IConfiguration configuration)
-    : BaseHttpService(logger, httpClientFactory, configuration), IHttpIdentityService
+    IHttpClientFactory httpClientFactory)
+    : BaseHttpService(logger, httpClientFactory), IHttpIdentityService
 {
     public async Task<TOut> SendPostMessage<TOut, TMessage>(string url, TMessage message, CancellationToken token)
     {
