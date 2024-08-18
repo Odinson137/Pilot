@@ -1,14 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Hubs;
+using Pilot.Messenger.Interfaces;
 
 namespace Pilot.Messenger.Services;
 
-public class NotificationService
+public class NotificationService(IHubContext<NotificationHub, INotificationClient> hubContext) : INotificationService
 {
-    private readonly IHubContext<NotificationHub> _hubContext;
-    
-    public NotificationService(IHubContext<NotificationHub> hubContext)
+    public Task Notify(int userId, MessageDto message)
     {
-        _hubContext = hubContext;
+        return hubContext.Clients.Group(userId.ToString()).SendNotificationAsync(message);
     }
 }

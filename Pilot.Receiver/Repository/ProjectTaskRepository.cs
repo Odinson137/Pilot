@@ -6,7 +6,7 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Repository;
 
-public class ProjectTaskRepository(DataContext context, IMapper mapper) : BaseRepository<ProjectTask>(context, mapper), IProjectTask
+public class ProjectTaskRepository(DataContext context, IMapper mapper)
+    : BaseRepository<ProjectTask>(context, mapper), IProjectTask
 {
-
 }

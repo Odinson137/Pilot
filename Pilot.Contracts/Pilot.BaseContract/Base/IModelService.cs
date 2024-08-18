@@ -1,9 +1,8 @@
-﻿
-namespace Pilot.Contracts.Base;
+﻿namespace Pilot.Contracts.Base;
 
-public interface IModelService<TDto>
+public interface IModelService
 {
-    public Task<TDto> GetValueByIdAsync(int userId, CancellationToken token = default);
+    public Task<TDto> GetValueByIdAsync<TDto>(int userId, CancellationToken token = default) where TDto : BaseDto;
 
-    public Task<ICollection<TDto>> GetValuesAsync(BaseFilter? filter, CancellationToken token = default);
+    public Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter? filter, CancellationToken token = default) where TDto : BaseDto;
 }

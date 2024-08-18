@@ -7,7 +7,8 @@ namespace Test.Receiver.IntegrationTests;
 public class FileTests : BaseModelReceiverIntegrationTest<File, FileDto>
 {
     /// <inheritdoc />
-    public FileTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
+    public FileTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(
+        receiverFactory, identityFactory)
     {
     }
 }

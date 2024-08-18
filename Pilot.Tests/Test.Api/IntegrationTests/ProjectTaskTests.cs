@@ -7,7 +7,8 @@ namespace Test.Api.IntegrationTests;
 public class ProjectTaskTests : BaseModelIntegrationTest<ProjectTask, ProjectTaskDto>
 {
     /// <inheritdoc />
-    public ProjectTaskTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory) 
+    public ProjectTaskTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+        ApiTestIdentityFactory identityFactory)
         : base(apiFactory, receiverFactory, identityFactory)
     {
     }

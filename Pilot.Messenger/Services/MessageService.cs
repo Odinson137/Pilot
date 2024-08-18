@@ -5,13 +5,9 @@ namespace Pilot.Messenger.Services;
 
 public class MessageService : IMessageService
 {
-    public MessageService()
-    {
-        
-    }
-    
     public Task SendMessage(MessageDto message)
     {
+        // TODO я не знаю, что здесь делать
         throw new NotImplementedException();
     }
 }

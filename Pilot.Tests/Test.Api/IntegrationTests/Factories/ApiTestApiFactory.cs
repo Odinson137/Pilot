@@ -3,33 +3,18 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Pilot.Api;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.Redis;
 
 namespace Test.Api.IntegrationTests.Factories;
 
-public class ApiTestApiFactory : WebApplicationFactory<Pilot.Api.Program>, IAsyncLifetime
+public class ApiTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")
         .Build();
-    
-    private const string ProjectTestName = "Api";
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-        builder.UseSetting("ENVIRONMENT", ProjectTestName);
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-        
-        Environment.SetEnvironmentVariable($"{ProjectTestName}.RedisCache:ConnectionString", _redisContainer.GetConnectionString());
-
-        builder.ConfigureTestServices(services =>
-        {
-            services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
-            services.AddTransient<ISeed, TestSeed>();
-        });
-    }
 
 
     public async Task InitializeAsync()
@@ -40,5 +25,19 @@ public class ApiTestApiFactory : WebApplicationFactory<Pilot.Api.Program>, IAsyn
     public new async Task DisposeAsync()
     {
         await _redisContainer.StopAsync();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
+
+        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+            _redisContainer.GetConnectionString());
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
+            services.AddTransient<ISeed, TestSeed>();
+        });
     }
 }

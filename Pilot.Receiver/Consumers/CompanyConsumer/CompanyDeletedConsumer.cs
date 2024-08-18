@@ -16,5 +16,4 @@ public class CompanyDeletedConsumer(
     IMapper mapper)
     : BaseDeleteConsumer<Company, CompanyDto>(logger, company, message, validate, mapper)
 {
-
 }

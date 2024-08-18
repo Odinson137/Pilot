@@ -15,6 +15,9 @@ public class AutoMapperProfile : Profile
 
         Mapping<Company, CompanyDto>();
         Mapping<CompanyUser, CompanyUserDto>();
+        
+        Mapping<CompanyUser, UserDto>();
+
         Mapping<File, FileDto>();
         Mapping<Project, ProjectDto>();
         Mapping<ProjectTask, ProjectTaskDto>();
@@ -27,13 +30,15 @@ public class AutoMapperProfile : Profile
         CreateMap<T?, T?>();
         CreateMap<T?, TDto?>();
         CreateMap<TDto?, T?>()
-            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));;
-        CreateMap<BaseDto?, T?>().ConvertUsing(src => src == null ? null : new T
-        {
-            Id = src.Id,
-            CreateAt = src.CreateAt,
-            ChangeAt = src.ChangeAt,
-            DeleteAt = src.DeleteAt
-        });
+            .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));
+        CreateMap<BaseDto?, T?>().ConvertUsing(src => src == null
+            ? null
+            : new T
+            {
+                Id = src.Id,
+                CreateAt = src.CreateAt,
+                ChangeAt = src.ChangeAt,
+                DeleteAt = src.DeleteAt
+            });
     }
 }

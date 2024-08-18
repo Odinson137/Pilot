@@ -6,6 +6,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
+using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
@@ -29,7 +30,6 @@ services.AddScoped<ITeam, TeamRepository>();
 
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 
-services.AddUserService();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 // var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
@@ -61,11 +61,8 @@ services.AddMassTransit(x =>
         .Select(c => c)
         .ToList();
 
-    foreach (var consumer in consumers)
-    {
-        x.AddConsumer(consumer);
-    }
-    
+    foreach (var consumer in consumers) x.AddConsumer(consumer);
+
     x.UsingRabbitMq((ctx, cfg) =>
     {
         cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));
@@ -81,19 +78,13 @@ services.AddDbContext<DataContext>(option => option.UseMySql(
     .EnableDetailedErrors()
 );
 
-services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = configuration.GetConnection("RedisCache:ConnectionString");
-    options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
-});
+await services.AddRedis(configuration);
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
 // TODO обобщить
-services.AddHttpClient("IdentityServer", c =>
-{
-    c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
-});
+services.AddHttpClient("IdentityServer",
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();

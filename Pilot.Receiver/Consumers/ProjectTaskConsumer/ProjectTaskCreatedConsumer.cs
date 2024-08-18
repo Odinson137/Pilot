@@ -15,6 +15,7 @@ public class ProjectTaskCreatedConsumer(
     IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
-    : BaseCreatedConsumer<ProjectTask, ProjectTaskDto>(logger, repository, messageService, validate, mapper, companyUser)
+    : BaseCreatedConsumer<ProjectTask, ProjectTaskDto>(logger, repository, messageService, validate, mapper,
+        companyUser)
 {
 }

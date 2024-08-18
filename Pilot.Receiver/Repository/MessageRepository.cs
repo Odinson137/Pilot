@@ -8,6 +8,7 @@ public class MessageService : IMessageService
 {
     private readonly ILogger<MessageService> _logger;
     private readonly IBaseMassTransitService _massTransitService;
+
     public MessageService(IBaseMassTransitService massTransitService, ILogger<MessageService> logger)
     {
         _massTransitService = massTransitService;

@@ -5,5 +5,5 @@ public enum ActionState
     NotChange,
     Create,
     Update,
-    Delete,
+    Delete
 }

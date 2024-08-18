@@ -6,7 +6,7 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Repository;
 
-public class HistoryActionRepository(DataContext context, IMapper mapper) : BaseRepository<HistoryAction>(context, mapper), IHistoryAction
+public class HistoryActionRepository(DataContext context, IMapper mapper)
+    : BaseRepository<HistoryAction>(context, mapper), IHistoryAction
 {
-
 }

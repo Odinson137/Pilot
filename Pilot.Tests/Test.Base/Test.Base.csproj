@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
-        <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
+        <PackageReference Include="JetBrains.Annotations" Version="2024.2.0"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageReference Include="xunit" Version="2.5.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
@@ -18,34 +18,34 @@
     <ItemGroup>
         <Using Include="Xunit"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <PackageReference Include="GitHubActionsTestLogger" Version="2.4.1">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.7" />
-      <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
-      <PackageReference Include="Testcontainers.MongoDb" Version="3.9.0" />
-      <PackageReference Include="Testcontainers.MySql" Version="3.9.0" />
-      <PackageReference Include="Testcontainers.RabbitMq" Version="3.9.0" />
-      <PackageReference Include="Testcontainers.Redis" Version="3.9.0" />
-      <PackageReference Include="xunit.extensibility.core" Version="2.5.3" />
+        <PackageReference Include="GitHubActionsTestLogger" Version="2.4.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0"/>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2"/>
+        <PackageReference Include="Testcontainers.MongoDb" Version="3.9.0"/>
+        <PackageReference Include="Testcontainers.MySql" Version="3.9.0"/>
+        <PackageReference Include="Testcontainers.RabbitMq" Version="3.9.0"/>
+        <PackageReference Include="Testcontainers.Redis" Version="3.9.0"/>
+        <PackageReference Include="xunit.extensibility.core" Version="2.5.3"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\..\Pilot.Api\Pilot.Api.csproj" />
-      <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\..\Pilot.Identity\Pilot.Identity.csproj" />
-      <ProjectReference Include="..\..\Pilot.Messenger\Pilot.Messenger.csproj" />
-      <ProjectReference Include="..\..\Pilot.Receiver\Pilot.Receiver.csproj" />
+        <ProjectReference Include="..\..\Pilot.Api\Pilot.Api.csproj"/>
+        <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Identity\Pilot.Identity.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Messenger\Pilot.Messenger.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Receiver\Pilot.Receiver.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <Folder Include="UnitTestBase\" />
+        <Folder Include="UnitTestBase\"/>
     </ItemGroup>
 
 </Project>

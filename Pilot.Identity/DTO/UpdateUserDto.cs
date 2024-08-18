@@ -9,5 +9,4 @@ public class UpdateUserDto : BaseId
     public required string LastName { get; set; } = null!;
     public required string OldPassword { get; init; }
     public required string Password { get; init; }
-
 }

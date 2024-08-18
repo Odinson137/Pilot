@@ -1,84 +1,70 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using Pilot.Contracts.Interfaces;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Contracts.Base;
 
-public abstract class ModelService<TDto> : BaseHttpService, IModelService<TDto> where TDto : BaseDto
+public class ModelService : BaseHttpService, IModelService
 {
-    private readonly ILogger<ModelService<TDto>> _logger;
-    private readonly IDistributedCache _cache;
-    private readonly string _modelName = BaseExpendMethods.GetModelName<TDto>();
-    
-    public ModelService(ILogger<ModelService<TDto>> logger, IHttpClientFactory httpClientFactory, IDistributedCache cache, IConfiguration configuration, string clientName) 
+    private readonly IRedisService _redis;
+    private readonly ILogger<ModelService> _logger;
+
+    public ModelService(ILogger<ModelService> logger, IHttpClientFactory httpClientFactory,
+        IRedisService redis, IConfiguration configuration)
         : base(logger, httpClientFactory, configuration)
     {
         _logger = logger;
-        _cache = cache;
+        _redis = redis;
     }
 
-    public async Task<TDto> GetValueByIdAsync(int valueId, CancellationToken token)
+    public virtual async Task<TDto> GetValueByIdAsync<TDto>(int valueId, CancellationToken token) where TDto : BaseDto
     {
-        _logger.LogInformation($"Getting {_modelName} by id - {valueId}");
-        
-        var cacheValue = await _cache.GetStringAsync($"{_modelName}-{valueId}", token);
-        
+        _logger.LogInformation($"Getting value by id - {valueId}");
+
+        var modelName = BaseExpendMethods.GetModelName<TDto>();
+
+        var cacheValue = await _redis.GetValueAsync($"{modelName}-{valueId}");
+
         TDto valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
             _logger.LogInformation("Get value from cache");
-            valueDto = await SendGetMessage<TDto>($"api/{_modelName}/{valueId}", default);
+            valueDto = await SendGetMessage<TDto>($"api/{modelName}/{valueId}", token);
         }
         else
         {
             _logger.LogInformation("Get value from db");
-            valueDto = JsonConvert.DeserializeObject<TDto>(cacheValue);
+            valueDto = cacheValue.FromJson<TDto>();
         }
-        
-        _logger.LogClassInfo(valueDto);
-        return valueDto!;
-    }
 
-    public async Task<ICollection<TDto>> GetValuesAsync(BaseFilter? filter, CancellationToken token = default)
-    {
-        _logger.LogInformation($"Getting {_modelName} list");
-        _logger.LogClassInfo(filter);
-        
-        var cacheValue = await _cache.GetStringAsync($"{_modelName}-{filter?.Skip}-{filter?.Take}", token);
-        
-        ICollection<TDto> valueDto;
-        if (string.IsNullOrEmpty(cacheValue))
-        {
-            _logger.LogInformation("Get values from cache");
-            valueDto = await SendGetMessages<List<TDto>>($"api/{_modelName}",  filter, default);
-        }
-        else
-        {
-            _logger.LogInformation("Get values from db");
-            valueDto = JsonConvert.DeserializeObject<List<TDto>>(cacheValue)!;
-        }
-        
         _logger.LogClassInfo(valueDto);
         return valueDto;
     }
-    
-    // public async Task PostValue<T>(T message, CancellationToken token = default)
-    // {
-    //     _logger.LogInformation($"Getting {_modelName} to post");
-    //     var response = SendPostMessage($"api/{_modelName}", message, token);
-    // }
-    //
-    // public async Task SendPutMessage<T>(T message, CancellationToken token = default)
-    // {
-    //     _logger.LogInformation($"Getting {_modelName} to post");
-    //     await SendPutMessage($"api/{_modelName}", message, token);
-    // }
-    //
-    // public async Task SendDeleteMessage(string url, CancellationToken token = default)
-    // {
-    //     Logger.LogInformation($"Delete message to {url}");
-    //     await HttpClient.DeleteAsync(url, cancellationToken: token);
-    // }
+
+    public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter? filter, CancellationToken token = default) where TDto : BaseDto
+    {
+        _logger.LogInformation($"Getting values list");
+        _logger.LogClassInfo(filter);
+        
+        var modelName = BaseExpendMethods.GetModelName<TDto>();
+
+        var cacheValue = await _redis.GetValueAsync($"{modelName}-{filter?.Skip}-{filter?.Take}");
+
+        ICollection<TDto> valueDto;
+        if (cacheValue.IsNull)
+        {
+            _logger.LogInformation("Get values from db");
+            valueDto = await SendGetMessages<TDto>($"api/{modelName}", filter, default);
+        }
+        else
+        {
+            _logger.LogInformation("Get values from cache");
+            valueDto = cacheValue.FromJson<List<TDto>>();
+        }
+
+        _logger.LogClassInfo(valueDto);
+        return valueDto;
+    }
 }

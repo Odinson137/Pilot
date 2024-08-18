@@ -5,10 +5,11 @@ using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.Validation.ValidationAttributes;
 
-[AttributeUsage( AttributeTargets.All )]
+[AttributeUsage(AttributeTargets.All)]
 public class CheckNameExist : Attribute, IValidationAttribute
 {
-    public async Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, DbSet<T> dbSet) where T : BaseModel where TDto : BaseDto
+    public async Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, DbSet<T> dbSet)
+        where T : BaseModel where TDto : BaseDto
     {
         var name = propertyInfo.Name;
         var value = (string)propertyInfo.GetValue(model)!;
@@ -22,12 +23,14 @@ public class CheckNameExist : Attribute, IValidationAttribute
 
         var isFound = await dbSet.AnyAsync(lambda);
 
-        return isFound 
-            ? new ValidateError($"Ошибка при добавлении значения '{value}' модели '{typeof(T).Name}'! Оно должно быть уникально во всей системе.") 
+        return isFound
+            ? new ValidateError(
+                $"Ошибка при добавлении значения '{value}' модели '{typeof(T).Name}'! Оно должно быть уникально во всей системе.")
             : new ValidateError();
     }
-    
-    public Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, IBaseReadRepository<T> context) where T : BaseModel where TDto : BaseDto
+
+    public Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, IBaseReadRepository<T> context)
+        where T : BaseModel where TDto : BaseDto
     {
         return IsValid(propertyInfo, model, context.DbSet);
     }

@@ -21,13 +21,16 @@ public class AutoMapperProfile : Profile
         CreateMap<T?, T?>();
         CreateMap<T?, TDto?>();
         CreateMap<TDto?, T?>()
-            .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));;
-        CreateMap<BaseDto?, T?>().ConvertUsing(src => src == null ? null : new T
-        {
-            Id = src.Id,
-            CreateAt = src.CreateAt,
-            ChangeAt = src.ChangeAt,
-            DeleteAt = src.DeleteAt
-        });
+            .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));
+        ;
+        CreateMap<BaseDto?, T?>().ConvertUsing(src => src == null
+            ? null
+            : new T
+            {
+                Id = src.Id,
+                CreateAt = src.CreateAt,
+                ChangeAt = src.ChangeAt,
+                DeleteAt = src.DeleteAt
+            });
     }
 }

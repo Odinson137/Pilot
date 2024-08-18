@@ -17,5 +17,4 @@ public class FileDeletedConsumer(
     ICompanyUser companyUser)
     : BaseDeleteConsumer<File, FileDto>(logger, fileRepository, message, validate, mapper)
 {
-
 }

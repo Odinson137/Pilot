@@ -21,7 +21,7 @@ public static class Validation
     //
     //     return new AttributeError();
     // }
-    
+
     public static ValidateError DefaultValidate<TDto>(this TDto model) where TDto : BaseDto
     {
         var validationContext = new ValidationContext(model);
@@ -42,27 +42,24 @@ public static class Validation
 
         return new ValidateError(builder.ToString());
     }
-    
-    public static async Task<ValidateError> Validate<T, TDto>(this DbSet<T> context, TDto model) 
+
+    public static async Task<ValidateError> Validate<T, TDto>(this DbSet<T> context, TDto model)
         where T : BaseModel where TDto : BaseDto
     {
         var defaultValidate = DefaultValidate(model);
-        if (defaultValidate.IsNotSuccessfully)
-        {
-            return defaultValidate;
-        }
-        
+        if (defaultValidate.IsNotSuccessfully) return defaultValidate;
+
         var validationType = typeof(IValidationAttribute);
         var assembly = Assembly.GetAssembly(validationType);
-        
+
         var customAttributes = assembly?.GetTypes()
             .Where(t => t is { IsClass: true, IsAbstract: false } && validationType.IsAssignableFrom(t))
             .ToList() ?? [];
-        
+
         var type = typeof(T);
 
         var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        
+
         foreach (var property in properties)
         {
             var foundAttributes = property.GetCustomAttributes()
@@ -73,17 +70,14 @@ public static class Validation
             foreach (var foundAttribute in foundAttributes)
             {
                 var attributeError = await foundAttribute.IsValid(property, model, context);
-                if (attributeError.IsNotSuccessfully)
-                {
-                    return attributeError;
-                }
+                if (attributeError.IsNotSuccessfully) return attributeError;
             }
         }
 
         return new ValidateError();
     }
-    
-    public static Task<ValidateError> Validate<T1, T2>(this IBaseReadRepository<T1> context, T2 model) 
+
+    public static Task<ValidateError> Validate<T1, T2>(this IBaseReadRepository<T1> context, T2 model)
         where T1 : BaseModel where T2 : BaseDto
     {
         return Validate(context.DbSet, model);

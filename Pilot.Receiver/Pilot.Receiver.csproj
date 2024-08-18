@@ -8,34 +8,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MassTransit" Version="8.1.3" />
-      <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
-      <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
-      <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.3" />
-      <PackageReference Include="MongoDB.Bson" Version="2.24.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="PilotContractsByYuri" Version="2.2.0" />
-      <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-      <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-      <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="MassTransit" Version="8.1.3"/>
+        <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1"/>
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.3"/>
+        <PackageReference Include="MongoDB.Bson" Version="2.24.0"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+        <PackageReference Include="PilotContractsByYuri" Version="2.2.0"/>
+        <PackageReference Include="Serilog.AspNetCore" Version="8.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj" />
-      <ProjectReference Include="..\Pilot.Messenger\Pilot.Messenger.csproj" />
+        <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\Pilot.Identity\Pilot.Identity.csproj"/>
+        <ProjectReference Include="..\Pilot.Messenger\Pilot.Messenger.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Data\Logs\" />
-      <Folder Include="DTO\" />
+        <Folder Include="Data\Logs\"/>
+        <Folder Include="DTO\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 </Project>

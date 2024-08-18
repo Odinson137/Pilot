@@ -8,5 +8,4 @@ namespace Pilot.Receiver.Repository;
 
 public class TeamRepository(DataContext context, IMapper mapper) : BaseRepository<Team>(context, mapper), ITeam
 {
-
 }

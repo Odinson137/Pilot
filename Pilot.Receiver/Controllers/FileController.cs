@@ -4,4 +4,5 @@ using File = Pilot.Receiver.Models.File;
 
 namespace Pilot.Receiver.Controllers;
 
-public class FileController(IFile repository, ILogger<FileController> logger) : BaseSelectController<File, FileDto>(repository, logger);
+public class FileController(IFile repository, ILogger<FileController> logger)
+    : BaseReadOnlyController<File, FileDto>(repository, logger);

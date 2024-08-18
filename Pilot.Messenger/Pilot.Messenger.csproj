@@ -9,25 +9,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsControllerLibrary\Pilot.SqrsControllerLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Commands\" />
-      <Folder Include="Handlers\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
-      <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsController\Pilot.SqrsController.csproj" />
     </ItemGroup>
 
 </Project>

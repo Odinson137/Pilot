@@ -2,12 +2,13 @@
 
 namespace Pilot.Contracts.Attributes;
 
-[AttributeUsage( AttributeTargets.All )]
+[AttributeUsage(AttributeTargets.All)]
 public class FromServiceAttribute : Attribute
 {
-    public ServiceName ServiceName { get; set; } 
     public FromServiceAttribute(ServiceName serviceName)
     {
         ServiceName = serviceName;
     }
+
+    public ServiceName ServiceName { get; set; }
 }

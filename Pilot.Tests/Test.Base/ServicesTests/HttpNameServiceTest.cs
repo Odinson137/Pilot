@@ -23,14 +23,14 @@ public class HttpNameServiceTest
             return modelTypes!;
         }
     }
-    
+
     [Theory]
     [MemberData(nameof(ModelData))]
     public void GetHttpClientName_Test(Type type)
     {
         // Act
         var httpClientName = HttpNameService.GetHttpClientName(type);
-        
+
         // Assert
         Assert.NotNull(httpClientName);
     }

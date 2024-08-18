@@ -6,12 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MongoDB.Driver;
 using Pilot.Contracts.Data;
+using Pilot.Identity;
 using Pilot.Identity.Data;
 using Testcontainers.MySql;
 
 namespace Test.Identity.IntegrationTests;
 
-public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.Identity.Program>, IAsyncLifetime
+public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     // private readonly MongoDbContainer _mongoDbContainer = new MongoDbBuilder()
     //     .WithImage("mongo:latest")
@@ -25,7 +26,17 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
         .WithUsername("root")
         .WithPassword("12345678")
         .Build();
-    
+
+    public async Task InitializeAsync()
+    {
+        await _mySqlContainer.StartAsync();
+    }
+
+    public new async Task DisposeAsync()
+    {
+        await _mySqlContainer.StopAsync();
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureTestServices(services =>
@@ -37,15 +48,5 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Pilot.
                 _mySqlContainer.GetConnectionString(),
                 new MySqlServerVersion(new Version()));
         });
-    }
-
-    public async Task InitializeAsync()
-    {
-        await _mySqlContainer.StartAsync();
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await _mySqlContainer.StopAsync();
     }
 }

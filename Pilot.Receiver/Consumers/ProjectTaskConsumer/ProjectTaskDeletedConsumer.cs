@@ -17,5 +17,4 @@ public class ProjectTaskDeletedConsumer(
     ICompanyUser companyUser)
     : BaseDeleteConsumer<ProjectTask, ProjectTaskDto>(logger, repository, message, validate, mapper)
 {
-
 }

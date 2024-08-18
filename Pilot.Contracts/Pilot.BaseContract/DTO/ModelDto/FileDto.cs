@@ -8,9 +8,9 @@ namespace Pilot.Contracts.DTO.ModelDto;
 [FromService(ServiceName.ReceiverServer)]
 public class FileDto : BaseDto
 {
-    [Required] [MaxLength(50)]
-    public required string Url { get; set; }
-    
-    [Required] [MaxLength(30)] // TODO потом разобраться с этим в валидауии
+    [Required] [MaxLength(50)] public required string Url { get; set; }
+
+    [Required]
+    [MaxLength(30)] // TODO потом разобраться с этим в валидауии
     public required string Type { get; set; }
 }

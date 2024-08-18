@@ -4,4 +4,5 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Controllers;
 
-public class HistoryActionController(IHistoryAction repository, ILogger<HistoryActionController> logger) : BaseSelectController<HistoryAction, HistoryActionDto>(repository, logger);
+public class HistoryActionController(IHistoryAction repository, ILogger<HistoryActionController> logger)
+    : BaseReadOnlyController<HistoryAction, HistoryActionDto>(repository, logger);

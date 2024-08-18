@@ -10,10 +10,10 @@ public class AutoMapperProfile : Profile
     public AutoMapperProfile()
     {
         CreateMap<BaseModel, BaseDto>();
-        
+
         CreateMap<User, UserDto>();
         CreateMap<UserDto, User>();
-        
+
         CreateMap<User, User>();
-    }   
+    }
 }

@@ -22,10 +22,10 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     where TDto : BaseDto
 {
     protected readonly ILogger<BaseUpdateConsumer<T, TDto>> Logger = logger;
-    protected readonly IBaseRepository<T> Repository = repository;
-    protected readonly IMessageService Message = message;
-    protected readonly IBaseValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
+    protected readonly IMessageService Message = message;
+    protected readonly IBaseRepository<T> Repository = repository;
+    protected readonly IBaseValidatorService Validator = validate;
 
     public virtual async Task Consume(ConsumeContext<UpdateCommandMessage<TDto>> context)
     {
@@ -33,14 +33,14 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         Logger.LogClassInfo(context.Message);
 
         var dtoModel = context.Message.Value;
-        
+
         await Validator.ValidateAsync<T, TDto>(dtoModel, context.Message.UserId);
 
         var model = Mapper.Map<T>(dtoModel);
 
         await Validator.FillValidateAsync(model);
         model.ChangeAt = DateTime.Now;
-        
+
         Repository.GetContext.Attach(model);
         Repository.GetContext.Entry(model).State = EntityState.Modified;
 

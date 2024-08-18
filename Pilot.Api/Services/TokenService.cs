@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Pilot.Api.Interfaces;
 using Pilot.Contracts.Data.Enums;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -23,9 +24,9 @@ public class TokenService : IToken
 
         var claims = new List<Claim>
         {
-            new (JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new (ClaimTypes.Role, role.ToString())
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(ClaimTypes.Role, role.ToString())
         };
 
         var token = new JwtSecurityToken(

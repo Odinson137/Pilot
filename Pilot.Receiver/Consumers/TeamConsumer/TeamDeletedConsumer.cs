@@ -17,5 +17,4 @@ public class TeamDeletedConsumer(
     ICompanyUser companyUser)
     : BaseDeleteConsumer<Team, TeamDto>(logger, repository, message, validate, mapper)
 {
-
 }

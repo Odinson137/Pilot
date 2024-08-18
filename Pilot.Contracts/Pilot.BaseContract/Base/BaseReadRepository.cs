@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Pilot.Contracts.Base;
 
 public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseReadRepository<T>
-    where T : BaseId
+    where T : BaseModel
 {
     public DbSet<T> DbSet { get; } = context.Set<T>();
 
@@ -13,25 +13,36 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
     {
         return await DbSet.FirstOrDefaultAsync(c => c.Id == id, token);
     }
-    
+
     public async Task<T> GetRequiredByIdAsync(int id, CancellationToken token = default)
     {
         var value = await GetByIdAsync(id, token);
         return value ?? throw new NullReferenceException("Сущность по id не найдена");
     }
-    
+
     public async Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseId
     {
         return await DbSet.ProjectTo<TOut>(mapper.ConfigurationProvider).FirstOrDefaultAsync(c => c.Id == id, token);
     }
 
-    public async Task<ICollection<T>> GetAllValuesAsync(int skip, int take, CancellationToken token = default)
+    public async Task<ICollection<T>> GetValuesAsync(BaseFilter filter, CancellationToken token = default)
     {
-        return await GetAllValuesAsync<T>(skip, take, token);
+        return await GetValuesAsync<T>(filter, token);
     }
-    
-    public async Task<ICollection<TOut>> GetAllValuesAsync<TOut>(int skip, int take, CancellationToken token = default)
+
+    public async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseId
     {
-        return await DbSet.Skip(skip).Take(take).OrderByDescending(c => c.Id).ProjectTo<TOut>(mapper.ConfigurationProvider).ToListAsync(token);
+        var query = DbSet
+            .Skip(filter.Skip)
+            .Take(filter.Take)
+            .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
+            .ProjectTo<TOut>(mapper.ConfigurationProvider);
+
+        if (filter.Ids != null)
+        {
+            query = query.Where(c => filter.Ids.Contains(c.Id));
+        }
+        
+        return await query.ToListAsync(token);
     }
 }

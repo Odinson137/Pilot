@@ -6,4 +6,3 @@ namespace Pilot.Api.Commands;
 public record UserRegistrationCommand(RegistrationUserDto UserDto) : IRequest;
 
 public record UserAuthorizationCommand(AuthorizationUserDto UserDto) : IRequest<AuthUserDto>;
-

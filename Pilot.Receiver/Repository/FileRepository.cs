@@ -8,5 +8,4 @@ namespace Pilot.Receiver.Repository;
 
 public class FileRepository(DataContext context, IMapper mapper) : BaseRepository<File>(context, mapper), IFile
 {
-
 }

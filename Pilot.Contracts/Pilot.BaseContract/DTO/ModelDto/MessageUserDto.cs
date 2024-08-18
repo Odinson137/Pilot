@@ -7,5 +7,4 @@ namespace Pilot.Contracts.DTO.ModelDto;
 [FromService(ServiceName.MessengerServer)]
 public class MessageUserDto : BaseDto
 {
-    
 }

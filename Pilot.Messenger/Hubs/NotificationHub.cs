@@ -1,11 +1,19 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using System.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using Pilot.Messenger.Interfaces;
 
 namespace Pilot.Messenger.Hubs;
 
-public class NotificationHub : Hub
+[Authorize]
+public class NotificationHub : Hub<INotificationClient>
 {
-    public async Task SendMessage(string user, string message)
+    public override async Task OnConnectedAsync()
     {
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
+        var name = Context.User!.Identity!.Name ?? throw new NoNullAllowedException("User name is null error");
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, name);
+
+        await base.OnConnectedAsync();
     }
 }

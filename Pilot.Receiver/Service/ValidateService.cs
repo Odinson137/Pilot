@@ -7,10 +7,9 @@ namespace Pilot.Receiver.Service;
 
 public class ValidatorService(
     IMessageService message,
-    IUserService user,
+    IModelService user,
     ILogger<ValidatorService> logger,
     DataContext context)
-    : BaseValidateService<CompanyUser>(message, user, logger, context)
+    : BaseValidateService(message, user, logger, context)
 {
-
 }

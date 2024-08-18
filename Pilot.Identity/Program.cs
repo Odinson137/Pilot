@@ -1,5 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Services;
@@ -22,6 +24,7 @@ services.AddSwaggerGen();
 
 services.AddTransient<IPasswordCoder, PasswordCoderService>();
 services.AddScoped<IUser, UserRepository>();
+services.AddScoped<IBaseHttpService, BaseHttpService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -48,6 +51,8 @@ services.AddDbContext<DataContext>(option => option.UseMySql(
     .EnableDetailedErrors()
 );
 
+services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
+
 var app = builder.Build();
 
 // await app.Services.GetRequiredService<ISeed>().Seeding(app);
@@ -65,19 +70,20 @@ app.UseHttpsRedirection();
 app.MapGet("/", () => "Это сервис для работы с пользователями");
 
 app.MapPost("/Registration", async (
-        IUser user, 
+        IUser user,
         IPasswordCoder passwordService,
         ILogger<Program> logger,
+        IMediator mediator,
         [FromBody] RegistrationUserDto registrationUser) =>
     {
         logger.LogInformation("Receive registration form in identity");
-        
+
         if (await user.IsUserNameExistAsync(registrationUser.UserName))
         {
             logger.LogInformation("This username is already taken");
             return Results.BadRequest("This username is already taken");
         }
-        
+
         var newUser = new User
         {
             UserName = registrationUser.UserName,
@@ -97,7 +103,7 @@ app.MapPost("/Registration", async (
     .WithOpenApi();
 
 app.MapPost("/Authorization", async (
-        IUser userRepository, 
+        IUser userRepository,
         ILogger<Program> logger,
         IPasswordCoder passwordService,
         [FromBody] AuthorizationUserDto userDto) =>
@@ -124,7 +130,7 @@ app.MapPost("/Authorization", async (
     .WithOpenApi();
 
 app.MapPut("/Change", async (
-        IUser userRepository, 
+        IUser userRepository,
         ILogger<Program> logger,
         IPasswordCoder passwordService,
         [FromBody] UpdateUserDto userDto) =>
@@ -142,7 +148,7 @@ app.MapPut("/Change", async (
         if (!string.IsNullOrEmpty(userDto.Password))
         {
             logger.LogInformation("Passwords change");
-            
+
             if (user.Password != passwordService.PasswordCode(userDto.OldPassword))
             {
                 logger.LogInformation("Passwords aren't match");
@@ -165,5 +171,7 @@ app.Run();
 namespace Pilot.Identity
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public partial class Program {}
+    public class Program
+    {
+    }
 }

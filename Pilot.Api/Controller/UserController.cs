@@ -16,7 +16,7 @@ public class UserController : BaseController
     {
         _mediator = mediator;
     }
-    
+
     [HttpPost("Registration")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
@@ -25,14 +25,14 @@ public class UserController : BaseController
         await _mediator.Send(new UserRegistrationCommand(userDto), token);
         return Ok();
     }
-    
+
     [HttpPost("Authorization")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
     public async Task<IActionResult> AuthorizationUser(AuthorizationUserDto userDto, CancellationToken token)
     {
-        var content = 
+        var content =
             await _mediator.Send(new UserAuthorizationCommand(userDto), token);
         return Ok(content);
     }

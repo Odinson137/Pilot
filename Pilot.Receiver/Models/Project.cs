@@ -8,17 +8,17 @@ namespace Pilot.Receiver.Models;
 public class Project : BaseModel, IAddCompanyUser
 {
     [Required] [MaxLength(100)] public string Name { get; set; } = null!;
-    
+
     [MaxLength(500)] public string? Description { get; set; }
-    
+
     public ICollection<Team> Teams { get; set; } = new List<Team>();
-    
+
     public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
-    
+
     public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
-    
-    public ProjectStatus ProjectStatus { get; set; } 
-    
+
+    public ProjectStatus ProjectStatus { get; set; }
+
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CompanyUsers.Add(companyUser);

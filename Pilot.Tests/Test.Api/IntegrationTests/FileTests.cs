@@ -7,7 +7,8 @@ namespace Test.Api.IntegrationTests;
 public class FileTests : BaseModelIntegrationTest<File, FileDto>
 {
     /// <inheritdoc />
-    public FileTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory) 
+    public FileTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+        ApiTestIdentityFactory identityFactory)
         : base(apiFactory, receiverFactory, identityFactory)
     {
     }

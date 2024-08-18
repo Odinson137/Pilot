@@ -7,7 +7,8 @@ namespace Test.Api.IntegrationTests;
 public class HistoryActionTests : BaseModelIntegrationTest<HistoryAction, HistoryActionDto>
 {
     /// <inheritdoc />
-    public HistoryActionTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory, ApiTestIdentityFactory identityFactory) 
+    public HistoryActionTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+        ApiTestIdentityFactory identityFactory)
         : base(apiFactory, receiverFactory, identityFactory)
     {
     }

@@ -8,7 +8,7 @@ public interface IValidationAttribute
 {
     Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, DbSet<T> dbSet)
         where T : BaseModel where TDto : BaseDto;
-    
-    Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, IBaseReadRepository<T> context) 
+
+    Task<ValidateError> IsValid<T, TDto>(PropertyInfo propertyInfo, TDto model, IBaseReadRepository<T> context)
         where T : BaseModel where TDto : BaseDto;
 }

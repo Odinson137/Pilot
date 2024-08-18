@@ -11,7 +11,8 @@ namespace Test.Receiver.IntegrationTests;
 public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
     /// <inheritdoc />
-    public CompanyUserTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
+    public CompanyUserTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) :
+        base(receiverFactory, identityFactory)
     {
     }
 
@@ -21,10 +22,10 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
         #region Arrange
 
         var companyUser = await CreateCompanyUser();
-        
+
         var mapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
         var valueDto = mapper.Map<CompanyUserDto>(companyUser);
-        
+
         #endregion
 
         // Act
@@ -33,10 +34,10 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
 
         // Assert
         await Wait();
-        
-        var result = await AssertReceiverContext.Set<CompanyUser>().Where(c => c.Id == companyUser.Id).FirstOrDefaultAsync();
+
+        var result = await AssertReceiverContext.Set<CompanyUser>().Where(c => c.Id == companyUser.Id)
+            .FirstOrDefaultAsync();
 
         Assert.NotNull(result);
     }
-
 }

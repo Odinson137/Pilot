@@ -6,7 +6,7 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Repository;
 
-public class CompanyUserRepository(DataContext context, IMapper mapper) : BaseRepository<CompanyUser>(context, mapper), ICompanyUser
+public class CompanyUserRepository(DataContext context, IMapper mapper)
+    : BaseRepository<CompanyUser>(context, mapper), ICompanyUser
 {
-
 }

@@ -4,4 +4,5 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Controllers;
 
-public class TeamController(ITeam repository, ILogger<TeamController> logger) : BaseSelectController<Team, TeamDto>(repository, logger);
+public class TeamController(ITeam repository, ILogger<TeamController> logger)
+    : BaseReadOnlyController<Team, TeamDto>(repository, logger);

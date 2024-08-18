@@ -18,6 +18,7 @@ public class BaseHttpService(
     protected readonly ILogger<BaseHttpService> Logger = logger;
 
     private HttpClient? _httpClient;
+
     protected HttpClient HttpClient
     {
         get
@@ -28,19 +29,45 @@ public class BaseHttpService(
             return _httpClient;
         }
     }
-    
+
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string url, BaseFilter? filter, CancellationToken token)
+    {
+        Logger.LogInformation($"Send message to {url}");
+
+        HttpClientInit<TOut>();
+
+        var response = await HttpClient.GetAsync(url, token);
+        if (!response.IsSuccessStatusCode)
+            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
+
+        var content = await response.Content.ReadFromJsonAsync<List<TOut>>(token);
+        if (content == null) throw new BadRequestException($"Content from {url} is null");
+
+        return content;
+    }
+
+    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token)
+    {
+        Logger.LogInformation($"Send message to {url}");
+
+        HttpClientInit<TOut>();
+
+        var response = await HttpClient.GetAsync(url, token);
+        if (!response.IsSuccessStatusCode)
+            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
+
+        var content = await response.Content.ReadFromJsonAsync<TOut>(token);
+        if (content == null) throw new NotFoundException("User is not found");
+
+        return content;
+    }
+
     private void HttpClientInit<TOut>()
     {
         if (_httpClient != null) throw new DataException("HttpClient уже и так инициализирован");
-        
-        var valueType = typeof(TOut);
-        if (typeof(IEnumerable).IsAssignableFrom(valueType) && valueType.IsGenericType)
-        {
-            valueType = valueType.GetGenericArguments().First();
-        }
-    
-        var clientName = HttpNameService.GetHttpClientName(valueType);
-        
+
+        var clientName = HttpNameService.GetHttpClientName(typeof(TOut));
+
         // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
             ? HttpSingleTone.Init.HttpClients[
@@ -48,48 +75,7 @@ public class BaseHttpService(
             : httpClientFactory.CreateClient(clientName);
     }
 
-    public async Task<TOut> SendGetMessages<TOut>(string url, BaseFilter? filter, CancellationToken token)
-    {
-        Logger.LogInformation($"Send message to {url}");
-        
-        HttpClientInit<TOut>();
-        
-        var response = await HttpClient.GetAsync(url, token);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
-        }
-
-        var content = await response.Content.ReadFromJsonAsync<TOut>(token);
-        if (content == null)
-        {
-            throw new BadRequestException($"Content from {url} is null");
-        }
-        
-        return content;
-    }
-
-    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token)
-    {
-        Logger.LogInformation($"Send message to {url}");
-        
-        HttpClientInit<TOut>();
-        
-        var response = await HttpClient.GetAsync(url, token);
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
-        }
-
-        var content = await response.Content.ReadFromJsonAsync<TOut>(token);
-        if (content == null)
-        {
-            throw new NotFoundException("User is not found");
-        }
-        
-        return content;
-    }
-    
+    // Я все операции Post, Update и Delete делаю через Consumer, поэтому это не надо. Но на крайний случай оставлю
     // public async Task SendPostMessage<TMessage>(string url, TMessage message, CancellationToken token)
     // {
     //     Logger.LogInformation($"Post message to {url}");
@@ -100,7 +86,7 @@ public class BaseHttpService(
     //         throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
     //     }
     // }
-    
+
     // public async Task SendPutMessage<TMessage>(string url, TMessage message, CancellationToken token)
     // {
     //     Logger.LogInformation($"Put message to {url}");

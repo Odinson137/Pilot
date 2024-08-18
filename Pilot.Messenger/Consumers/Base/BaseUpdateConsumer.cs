@@ -18,10 +18,10 @@ public abstract class BaseUpdateConsumer<T, TDto>(
     where TDto : BaseDto
 {
     protected readonly ILogger<BaseUpdateConsumer<T, TDto>> Logger = logger;
-    protected readonly IBaseRepository<T> Repository = repository;
-    protected readonly IMessageService Message = message;
-    protected readonly IBaseValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
+    protected readonly IMessageService Message = message;
+    protected readonly IBaseRepository<T> Repository = repository;
+    protected readonly IBaseValidatorService Validator = validate;
 
     public virtual async Task Consume(ConsumeContext<UpdateCommandMessage<TDto>> context)
     {

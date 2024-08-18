@@ -4,4 +4,5 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Controllers;
 
-public class ProjectController(IProject repository, ILogger<ProjectController> logger) : BaseSelectController<Project, ProjectDto>(repository, logger);
+public class ProjectController(IProject repository, ILogger<ProjectController> logger)
+    : BaseReadOnlyController<Project, ProjectDto>(repository, logger);

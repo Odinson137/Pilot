@@ -10,9 +10,9 @@ public class HistoryAction : BaseModel, IAddCompanyUser
     [Required] public CompanyUser CompanyUser { get; set; } = null!;
 
     [Required] public ProjectTask ProjectTask { get; set; } = null!;
-    
+
     [Required] public ActionState ActionState { get; set; }
-    
+
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CompanyUser = companyUser;

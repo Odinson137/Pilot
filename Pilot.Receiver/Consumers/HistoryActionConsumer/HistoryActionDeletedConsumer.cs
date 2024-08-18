@@ -17,5 +17,4 @@ public class HistoryActionDeletedConsumer(
     ICompanyUser companyUser)
     : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate, mapper)
 {
-
 }

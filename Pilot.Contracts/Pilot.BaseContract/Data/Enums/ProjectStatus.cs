@@ -6,5 +6,5 @@ public enum ProjectStatus
     Development,
     Ready,
     Publish,
-    Deleted,
+    Deleted
 }

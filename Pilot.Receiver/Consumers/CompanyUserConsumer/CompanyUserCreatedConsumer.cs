@@ -14,6 +14,7 @@ public class CompanyUserCreatedConsumer(
     IMessageService messageService,
     IBaseValidatorService validate,
     IMapper mapper)
-    : BaseCreatedConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, messageService, validate, mapper, companyUser)
+    : BaseCreatedConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, messageService, validate, mapper,
+        companyUser)
 {
 }

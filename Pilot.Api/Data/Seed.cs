@@ -2,7 +2,6 @@
 
 namespace Pilot.Api.Data;
 
-
 public class Seed : ISeed
 {
     public Task Seeding(IApplicationBuilder app)

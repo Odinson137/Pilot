@@ -4,5 +4,4 @@ namespace Pilot.Messenger.Hubs;
 
 public class ChatHub : Hub
 {
-    
 }

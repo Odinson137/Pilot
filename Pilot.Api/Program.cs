@@ -3,14 +3,17 @@ using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
+using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ProjectExceptions;
 using Pilot.Contracts.Services;
-using Pilot.SqrsController.Behaviors;
+using Pilot.InvalidationCacheRedisLibrary;
+using Pilot.SqrsControllerLibrary.Behaviors;
 using Serilog;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -18,20 +21,14 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddHttpClient(ServiceName.IdentityServer.ToString(), c =>
-{
-    c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!);
-});
+services.AddHttpClient(ServiceName.IdentityServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
-services.AddHttpClient(ServiceName.ReceiverServer.ToString(), c =>
-{
-    c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!);
-});
+services.AddHttpClient(ServiceName.ReceiverServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!); });
 
-services.AddHttpClient(ServiceName.MessengerServer.ToString(), c =>
-{
-    c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!);
-});
+services.AddHttpClient(ServiceName.MessengerServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!); });
 
 services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
@@ -41,11 +38,7 @@ services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 // services.AddSingleton(
 //     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
 
-services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = configuration.GetConnection("RedisCache:ConnectionString");
-    options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
-});
+await services.AddRedis(configuration);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -59,13 +52,11 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .CreateLogger());
 
 
-services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-});
+services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingOneBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingListBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryListHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryOneHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
@@ -80,10 +71,7 @@ services.AddSwaggerGen();
 services.AddEndpointsApiExplorer();
 services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((_, cfg) =>
-    {
-        cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString"));
-    });
+    x.UsingRabbitMq((_, cfg) => { cfg.Host(configuration.GetConnection("RabbitMQ:ConnectionString")); });
 });
 
 services.AddTransient<ISeed, Seed>();
@@ -130,6 +118,5 @@ app.Run();
 
 namespace Pilot.Api
 {
-    public partial class Program;
+    public class Program;
 }
-

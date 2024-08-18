@@ -15,6 +15,7 @@ public class HistoryActionCreatedConsumer(
     IBaseValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
-    : BaseCreatedConsumer<HistoryAction, HistoryActionDto>(logger, repository, messageService, validate, mapper, companyUser)
+    : BaseCreatedConsumer<HistoryAction, HistoryActionDto>(logger, repository, messageService, validate, mapper,
+        companyUser)
 {
 }

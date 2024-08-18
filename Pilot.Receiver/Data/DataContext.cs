@@ -8,14 +8,6 @@ namespace Pilot.Receiver.Data;
 
 public sealed class DataContext : DbContext
 {
-    public DbSet<Project> Projects { get; set; }
-    public DbSet<Company> Companies { get; set; }
-    public DbSet<CompanyUser> CompanyUsers { get; set; }
-    public DbSet<ProjectTask> ProjectTasks { get; set; }
-    public DbSet<File> Files { get; set; }
-    public DbSet<HistoryAction> HistoryActions { get; set; }
-    public DbSet<Team> Teams { get; set; }
-        
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
         if (Database.GetService<IDatabaseCreator>() is RelationalDatabaseCreator databaseCreator)
@@ -24,4 +16,17 @@ public sealed class DataContext : DbContext
             if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
         }
     }
+    
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        builder.Entity<CompanyUser>().HasQueryFilter(c => c.DeleteAt == null);
+    }
+
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Company> Companies { get; set; }
+    public DbSet<CompanyUser> CompanyUsers { get; set; }
+    public DbSet<ProjectTask> ProjectTasks { get; set; }
+    public DbSet<File> Files { get; set; }
+    public DbSet<HistoryAction> HistoryActions { get; set; }
+    public DbSet<Team> Teams { get; set; }
 }

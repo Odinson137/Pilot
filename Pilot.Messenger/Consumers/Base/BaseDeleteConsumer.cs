@@ -18,10 +18,10 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     where TDto : BaseDto
 {
     protected readonly ILogger<BaseDeleteConsumer<T, TDto>> Logger = logger;
-    protected readonly IBaseRepository<T> Repository = repository;
-    protected readonly IMessageService MessageService = messageService;
-    protected readonly IBaseValidatorService Validator = validate;
     protected readonly IMapper Mapper = mapper;
+    protected readonly IMessageService MessageService = messageService;
+    protected readonly IBaseRepository<T> Repository = repository;
+    protected readonly IBaseValidatorService Validator = validate;
 
     public virtual async Task Consume(ConsumeContext<DeleteCommandMessage<TDto>> context)
     {

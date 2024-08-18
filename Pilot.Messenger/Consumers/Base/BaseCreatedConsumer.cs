@@ -3,6 +3,7 @@ using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
+using Pilot.Messenger.Interfaces;
 
 namespace Pilot.Messenger.Consumers.Base;
 
@@ -10,20 +11,25 @@ public abstract class BaseCreatedConsumer<T, TDto> : IConsumer<CreateCommandMess
     where T : BaseModel
     where TDto : BaseDto
 {
+    // ReSharper disable always MemberCanBePrivate.Global
     protected readonly IBaseValidatorService Validator;
     protected readonly ILogger<BaseCreatedConsumer<T, TDto>> Logger;
     protected readonly IBaseRepository<T> Repository;
     protected readonly IMapper Mapper;
+    protected readonly INotificationService NotificationService;
 
-    protected BaseCreatedConsumer(ILogger<BaseCreatedConsumer<T, TDto>> logger,
+    protected BaseCreatedConsumer(
+        ILogger<BaseCreatedConsumer<T, TDto>> logger,
         IBaseRepository<T> repository,
         IBaseValidatorService validatorService,
-        IMapper mapper)
+        IMapper mapper,
+        INotificationService notificationService)
     {
         Validator = validatorService;
         Logger = logger;
         Repository = repository;
         Mapper = mapper;
+        NotificationService = notificationService;
     }
 
     public virtual async Task Consume(ConsumeContext<CreateCommandMessage<TDto>> context)
@@ -31,18 +37,19 @@ public abstract class BaseCreatedConsumer<T, TDto> : IConsumer<CreateCommandMess
         Logger.LogInformation($"{typeof(T).Name} create consume");
         Logger.LogClassInfo(context.Message);
 
-        await Validator.ValidateAsync<T, TDto>(context.Message.Value, context.Message.UserId);
+        var message = context.Message.Value;
+        var userId = context.Message.UserId;
+
+        await Validator.ValidateAsync<T, TDto>(message, userId);
 
         var model = Mapper.Map<T>(context.Message.Value);
 
         await Validator.FillValidateAsync(model);
-        
+
         await Repository.AddValueToContextAsync(model);
 
         await Repository.SaveAsync();
 
-        // await HubContext.Clients.User();
-        
         Logger.LogInformation($"{typeof(T).Name} consumed");
     }
 }

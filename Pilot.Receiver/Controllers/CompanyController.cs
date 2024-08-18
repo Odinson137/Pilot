@@ -4,4 +4,5 @@ using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Controllers;
 
-public class CompanyController(ICompany repository, ILogger<CompanyController> logger) : BaseSelectController<Company, CompanyDto>(repository, logger);
+public class CompanyController(ICompany repository, ILogger<CompanyController> logger)
+    : BaseReadOnlyController<Company, CompanyDto>(repository, logger);
