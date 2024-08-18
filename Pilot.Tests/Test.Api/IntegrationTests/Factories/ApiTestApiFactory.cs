@@ -15,8 +15,7 @@ public class ApiTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")
         .Build();
-
-
+    
     public async Task InitializeAsync()
     {
         await _redisContainer.StartAsync();

@@ -70,8 +70,7 @@ public class BaseHttpService(
 
         // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
-            ? HttpSingleTone.Init.HttpClients[
-                $"{сonfiguration.GetValue<string>("ENVIRONMENT")}.{clientName}"]
+            ? HttpSingleTone.Init.HttpClients[$"{clientName}"]
             : httpClientFactory.CreateClient(clientName);
     }
 

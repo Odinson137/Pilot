@@ -8,6 +8,7 @@ using Pilot.Receiver;
 using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
+using Testcontainers.Redis;
 
 namespace Test.Api.IntegrationTests.Factories;
 
@@ -22,17 +23,22 @@ public class ApiTestReceiverFactory : WebApplicationFactory<Program>, IAsyncLife
         .WithImage("rabbitmq:3-management")
         .Build();
 
+    private readonly RedisContainer _redisContainer = new RedisBuilder()
+        .WithImage("redis:latest")
+        .Build();
+    
     public async Task InitializeAsync()
     {
         await _rabbitContainer.StartAsync();
         await _mySqlContainer.StartAsync();
-        // await _mongoDbContainer.StartAsync();
+        await _redisContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await _rabbitContainer.StopAsync();
         await _mySqlContainer.StopAsync();
+        await _redisContainer.StopAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -43,7 +49,9 @@ public class ApiTestReceiverFactory : WebApplicationFactory<Program>, IAsyncLife
             _rabbitContainer.GetConnectionString());
         Environment.SetEnvironmentVariable("MySql:ConnectionString",
             _mySqlContainer.GetConnectionString());
-
+        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+            _redisContainer.GetConnectionString());
+        
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests

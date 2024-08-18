@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
-using Pilot.InvalidationCacheRedisLibrary.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary.Services;
 using StackExchange.Redis;
 
