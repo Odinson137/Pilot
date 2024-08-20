@@ -27,6 +27,7 @@ services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
 
+services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();

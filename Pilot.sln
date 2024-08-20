@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Messenger", "Pilot.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.InvalidationCacheRedisLibrary", "Pilot.Contracts\Pilot.InvalidationCacheRedisLibrary\Pilot.InvalidationCacheRedisLibrary.csproj", "{A4EC34E4-94CE-4304-9A8E-40CFAD8A9FF5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pilot.Clients", "Pilot.Clients", "{26302DF8-31F3-449B-A500-9FAE93D47D16}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
