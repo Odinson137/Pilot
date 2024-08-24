@@ -161,4 +161,34 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         Assert.NotNull(result);
     }
+    
+    [Fact]
+    public virtual async void DeleteModelTest_ReturnOk()
+    {
+        #region Arrange
+
+        var companyUser = await CreateCompanyUser();
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
+
+        await ReceiverContext.AddAsync(value);
+        await ReceiverContext.SaveChangesAsync();
+
+        var valueDto = ReceiverMapper.Map<TDto>(value);
+
+        #endregion
+
+        // Act
+
+        await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(valueDto, companyUser.Id));
+
+        // Assert
+        await Wait();
+
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.Null(result);
+    }
 }

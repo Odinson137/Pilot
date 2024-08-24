@@ -45,7 +45,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         var message = new MessageDto
         {
             Title = "Успешное удаление!",
-            Description = $"Успешное удаление сущности {nameof(T)}'",
+            Description = $"Успешное удаление сущности {typeof(T).Name}'",
             MessagePriority = MessagePriority.Success | MessagePriority.Delete,
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };

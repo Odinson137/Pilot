@@ -37,6 +37,6 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
 
         ReceiverMapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
 
-        HttpSingleTone.Init.HttpClients["Receiver.IdentityServer"] = IdentityClient;
+        HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
     }
 }
