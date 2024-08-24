@@ -1,10 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 using Pilot.Api.Interfaces;
 using Pilot.Contracts.Data.Enums;
-using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Pilot.Api.Services;
 
@@ -22,18 +21,18 @@ public class TokenService : IToken
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationManager["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new List<Claim>
+        var claims = new[]
         {
-            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(ClaimTypes.Role, role.ToString())
+            new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Role, "Admin")
         };
 
         var token = new JwtSecurityToken(
             _configurationManager["Jwt:Issuer"],
             _configurationManager["Jwt:Issuer"],
             claims,
-            expires: DateTime.Now.AddYears(999),
+            expires: DateTime.Now.AddDays(120),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
