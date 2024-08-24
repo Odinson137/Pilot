@@ -23,7 +23,6 @@ services.AddSwaggerGen();
 
 services.AddTransient<IPasswordCoder, PasswordCoderService>();
 services.AddScoped<IUser, UserRepository>();
-services.AddScoped<IBaseHttpService, BaseHttpService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()

@@ -19,40 +19,23 @@ public class TokenService : IToken
 
     public string GenerateToken(int userId, Role role)
     {
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configurationManager["Jwt:Key"]!);
-        
-        var tokenDescriptor = new SecurityTokenDescriptor
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationManager["Jwt:Key"]!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new List<Claim>
         {
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new(ClaimTypes.Role, role.ToString())
-            }),
-            Expires = DateTime.Now.AddYears(999), // Вопросы безопасности во время создания этого проекта меня не волнуют
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            new(JwtRegisteredClaimNames.Sub, userId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(ClaimTypes.Role, role.ToString())
         };
 
-        return tokenHandler.CreateEncodedJwt(tokenDescriptor);
-        
-        //
-        // var creeds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        //
-        // var claims = new List<Claim>
-        // {
-        //     new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-        //     new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        //     new(ClaimTypes.Role, role.ToString())
-        // };
-        //
-        // var token = new JwtSecurityToken(
-        //     _configurationManager["Jwt:Issuer"],
-        //     _configurationManager["Jwt:Issuer"],
-        //     claims,
-        //     expires: DateTime.Now.AddYears(999), // Вопросы безопасности во время создания этого проекта меня не волнуют
-        //     signingCredentials: creeds);
-        //
-        // return new JwtSecurityTokenHandler().WriteToken(token);
+        var token = new JwtSecurityToken(
+            _configurationManager["Jwt:Issuer"],
+            _configurationManager["Jwt:Issuer"],
+            claims,
+            expires: DateTime.Now.AddYears(999),
+            signingCredentials: creds);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
