@@ -60,6 +60,6 @@ public abstract class BaseCreatedConsumer<T, TDto>(
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };
 
-        await MessageService.SendMessage(message);
+        await MessageService.SendMessageAsync(message);
     }
 }

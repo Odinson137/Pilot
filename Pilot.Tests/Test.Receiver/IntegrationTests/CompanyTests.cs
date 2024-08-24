@@ -31,9 +31,9 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
         // Act
 
         await PublishEndpoint.Publish(new CreateCommandMessage<CompanyDto>(value, companyUser.Id));
+        await Helper.Wait();
 
         // Assert
-        await Wait();
 
         var result = await ReceiverContext.Companies.Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
 

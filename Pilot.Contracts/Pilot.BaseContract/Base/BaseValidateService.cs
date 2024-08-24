@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Exception.ProjectExceptions;
-using Pilot.Contracts.Interfaces;
+using Pilot.Contracts.Exception;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Contracts.Validation;
@@ -16,13 +16,10 @@ public abstract class BaseValidateService : IBaseValidatorService
 {
     private readonly DbContext _context;
     private readonly ILogger<BaseValidateService> _logger;
-    private readonly IMessageService _message;
     private readonly IModelService _userService;
 
-    public BaseValidateService(IMessageService message, IModelService user,
-        ILogger<BaseValidateService> logger, DbContext context)
+    public BaseValidateService(IModelService user, ILogger<BaseValidateService> logger, DbContext context)
     {
-        _message = message;
         _userService = user;
         _logger = logger;
         _context = context;
@@ -110,27 +107,27 @@ public abstract class BaseValidateService : IBaseValidatorService
         }
     }
 
-    public async Task DeleteValidateAsync<T>(T model) where T : BaseModel
+    public async Task DeleteValidateAsync<T>(int modelId) where T : BaseModel
     {
         _logger.LogInformation($"Start delete validate model of {typeof(T).Name}");
-        _logger.LogClassInfo(model);
+        _logger.LogClassInfo(modelId);
 
-        var anyModelExist = await _context.Set<T>().AnyAsync(c => c.Id == model.Id);
+        var anyModelExist = await _context.Set<T>().AnyAsync(c => c.Id == modelId);
         if (!anyModelExist)
         {
-            _logger.LogError($"Value '{typeof(T).Name}' with Id = {model.Id} is not exist");
+            _logger.LogError($"Value '{typeof(T).Name}' with Id = {modelId} is not exist");
 
             var message = new MessageDto
             {
                 Title = "Невозможно удалить",
                 Description =
-                    $"При попытке удалить значение {typeof(T).Name}' с Id = {model.Id} произошла ошибка: сущность не была найдена",
+                    $"При попытке удалить значение {typeof(T).Name}' с Id = {modelId} произошла ошибка: сущность не была найдена",
                 MessagePriority = MessagePriority.Error | MessagePriority.Delete | MessagePriority.Validate,
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
-                EntityId = model.Id
+                EntityId = modelId
             };
 
-            await _message.SendMessage(message);
+            throw new MessageException(message);
         }
     }
 
@@ -163,8 +160,7 @@ public abstract class BaseValidateService : IBaseValidatorService
                 EntityId = model.Id
             };
 
-            await _message.SendMessage(message);
-            throw new BadRequestException($"{isValidate.Error}");
+            throw new MessageException(message);
         }
     }
 
@@ -183,8 +179,7 @@ public abstract class BaseValidateService : IBaseValidatorService
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
             };
 
-            await _message.SendMessage(message);
-            throw new NotFoundException($"{typeof(T).Name} has no exist");
+            throw new MessageException(message);
         }
     }
 
@@ -210,9 +205,6 @@ public abstract class BaseValidateService : IBaseValidatorService
             EntityId = valueId
         };
 
-        await _message.SendMessage(message);
-
-        throw new NotFoundException(
-            $"Property {property.PropertyType.Name} - {property.Name} has BAD id that is not contained in db");
+        throw new MessageException(message);
     }
 }

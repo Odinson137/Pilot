@@ -1,10 +1,11 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.Extensions.DependencyInjection;
-using Pilot.Api.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Models;
+using Pilot.Receiver.Models;
+using Pilot.Receiver.Models.ModelHelpers;
 using Test.Api.IntegrationTests.Factories;
 using Test.Base.IntegrationBase;
 
@@ -14,25 +15,30 @@ namespace Test.Api.IntegrationTests;
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
+    protected async Task<CompanyUser> CreateCompanyUserWithAuthorization()
+    {
+        var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
+        companyUser.UserName = Guid.NewGuid().ToString();
+
+        await ReceiverContext.AddAsync(companyUser);
+        await ReceiverContext.SaveChangesAsync();
+
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+        user.Id = companyUser.Id;
+
+        await IdentityContext.AddRangeAsync(user);
+        await IdentityContext.SaveChangesAsync();
+        
+        var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+        ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
+        return companyUser;
+    }
+    
     public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
         ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory)
     {
-        var admin = new User
-        {
-            UserName = $"Admin-{Guid.NewGuid()}",
-            Name = "AdminName",
-            LastName = "AdminLastName",
-            Password = "12345678",
-            Role = Role.Admin
-        };
 
-        IdentityContext.Add(admin);
-        IdentityContext.SaveChanges();
-
-        var tokenService = apiFactory.Services.GetRequiredService<IToken>();
-        var token = tokenService.GenerateToken(admin.Id, admin.Role);
-
-        ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
     [Fact]
@@ -85,5 +91,90 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
         var content = await result.Content.ReadFromJsonAsync<BaseDto>();
         Assert.NotNull(content);
         Assert.Equal(id, content.Id);
+    }
+    
+    [Fact]
+    public async Task CreateValue_ReturnOk()
+    {
+        #region Arrange
+
+        var companyUser = await CreateCompanyUserWithAuthorization();
+        
+        var type = typeof(T);
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        var valueDto = ReceiverMapper.Map<TDto>(value);
+        
+        #endregion
+
+        // Act
+        var result = await ApiClient.PostAsJsonAsync($"api/{type.Name}", valueDto);
+        await Helper.Wait();
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await AssertReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
+        Assert.NotNull(content);
+    }
+        
+    [Fact]
+    public async Task UpdateValue_ReturnOk()
+    {
+        #region Arrange
+
+        var companyUser = await CreateCompanyUserWithAuthorization();
+
+        var type = typeof(T);
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
+
+        await ReceiverContext.AddRangeAsync(value);
+        await ReceiverContext.SaveChangesAsync();
+
+        var valueDto = ReceiverMapper.Map<TDto>(value);
+        
+        #endregion
+
+        // Act
+        var result = await ApiClient.PutAsJsonAsync($"api/{type.Name}", valueDto);
+        await Helper.Wait();
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+        Assert.NotNull(content);
+        Assert.NotNull(content.ChangeAt);
+    }
+    
+    [Fact]
+    public async Task DeleteValue_ReturnOk()
+    {
+        #region Arrange
+
+        var companyUser = await CreateCompanyUserWithAuthorization();
+
+        var type = typeof(T);
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
+
+        await ReceiverContext.AddRangeAsync(value);
+        await ReceiverContext.SaveChangesAsync();
+        
+        #endregion
+
+        // Act
+        var result = await ApiClient.DeleteAsync($"api/{type.Name}/{value.Id}");
+        await Helper.Wait();
+
+        // Assert
+        
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+        Assert.Null(content);
     }
 }

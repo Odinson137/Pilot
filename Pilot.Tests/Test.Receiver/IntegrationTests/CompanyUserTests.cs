@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Receiver.Models;
+using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 
 namespace Test.Receiver.IntegrationTests;
@@ -31,9 +32,9 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
         // Act
 
         await PublishEndpoint.Publish(new UpdateCommandMessage<CompanyUserDto>(valueDto, companyUser.Id));
+        await Helper.Wait();
 
         // Assert
-        await Wait();
 
         var result = await AssertReceiverContext.Set<CompanyUser>().Where(c => c.Id == companyUser.Id)
             .FirstOrDefaultAsync();

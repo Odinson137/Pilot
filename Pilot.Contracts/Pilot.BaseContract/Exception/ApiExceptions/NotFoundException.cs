@@ -1,4 +1,4 @@
-﻿namespace Pilot.Contracts.Exception.ProjectExceptions;
+﻿namespace Pilot.Contracts.Exception.ApiExceptions;
 
 public class NotFoundException : System.Exception
 {

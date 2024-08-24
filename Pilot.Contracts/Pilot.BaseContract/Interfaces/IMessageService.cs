@@ -4,5 +4,5 @@ namespace Pilot.Contracts.Interfaces;
 
 public interface IMessageService
 {
-    public Task SendMessage(MessageDto message);
+    public Task SendMessageAsync(MessageDto message);
 }

@@ -1,6 +1,9 @@
+using System.Text;
 using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.IdentityModel.Tokens;
 using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces;
@@ -8,7 +11,7 @@ using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Serilog;
@@ -56,8 +59,6 @@ services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).As
 services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingOneBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryOneHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UpdateCommandHandling<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DeleteCommandHandling<,>));
@@ -66,6 +67,27 @@ services.AddControllers();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+        };
+    });
+
+services.AddAuthorization();
 
 services.AddEndpointsApiExplorer();
 services.AddMassTransit(x =>

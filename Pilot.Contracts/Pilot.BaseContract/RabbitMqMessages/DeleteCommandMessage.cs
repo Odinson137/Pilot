@@ -1,3 +1,4 @@
 ﻿namespace Pilot.Contracts.RabbitMqMessages;
 
-public record DeleteCommandMessage<TDto>(TDto Value, int UserId) : BaseCommandMessage<TDto>(Value, UserId);
+// ReSharper disable once UnusedTypeParameter
+public record DeleteCommandMessage<TDto>(int Value, int UserId) : BaseCommandMessage<int>(Value, UserId);

@@ -1,6 +1,6 @@
 ﻿using Pilot.Api.Interfaces;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Services.LogService;
 
 namespace Pilot.Api.Services;

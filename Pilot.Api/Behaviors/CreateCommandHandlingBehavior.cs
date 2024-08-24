@@ -5,6 +5,7 @@ using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.Api.Behaviors;
 
+// TODO потом удалить и переделать через Handlers
 public class CreateCommandHandling<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IBaseCommand
 {

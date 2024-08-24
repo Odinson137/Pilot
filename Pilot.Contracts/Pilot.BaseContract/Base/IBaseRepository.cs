@@ -9,5 +9,9 @@ public interface IBaseRepository<T> : IBaseReadRepository<T> where T : BaseModel
 
     public Task SaveAsync(CancellationToken token = default);
 
+    public void LazyLoading(bool isActive = false);
+
+    public Task<int> FastDeleteAsync(int modelId, CancellationToken token = default);
+    
     public void DeleteAsync(T value);
 }

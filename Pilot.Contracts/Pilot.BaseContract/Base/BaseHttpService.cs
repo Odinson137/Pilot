@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data;
-using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;

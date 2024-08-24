@@ -26,7 +26,7 @@ public class DeleteCommandHandling<TRequest, TResponse> : IPipelineBehavior<TReq
         _logger.LogInformation($"Delete command handling {typeof(TRequest).Name}");
 
         await _massTransitService.Publish(
-            new DeleteCommandMessage<TResponse>((TResponse)request.ValueDto, request.UserId), cancellationToken);
+            new DeleteCommandMessage<TResponse>((int)request.ValueDto, request.UserId), cancellationToken);
         // var response = await next();
 
         _logger.LogInformation($"Delete command handled {typeof(TRequest).Name}");

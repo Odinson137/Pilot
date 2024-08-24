@@ -3,7 +3,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Exception.ProjectExceptions;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Receiver.Consumers.Base;
@@ -121,7 +121,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Main page!");
+app.MapGet("/", () => "Main receiver page!");
 
 app.MapControllers();
 app.UseHttpsRedirection();

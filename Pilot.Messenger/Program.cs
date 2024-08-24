@@ -1,7 +1,6 @@
 using MediatR;
 using MediatR.NotificationPublishers;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;
@@ -14,7 +13,6 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddScoped<IMessageRepository, MessageRepository>();
-services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddScoped<INotificationService, NotificationService>();
 

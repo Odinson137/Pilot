@@ -48,14 +48,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         return companyUser;
     }
-
-    // Маленькое ухищрение, которое позволяет ожидать пока консюмер обработает сообщение из очереди,
-    // А ещё нормально использовать debug, имея в запасе i кликов в нём
-    public async Task Wait()
-    {
-        for (var i = 0; i < 40; i++) await Task.Delay(100);
-    }
-
+    
     [Fact]
     public virtual async void GetAllValuesTest_ReturnOk()
     {
@@ -123,9 +116,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         // Act
 
         await PublishEndpoint.Publish(new CreateCommandMessage<TDto>(value, companyUser.Id));
+        await Helper.Wait();
 
         // Assert
-        await Wait();
 
         var result = await ReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
 
@@ -153,9 +146,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         // Act
 
         await PublishEndpoint.Publish(new UpdateCommandMessage<TDto>(valueDto, companyUser.Id));
+        await Helper.Wait();
 
         // Assert
-        await Wait();
 
         var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
 
@@ -171,22 +164,18 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
-
         await ReceiverContext.AddAsync(value);
         await ReceiverContext.SaveChangesAsync();
-
-        var valueDto = ReceiverMapper.Map<TDto>(value);
 
         #endregion
 
         // Act
 
-        await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(valueDto, companyUser.Id));
-
+        await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, companyUser.Id));
+        await Helper.Wait();
+        
         // Assert
-        await Wait();
-
+        
         var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
 
         Assert.Null(result);

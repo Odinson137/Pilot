@@ -18,6 +18,16 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
         await GetContext.SaveChangesAsync(token);
     }
 
+    public void LazyLoading(bool isActive = false)
+    {
+        context.ChangeTracker.LazyLoadingEnabled = isActive;
+    }
+
+    public async Task<int> FastDeleteAsync(int modelId, CancellationToken token = default)
+    {
+        return await DbSet.Where(c => c.Id == modelId).ExecuteDeleteAsync(token);
+    }
+
     public void DeleteAsync(T value)
     {
         GetContext.Remove(value);

@@ -9,6 +9,6 @@ public class ValidatorService(
     IModelService user,
     ILogger<ValidatorService> logger,
     DataContext context)
-    : BaseValidateService(message, user, logger, context)
+    : BaseValidateService(user, logger, context)
 {
 }
