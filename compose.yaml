@@ -92,7 +92,7 @@ services:
       retries: 10
       
   pilot_messenger_mysql:
-    container_name: pilot-mysql
+    container_name: pilot-messenger-mysql
     image: mysql:8.0
     ports:
       - "3310:3306"
