@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
-using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
@@ -36,21 +35,12 @@ services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
-// var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-// services.AddSingleton(
-//     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
-
 await services.AddRedis(configuration);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    // .WriteTo.Logger(lc =>
-    // {
-    //     lc.MinimumLevel.Error();
-    //     lc.WriteTo.MongoDb(mongoConfiguration);
-    // })
     .CreateLogger());
 
 
@@ -59,9 +49,6 @@ services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).As
 services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CreateCommandHandling<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UpdateCommandHandling<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(DeleteCommandHandling<,>));
 
 services.AddControllers();
 
@@ -139,5 +126,6 @@ app.Run();
 
 namespace Pilot.Api
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class Program;
 }

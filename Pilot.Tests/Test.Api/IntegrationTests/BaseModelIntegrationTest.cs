@@ -160,8 +160,6 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
-
         await ReceiverContext.AddRangeAsync(value);
         await ReceiverContext.SaveChangesAsync();
         

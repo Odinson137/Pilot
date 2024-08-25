@@ -39,6 +39,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         var model = Mapper.Map<T>(dtoModel);
 
         await Validator.FillValidateAsync(model);
+        
         model.ChangeAt = DateTime.Now;
 
         Repository.GetContext.Attach(model);

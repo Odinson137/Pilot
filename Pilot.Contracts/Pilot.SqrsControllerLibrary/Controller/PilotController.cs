@@ -17,7 +17,7 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [ProducesResponseType(400)]
     public virtual async Task<IActionResult> AddValue(TDto valueDto, CancellationToken token)
     {
-        await Mediator.Send(new AddValueCommand<TDto>(valueDto, UserId), token);
+        await Mediator.Send(new CreateCommand<TDto>(valueDto, UserId), token);
         return Ok($"The {nameof(TDto)} will be adding soon");
     }
 
@@ -28,18 +28,18 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [ProducesResponseType(404)]
     public virtual async Task<IActionResult> UpdateValue(TDto valueDto, CancellationToken token)
     {
-        await Mediator.Send(new UpdateValueCommand<TDto>(valueDto, UserId), token);
+        await Mediator.Send(new UpdateCommand<TDto>(valueDto, UserId), token);
         return Ok($"The {nameof(TDto)} will edit soon");
     }
 
-    [HttpDelete]
+    [HttpDelete("{valueId:int}")]
     [Authorize]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public virtual async Task<IActionResult> DeleteValue(int valueId, CancellationToken token) // достаточно в модели передать id
+    public virtual async Task<IActionResult> DeleteValue(int valueId, CancellationToken token)
     {
-        await Mediator.Send(new DeleteValueCommand<TDto>(valueId, UserId), token);
+        await Mediator.Send(new DeleteCommand<TDto>(valueId, UserId), token);
         return Ok($"The {nameof(TDto)} will delete soon");
     }
 }

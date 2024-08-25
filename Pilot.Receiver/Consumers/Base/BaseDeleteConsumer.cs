@@ -32,8 +32,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         Logger.LogClassInfo(context.Message);
         
         await Validator.DeleteValidateAsync<T>(context.Message.Value);
-
-        Repository.LazyLoading(isActive: false);
+        
         var deleteCount = await Repository.FastDeleteAsync(context.Message.Value);
 
         var message = new MessageDto
