@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Api.Interfaces;
-using Pilot.Api.Services;
 using Pilot.Contracts.Data;
 using Pilot.Identity.Data;
 using Test.Api.IntegrationTests.Factories;
@@ -14,9 +13,7 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
     private readonly IServiceProvider _receiverScopeService;
     protected readonly IToken TokenService;
     protected readonly HttpClient ApiClient;
-    protected readonly HttpClient IdentityClient;
     protected readonly DataContext IdentityContext;
-    protected readonly HttpClient ReceiverClient;
     protected readonly IMapper ReceiverMapper;
     protected Pilot.Receiver.Data.DataContext AssertReceiverContext 
         => _receiverScopeService.CreateScope().ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
@@ -35,10 +32,11 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
 
         TokenService = apiFactory.Services.GetRequiredService<IToken>();
         
-        ReceiverClient = receiverFactory.CreateClient();
-        IdentityClient = identityFactory.CreateClient();
-        HttpSingleTone.Init.HttpClients["ReceiverServer"] = ReceiverClient;
-        HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
+        var receiverClient = receiverFactory.CreateClient();
+        var identityClient = identityFactory.CreateClient();
+        
+        HttpSingleTone.Init.HttpClients["ReceiverServer"] = receiverClient;
+        HttpSingleTone.Init.HttpClients["IdentityServer"] = identityClient;
 
         ApiClient = apiFactory.CreateClient();
     }

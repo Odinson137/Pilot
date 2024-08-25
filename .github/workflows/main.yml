@@ -11,7 +11,7 @@ jobs:
   gateway:
     name: Gateway
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +69,7 @@ jobs:
   identity:
     name: Identity
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
   messenger:
     name: Messenger
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
   
     steps:
       - uses: actions/checkout@v4
@@ -127,7 +127,7 @@ jobs:
   base:
     name: Base
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4

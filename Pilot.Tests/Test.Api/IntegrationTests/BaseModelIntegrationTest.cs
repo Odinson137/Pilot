@@ -37,12 +37,9 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
         
         return companyUser;
     }
-    
-    public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
-        ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory)
-    {
 
-    }
+    public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+        ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory) {}
 
     [Fact]
     public async Task GetAllValuesTest_ReturnOk()
