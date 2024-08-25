@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Consumers.Base;
@@ -12,9 +11,7 @@ public class HistoryActionDeletedConsumer(
     ILogger<HistoryActionDeletedConsumer> logger,
     IHistoryAction repository,
     IMessageService message,
-    IBaseValidatorService validate,
-    IMapper mapper,
-    ICompanyUser companyUser)
-    : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate, mapper)
+    IBaseValidatorService validate)
+    : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate)
 {
 }

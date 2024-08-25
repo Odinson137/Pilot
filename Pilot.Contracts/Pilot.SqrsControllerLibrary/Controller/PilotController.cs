@@ -6,8 +6,6 @@ using Pilot.SqrsControllerLibrary.Commands;
 
 namespace Pilot.SqrsControllerLibrary.Controller;
 
-[ApiController]
-[Route("api/[controller]")]
 public abstract class PilotController<TDto>(IMediator mediator)
     : PilotReadOnlyController<TDto>(mediator) where TDto : BaseDto
 {

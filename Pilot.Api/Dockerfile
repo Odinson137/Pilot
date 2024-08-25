@@ -8,7 +8,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Pilot.Api/Pilot.Api.csproj", "Pilot.Api/"]
-COPY ["Pilot.Contracts/Pilot.Contracts.csproj", "Pilot.Contracts/"]
+COPY ["Pilot.Contracts/Pilot.BaseContract/Pilot.BaseContract.csproj", "Pilot.Contracts/Pilot.BaseContract/"]
+COPY ["Pilot.Messenger/Pilot.Messenger.csproj", "Pilot.Messenger/"]
+COPY ["Pilot.Contracts/Pilot.SqrsControllerLibrary/Pilot.SqrsControllerLibrary.csproj", "Pilot.Contracts/Pilot.SqrsControllerLibrary/"]
+COPY ["Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/Pilot.InvalidationCacheRedisLibrary.csproj", "Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/"]
 RUN dotnet restore "Pilot.Api/Pilot.Api.csproj"
 COPY . .
 WORKDIR "/src/Pilot.Api"

@@ -36,7 +36,7 @@ public class ReceiverTestIdentityFactory : WebApplicationFactory<Program>, IAsyn
         Environment.SetEnvironmentVariable("MySqlIdentity:ConnectionString",
             _mySqlContainer.GetConnectionString());
 
-        builder.ConfigureTestServices(async services =>
+        builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();

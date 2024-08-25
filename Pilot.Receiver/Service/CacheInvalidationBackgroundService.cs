@@ -11,7 +11,7 @@ public class CacheInvalidationBackgroundService(IConnectionMultiplexer connectio
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var subscriber = connectionMultiplexer.GetSubscriber();
-        await subscriber.SubscribeAsync(Channel, (channel, key) =>
+        await subscriber.SubscribeAsync(Channel, (_, key) =>
         {
             memoryCache.Remove(key);
         });

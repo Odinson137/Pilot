@@ -7,17 +7,20 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Pilot.Messanger/Pilot.Messanger.csproj", "Pilot.Messanger/"]
-RUN dotnet restore "Pilot.Messanger/Pilot.Messanger.csproj"
+COPY ["Pilot.Messenger/Pilot.Messenger.csproj", "Pilot.Messenger/"]
+COPY ["Pilot.Contracts/Pilot.BaseContract/Pilot.BaseContract.csproj", "Pilot.Contracts/Pilot.BaseContract/"]
+COPY ["Pilot.Contracts/Pilot.SqrsControllerLibrary/Pilot.SqrsControllerLibrary.csproj", "Pilot.Contracts/Pilot.SqrsControllerLibrary/"]
+COPY ["Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/Pilot.InvalidationCacheRedisLibrary.csproj", "Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/"]
+RUN dotnet restore "Pilot.Messenger/Pilot.Messenger.csproj"
 COPY . .
-WORKDIR "/src/Pilot.Messanger"
-RUN dotnet build "Pilot.Messanger.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Pilot.Messenger"
+RUN dotnet build "Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Pilot.Messanger.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Pilot.Messanger.dll"]
+ENTRYPOINT ["dotnet", "Pilot.Messenger.dll"]

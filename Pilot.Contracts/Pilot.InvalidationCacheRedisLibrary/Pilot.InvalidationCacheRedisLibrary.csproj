@@ -10,4 +10,9 @@
       <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
+      <PackageReference Include="StackExchange.Redis" Version="2.8.0" />
+    </ItemGroup>
+
 </Project>

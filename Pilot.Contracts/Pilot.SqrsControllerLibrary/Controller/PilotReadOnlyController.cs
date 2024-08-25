@@ -13,7 +13,7 @@ public abstract class PilotReadOnlyController<TDto>(IMediator mediator) : BaseCo
 
     [HttpGet]
     [ProducesResponseType(200)]
-    public virtual async Task<IActionResult> GetAllValues(CancellationToken token, BaseFilter? filter = null)
+    public virtual async Task<IActionResult> GetAllValues(CancellationToken token, [FromBody] BaseFilter? filter = null)
     {
         filter ??= new BaseFilter();
         var result = await Mediator.Send(new GetValuesQuery<TDto>(filter.Value), token);

@@ -110,17 +110,19 @@ app.UseExceptionHandler(errorApp =>
 
 await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+app.UseSwagger();
+app.UseSwaggerUI();
+// }
 
 app.MapControllers();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/", () => "Main api page!");
 
 app.Run();
 

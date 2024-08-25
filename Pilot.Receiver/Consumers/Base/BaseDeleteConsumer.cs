@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MassTransit;
+﻿using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
@@ -14,8 +13,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     ILogger<BaseDeleteConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
-    IMapper mapper)
+    IBaseValidatorService validate)
     : IConsumer<DeleteCommandMessage<TDto>>
     where T : BaseModel
     where TDto : BaseDto

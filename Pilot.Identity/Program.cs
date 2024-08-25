@@ -1,7 +1,5 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Identity.Data;
@@ -28,11 +26,6 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    // .WriteTo.Logger(lc =>
-    // {
-    //     lc.MinimumLevel.Error();
-    //     lc.WriteTo.MongoDb(configuration.GetSection("MongoDatabase").Get<MongoConfig>()!);
-    // })
     .CreateLogger());
 
 services.AddTransient<ISeed, Seed>();
@@ -56,11 +49,11 @@ var app = builder.Build();
 // await app.Services.GetRequiredService<ISeed>().Seeding(app);
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+app.UseSwagger();
+app.UseSwaggerUI();
+// }
 
 app.MapControllers();
 app.UseHttpsRedirection();
@@ -71,7 +64,6 @@ app.MapPost("/Registration", async (
         IUser user,
         IPasswordCoder passwordService,
         ILogger<Program> logger,
-        IMediator mediator,
         [FromBody] RegistrationUserDto registrationUser) =>
     {
         logger.LogInformation("Receive registration form in identity");

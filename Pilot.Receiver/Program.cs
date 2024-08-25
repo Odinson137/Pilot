@@ -3,6 +3,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary;
@@ -32,20 +33,10 @@ services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
-// var mongoConfiguration = configuration.GetSection("MongoDatabase").Get<MongoConfig>()!;
-// builder.Services.AddSingleton(
-//     new MongoClient(mongoConfiguration.ConnectionString).GetDatabase(mongoConfiguration.DbName));
-
-
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
-    // .WriteTo.Logger(lc =>
-    // {
-    //     lc.MinimumLevel.Error();
-    //     lc.WriteTo.MongoDb(mongoConfiguration);
-    // })
     .CreateLogger());
 
 
@@ -82,8 +73,7 @@ await services.AddRedis(configuration);
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
-// TODO обобщить
-services.AddHttpClient("IdentityServer",
+services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
 services.AddEndpointsApiExplorer();
@@ -115,11 +105,11 @@ app.UseExceptionHandler(errorApp =>
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// if (app.Environment.IsDevelopment())
+// {
+app.UseSwagger();
+app.UseSwaggerUI();
+// }
 
 app.MapGet("/", () => "Main receiver page!");
 
