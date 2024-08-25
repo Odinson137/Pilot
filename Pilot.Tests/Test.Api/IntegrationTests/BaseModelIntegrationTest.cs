@@ -15,7 +15,7 @@ namespace Test.Api.IntegrationTests;
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    protected async Task<CompanyUser> CreateCompanyUserWithAuthorization()
+    protected async Task<CompanyUser> CreateCompanyUser(bool withAuthorization = false)
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
         companyUser.UserName = Guid.NewGuid().ToString();
@@ -28,9 +28,12 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         await IdentityContext.AddRangeAsync(user);
         await IdentityContext.SaveChangesAsync();
-        
-        var token = TokenService.GenerateToken(companyUser.Id, Role.User);
-        ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        if (withAuthorization)
+        {
+            var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+            ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
         
         return companyUser;
     }
@@ -98,12 +101,14 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     {
         #region Arrange
 
-        var companyUser = await CreateCompanyUserWithAuthorization();
+        await CreateCompanyUser(true);
         
         var type = typeof(T);
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
+        await GenerateTestEntity.FillChildren(value, ReceiverContext);
+        
         var valueDto = ReceiverMapper.Map<TDto>(value);
         
         #endregion
@@ -123,7 +128,7 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     {
         #region Arrange
 
-        var companyUser = await CreateCompanyUserWithAuthorization();
+        var companyUser = await CreateCompanyUser(true);
 
         var type = typeof(T);
 
@@ -154,7 +159,7 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     {
         #region Arrange
 
-        var companyUser = await CreateCompanyUserWithAuthorization();
+        await CreateCompanyUser(true);
 
         var type = typeof(T);
 

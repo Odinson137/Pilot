@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
     private static void AddGetByIdQueryHandlers(IServiceCollection services, IReadOnlyCollection<Type> dtoTypes, Type handlerInterfaceType)
     {
         var queryType = typeof(GetValueByIdQuery<>);
-        var handlerType = typeof(GetValueByIdQuery<>);
+        var handlerType = typeof(GetValueQueryHandler<>);
 
         foreach (var dtoType in dtoTypes)
         {
