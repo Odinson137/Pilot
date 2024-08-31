@@ -4,7 +4,7 @@ namespace Pilot.Api.Data;
 
 public class Seed : ISeed
 {
-    public Task Seeding(IApplicationBuilder app)
+    public Task Seeding()
     {
         return Task.CompletedTask;
         // var mongoDatabase = app.ApplicationServices.GetRequiredService<IMongoDatabase>();

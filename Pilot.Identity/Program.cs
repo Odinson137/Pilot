@@ -28,14 +28,14 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Debug()
     .CreateLogger());
 
-services.AddTransient<ISeed, Seed>();
+services.AddScoped<ISeed, Seed>();
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddControllers();
 
 services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration["MySqlIdentity:ConnectionString"],
+        configuration["MySql:ConnectionString"],
         new MySqlServerVersion(new Version(8, 0, 11))
     )
     .EnableSensitiveDataLogging()
@@ -46,14 +46,12 @@ services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).As
 
 var app = builder.Build();
 
-// await app.Services.GetRequiredService<ISeed>().Seeding(app);
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
+
 app.UseSwagger();
 app.UseSwaggerUI();
-// }
 
 app.MapControllers();
 app.UseHttpsRedirection();
@@ -74,12 +72,15 @@ app.MapPost("/Registration", async (
             return Results.BadRequest("This username is already taken");
         }
 
+        var items = passwordService.GenerateSaltAndHashPassword(registrationUser.Password);
+        
         var newUser = new User
         {
             UserName = registrationUser.UserName,
             Name = registrationUser.Name,
             LastName = registrationUser.LastName,
-            Password = passwordService.PasswordCode(registrationUser.Password)
+            Password = items.Item1,
+            Salt = items.Item2
         };
 
         await user.AddValueToContextAsync(newUser);
@@ -108,7 +109,8 @@ app.MapPost("/Authorization", async (
             return Results.NotFound("User not found");
         }
 
-        if (user.Password != passwordService.PasswordCode(userDto.Password))
+        var realPassword = passwordService.ComparePasswordAndSalt(userDto.Password, user.Salt);
+        if (user.Password != realPassword)
         {
             logger.LogInformation("Passwords aren't match");
             return Results.BadRequest("Passwords aren't match");
@@ -119,10 +121,11 @@ app.MapPost("/Authorization", async (
     })
     .WithOpenApi();
 
+
+// TODO потом перенести в контроллер дабы использовать Authorize
 app.MapPut("/Change", async (
         IUser userRepository,
         ILogger<Program> logger,
-        IPasswordCoder passwordService,
         [FromBody] UpdateUserDto userDto) =>
     {
         logger.LogInformation("Receive change form in identity");
@@ -133,19 +136,6 @@ app.MapPut("/Change", async (
         {
             logger.LogInformation("User not found");
             return Results.NotFound("User not found");
-        }
-
-        if (!string.IsNullOrEmpty(userDto.Password))
-        {
-            logger.LogInformation("Passwords change");
-
-            if (user.Password != passwordService.PasswordCode(userDto.OldPassword))
-            {
-                logger.LogInformation("Passwords aren't match");
-                return Results.BadRequest("Passwords aren't match");
-            }
-
-            user.Password = passwordService.PasswordCode(userDto.Password);
         }
 
         user.Name = user.Name;

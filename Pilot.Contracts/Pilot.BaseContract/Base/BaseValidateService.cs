@@ -122,7 +122,7 @@ public abstract class BaseValidateService : IBaseValidatorService
                 Title = "Невозможно удалить",
                 Description =
                     $"При попытке удалить значение {typeof(T).Name}' с Id = {modelId} произошла ошибка: сущность не была найдена",
-                MessagePriority = MessagePriority.Error | MessagePriority.Delete | MessagePriority.Validate,
+                MessagePriority = MessageInfo.Error | MessageInfo.Delete | MessageInfo.Validate,
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
                 EntityId = modelId
             };
@@ -155,7 +155,7 @@ public abstract class BaseValidateService : IBaseValidatorService
             {
                 Title = "Ошибка валидации",
                 Description = isValidate.Error,
-                MessagePriority = MessagePriority.Error | MessagePriority.Validate,
+                MessagePriority = MessageInfo.Error | MessageInfo.Validate,
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
                 EntityId = model.Id
             };
@@ -175,7 +175,7 @@ public abstract class BaseValidateService : IBaseValidatorService
             {
                 Title = "Ошибка валидации",
                 Description = "Данный локальный пользователь не найден. Попробуйте позже",
-                MessagePriority = MessagePriority.Error | MessagePriority.Validate,
+                MessagePriority = MessageInfo.Error | MessageInfo.Validate,
                 EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
             };
 
@@ -200,7 +200,7 @@ public abstract class BaseValidateService : IBaseValidatorService
             Title = "Ошибка связанной сущности",
             Description =
                 $"Вы пытаетесь добавить/обновить значение ({property.PropertyType.Name} - {property.Name}), которое не существует",
-            MessagePriority = MessagePriority.Error | MessagePriority.Update | MessagePriority.Validate,
+            MessagePriority = MessageInfo.Error | MessageInfo.Update | MessageInfo.Validate,
             EntityType = PilotEnumExtensions.GetModelEnumValue(propertyType.Name),
             EntityId = valueId
         };

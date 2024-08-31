@@ -1,18 +1,11 @@
 ﻿using MediatR;
 using Pilot.Contracts.Base;
-using Pilot.InvalidationCacheRedisLibrary.CacheKeyTemplates;
 using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Commands;
 
 public record GetValueByIdQuery<TDto>(int Id)
-    : BaseQuery, IRequest<TDto> where TDto : BaseDto
-{
-    public BaseFilter Filter { get; set; }
-
-    public string CacheKey => BaseCacheKeyTemplate.OneCacheKey(GetModelName<TDto>(), Id);
-    public string Url => $"api/{GetModelName<TDto>()}/{Id}";
-}
+    : BaseQuery, IRequest<TDto> where TDto : BaseDto;
 
 public record GetValuesQuery<TDto> 
     : BaseQuery, IRequest<ICollection<TDto>> where TDto : BaseDto
@@ -23,8 +16,4 @@ public record GetValuesQuery<TDto>
     }
 
     public BaseFilter Filter { get; set; }
-
-    public string CacheKey => Filter.GetHashCode().ToString();
-
-    public string Url => $"api/{GetModelName<TDto>()}";
 }

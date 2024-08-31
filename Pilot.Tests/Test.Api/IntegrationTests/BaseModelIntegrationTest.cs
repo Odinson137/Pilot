@@ -18,7 +18,6 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     protected async Task<CompanyUser> CreateCompanyUser(bool withAuthorization = false)
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
-        companyUser.UserName = Guid.NewGuid().ToString();
 
         await ReceiverContext.AddAsync(companyUser);
         await ReceiverContext.SaveChangesAsync();

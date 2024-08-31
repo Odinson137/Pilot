@@ -5,7 +5,7 @@ using Pilot.Contracts.Data.Enums;
 namespace Pilot.Contracts.DTO.ModelDto;
 
 [FromService(ServiceName.ReceiverServer)]
-public class CompanyUserDto : BaseUserDto
+public class CompanyUserDto : BaseDto
 {
     public BaseDto? Company { get; set; }
 

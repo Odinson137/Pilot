@@ -3,9 +3,9 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Receiver.Consumers.Base;
 
@@ -37,7 +37,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         {
             Title = "Успешное удаление!",
             Description = $"Успешное удаление сущности {typeof(T).Name}' (Удалено сущностей {deleteCount})",
-            MessagePriority = MessagePriority.Success | MessagePriority.Delete,
+            MessagePriority = MessageInfo.Success | MessageInfo.Delete,
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };
 

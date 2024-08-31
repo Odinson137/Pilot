@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Pilot.Contracts.Data;
+﻿using Pilot.Contracts.Data;
 
 namespace Test.Base.IntegrationBase;
 
 public class TestSeed : ISeed
 {
-    public Task Seeding(IApplicationBuilder app)
+    public Task Seeding()
     {
         return Task.CompletedTask;
     }

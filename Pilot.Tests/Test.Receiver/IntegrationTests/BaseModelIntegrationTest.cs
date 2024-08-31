@@ -1,10 +1,10 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Identity.Models;
 using Pilot.Receiver.Models;
 using Pilot.Receiver.Models.ModelHelpers;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 
@@ -35,7 +35,6 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     protected async Task<CompanyUser> CreateCompanyUser()
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
-        companyUser.UserName = Guid.NewGuid().ToString();
 
         await ReceiverContext.AddAsync(companyUser);
         await ReceiverContext.SaveChangesAsync();

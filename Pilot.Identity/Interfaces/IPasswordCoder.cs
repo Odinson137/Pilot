@@ -2,5 +2,7 @@
 
 public interface IPasswordCoder
 {
-    public string PasswordCode(string password);
+    public (string, string) GenerateSaltAndHashPassword(string password);
+    
+    public string ComparePasswordAndSalt(string password, string salt);
 }

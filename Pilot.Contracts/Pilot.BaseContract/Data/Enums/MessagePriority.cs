@@ -1,7 +1,7 @@
 ﻿namespace Pilot.Contracts.Data.Enums;
 
 [Flags]
-public enum MessagePriority
+public enum MessageInfo
 {
     Default = 0,
     Error = 1,

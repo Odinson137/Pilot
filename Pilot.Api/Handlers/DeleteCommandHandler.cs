@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.SqrsControllerLibrary.Commands;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Api.Handlers;
 

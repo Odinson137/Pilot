@@ -1,0 +1,6 @@
+@Pilot.Storage_HostAddress = http://localhost:5174
+
+GET {{Pilot.Storage_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

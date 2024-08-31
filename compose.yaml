@@ -40,22 +40,22 @@ services:
       pilot_messenger_mysql:
         condition: service_healthy
 
+  storage_server:
+    build:
+      context: .
+      dockerfile: Pilot.Storage/Dockerfile
+    ports:
+      - 8040:8080
+    depends_on:
+      pilot_messenger_mysql:
+        condition: service_healthy
+
   rabbitmq:
     container_name: pilot-rabbitmq
     image: rabbitmq:3-management
     ports:
       - 5672:5672
       - 15672:15672
-
-#  pilot_mongo:
-#    container_name: pilot-mongodb
-#    image: mongo
-#    ports:
-#      - 27017:27017
-#    environment:
-#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-#      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-#      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
 
   redis:
     container_name: pilot-redis
@@ -96,6 +96,19 @@ services:
       - "3310:3306"
     environment:
       MYSQL_DATABASE: PilotMessengerDb
+      MYSQL_ROOT_PASSWORD: 12345678
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+      
+  pilot_storage_mysql:
+    container_name: pilot-storage-mysql
+    image: mysql:8.0
+    ports:
+      - "3311:3306"
+    environment:
+      MYSQL_DATABASE: PilotStorageDb
       MYSQL_ROOT_PASSWORD: 12345678
     healthcheck:
       test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]

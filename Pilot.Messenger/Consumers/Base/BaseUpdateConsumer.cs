@@ -2,8 +2,8 @@
 using MassTransit;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Messenger.Consumers.Base;
 

@@ -21,9 +21,7 @@ var configuration = builder.Configuration;
 
 services.AddScoped<ICompany, CompanyRepository>();
 services.AddScoped<ICompanyUser, CompanyUserRepository>();
-services.AddScoped<IFile, FileRepository>();
 services.AddScoped<IHistoryAction, HistoryActionRepository>();
-services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
@@ -32,13 +30,13 @@ services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
+services.AddScoped<IMessageService, MessageService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
     .CreateLogger());
-
 
 services.AddMassTransit(x =>
 {
@@ -75,6 +73,9 @@ services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
+
+services.AddHttpClient(ServiceName.StorageServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("StorageServerUrl")!); });
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();

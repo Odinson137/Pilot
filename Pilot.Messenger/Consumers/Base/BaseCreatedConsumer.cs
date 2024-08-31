@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Messenger.Interfaces;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Messenger.Consumers.Base;
 

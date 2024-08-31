@@ -4,12 +4,12 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Models;
 using Pilot.Receiver.Models.ModelHelpers;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Receiver.Consumers.Base;
 
@@ -56,8 +56,9 @@ public abstract class BaseCreatedConsumer<T, TDto>(
         {
             Title = "Успешное создание!",
             Description = $"Успешное создание сущности '{typeof(T).Name}'",
-            MessagePriority = MessagePriority.Success | MessagePriority.Create,
-            EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
+            MessagePriority = MessageInfo.Success | MessageInfo.Create,
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
+            EntityId = model.Id
         };
 
         await MessageService.SendMessageAsync(message);

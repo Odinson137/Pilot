@@ -12,7 +12,7 @@ public class Message : BaseModel
 
     [Required] public int UserId { get; set; }
 
-    [Required] public MessagePriority MessagePriority { get; set; }
+    [Required] public MessageInfo MessagePriority { get; set; }
 
     public ModelType? EntityType { get; set; }
 

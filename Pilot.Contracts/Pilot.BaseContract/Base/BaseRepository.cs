@@ -7,6 +7,8 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
     : BaseReadRepository<T>(context, mapper), IBaseRepository<T>
     where T : BaseModel
 {
+    private readonly DbContext _context = context;
+
     public async Task<T> AddValueToContextAsync(T value, CancellationToken token = default)
     {
         await DbSet.AddAsync(value, token);
@@ -16,11 +18,6 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
     public async Task SaveAsync(CancellationToken token = default)
     {
         await GetContext.SaveChangesAsync(token);
-    }
-
-    public void LazyLoading(bool isActive = false)
-    {
-        context.ChangeTracker.LazyLoadingEnabled = isActive;
     }
 
     public async Task<int> FastDeleteAsync(int modelId, CancellationToken token = default)

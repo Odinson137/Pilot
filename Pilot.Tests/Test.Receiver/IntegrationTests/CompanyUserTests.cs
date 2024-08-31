@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.RabbitMqMessages;
 using Pilot.Receiver.Models;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Test.Base.IntegrationBase;
 using Test.Receiver.IntegrationTests.Factories;
 

@@ -10,6 +10,7 @@ using Pilot.Messenger.Interfaces;
 using Pilot.Messenger.Repository;
 using Pilot.Messenger.Services;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -38,8 +39,6 @@ services.AddMediatR(cfg =>
 });
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingOneBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CachingListBehavior<,>));
 
 await services.AddRedis(configuration);
 
@@ -50,6 +49,12 @@ services.AddDbContext<DataContext>(option => option.UseMySql(
     .EnableSensitiveDataLogging()
     .EnableDetailedErrors()
 );
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Debug()
+    .CreateLogger());
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 

@@ -6,5 +6,7 @@ public enum ServiceName
 
     ReceiverServer = 2,
 
-    MessengerServer = 3
+    MessengerServer = 3,
+    
+    StorageServer = 4,
 }

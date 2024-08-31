@@ -5,12 +5,21 @@ using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.ReceiverServer)]
+[FromService(ServiceName.StorageServer)]
 public class FileDto : BaseDto
 {
-    [Required] [MaxLength(50)] public required string Url { get; set; }
+    public bool HasNewFile => ByteFormFile != null;
+  
+    // TODO потом придумать что с этим делать: возможно в каждом клиенте сразу кидать файлы в виде байтов
+    // [JsonIgnore]
+    // public IFormFile? FormFile { get; set; }
+    
+    public byte[]? ByteFormFile { get; set; }
 
     [Required]
     [MaxLength(30)] // TODO потом разобраться с этим в валидауии
-    public required string Type { get; set; }
+    public string Type { get; set; } = null!;
+
+    public double GetSize() =>
+        ByteFormFile?.Length / 1024.0 ?? throw new System.Exception("Нет файла, чтоб узнать его длину");
 }

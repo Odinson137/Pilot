@@ -14,7 +14,7 @@ public class ProjectTask : BaseModel, IAddCompanyUser
 
     [Required] public CompanyUser CompanyUser { get; set; } = null!;
 
-    public File? File { get; set; }
+    public int? FileId { get; set; }
 
     public void AddCompanyUser(CompanyUser companyUser)
     {

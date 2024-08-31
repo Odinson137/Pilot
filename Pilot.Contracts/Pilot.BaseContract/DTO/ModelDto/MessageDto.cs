@@ -12,7 +12,7 @@ public class MessageDto : BaseDto
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] public MessagePriority MessagePriority { get; set; }
+    [Required] public MessageInfo MessagePriority { get; set; }
 
     public ModelType? EntityType { get; set; }
 

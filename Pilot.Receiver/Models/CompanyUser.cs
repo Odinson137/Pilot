@@ -2,7 +2,7 @@
 
 namespace Pilot.Receiver.Models;
 
-public class CompanyUser : BaseUserModel
+public class CompanyUser : BaseModel
 {
     public Company? Company { get; set; }
 

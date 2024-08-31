@@ -23,7 +23,7 @@ public class ValidateError
         {
             if (string.IsNullOrEmpty(_error))
                 throw new ArgumentNullException(
-                    "Значение ошибки не должно здесь быть null. До этого вы должны произвести проверку на успешность валидации");
+                    $"Значение ошибки не должно здесь быть null. До этого вы должны произвести проверку на успешность валидации");
 
             return _error;
         }

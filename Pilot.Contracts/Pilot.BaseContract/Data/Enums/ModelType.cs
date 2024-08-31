@@ -25,6 +25,5 @@ public enum ModelType
 
     [Description(nameof(TeamDto))] Team = 7,
 
-    [Description(nameof(HistoryActionDto))]
-    HistoryAction = 8,
+    [Description(nameof(HistoryActionDto))] HistoryAction = 8,
 }

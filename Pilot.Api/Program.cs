@@ -30,6 +30,9 @@ services.AddHttpClient(ServiceName.ReceiverServer.ToString(),
 services.AddHttpClient(ServiceName.MessengerServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!); });
 
+services.AddHttpClient(ServiceName.StorageServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("StorageServerUrl")!); });
+
 services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
@@ -108,7 +111,7 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-await app.Services.GetRequiredService<ISeed>().Seeding(app);
+await app.Services.GetRequiredService<ISeed>().Seeding();
 
 // if (app.Environment.IsDevelopment())
 // {
