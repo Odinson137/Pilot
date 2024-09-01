@@ -123,7 +123,27 @@ jobs:
   
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-build
-        
+  
+  storage:
+    name: Storage
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore Test.Storage project
+        run: dotnet restore ./Pilot.Tests/Test.Storage/Test.Storage.csproj
+
+      - name: Build Test.Storage project
+        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
+
+      - name: Build Test.Storage project
+        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
+  
   base:
     name: Base
     runs-on: ubuntu-latest

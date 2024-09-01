@@ -40,7 +40,7 @@ public abstract class BaseCreatedConsumer<T, TDto> : IConsumer<CreateCommandMess
         var message = context.Message.Value;
         var userId = context.Message.UserId;
 
-        await Validator.ValidateAsync<T, TDto>(message, userId);
+        await Validator.ValidateAsync<T, TDto>(message);
 
         var model = Mapper.Map<T>(context.Message.Value);
 

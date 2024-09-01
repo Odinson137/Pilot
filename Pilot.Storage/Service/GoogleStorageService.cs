@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Storage.Interface;
 
@@ -8,58 +9,38 @@ namespace Pilot.Storage.Service;
 public class GoogleStorageService : IStorageService
 {
     private readonly string _bucketName;
+    private readonly string _cloudUrl;
     private readonly StorageClient _storageClient;
-    private readonly IFileRepository _fileRepository;
 
-    private const string Credential = "pilot.Credential.GoogleStorage.json";
-
-    public GoogleStorageService(IConfiguration configuration, IFileRepository fileRepository)
+    public GoogleStorageService(IConfiguration configuration)
     {
-        _fileRepository = fileRepository;
-        var googleCredential = GoogleCredential.FromFile(Credential);
-        _bucketName = configuration.GetValue<string>("BucketName")!;
+        var credential = configuration.GetValue<string>("Credential")!;
+        var googleCredential = GoogleCredential.FromFile(credential);
         _storageClient = StorageClient.Create(googleCredential);
+        _cloudUrl = configuration.GetValue<string>("GoogleUrl")!;
+        _bucketName = configuration.GetValue<string>("BucketName")!;
     }
     
-    public async Task UploadOrChangeFileAsync(FileDto fileDto)
+    public async Task UploadFileAsync(FileDto fileDto)
     {
-        var fileModel = fileDto.Id != 0 ? await _fileRepository.GetByIdAsync(fileDto.Id) : null;
-
-        var fileName = Guid.NewGuid().ToString();
-        
         using var memoryStream = new MemoryStream(fileDto.ByteFormFile!);
-        
-        await _storageClient.UploadObjectAsync(_bucketName, fileName, $"image/{fileDto.Type}", memoryStream);
-
-        if (fileModel != null)
-        {
-            fileModel.Name = fileName;
-            fileModel.Size = fileDto.GetSize();
-            fileModel.ChangeAt = DateTime.Now;
-            await _fileRepository.SaveAsync();
-            
-            await _storageClient.DeleteObjectAsync(_bucketName, fileModel.Name);
-        }
+        await _storageClient.UploadObjectAsync(_bucketName, fileDto.Name, $"{fileDto.Format.ToString()}/{fileDto.Type}", memoryStream);
     }
 
-    public async Task DeleteFileAsync(int id)
+    public async Task DeleteFileAsync(string fileName)
     {
-        await _fileRepository.FastDeleteAsync(id);
-        await _storageClient.DeleteObjectAsync(_bucketName, Guid.NewGuid().ToString());
+        await _storageClient.DeleteObjectAsync(_bucketName, fileName);
     }
-    
-    public async Task<byte[]> GetFileAsync(int id)
-    {
-        var fileModel = await _fileRepository.GetRequiredByIdAsync(id);
 
+    public async Task<byte[]> GetFileAsync(string fileName)
+    {
         using var memoryStream = new MemoryStream();
-        await _storageClient.DownloadObjectAsync(_bucketName, fileModel.Name, memoryStream);
+        await _storageClient.DownloadObjectAsync(_bucketName, fileName, memoryStream);
         return memoryStream.ToArray();
     }
 
-    public async Task<string> GetUrlAsync(int id)
+    public string GetUrl(string fileName, FileFormat format, string type)
     {
-        var fileModel = await _fileRepository.GetRequiredByIdAsync(id);
-        return fileModel.Url;
+        return $"{_cloudUrl}/{_bucketName}/{type}/{fileName}.{format}";
     }
 }

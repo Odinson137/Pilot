@@ -1,14 +1,15 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
+﻿using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.Storage.Interface;
 
 public interface IStorageService
 {
-    public Task UploadOrChangeFileAsync(FileDto fileDto);
+    public Task UploadFileAsync(FileDto fileDto);
     
-    public Task DeleteFileAsync(int id);
+    public Task DeleteFileAsync(string fileName);
 
-    public Task<byte[]> GetFileAsync(int id);
+    public Task<byte[]> GetFileAsync(string fileName);
     
-    public Task<string> GetUrlAsync(int id);
+    public string GetUrl(string fileName, FileFormat format, string type);
 }

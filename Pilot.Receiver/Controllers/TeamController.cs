@@ -1,8 +1,8 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Interface;
-using Pilot.Receiver.Models;
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Receiver.Controllers;
 
-public class TeamController(ITeam repository, ILogger<TeamController> logger)
-    : BaseReadOnlyController<Team, TeamDto>(repository, logger);
+public class TeamController(IMediator mediator)
+    : PilotReadOnlyController<TeamDto>(mediator);

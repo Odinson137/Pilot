@@ -25,7 +25,7 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
         return await DbSet.Where(c => c.Id == modelId).ExecuteDeleteAsync(token);
     }
 
-    public void DeleteAsync(T value)
+    public void Delete(T value)
     {
         GetContext.Remove(value);
     }

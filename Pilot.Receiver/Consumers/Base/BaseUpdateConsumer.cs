@@ -34,7 +34,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
 
         var dtoModel = context.Message.Value;
 
-        await Validator.ValidateAsync<T, TDto>(dtoModel, context.Message.UserId);
+        await Validator.ValidateAsync<T, TDto>(dtoModel);
 
         var model = Mapper.Map<T>(dtoModel);
 

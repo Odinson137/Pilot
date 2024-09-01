@@ -47,7 +47,7 @@ services:
     ports:
       - 8040:8080
     depends_on:
-      pilot_messenger_mysql:
+      pilot_storage_mysql:
         condition: service_healthy
 
   rabbitmq:

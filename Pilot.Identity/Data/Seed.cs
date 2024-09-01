@@ -12,7 +12,6 @@ public class Seed : ISeed
     private readonly IPasswordCoder _passwordCoder;
     private readonly DataContext _context;
     private int _userId = 1;
-    private Dictionary<string, byte[]> _imagesDictionary;
 
     public Seed(IPasswordCoder passwordCoder, DataContext context)
     {
@@ -23,39 +22,21 @@ public class Seed : ISeed
     private Faker<User> GetUserFaker()
     {
         var fakeUser = new Faker<User>()
-                .RuleFor(u => u.Id, (f, u) => _userId++)
-                .RuleFor(u => u.Gender, (f, u) => f.Person.Gender)
+                .RuleFor(u => u.Id, (_, _) => _userId++)
+                .RuleFor(u => u.Gender, (f, _) => f.Person.Gender)
                 .RuleFor(u => u.Name, (f, u) => f.Name.FirstName(u.Gender))
                 .RuleFor(u => u.LastName, (f, u) => f.Name.LastName(u.Gender))
                 .RuleFor(u => u.UserName, (f, u) => f.Internet.UserName(u.Name, u.LastName))
                 .RuleFor(u => u.Email, (f, u) => f.Internet.Email(u.Name, u.LastName))
-                .RuleFor(u => u.Description, (f, u) => f.Lorem.Paragraphs().TakeOnly(1000))
-                .RuleFor(u => u.Country, (f, u) => f.Address.Country())
-                .RuleFor(u => u.City, (f, u) => f.Address.City())
-                .RuleFor(u => u.AvatarUrl, (f, u) => f.Internet.Avatar())
+                .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(1000))
+                .RuleFor(u => u.Country, (f, _) => f.Address.Country())
+                .RuleFor(u => u.City, (f, _) => f.Address.City())
+                .RuleFor(u => u.AvatarImageId, (_, _) => _userId++) // fileId = userId - в сиде должно совпадать, можно оставить и так 
                 .RuleFor(u => u.Password, f => _passwordCoder.GenerateSaltAndHashPassword(f.Internet.Password()).Item1)
-                .RuleFor(u => u.Salt, (f, u) => _passwordCoder.GenerateSaltAndHashPassword(u.Password).Item2)
-                .RuleFor(u => u.Birthday, (f, u) => f.Person.DateOfBirth);
+                .RuleFor(u => u.Salt, (_, u) => _passwordCoder.GenerateSaltAndHashPassword(u.Password).Item2)
+                .RuleFor(u => u.Birthday, (f, _) => f.Person.DateOfBirth);
         
         return fakeUser;
-    }
-    
-    public Dictionary<string, byte[]> GetFilesFromDirectory(string directoryPath)
-    {
-        var filesDictionary = new Dictionary<string, byte[]>();
-
-        var filePaths = Directory.GetFiles(directoryPath);
-
-        foreach (var filePath in filePaths)
-        {
-            var fileName = Path.GetFileName(filePath);
-
-            var fileContent = File.ReadAllBytes(filePath);
-
-            filesDictionary[fileName] = fileContent;
-        }
-
-        return filesDictionary;
     }
     
     public async Task Seeding()
@@ -63,8 +44,7 @@ public class Seed : ISeed
         if (await _context.Users.AnyAsync()) return;
         
         var faker = GetUserFaker();
-        _imagesDictionary = GetFilesFromDirectory("SeedImages");
-        var users = faker.Generate(_imagesDictionary.Count);
+        var users = faker.Generate(Constants.SeedDataCount);
         await _context.AddRangeAsync(users);
         await _context.SaveChangesAsync();
     }

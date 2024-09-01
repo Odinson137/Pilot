@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception;
-using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Contracts.Validation;
@@ -16,27 +15,20 @@ public abstract class BaseValidateService : IBaseValidatorService
 {
     private readonly DbContext _context;
     private readonly ILogger<BaseValidateService> _logger;
-    private readonly IModelService _userService;
 
-    public BaseValidateService(IModelService user, ILogger<BaseValidateService> logger, DbContext context)
+    public BaseValidateService(ILogger<BaseValidateService> logger, DbContext context)
     {
-        _userService = user;
         _logger = logger;
         _context = context;
     }
 
-    public async Task ValidateAsync<T, TDto>(TDto model, int userId,
-        bool canUserValidate = true, bool canDefaultValidate = true)
+    public async Task ValidateAsync<T, TDto>(TDto model)
         where T : BaseModel where TDto : BaseDto
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
 
-        if (canUserValidate)
-            await UserValidateAsync(userId);
-
-        if (canDefaultValidate)
-            await DefaultValidateAsync<T, TDto>(model);
+        await DefaultValidateAsync<T, TDto>(model);
 
         _logger.LogInformation($"End validate model of {typeof(T).Name}");
     }
@@ -47,9 +39,6 @@ public abstract class BaseValidateService : IBaseValidatorService
     {
         _logger.LogInformation($"Start validate model of {typeof(T).Name}");
         _logger.LogClassInfo(model);
-
-        if (canUserValidate)
-            await UserValidateAsync(userId);
 
         if (canDefaultValidate)
             await DefaultValidateAsync<T, TDto>(model);
@@ -128,18 +117,6 @@ public abstract class BaseValidateService : IBaseValidatorService
             };
 
             throw new MessageException(message);
-        }
-    }
-
-    private async Task UserValidateAsync(int userId)
-    {
-        var user = await _userService.GetValueByIdAsync<UserDto>(userId);
-
-        // по логике, это условие всегда должно быть положительным, если система консистентна, иначе она не допустит появлению не связанных данных
-        if (user == null)
-        {
-            _logger.LogError("User not found");
-            throw new NotFoundException("User not found");
         }
     }
 

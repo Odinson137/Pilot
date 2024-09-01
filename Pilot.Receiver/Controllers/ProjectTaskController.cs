@@ -1,8 +1,8 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Interface;
-using Pilot.Receiver.Models;
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Receiver.Controllers;
 
-public class ProjectTaskController(IProjectTask repository, ILogger<ProjectTaskController> logger)
-    : BaseReadOnlyController<ProjectTask, ProjectTaskDto>(repository, logger);
+public class ProjectTaskController(IMediator mediator)
+    : PilotReadOnlyController<ProjectTaskDto>(mediator);

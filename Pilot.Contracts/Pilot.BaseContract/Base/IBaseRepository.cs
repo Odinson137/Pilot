@@ -11,5 +11,5 @@ public interface IBaseRepository<T> : IBaseReadRepository<T> where T : BaseModel
 
     public Task<int> FastDeleteAsync(int modelId, CancellationToken token = default);
     
-    public void DeleteAsync(T value);
+    public void Delete(T value);
 }

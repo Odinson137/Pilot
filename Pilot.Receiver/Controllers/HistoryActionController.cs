@@ -1,8 +1,8 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Interface;
-using Pilot.Receiver.Models;
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Receiver.Controllers;
 
-public class HistoryActionController(IHistoryAction repository, ILogger<HistoryActionController> logger)
-    : BaseReadOnlyController<HistoryAction, HistoryActionDto>(repository, logger);
+public class HistoryActionController(IMediator mediator)
+    : PilotReadOnlyController<HistoryActionDto>(mediator);

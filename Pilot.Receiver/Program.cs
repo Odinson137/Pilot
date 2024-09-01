@@ -1,18 +1,16 @@
-using System.Reflection;
-using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary;
-using Pilot.Receiver.Consumers.Base;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
 using Pilot.Receiver.Service;
-using Serilog;
+using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Services;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,44 +30,9 @@ services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .CreateLogger());
-
-services.AddMassTransit(x =>
-{
-    x.SetKebabCaseEndpointNameFormatter();
-
-    var baseModelType = typeof(BaseCreatedConsumer<,>);
-    var assembly = Assembly.GetAssembly(baseModelType);
-
-    var consumers = assembly!.GetTypes()
-        .Where(t => t is { IsClass: true, IsAbstract: false } && t.Name.Contains("Consumer"))
-        .Select(c => c)
-        .ToList();
-
-    foreach (var consumer in consumers) x.AddConsumer(consumer);
-
-    x.UsingRabbitMq((ctx, cfg) =>
-    {
-        cfg.Host(configuration["RabbitMQ:ConnectionString"]);
-        cfg.ConfigureEndpoints(ctx);
-    });
-});
-
-services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration["MySql:ConnectionString"],
-        new MySqlServerVersion(new Version(8, 0, 11))
-    )
-    .EnableSensitiveDataLogging()
-    .EnableDetailedErrors()
-);
+builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
 
 await services.AddRedis(configuration);
-
-services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
@@ -82,7 +45,14 @@ services.AddSwaggerGen();
 
 services.AddControllers();
 
+services.AddScoped<ISeed, Seed>();
+
+services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
+services.AddBaseRepositories(typeof(BaseDto).Assembly);
+
 var app = builder.Build();
+
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
 
 app.UseExceptionHandler(errorApp =>
 {

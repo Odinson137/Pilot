@@ -26,7 +26,7 @@ public class MessageCreatedConsumer(
         var message = context.Message.Value;
         var userId = context.Message.UserId;
 
-        await Validator.ValidateAsync<Message, MessageDto>(message, userId);
+        await Validator.ValidateAsync<Message, MessageDto>(message);
 
         var model = Mapper.Map<Message>(context.Message.Value);
 

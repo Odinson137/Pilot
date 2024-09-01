@@ -1,14 +1,12 @@
-using System.Reflection;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.Interfaces;
-using Pilot.Storage.Consumers.Base;
+using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Services;
 using Pilot.Storage.Data;
 using Pilot.Storage.Interface;
 using Pilot.Storage.Repository;
 using Pilot.Storage.Service;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -21,46 +19,22 @@ services.AddSwaggerGen();
 
 services.AddScoped<IStorageService, GoogleStorageService>();
 services.AddScoped<IFileRepository, FileRepository>();
+services.AddScoped<IFileService, FileService>();
 
+services.AddScoped<IBaseValidatorService, BaseValidateService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
-services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration["MySql:ConnectionString"],
-        new MySqlServerVersion(new Version(8, 0, 11))
-    )
-    .EnableSensitiveDataLogging()
-    .EnableDetailedErrors()
-);
+builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .CreateLogger());
+services.AddScoped<ISeed, Seed>();
 
-services.AddMassTransit(x =>
-{
-    x.SetKebabCaseEndpointNameFormatter();
-
-    var baseModelType = typeof(BaseCreatedConsumer<,>);
-    var assembly = Assembly.GetAssembly(baseModelType);
-
-    var consumers = assembly!.GetTypes()
-        .Where(t => t is { IsClass: true, IsAbstract: false } && t.Name.Contains("Consumer"))
-        .Select(c => c)
-        .ToList();
-
-    foreach (var consumer in consumers) x.AddConsumer(consumer);
-
-    x.UsingRabbitMq((ctx, cfg) =>
-    {
-        cfg.Host(configuration["RabbitMQ:ConnectionString"]);
-        cfg.ConfigureEndpoints(ctx);
-    });
-});
+services.AddBaseQueryHandlers(typeof(Program).Assembly);
+services.AddBaseRepositories(typeof(BaseDto).Assembly);
 
 var app = builder.Build();
+
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();

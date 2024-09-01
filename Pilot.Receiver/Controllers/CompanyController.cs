@@ -1,8 +1,7 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Interface;
-using Pilot.Receiver.Models;
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Receiver.Controllers;
 
-public class CompanyController(ICompany repository, ILogger<CompanyController> logger)
-    : BaseReadOnlyController<Company, CompanyDto>(repository, logger);
+public class CompanyController(IMediator mediator) : PilotReadOnlyController<CompanyDto>(mediator);

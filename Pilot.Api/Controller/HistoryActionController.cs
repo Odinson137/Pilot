@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Pilot.Api.Base;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class HistoryActionController(IMediator mediator) : GatewayController<HistoryActionDto>(mediator);
+public class HistoryActionController(IMediator mediator) : PilotController<HistoryActionDto>(mediator);

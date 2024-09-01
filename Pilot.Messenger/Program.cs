@@ -1,26 +1,20 @@
 using MediatR;
-using MediatR.NotificationPublishers;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
-using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Messenger.Data;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;
 using Pilot.Messenger.Repository;
 using Pilot.Messenger.Services;
+using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Serilog;
+using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
-services.AddHttpClient(ServiceName.IdentityServer.ToString(),
-    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
-
 services.AddScoped<IMessageRepository, MessageRepository>();
-services.AddScoped<IBaseValidatorService, ValidatorService>();
+services.AddScoped<IBaseValidatorService, BaseValidateService>();
 services.AddScoped<IModelService, ModelService>();
 services.AddScoped<INotificationService, NotificationService>();
 
@@ -31,41 +25,18 @@ services.AddSignalR();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-    cfg.NotificationPublisher = new TaskWhenAllPublisher();
-    cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
-});
-
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-await services.AddRedis(configuration);
+builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
 
-services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration["MySql:ConnectionString"],
-        new MySqlServerVersion(new Version(8, 0, 11))
-    )
-    .EnableSensitiveDataLogging()
-    .EnableDetailedErrors()
-);
-
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .CreateLogger());
-
-services.AddAutoMapper(typeof(AutoMapperProfile));
+services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
+services.AddBaseRepositories(typeof(BaseDto).Assembly);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
 app.UseSwagger();
 app.UseSwaggerUI();
-// }
 
 app.MapHub<NotificationHub>("/notificationhub");
 app.MapHub<ChatHub>("/chatHub");

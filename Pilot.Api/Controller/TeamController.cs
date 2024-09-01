@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Pilot.Api.Base;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class TeamController(IMediator mediator) : GatewayController<TeamDto>(mediator);
+public class TeamController(IMediator mediator) : PilotController<TeamDto>(mediator);

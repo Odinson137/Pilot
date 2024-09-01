@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Pilot.Api.Base;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class ProjectTaskController(IMediator mediator) : GatewayController<ProjectTaskDto>(mediator);
+public class ProjectTaskController(IMediator mediator) : PilotController<ProjectTaskDto>(mediator);

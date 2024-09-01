@@ -19,6 +19,12 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         var value = await GetByIdAsync(id, token);
         return value ?? throw new NullReferenceException("Сущность по id не найдена");
     }
+    
+    public async Task<TOut> GetRequiredByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseDto
+    {
+        var value = await GetByIdAsync<TOut>(id, token);
+        return value ?? throw new NullReferenceException("Сущность по id не найдена");
+    }
 
     public async Task<TOut?> GetByIdAsync<TOut>(int id, CancellationToken token = default) where TOut : BaseDto
     {
