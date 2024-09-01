@@ -22,6 +22,7 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+      <Content Remove="pilot.Credential.GoogleStorage.json" />
     </ItemGroup>
 
     <ItemGroup>
