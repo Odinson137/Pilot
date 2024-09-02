@@ -14,7 +14,7 @@ public class ApiTestIdentityFactory : WebApplicationFactory<Program>, IAsyncLife
 {
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")
-        .WithDatabase("TestPilotIdentityDb")
+        .WithDatabase("PilotIdentityDb")
         .Build();
 
     public async Task InitializeAsync()
@@ -33,7 +33,7 @@ public class ApiTestIdentityFactory : WebApplicationFactory<Program>, IAsyncLife
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
-        Environment.SetEnvironmentVariable("MySqlIdentity:ConnectionString",
+        Environment.SetEnvironmentVariable("MySql:ConnectionString",
             _mySqlContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>

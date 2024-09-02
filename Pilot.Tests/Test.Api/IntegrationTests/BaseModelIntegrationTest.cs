@@ -15,6 +15,7 @@ namespace Test.Api.IntegrationTests;
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
+    // ReSharper disable once MemberCanBePrivate.Global
     protected async Task<CompanyUser> CreateCompanyUser(bool withAuthorization = false)
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
