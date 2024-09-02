@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.Commands;
+using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Handlers;
 

@@ -59,8 +59,4 @@
       <None Include="wwwroot\SeedImages\f7ec5e23bcc148b7807c006b2a36675c.jpeg" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Handlers\" />
-    </ItemGroup>
-
 </Project>

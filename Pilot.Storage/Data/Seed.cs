@@ -12,13 +12,11 @@ public class Seed : ISeed
 {
     private readonly IFileService _fileService;
     private readonly DataContext _context;
-    private readonly IMapper _mapper;
 
-    public Seed(IFileService fileService, DataContext context, IMapper mapper)
+    public Seed(IFileService fileService, DataContext context)
     {
         _fileService = fileService;
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task Seeding()

@@ -29,8 +29,7 @@ builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
 
 services.AddScoped<ISeed, Seed>();
 
-services.AddBaseQueryHandlers(typeof(Program).Assembly);
-services.AddBaseRepositories(typeof(BaseDto).Assembly);
+// services.AddBaseQueryHandlers(typeof(Program).Assembly);
 
 var app = builder.Build();
 

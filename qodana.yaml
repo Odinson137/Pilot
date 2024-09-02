@@ -17,3 +17,14 @@ exclude:
       - Pilot.Messenger
       - Pilot.Receiver
       - Pilot.Tests
+include:
+  - name: RouteTemplates.ActionRoutePrefixCanBeExtractedToControllerRoute
+  - name: RouteTemplates.ControllerRouteParameterIsNotPassedToMethods
+  - name: RouteTemplates.MethodMissingRouteParameters
+  - name: RouteTemplates.ParameterTypeCanBeMadeStricter
+  - name: RouteTemplates.RouteParameterIsNotPassedToMethod
+  - name: RouteTemplates.ParameterConstraintCanBeSpecified
+  - name: EntityFramework.NPlusOne.Query
+  - name: MissingBlankLines
+  - name: TaskProblemsInspection
+  - name: AsyncVoidMethod

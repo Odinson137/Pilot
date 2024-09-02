@@ -7,7 +7,6 @@ using Pilot.Messenger.Repository;
 using Pilot.Messenger.Services;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -29,8 +28,7 @@ services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
 
-services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
-services.AddBaseRepositories(typeof(BaseDto).Assembly);
+// services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 
 var app = builder.Build();
 

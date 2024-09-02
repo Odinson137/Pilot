@@ -5,15 +5,18 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Api.Data;
+using Pilot.Api.Handlers.BaseHandlers;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Pilot.SqrsControllerLibrary.Services;
+using Pilot.SqrsControllerLibrary.Commands;
+using Pilot.SqrsControllerLibrary.Handlers;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,7 +52,7 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 
-services.AddQueryHandlers(typeof(BaseDto).Assembly);
+// services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
@@ -113,11 +116,8 @@ app.UseExceptionHandler(errorApp =>
 
 await app.Services.GetRequiredService<ISeed>().Seeding();
 
-// if (app.Environment.IsDevelopment())
-// {
 app.UseSwagger();
 app.UseSwaggerUI();
-// }
 
 app.MapControllers();
 app.UseHttpsRedirection();

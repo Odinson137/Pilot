@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Base;
 using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.Handlers;
+using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Services;
 

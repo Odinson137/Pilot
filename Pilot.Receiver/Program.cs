@@ -10,7 +10,6 @@ using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
 using Pilot.Receiver.Service;
 using Pilot.SqrsControllerLibrary;
-using Pilot.SqrsControllerLibrary.Services;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,8 +46,7 @@ services.AddControllers();
 
 services.AddScoped<ISeed, Seed>();
 
-services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
-services.AddBaseRepositories(typeof(BaseDto).Assembly);
+// services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 
 var app = builder.Build();
 

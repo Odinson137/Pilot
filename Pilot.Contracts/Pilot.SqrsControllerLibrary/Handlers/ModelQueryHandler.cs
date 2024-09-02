@@ -8,15 +8,15 @@ using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Handlers;
 
-public abstract class GetValueQueryHandler<T, TDto> : 
+public abstract class ModelQueryHandler<T, TDto> : 
     IRequestHandler<GetValuesQuery<TDto>, ICollection<TDto>>,
-    IRequestHandler<GetValueByIdQuery<TDto>, TDto> 
+    IRequestHandler<GetValueByIdQuery<TDto>, TDto>
     where TDto : BaseDto where T : BaseModel
 {
     private readonly IBaseReadRepository<T> _repository;
-    private readonly ILogger<GetValueQueryHandler<T, TDto>> _logger;
+    private readonly ILogger<ModelQueryHandler<T, TDto>> _logger;
     
-    public GetValueQueryHandler(IBaseReadRepository<T> repository, ILogger<GetValueQueryHandler<T, TDto>> logger)
+    public ModelQueryHandler(IBaseReadRepository<T> repository, ILogger<ModelQueryHandler<T, TDto>> logger)
     {
         _repository = repository;
         _logger = logger;
