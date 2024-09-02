@@ -4,5 +4,5 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Receiver.Controllers;
 
-public class CompanyUserController(Mediator mediator)
+public class CompanyUserController(IMediator mediator)
     : PilotReadOnlyController<CompanyUserDto>(mediator);
