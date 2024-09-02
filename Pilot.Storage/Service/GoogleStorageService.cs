@@ -24,7 +24,8 @@ public class GoogleStorageService : IStorageService
     public async Task UploadFileAsync(FileDto fileDto)
     {
         using var memoryStream = new MemoryStream(fileDto.ByteFormFile!);
-        await _storageClient.UploadObjectAsync(_bucketName, fileDto.Name, $"{fileDto.Format.ToString()}/{fileDto.Type}", memoryStream);
+        var fullUrl = $"{fileDto.Format}/{fileDto.Name}";
+        await _storageClient.UploadObjectAsync(_bucketName, fullUrl, $"{fileDto.Format}/{fileDto.Type}", memoryStream);
     }
 
     public async Task DeleteFileAsync(string fileName)

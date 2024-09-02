@@ -1,11 +1,34 @@
-﻿using Pilot.Contracts.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Data;
+using Pilot.Receiver.Models;
 
 namespace Pilot.Receiver.Data;
 
 public class Seed : ISeed
 {
-    public Task Seeding()
+    private readonly DataContext _context;
+
+    private List<string> CompanyRoles =
+    [
+        "Owner", "Developer", "Designer"
+    ];
+
+    public Seed(DataContext context)
     {
-        return Task.CompletedTask;
+        _context = context;
     }
+    
+    public async Task Seeding()
+    {
+        if (await _context.CompanyUsers.AnyAsync()) return;
+    }
+    
+    // private Faker<CompanyRole> GetFileDtoFaker()
+    // {
+    //     var fakeUser = new Faker<CompanyRole>()
+    //             .RuleFor(u => u.Title, (f, _u) => f.)
+    //         ;
+    //     
+    //     return fakeUser;
+    // }
 }

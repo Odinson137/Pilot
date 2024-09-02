@@ -33,7 +33,7 @@ public class ReceiverTestIdentityFactory : WebApplicationFactory<Program>, IAsyn
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
-        Environment.SetEnvironmentVariable("MySqlIdentity:ConnectionString",
+        Environment.SetEnvironmentVariable("MySql:ConnectionString",
             _mySqlContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>

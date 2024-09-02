@@ -10,5 +10,7 @@ public class CompanyUser : BaseModel
 
     public Team? Team { get; set; }
 
-    public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
+    public List<ProjectTask> ProjectTasks { get; set; } = [];
+    
+    public List<CompanyRole> CompanyRoles { get; set; } = [];
 }
