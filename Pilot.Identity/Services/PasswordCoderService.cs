@@ -17,7 +17,7 @@ public class PasswordCoderService : IPasswordCoder
 
         var hashed = HashedPassword(password, salt);
 
-        return (hashed, salt.ToString()!);
+        return (hashed, salt.ToJson());
     }
 
     public string ComparePasswordAndSalt(string password, string salt)

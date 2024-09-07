@@ -11,7 +11,7 @@ public class Seed : ISeed
 {
     private readonly IPasswordCoder _passwordCoder;
     private readonly DataContext _context;
-    private int _userId = 1;
+    private int _userId = 0;
 
     public Seed(IPasswordCoder passwordCoder, DataContext context)
     {
@@ -22,7 +22,7 @@ public class Seed : ISeed
     private Faker<User> GetUserFaker()
     {
         var fakeUser = new Faker<User>()
-                .RuleFor(u => u.Id, (_, _) => _userId++)
+                .RuleFor(u => u.Id, (_, _) => ++_userId)
                 .RuleFor(u => u.Gender, (f, _) => f.Person.Gender)
                 .RuleFor(u => u.Name, (f, u) => f.Name.FirstName(u.Gender))
                 .RuleFor(u => u.LastName, (f, u) => f.Name.LastName(u.Gender))
@@ -31,7 +31,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(1000))
                 .RuleFor(u => u.Country, (f, _) => f.Address.Country())
                 .RuleFor(u => u.City, (f, _) => f.Address.City())
-                .RuleFor(u => u.AvatarImageId, (_, _) => _userId++) // fileId = userId - в сиде должно совпадать, можно оставить и так 
+                .RuleFor(u => u.AvatarImageId, (_, _) => _userId) // fileId = userId - в сиде должно совпадать, можно оставить и так 
                 .RuleFor(u => u.Password, f => _passwordCoder.GenerateSaltAndHashPassword(f.Internet.Password()).Item1)
                 .RuleFor(u => u.Salt, (_, u) => _passwordCoder.GenerateSaltAndHashPassword(u.Password).Item2)
                 .RuleFor(u => u.Birthday, (f, _) => f.Person.DateOfBirth);
