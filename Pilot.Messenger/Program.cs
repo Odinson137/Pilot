@@ -13,7 +13,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 services.AddScoped<IMessageRepository, MessageRepository>();
-services.AddScoped<IBaseValidatorService, BaseValidateService>();
+services.AddScoped<IBaseValidatorService, MessengerValidateService>();
 services.AddScoped<IModelService, ModelService>();
 services.AddScoped<INotificationService, NotificationService>();
 

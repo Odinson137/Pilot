@@ -2,7 +2,6 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary;
-using Pilot.SqrsControllerLibrary.Services;
 using Pilot.Storage.Data;
 using Pilot.Storage.Interface;
 using Pilot.Storage.Repository;
@@ -21,7 +20,7 @@ services.AddScoped<IStorageService, GoogleStorageService>();
 services.AddScoped<IFileRepository, FileRepository>();
 services.AddScoped<IFileService, FileService>();
 
-services.AddScoped<IBaseValidatorService, BaseValidateService>();
+services.AddScoped<IBaseValidatorService, StorageValidateService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 

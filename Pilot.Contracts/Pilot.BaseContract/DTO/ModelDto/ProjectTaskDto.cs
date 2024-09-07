@@ -2,6 +2,7 @@
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
+using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
@@ -12,9 +13,13 @@ public class ProjectTaskDto : BaseDto
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] public BaseDto Project { get; set; } = null!;
-
+    [Required] public BaseDto Team { get; set; } = null!;
+    
     [Required] public BaseDto CompanyUser { get; set; } = null!;
+    
+    public List<BaseDto> TaskInfos { get; set; } = [];
 
-    public BaseDto? File { get; set; }
+    public int? File { get; set; }
+    
+    public TaskStatus TaskStatus { get; set; }
 }

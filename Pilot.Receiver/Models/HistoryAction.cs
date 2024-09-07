@@ -11,6 +11,8 @@ public class HistoryAction : BaseModel, IAddCompanyUser
 
     [Required] public ProjectTask ProjectTask { get; set; } = null!;
 
+    [Required] [MaxLength(500)] public string LastValue { get; set; } = null!;
+    
     [Required] public ActionState ActionState { get; set; }
 
     public void AddCompanyUser(CompanyUser companyUser)

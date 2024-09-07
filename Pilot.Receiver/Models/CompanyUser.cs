@@ -1,16 +1,15 @@
-﻿using Pilot.Contracts.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using Pilot.Contracts.Base;
 
 namespace Pilot.Receiver.Models;
 
 public class CompanyUser : BaseModel
 {
-    public Company? Company { get; set; }
+    [Required] public Company Company { get; set; } = null!;
 
-    public Project? Project { get; set; }
-
-    public Team? Team { get; set; }
+    public List<Team> Team { get; set; } = [];
 
     public List<ProjectTask> ProjectTasks { get; set; } = [];
     
-    public List<CompanyRole> CompanyRoles { get; set; } = [];
+    public CompanyRole? CompanyRole { get; set; }
 }

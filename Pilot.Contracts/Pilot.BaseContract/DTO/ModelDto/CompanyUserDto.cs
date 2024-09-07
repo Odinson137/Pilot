@@ -9,9 +9,9 @@ public class CompanyUserDto : BaseDto
 {
     public BaseDto? Company { get; set; }
 
-    public BaseDto? Project { get; set; }
+    public List<BaseDto> Team { get; set; } = [];
 
-    public BaseDto? Team { get; set; }
-
-    public ICollection<BaseDto> Tasks { get; set; } = new List<BaseDto>();
+    public List<BaseDto> ProjectTasks { get; set; } = [];
+    
+    public BaseDto? CompanyRole { get; set; }
 }

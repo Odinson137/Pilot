@@ -4,24 +4,16 @@ using Pilot.Receiver.Models.ModelHelpers;
 
 namespace Pilot.Receiver.Models;
 
-public class ProjectTask : BaseModel, IAddCompanyUser
+public class TaskInfo : BaseModel, IAddCompanyUser
 {
-    [Required] [MaxLength(50)] public string Name { get; set; } = null!;
-
-    [MaxLength(500)] public string? Description { get; set; }
-
-    [Required] public Team Team { get; set; } = null!;
-
-    public CompanyUser? CompanyUser { get; set; }
-
-    [Required] public CompanyUser CreatedBy { get; set; } = null!;
-    
-    public List<TaskInfo> TaskInfos { get; set; } = [];
+    [Required] public ProjectTask ProjectTask { get; set; } = null!;
 
     public int? FileId { get; set; }
     
-    public TaskStatus TaskStatus { get; set; }
+    [MaxLength(500)] public string? Description { get; set; }
 
+    [Required] public CompanyUser CreatedBy { get; set; } = null!;
+    
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CreatedBy = companyUser;

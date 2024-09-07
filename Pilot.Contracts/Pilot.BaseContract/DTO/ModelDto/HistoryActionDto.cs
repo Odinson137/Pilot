@@ -11,6 +11,8 @@ public class HistoryActionDto : BaseDto
     [Required] public required BaseDto CompanyUser { get; set; }
 
     [Required] public required BaseDto ProjectTask { get; set; }
+    
+    [Required] [MaxLength(500)] public string LastValue { get; set; } = null!;
 
     [Required] public required ActionState ActionState { get; set; }
 }

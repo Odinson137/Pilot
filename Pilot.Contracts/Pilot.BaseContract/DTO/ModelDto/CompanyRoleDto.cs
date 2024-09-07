@@ -7,16 +7,16 @@ using Pilot.Contracts.Validation.ValidationAttributes;
 namespace Pilot.Contracts.DTO.ModelDto;
 
 [FromService(ServiceName.ReceiverServer)]
-public class CompanyDto : BaseDto
+public class CompanyRoleDto : BaseDto
 {
     [Required]
     [MaxLength(50)]
     [CheckNameExist]
     public required string Title { get; set; }
 
-    [MaxLength(500)] public string? Description { get; init; }
+    public List<BaseDto> CompanyUsers { get; set; } = [];
 
-    public ICollection<BaseDto> Projects { get; init; } = new List<BaseDto>();
-
-    public ICollection<BaseDto> CompanyRoles { get; set; } = new List<BaseDto>();
+    public List<BaseDto> Companies { get; set; } = [];
+    
+    public bool IsBaseRole { get; init; }
 }

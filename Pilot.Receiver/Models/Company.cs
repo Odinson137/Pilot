@@ -1,23 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
-using Pilot.Receiver.Models.ModelHelpers;
 
 namespace Pilot.Receiver.Models;
 
-public class Company : BaseModel, IAddCompanyUser
+public class Company : BaseModel
 {
     [Required] [MaxLength(50)] public string Title { get; init; } = null!;
 
     [MaxLength(500)] public string? Description { get; init; }
 
-    public ICollection<Project> Projects { get; set; } = new List<Project>();
+    public List<Project> Projects { get; set; } = [];
 
-    public ICollection<Team> Teams { get; set; } = new List<Team>();
-
-    public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
-
-    public void AddCompanyUser(CompanyUser companyUser)
-    {
-        CompanyUsers.Add(companyUser);
-    }
+    public List<CompanyRole> CompanyRoles { get; set; } = [];
 }

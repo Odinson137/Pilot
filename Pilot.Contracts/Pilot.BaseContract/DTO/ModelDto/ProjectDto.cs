@@ -14,9 +14,9 @@ public class ProjectDto : BaseDto
 
     public ICollection<BaseDto> Teams { get; set; } = new List<BaseDto>();
 
-    public ICollection<BaseDto> ProjectTasks { get; set; } = new List<BaseDto>();
-
-    public ICollection<BaseDto> CompanyUsers { get; set; } = new List<BaseDto>();
+    public BaseDto Company { get; set; } = null!;
+    
+    public BaseDto CreatedBy { get; set; } = null!;
 
     public ProjectStatus ProjectStatus { get; set; }
 }

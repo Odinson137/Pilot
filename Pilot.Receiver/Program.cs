@@ -4,7 +4,6 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
-using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Receiver.Data;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
@@ -22,16 +21,15 @@ services.AddScoped<IHistoryAction, HistoryActionRepository>();
 services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
+services.AddScoped<ICompanyRole, CompanyRoleRepository>();
+services.AddScoped<ITaskInfo, TaskInfoRepository>();
 
-services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
 builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
-
-await services.AddRedis(configuration);
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });

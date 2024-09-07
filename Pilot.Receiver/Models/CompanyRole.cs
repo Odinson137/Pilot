@@ -5,11 +5,11 @@ namespace Pilot.Receiver.Models;
 
 public class CompanyRole : BaseModel
 {
-    [Required] [MaxLength(100)] public string Title { get; set; } = null!;
-
+    [Required] [MaxLength(100)] public string Title { get; init; } = null!;
+    
     public List<CompanyUser> CompanyUsers { get; set; } = [];
 
-    [Required] public Company Company { get; set; } = null!;
+    public List<Company> Companies { get; set; } = [];
     
-    [Required] public CompanyUser CreatedBy { get; set; } = null!;
+    public bool IsBaseRole { get; init; }
 }

@@ -12,7 +12,7 @@ public class TeamDto : BaseDto
 
     [Required] [MaxLength(500)] public required string Description { get; set; }
 
-    public ICollection<BaseDto> ProjectTasks { get; set; } = new List<BaseDto>();
-
     public ICollection<BaseDto> CompanyUsers { get; set; } = new List<BaseDto>();
+
+    [Required] public BaseDto Project { get; set; } = null!;
 }

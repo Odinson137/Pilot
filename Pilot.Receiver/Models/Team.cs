@@ -10,10 +10,10 @@ public class Team : BaseModel, IAddCompanyUser
 
     [Required] [MaxLength(500)] public string Description { get; set; } = null!;
 
-    public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
+    public List<CompanyUser> CompanyUsers { get; set; } = [];
 
-    public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
-
+    [Required] public Project Project { get; set; } = null!;
+    
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CompanyUsers.Add(companyUser);

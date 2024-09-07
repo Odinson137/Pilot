@@ -13,14 +13,14 @@ public class Project : BaseModel, IAddCompanyUser
 
     public ICollection<Team> Teams { get; set; } = new List<Team>();
 
-    public ICollection<ProjectTask> ProjectTasks { get; set; } = new List<ProjectTask>();
-
-    public ICollection<CompanyUser> CompanyUsers { get; set; } = new List<CompanyUser>();
-
+    [Required] public Company Company { get; set; } = null!;
+    
+    [Required] public CompanyUser CreatedBy { get; set; } = null!;
+    
     public ProjectStatus ProjectStatus { get; set; }
-
+    
     public void AddCompanyUser(CompanyUser companyUser)
     {
-        CompanyUsers.Add(companyUser);
+        CreatedBy = companyUser;
     }
 }

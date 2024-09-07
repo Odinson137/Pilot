@@ -45,7 +45,7 @@ services:
       context: .
       dockerfile: Pilot.Storage/Dockerfile
     ports:
-      - 8040:8080
+      - 8050:8080
     depends_on:
       pilot_storage_mysql:
         condition: service_healthy
