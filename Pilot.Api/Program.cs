@@ -11,12 +11,9 @@ using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Pilot.SqrsControllerLibrary.Commands;
-using Pilot.SqrsControllerLibrary.Handlers;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

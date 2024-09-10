@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand text-primary fw-bold" href="/">Pilot</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/company">Company</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/work">Work</a>
+                </li>
+                @if (_isAuthenticated)
+                {
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/account">Account</a>
+                </li>
+                }
+                else
+                {
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/login">Log in</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/signup">Sign up</a>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@Body
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+@code {
+    private bool _isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        _isAuthenticated = authState.User.Identity != null && authState.User.Identity.IsAuthenticated;
+    }
+}
+

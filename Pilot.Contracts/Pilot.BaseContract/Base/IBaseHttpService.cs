@@ -1,4 +1,8 @@
-﻿namespace Pilot.Contracts.Base;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Pilot.Contracts.Base;
 
 public interface IBaseHttpService
 {

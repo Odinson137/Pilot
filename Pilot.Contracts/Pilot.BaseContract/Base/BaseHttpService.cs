@@ -1,5 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ApiExceptions;
@@ -24,6 +28,10 @@ public class BaseHttpService(
                 throw new NullReferenceException("Null http client");
 
             return _httpClient;
+        }
+        set
+        {
+            _httpClient = value;
         }
     }
 
@@ -59,15 +67,15 @@ public class BaseHttpService(
         return content;
     }
 
-    private void HttpClientInit<TOut>()
+    protected virtual void HttpClientInit<TOut>()
     {
-        if (_httpClient != null) throw new DataException("HttpClient уже и так инициализирован");
+        if (_httpClient != null) return;
 
         var clientName = HttpNameService.GetHttpClientName(typeof(TOut));
 
         // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
-            ? HttpSingleTone.Init.HttpClients[$"{clientName}"]
+            ? HttpSingleTone.Init.HttpClients[clientName]
             : httpClientFactory.CreateClient(clientName);
     }
 

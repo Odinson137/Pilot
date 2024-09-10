@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
