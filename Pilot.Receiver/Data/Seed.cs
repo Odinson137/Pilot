@@ -56,7 +56,7 @@ public class Seed : ISeed
         for (var i = 0; i < 5; i++)
         {
             var company = companyFaker.Generate();
-
+            
             // Добавляем компанию в контекст сразу
             _context.Companies.Add(company);
             await _context.SaveChangesAsync();  // Сохраняем, чтобы сгенерировать ключ
@@ -190,12 +190,14 @@ public class Seed : ISeed
         
         return fake;
     }
-    
+
+    private int logoId = 31; // смотреть в сиде в проекте Storage. Там доступно 5 фотографий компаний
     private Faker<Company> GetCompanyFaker()
     {
         var fake = new Faker<Company>()
                 .RuleFor(u => u.Title, (f, _) => f.Company.CompanyName())
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(500))
+                .RuleFor(u => u.LogoId, (f, _) => logoId++)
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
         

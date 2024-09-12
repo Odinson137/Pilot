@@ -14,24 +14,24 @@
                     <a class="nav-link text-primary" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/company">Company</a>
+                    <a class="nav-link text-primary" href="/Company">Company</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/work">Work</a>
+                    <a class="nav-link text-primary" href="/Work">Work</a>
                 </li>
                 @if (_isAuthenticated)
                 {
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/account">Account</a>
+                    <a class="nav-link text-primary" href="/Account">Account</a>
                 </li>
                 }
                 else
                 {
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/login">Log in</a>
+                    <a class="nav-link text-primary" href="/User/Login">Log in</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/signup">Sign up</a>
+                    <a class="nav-link text-primary" href="/User/Registration">Sign up</a>
                 </li>
                 }
             </ul>
@@ -40,6 +40,55 @@
 </nav>
 
 @Body
+
+<footer class="bg-light text-primary mt-auto" style="background-color: #f8f9fa;">
+    <div class="container p-4">
+        <div class="row">
+            <!-- Информация о проекте -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold">О проекте</h5>
+                <p>
+                    Проект Pilot создан для управления проектами и командной работы. Наше решение поможет вам следить за прогрессом и достигать ваших целей быстрее.
+                </p>
+            </div>
+
+            <!-- Контакты -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold">Контакты</h5>
+                <p>Email: contact@pilot.com</p>
+                <p>Телефон: +123 456 789</p>
+            </div>
+
+            <!-- GitHub -->
+            <div class="col-md-4 mb-4">
+                <h5 class="text-uppercase fw-bold">GitHub</h5>
+                <a href="https://github.com/your-repository" class="text-primary" target="_blank">
+                    <i class="bi bi-github"></i> Посетите наш репозиторий на GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижняя часть футера -->
+    <div class="text-center p-3 bg-primary text-white" style="background-color: #4B0082;">
+        © @(DateTime.Now.Year) Pilot - Все права защищены
+    </div>
+</footer>
+
+<style>
+    /* Стиль для фиксации футера внизу страницы */
+    html, body {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+    footer {
+        margin-top: auto;
+    }
+</style>
+
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -53,7 +102,6 @@
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        _isAuthenticated = authState.User.Identity != null && authState.User.Identity.IsAuthenticated;
+        _isAuthenticated = authState.User.Identity is { IsAuthenticated: true };
     }
 }
-

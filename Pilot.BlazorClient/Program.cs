@@ -1,7 +1,9 @@
 using Pilot.BlazorClient.Components;
+using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.Service;
 using Pilot.Contracts.Data.Enums;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -15,6 +17,15 @@ services.AddHttpClient(ServiceName.ApiServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("ApiServerUrl")!); });
 
 services.AddScoped<IGateWayApiService, GateWayApiService>();
+services.AddScoped<ICompanyPageService, CompanyPageService>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.Debug()
+    .CreateLogger());
+
+services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 

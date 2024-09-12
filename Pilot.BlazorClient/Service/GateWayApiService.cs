@@ -1,42 +1,64 @@
-﻿using Pilot.BlazorClient.Interface;
+﻿using AutoMapper;
+using Pilot.BlazorClient.Interface;
+using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service;
 
-public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFactory httpClientFactory) : BaseHttpService(logger, httpClientFactory), IGateWayApiService
+public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFactory httpClientFactory, IMapper mapper) 
+    : BaseHttpService(logger, httpClientFactory), IGateWayApiService
 {
-    public async Task SendPostMessage<TMessage>(string url, TMessage message, CancellationToken token)
+    public async Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
+        string? url = null,
+        CancellationToken token = default, params (string, string)[] queryParams) 
+        where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var response = await HttpClient.PostAsJsonAsync(url, message, token);
+        var models = await SendGetMessages<TOut>(url, token, queryParams);
+        return models.MapList<TViewModel>(mapper);
+    }
+    
+    public async Task<TViewModel> SendGetMessage<TOut, TViewModel>(
+        int valueId,
+        CancellationToken token = default, params (string, string)[] queryParams) 
+        where TOut : BaseDto where TViewModel : BaseViewModel
+    {
+        var models = await SendGetMessage<TOut>(valueId, token, queryParams);
+        return models.Map<TViewModel>(mapper);
+    }
+    
+    public async Task SendPostMessage<TMessage>(string? url, TMessage message, CancellationToken token) where TMessage : BaseDto
+    {
+        var response = await HttpClient.PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Ошибка при отправке данных на сервер");
+            Logger.LogInformation("Ошибка при отправке данных на сервер");
             var error = await response.Content.ReadAsStringAsync(token);
             throw new Exception(error);
         }
     }
 
-    public async Task SendPutMessage<TMessage>(string url, TMessage message, CancellationToken token)
+    public async Task SendPutMessage<TMessage>(string? url, TMessage message, CancellationToken token) where TMessage : BaseDto
     {
-        var response = await HttpClient.PostAsJsonAsync(url, message, token);
+        var response = await HttpClient.PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Ошибка при отправке данных на сервер");
+            Logger.LogInformation("Ошибка при отправке данных на сервер");
             var error = await response.Content.ReadAsStringAsync(token);
             throw new Exception(error);
         }
     }
 
-    public async Task SendDeleteMessage<TMessage>(string url, CancellationToken token)
+    public async Task SendDeleteMessage<TMessage>(string? url, CancellationToken token) where TMessage : BaseDto
     {
-        var response = await HttpClient.DeleteAsync(url, token);
+        var response = await HttpClient.DeleteAsync(GetFullUrl<TMessage>(url), token);
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Ошибка при отправке данных на сервер");
+            Logger.LogInformation("Ошибка при отправке данных на сервер");
             var error = await response.Content.ReadAsStringAsync(token);
             throw new Exception(error);
         }
@@ -44,8 +66,6 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
     
     protected override void HttpClientInit<TOut>()
     {
-        HttpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
-            ? HttpSingleTone.Init.HttpClients["ApiServerUrl"]
-            : httpClientFactory.CreateClient("ApiServerUrl");
+        HttpClient = HttpClientFactory.CreateClient(ServiceName.ApiServer.ToString());
     }
 }

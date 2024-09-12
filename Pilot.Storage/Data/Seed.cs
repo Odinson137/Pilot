@@ -23,7 +23,7 @@ public class Seed : ISeed
     {
         if (await _context.Files.AnyAsync()) return;
         
-        var imagesDictionary = GetFilesFromDirectory("wwwroot/SeedImages");
+        var imagesDictionary = GetFilesFromDirectory("wwwroot/SeedImages/UserProfileLogos", "wwwroot/SeedImages/CompanyLogos");
 
         if (imagesDictionary.Count < Constants.SeedDataCount) throw new Exception("Данных в сиде меньше, чем должно быть");
 
@@ -49,19 +49,23 @@ public class Seed : ISeed
         return fakeUser;
     }
     
-    private static Dictionary<string, byte[]> GetFilesFromDirectory(string directoryPath)
+    private static Dictionary<string, byte[]> GetFilesFromDirectory(params string[] directoryPaths)
     {
         var filesDictionary = new Dictionary<string, byte[]>();
 
-        var filePaths = Directory.GetFiles(directoryPath);
-
-        foreach (var filePath in filePaths)
+        foreach (var directoryPath in directoryPaths)
         {
-            var fileName = Path.GetFileName(filePath);
+            var filePaths = Directory.GetFiles(directoryPath);
 
-            var fileContent = File.ReadAllBytes(filePath);
+            foreach (var filePath in filePaths)
+            {
+                var fileName = Path.GetFileName(filePath);
 
-            filesDictionary[fileName] = fileContent;
+                var fileContent = File.ReadAllBytes(filePath);
+
+                if (filesDictionary.TryGetValue(fileName, out _)) throw new Exception("Упс.. Ты запихнул файл, название которое уже где-то есть. Change it");
+                filesDictionary[fileName] = fileContent;
+            }
         }
 
         return filesDictionary;

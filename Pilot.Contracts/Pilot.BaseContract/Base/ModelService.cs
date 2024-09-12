@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
@@ -24,19 +20,17 @@ public class ModelService : BaseHttpService, IModelService
         _redis = redis;
     }
 
-    public virtual async Task<TDto> GetValueByIdAsync<TDto>(int valueId, CancellationToken token) where TDto : BaseDto
+    public virtual async Task<TDto> GetValueByIdAsync<TDto>(int valueId, CancellationToken token = default) where TDto : BaseDto
     {
         _logger.LogInformation($"Getting value by id - {valueId}");
 
-        var modelName = BaseExpendMethods.GetModelName<TDto>();
-
-        var cacheValue = await _redis.GetValueAsync($"{modelName}-{valueId}");
+        var cacheValue = await _redis.GetValueAsync($"{BaseExpendMethods.GetModelName<TDto>()}-{valueId}");
 
         TDto valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
             _logger.LogInformation("Get value from cache");
-            valueDto = await SendGetMessage<TDto>($"api/{modelName}/{valueId}", token);
+            valueDto = await SendGetMessage<TDto>(valueId, token);
         }
         else
         {
@@ -61,7 +55,7 @@ public class ModelService : BaseHttpService, IModelService
         if (cacheValue == null)
         {
             _logger.LogInformation("Get values from db");
-            valueDto = await SendGetMessages<TDto>($"api/{modelName}?value={filter}", token);
+            valueDto = await SendGetMessages<TDto>(null, token, [("value", $"{filter}")]);
         }
         else
         {

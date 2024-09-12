@@ -1,39 +1,14 @@
 ﻿@page "/"
-@using Pilot.Contracts.Data.Enums
-@using Pilot.Contracts.DTO.ModelDto
-@inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app.
-
-@if (Companies != null)
-{
-    @foreach (var company in Companies)
-    {
-        <h1>@company.Title</h1>
-    } 
-}
-else
-{
-    <p>Loading...</p>
 }
 
 @code{
-    private ICollection<CompanyDto>? Companies { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
-        var httpClient = HttpClientFactory.CreateClient(ServiceName.ApiServer.ToString());
-        var response = await httpClient.GetAsync("api/Company/");
         
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception("Запрос не получился");
-        }
-
-        Companies = await response.Content.ReadFromJsonAsync<List<CompanyDto>>();
     }
 }

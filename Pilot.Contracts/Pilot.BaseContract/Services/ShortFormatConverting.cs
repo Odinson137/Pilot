@@ -1,9 +1,10 @@
 ﻿using System.Web;
+using AutoMapper;
 using Newtonsoft.Json;
 
 namespace Pilot.Contracts.Services;
 
-public static class JsonConverting
+public static class ShortFormatConverting
 {
     public static string ToJson<T>(this T data)
     {
@@ -32,5 +33,15 @@ public static class JsonConverting
             select p.Name + "=" + HttpUtility.UrlEncode(p.GetValue(obj, null)?.ToString());
 
         return "?" + string.Join("&", properties.ToArray());
+    }
+
+    public static TOut Map<TOut>(this object model, IMapper mapper)
+    {
+        return mapper.Map<TOut>(model);
+    }
+    
+    public static ICollection<TOut> MapList<TOut>(this object model, IMapper mapper)
+    {
+        return mapper.Map<List<TOut>>(model);
     }
 }

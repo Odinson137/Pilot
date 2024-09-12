@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Pilot.Contracts.Attributes;
+﻿using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.Services;

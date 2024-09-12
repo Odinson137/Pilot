@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ApiExceptions;
@@ -19,6 +15,7 @@ public class BaseHttpService(
     protected readonly ILogger<BaseHttpService> Logger = logger;
 
     private HttpClient? _httpClient;
+    protected readonly IHttpClientFactory HttpClientFactory = httpClientFactory;
 
     protected HttpClient HttpClient
     {
@@ -29,35 +26,51 @@ public class BaseHttpService(
 
             return _httpClient;
         }
-        set
-        {
-            _httpClient = value;
-        }
+        set => _httpClient = value;
     }
 
-    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string url, CancellationToken token)
+    protected static string GetFullUrl<TDto>(string? url, params (string, string)[] queryParams) where TDto : BaseDto
     {
-        Logger.LogInformation($"Send message to {url}");
+        var stringBuilder = new StringBuilder($"api/{BaseExpendMethods.GetModelName<TDto>()}");
+
+        if (url != null) stringBuilder.Append($"/{url}");
+        
+        if (!queryParams.Any()) return stringBuilder.ToString();
+
+        stringBuilder.Append("?");
+        foreach (var param in queryParams)
+        {
+            stringBuilder.Append($"{param.Item1}={param.Item2}&");
+        }
+
+        stringBuilder.Remove(stringBuilder.Length-1, 1);
+        
+        return stringBuilder.ToString();
+    }
+
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
+    {
+        Logger.LogInformation($"Send message to {typeof(TOut)}");
 
         HttpClientInit<TOut>();
 
-        var response = await HttpClient.GetAsync(url, token);
+        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
         var content = await response.Content.ReadFromJsonAsync<List<TOut>>(token);
-        if (content == null) throw new BadRequestException($"Content from {url} is null");
+        if (content == null) throw new BadRequestException($"Content from {typeof(TOut)} is null");
 
         return content;
     }
 
-    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token)
+    public async Task<TOut> SendGetMessage<TOut>(int valueId, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
     {
-        Logger.LogInformation($"Send message to {url}");
+        Logger.LogInformation($"Send message by id = {valueId}");
 
         HttpClientInit<TOut>();
-
-        var response = await HttpClient.GetAsync(url, token);
+        
+        var response = await HttpClient.GetAsync(GetFullUrl<TOut>($"{valueId}", queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -67,6 +80,10 @@ public class BaseHttpService(
         return content;
     }
 
+    /// <summary>
+    /// Инициализация конструктора для отправки данных в нужный сервис по DTO
+    /// </summary>
+    /// <typeparam name="TOut"></typeparam>
     protected virtual void HttpClientInit<TOut>()
     {
         if (_httpClient != null) return;
@@ -76,39 +93,8 @@ public class BaseHttpService(
         // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
         _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
             ? HttpSingleTone.Init.HttpClients[clientName]
-            : httpClientFactory.CreateClient(clientName);
+            : HttpClientFactory.CreateClient(clientName);
     }
 
-    // Я все операции Post, Update и Delete делаю через Consumer, поэтому это не надо. Но на крайний случай оставлю
-    // public async Task SendPostMessage<TMessage>(string url, TMessage message, CancellationToken token)
-    // {
-    //     Logger.LogInformation($"Post message to {url}");
-    //     Logger.LogClassInfo(message);
-    //     var response = await HttpClient.PostAsJsonAsync(url, message, cancellationToken: token);
-    //     if (!response.IsSuccessStatusCode)
-    //     {
-    //         throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
-    //     }
-    // }
-
-    // public async Task SendPutMessage<TMessage>(string url, TMessage message, CancellationToken token)
-    // {
-    //     Logger.LogInformation($"Put message to {url}");
-    //     Logger.LogClassInfo(message);
-    //     var response = await HttpClient.PutAsJsonAsync(url, message, cancellationToken: token);
-    //     if (!response.IsSuccessStatusCode)
-    //     {
-    //         throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
-    //     }
-    // }
-    //
-    // public async Task SendDeleteMessage<TMessage>(string url, CancellationToken token)
-    // {
-    //     Logger.LogInformation($"Delete message to {url}");
-    //     var response = await HttpClient.DeleteAsync(url, cancellationToken: token);
-    //     if (!response.IsSuccessStatusCode)
-    //     {
-    //         throw new BadRequestException(await response.Content.ReadAsStringAsync(token));   
-    //     }
-    // }
+    // Я все операции Post, Update и Delete делаю через Consumer, поэтому это не надо
 }

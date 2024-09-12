@@ -12,4 +12,8 @@ public class Company : BaseModel
     public List<Project> Projects { get; set; } = [];
 
     public List<CompanyRole> CompanyRoles { get; set; } = [];
+    
+    public int? LogoId { get; set; }
+
+    public List<int> InsideImages { get; set; } = [];
 }

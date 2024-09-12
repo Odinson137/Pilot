@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
 using StackExchange.Redis;
 
 namespace Pilot.Contracts.Interfaces;

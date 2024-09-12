@@ -19,4 +19,8 @@ public class CompanyDto : BaseDto
     public ICollection<BaseDto> Projects { get; init; } = new List<BaseDto>();
 
     public ICollection<BaseDto> CompanyRoles { get; set; } = new List<BaseDto>();
+    
+    public string? LogoId { get; set; }
+
+    public List<string> InsideImages { get; set; } = [];
 }
