@@ -45,6 +45,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Storage", "Pilot.Tests
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.BlazorClient", "Pilot.BlazorClient\Pilot.BlazorClient.csproj", "{2B1BAD40-46C4-4426-8934-8581EAFAAEDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.Capability", "Pilot.Capability\Pilot.Capability.csproj", "{7F11C8FF-02BF-4387-8013-C6BF716FBB19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Capability", "Pilot.Tests\Test.Capability\Test.Capability.csproj", "{3339E008-869D-43EF-8C1B-37EB495A2BD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +115,14 @@ Global
 		{2B1BAD40-46C4-4426-8934-8581EAFAAEDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B1BAD40-46C4-4426-8934-8581EAFAAEDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B1BAD40-46C4-4426-8934-8581EAFAAEDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F11C8FF-02BF-4387-8013-C6BF716FBB19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F11C8FF-02BF-4387-8013-C6BF716FBB19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F11C8FF-02BF-4387-8013-C6BF716FBB19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F11C8FF-02BF-4387-8013-C6BF716FBB19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3339E008-869D-43EF-8C1B-37EB495A2BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3339E008-869D-43EF-8C1B-37EB495A2BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3339E008-869D-43EF-8C1B-37EB495A2BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3339E008-869D-43EF-8C1B-37EB495A2BD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,5 +141,6 @@ Global
 		{A4EC34E4-94CE-4304-9A8E-40CFAD8A9FF5} = {F1E9EF87-7CBB-4022-8909-1BB3600A3B98}
 		{89D841E8-7667-49AC-AC50-21E37CDB2190} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
 		{2B1BAD40-46C4-4426-8934-8581EAFAAEDD} = {26302DF8-31F3-449B-A500-9FAE93D47D16}
+		{3339E008-869D-43EF-8C1B-37EB495A2BD5} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Bogus;
+﻿using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
@@ -12,16 +11,20 @@ public class Seed : ISeed
 {
     private readonly IFileService _fileService;
     private readonly DataContext _context;
+    private readonly IStorageService _storageService;
 
-    public Seed(IFileService fileService, DataContext context)
+    public Seed(IFileService fileService, DataContext context, IStorageService storageService)
     {
         _fileService = fileService;
         _context = context;
+        _storageService = storageService;
     }
 
     public async Task Seeding()
     {
         if (await _context.Files.AnyAsync()) return;
+        
+        await _storageService.DeleteFolderAsync(FileFormat.Image.ToString());
         
         var imagesDictionary = GetFilesFromDirectory("wwwroot/SeedImages/UserProfileLogos", "wwwroot/SeedImages/CompanyLogos");
 

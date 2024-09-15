@@ -10,6 +10,7 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0"/>
         <PackageReference Include="JetBrains.Annotations" Version="2024.2.0"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.8" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
         <PackageReference Include="xunit" Version="2.5.3"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3"/>
@@ -38,10 +39,12 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Pilot.Api\Pilot.Api.csproj"/>
         <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Capability\Pilot.Capability.csproj" />
         <ProjectReference Include="..\..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
         <ProjectReference Include="..\..\Pilot.Identity\Pilot.Identity.csproj"/>
         <ProjectReference Include="..\..\Pilot.Messenger\Pilot.Messenger.csproj"/>
         <ProjectReference Include="..\..\Pilot.Receiver\Pilot.Receiver.csproj"/>
+        <ProjectReference Include="..\..\Pilot.Storage\Pilot.Storage.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Interfaces;
 using Pilot.Receiver.Interface;
 using Pilot.Receiver.Models;
 using Pilot.SqrsControllerLibrary.Handlers;

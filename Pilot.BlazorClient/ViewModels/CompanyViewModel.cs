@@ -8,9 +8,9 @@ public class CompanyViewModel : BaseViewModel
 
     [MaxLength(500)] public string? Description { get; init; }
 
-    public List<ProjectViewModel> Projects { get; set; } = [];
+    public ICollection<ProjectViewModel> Projects { get; set; } = [];
 
-    public List<CompanyRoleViewModel> CompanyRoles { get; set; } = [];
+    public ICollection<CompanyRoleViewModel> CompanyRoles { get; set; } = [];
     
     public string? LogoId { get; set; }
 

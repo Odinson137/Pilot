@@ -12,10 +12,12 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
 {
     public async Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
         string? url = null,
-        CancellationToken token = default, params (string, string)[] queryParams) 
+        BaseFilter? filter = null, 
+        CancellationToken token = default, 
+        params (string, string)[] queryParams) 
         where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var models = await SendGetMessages<TOut>(url, token, queryParams);
+        var models = await SendGetMessages<TOut>(url, filter, token, queryParams);
         return models.MapList<TViewModel>(mapper);
     }
     
@@ -24,7 +26,7 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
         CancellationToken token = default, params (string, string)[] queryParams) 
         where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var models = await SendGetMessage<TOut>(valueId, token, queryParams);
+        var models = await SendGetMessage<TOut>($"{valueId}", token, queryParams);
         return models.Map<TViewModel>(mapper);
     }
     

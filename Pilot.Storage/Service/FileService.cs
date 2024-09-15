@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Storage.Interface;
@@ -71,5 +72,15 @@ public class FileService : IFileService
         var file = await _fileRepository.GetRequiredByIdAsync<FileDto>(id);
         file.Url = _storageService.GetUrl(file.Name, file.Format, file.Type);
         return file;
+    }
+    
+    public async Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter filter)
+    {
+        var files = await _fileRepository.GetValuesAsync<FileDto>(filter);
+        foreach (var file in files)
+        {
+            file.Url = _storageService.GetUrl(file.Name, file.Format, file.Type);
+        }
+        return files;
     }
 }

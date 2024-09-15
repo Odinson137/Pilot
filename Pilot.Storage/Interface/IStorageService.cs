@@ -9,6 +9,8 @@ public interface IStorageService
     
     public Task DeleteFileAsync(string fileName);
 
+    public Task DeleteFolderAsync(string folderName);
+
     public Task<byte[]> GetFileAsync(string fileName);
     
     public string GetUrl(string fileName, FileFormat format, string type);

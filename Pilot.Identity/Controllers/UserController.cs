@@ -18,7 +18,7 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(200)]
-    public async Task<IActionResult> GetAllValues([FromBody] BaseFilter filter, CancellationToken token)
+    public async Task<IActionResult> GetAllValues([FromQuery] BaseFilter filter, CancellationToken token)
     {
         var result = await _user.GetValuesAsync<UserDto>(filter, token);
         return Ok(result);

@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Contracts.Base;
-using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Controller;

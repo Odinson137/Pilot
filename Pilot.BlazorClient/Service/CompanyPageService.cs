@@ -1,5 +1,6 @@
 ﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service;
@@ -12,15 +13,11 @@ public class CompanyPageService(IGateWayApiService apiService) : ICompanyPageSer
 
         foreach (var company in companies)
         {
-            var projectList = new List<ProjectViewModel>();
-
-            foreach (var project in company.Projects)
-            {
-                var projectViewModel = await apiService.SendGetMessage<ProjectDto, ProjectViewModel>(project.Id);
-                projectList.Add(projectViewModel);
-            }
-
-            company.Projects = projectList;
+            var idArray = company.Projects.Select(c => c.Id).ToArray();
+            var projectViewModels =
+                await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(
+                    filter: new BaseFilter(idArray));
+            company.Projects = projectViewModels;
         }
         
         return companies;

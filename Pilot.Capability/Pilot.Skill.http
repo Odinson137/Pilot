@@ -1,0 +1,6 @@
+@Pilot.Skill_HostAddress = http://localhost:5201
+
+GET {{Pilot.Skill_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

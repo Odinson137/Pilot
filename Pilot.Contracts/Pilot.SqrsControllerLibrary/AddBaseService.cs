@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.SqrsControllerLibrary.Services;
 using Serilog;
 
 namespace Pilot.SqrsControllerLibrary;
@@ -60,5 +62,7 @@ public static class AddBaseService
         });
 
         services.AddAutoMapper(typeof(TMapper));
+
+        services.AddScoped<IFileUrlService, FileUrlService>();
     }
 }

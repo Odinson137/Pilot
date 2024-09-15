@@ -20,7 +20,7 @@ public class ReceiverTestReceiverFactory : WebApplicationFactory<Program>, IAsyn
         .Build();
 
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
-        .WithImage("rabbitmq:3-management")
+        .WithImage("rabbitmq:3")
         .Build();
 
     private readonly RedisContainer _redisContainer = new RedisBuilder()

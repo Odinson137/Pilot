@@ -11,4 +11,13 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
         base(receiverFactory, identityFactory)
     {
     }
+    
+    protected override async ValueTask GetArrangeDop(ICollection<Company> values)
+    {
+        foreach (var company in values)
+        {
+            company.LogoId = 1;
+            company.InsideImagesId = [1];
+        }
+    }
 }

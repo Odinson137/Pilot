@@ -18,7 +18,6 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
     {
     }
-    // public readonly User Admin;
 
     public string EntityName => typeof(T).Name;
 
@@ -47,6 +46,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         return companyUser;
     }
+
+    protected virtual async ValueTask GetArrangeDop(ICollection<T> values) {}
     
     [Fact]
     public virtual async void GetAllValuesTest_ReturnOk()
@@ -56,6 +57,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: 2, listDepth: 0);
 
+        await GetArrangeDop(values);
+        
         await ReceiverContext.AddRangeAsync(values);
         await ReceiverContext.SaveChangesAsync();
 
@@ -79,6 +82,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 2;
 
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        await GetArrangeDop(values);
 
         await ReceiverContext.AddRangeAsync(values);
         await ReceiverContext.SaveChangesAsync();

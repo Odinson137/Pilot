@@ -9,6 +9,8 @@ namespace Pilot.Contracts.Data.Enums;
 /// </summary>
 public enum ModelType
 {
+    NotSelected = 0,
+    
     [Description(nameof(UserDto))] User = 1,
 
     [Description(nameof(CompanyDto))] Company = 2,
@@ -26,4 +28,8 @@ public enum ModelType
     [Description(nameof(TeamDto))] Team = 7,
 
     [Description(nameof(HistoryActionDto))] HistoryAction = 8,
+    
+    [Description(nameof(SkillDto))] Skill = 9,
+    
+    [Description(nameof(PostDto))] Post = 10,
 }

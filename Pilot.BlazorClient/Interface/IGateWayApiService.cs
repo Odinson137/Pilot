@@ -7,7 +7,10 @@ public interface IGateWayApiService : IBaseHttpService
 {
     Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
         string? url = null,
-        CancellationToken token = default, params (string, string)[] queryParams)
+        BaseFilter? filter = null, 
+        CancellationToken token = default,
+        params (string, string)[] queryParams
+        )
         where TOut : BaseDto where TViewModel : BaseViewModel;
 
     Task<TViewModel> SendGetMessage<TOut, TViewModel>(

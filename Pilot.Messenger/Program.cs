@@ -44,3 +44,9 @@ app.UseHttpsRedirection();
 app.MapGet("/", () => "Main messenger page!");
 
 app.Run();
+
+namespace Pilot.Messenger
+{
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program;
+}

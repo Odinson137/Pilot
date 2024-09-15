@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
@@ -9,6 +10,7 @@ using Pilot.Receiver.Interface;
 using Pilot.Receiver.Repository;
 using Pilot.Receiver.Service;
 using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Behaviors;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +47,8 @@ services.AddControllers();
 services.AddScoped<ISeed, Seed>();
 
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 var app = builder.Build();
 

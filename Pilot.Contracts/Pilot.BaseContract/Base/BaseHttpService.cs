@@ -31,6 +31,11 @@ public class BaseHttpService(
 
     protected static string GetFullUrl<TDto>(string? url, params (string, string)[] queryParams) where TDto : BaseDto
     {
+        return GetFullUrl<TDto>(url, null, queryParams);
+    }
+    
+    protected static string GetFullUrl<TDto>(string? url, BaseFilter? filter,  params (string, string)[] queryParams) where TDto : BaseDto
+    {
         var stringBuilder = new StringBuilder($"api/{BaseExpendMethods.GetModelName<TDto>()}");
 
         if (url != null) stringBuilder.Append($"/{url}");
@@ -38,6 +43,13 @@ public class BaseHttpService(
         if (!queryParams.Any()) return stringBuilder.ToString();
 
         stringBuilder.Append("?");
+
+        // TODO добавить в тело 
+        // if (filter.HasValue)
+        // {
+        //     stringBuilder.Append($"filter={filter.ToJson()}");
+        // }
+        
         foreach (var param in queryParams)
         {
             stringBuilder.Append($"{param.Item1}={param.Item2}&");
@@ -48,13 +60,13 @@ public class BaseHttpService(
         return stringBuilder.ToString();
     }
 
-    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, BaseFilter? filter = null, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message to {typeof(TOut)}");
 
         HttpClientInit<TOut>();
 
-        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, queryParams), token);
+        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, filter, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -64,13 +76,13 @@ public class BaseHttpService(
         return content;
     }
 
-    public async Task<TOut> SendGetMessage<TOut>(int valueId, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
+    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
     {
-        Logger.LogInformation($"Send message by id = {valueId}");
+        Logger.LogInformation($"Send message by id = {url}");
 
         HttpClientInit<TOut>();
         
-        var response = await HttpClient.GetAsync(GetFullUrl<TOut>($"{valueId}", queryParams), token);
+        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, null, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -95,6 +107,4 @@ public class BaseHttpService(
             ? HttpSingleTone.Init.HttpClients[clientName]
             : HttpClientFactory.CreateClient(clientName);
     }
-
-    // Я все операции Post, Update и Delete делаю через Consumer, поэтому это не надо
 }

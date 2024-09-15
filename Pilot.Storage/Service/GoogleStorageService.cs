@@ -33,6 +33,20 @@ public class GoogleStorageService : IStorageService
     {
         await _storageClient.DeleteObjectAsync(_bucketName, fileName);
     }
+    
+    public async Task DeleteFolderAsync(string folderName)
+    {
+        var awaitList = new List<Task>();
+        
+        foreach (var storageObject in _storageClient.ListObjects(_bucketName, folderName))
+        {
+            var a = _storageClient.DeleteObjectAsync(_bucketName, storageObject.Name);
+            awaitList.Add(a);
+            Console.WriteLine($"Deleted {storageObject.Name}.");
+        }
+
+        await Task.WhenAll(awaitList);
+    }
 
     public async Task<byte[]> GetFileAsync(string fileName)
     {
