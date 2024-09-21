@@ -14,7 +14,7 @@ public class CompanyDto : BaseDto, IHasFile
     [Required]
     [MaxLength(50)]
     [CheckNameExist]
-    public required string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     [MaxLength(500)] public string? Description { get; init; }
 
