@@ -5,9 +5,10 @@ namespace Pilot.Capability.Models;
 
 public class CompanyPost : BaseModel
 {
-    [Required] [Range(1, int.MaxValue)] public int CompanyId { get; set; }
+    public int? CompanyUserId { get; set; } // если пусто, значит вакансия может быть открыта
 
+    public bool IsOpen { get; set; } = true;
     [Required] public Post Post { get; set; } = null!;
-
-    [Required] public ICollection<Skill> Skills { get; set; } = [];
+    
+    [MaxLength(500)] public string? Description { get; set; }
 }

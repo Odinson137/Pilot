@@ -24,6 +24,6 @@ public class ModelQueryHandler<TDto> :
 
     public async Task<ICollection<TDto>> Handle(GetValuesQuery<TDto> request, CancellationToken cancellationToken)
     {
-        return await _modelService.GetValuesAsync<TDto>(request.Filter, cancellationToken);
+        return await _modelService.GetValuesAsync<TDto>(request.Url ?? "", request.Filter, cancellationToken);
     }
 }

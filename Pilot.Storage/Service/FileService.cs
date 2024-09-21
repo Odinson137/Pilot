@@ -9,21 +9,25 @@ namespace Pilot.Storage.Service;
 
 public class FileService : IFileService
 {
+    private readonly ILogger<FileService> _logger;
     private readonly IStorageService _storageService;
     private readonly IFileRepository _fileRepository;
     private readonly IMapper _mapper;
 
-    public FileService(IStorageService storageService, IFileRepository fileRepository, IMapper mapper)
+    public FileService(IStorageService storageService, IFileRepository fileRepository, IMapper mapper, ILogger<FileService> logger)
     {
         _storageService = storageService;
         _fileRepository = fileRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<int> UploadFileAsync(FileDto fileDto)
     {
         var fileName = Guid.NewGuid().ToString();
         fileDto.Name = fileName;
+        
+        _logger.LogClassInfo(fileDto);
         
         var fileModel = _mapper.Map<File>(fileDto);
         fileModel.Size = fileDto.ByteFormFile.GetSize();

@@ -16,8 +16,6 @@ public class FileDto : BaseDto
     
     [Required] public FileFormat Format { get; set; }
     
-    public bool HasNewFile => ByteFormFile != null;
-    
     public byte[]? ByteFormFile { get; set; }
     
     public int? UserUploadedId { get; set; }

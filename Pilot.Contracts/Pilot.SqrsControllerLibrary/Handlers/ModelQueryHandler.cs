@@ -13,26 +13,26 @@ public abstract class ModelQueryHandler<T, TDto> :
     where TDto : BaseDto where T : BaseModel
 {
     protected readonly IBaseReadRepository<T> Repository;
-    private readonly ILogger<ModelQueryHandler<T, TDto>> _logger;
+    protected readonly ILogger<ModelQueryHandler<T, TDto>> Logger;
     
     public ModelQueryHandler(IBaseReadRepository<T> repository, ILogger<ModelQueryHandler<T, TDto>> logger)
     {
         Repository = repository;
-        _logger = logger;
+        Logger = logger;
     }
 
     public async Task<TDto> Handle(GetValueByIdQuery<TDto> request, CancellationToken cancellationToken)
     {
         var result = await Repository.GetByIdAsync<TDto>(request.Id, cancellationToken);
         if (result == null) throw new NotFoundException($"{typeof(TDto).Namespace} not found");
-        _logger.LogClassInfo(result);
+        Logger.LogClassInfo(result);
         return result;
     }
 
     public async Task<ICollection<TDto>> Handle(GetValuesQuery<TDto> request, CancellationToken cancellationToken)
     {
         var result = await Repository.GetValuesAsync<TDto>(request.Filter, cancellationToken);
-        _logger.LogClassInfo(result);
+        Logger.LogClassInfo(result);
         return result;
     }
 }

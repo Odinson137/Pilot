@@ -1,6 +1,6 @@
 ﻿// using Pilot.Contracts.DTO.ModelDto;
 // using Test.Api.IntegrationTests.Factories;
-// using File = Pilot.Receiver.Models.File;
+// using File = Pilot.Worker.Models.File;
 //
 // namespace Test.Api.IntegrationTests;
 //

@@ -25,38 +25,4 @@
       <Content Remove="pilot.Credential.GoogleStorage.json" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="wwwroot\SeedImages\149d9c67-b4ad-438e-8130-5cc5c1a7694f.jpeg" />
-      <None Include="wwwroot\SeedImages\1a17355c-a448-4162-8b69-c049f330dd95.jpeg" />
-      <None Include="wwwroot\SeedImages\1e385bb5-7edd-48a7-bc0d-08c780f1dfff.png" />
-      <None Include="wwwroot\SeedImages\304cf323-e55f-4bf8-ae25-59f4dd36d65b.jpeg" />
-      <None Include="wwwroot\SeedImages\32c1b324-fe32-4f2f-84ac-b54dbaa48eb5.jpeg" />
-      <None Include="wwwroot\SeedImages\362aa0dc-e2f1-4b94-8ec3-246e64ddd26e.png" />
-      <None Include="wwwroot\SeedImages\3ef9b94f855e9b68aabd5c76401c0cfa.jpg" />
-      <None Include="wwwroot\SeedImages\41ae2e234e5341358fa2b4e1da9e00de.jpeg" />
-      <None Include="wwwroot\SeedImages\47496432-551b-44bf-8444-ee0e83af171d.jpeg" />
-      <None Include="wwwroot\SeedImages\5abac8c9-5e71-4478-aba3-e81c6187ea7d.jpg" />
-      <None Include="wwwroot\SeedImages\5f0856e2-dc26-4c14-b127-b49bbfa9bd85.png" />
-      <None Include="wwwroot\SeedImages\7d25dfbb-312d-46d1-af93-5d984768ed92.jpeg" />
-      <None Include="wwwroot\SeedImages\99979fcb-33c1-4da9-8a1c-92edbb54748b.jpeg" />
-      <None Include="wwwroot\SeedImages\9dc3848e-49ac-4ba2-84c3-d575674fbb7c.png" />
-      <None Include="wwwroot\SeedImages\9e0ccb70-6e1b-482d-9d04-c86463ab92fa.jpeg" />
-      <None Include="wwwroot\SeedImages\a03bca47-4bb9-4c17-9909-c0e6432f09f8.jpeg" />
-      <None Include="wwwroot\SeedImages\a61f9a61-805f-4994-9f81-f217fd02e23c.jpeg" />
-      <None Include="wwwroot\SeedImages\aec38d4f-b0c5-4e96-bcdc-4fd637b89773.png" />
-      <None Include="wwwroot\SeedImages\bda8417e-2a0d-49bd-a8ee-a9d3325dc054.jpeg" />
-      <None Include="wwwroot\SeedImages\c7c9b588341f401ebff50a9e770f9484.jpeg" />
-      <None Include="wwwroot\SeedImages\ce0cbd50-653c-41f4-af16-1aa006211489.jpeg" />
-      <None Include="wwwroot\SeedImages\d7615c9f-c774-4714-9823-8946783dd699.png" />
-      <None Include="wwwroot\SeedImages\e022fe4ee22e4e3e9a3d17bdf25da467.jpeg" />
-      <None Include="wwwroot\SeedImages\e175cc88-270f-4bb6-9a46-9c85ef61f17f.jpeg" />
-      <None Include="wwwroot\SeedImages\e5d3bd04d8d041489faeb200921cd16f.jpeg" />
-      <None Include="wwwroot\SeedImages\e886558b-86b4-427f-a7e2-34ef4d1bc18a.jpg" />
-      <None Include="wwwroot\SeedImages\ed837a87-8dc9-44b1-b5bb-d03c0fa1f150 (1).jpeg" />
-      <None Include="wwwroot\SeedImages\ed837a87-8dc9-44b1-b5bb-d03c0fa1f150.jpeg" />
-      <None Include="wwwroot\SeedImages\eddaf58f-6492-49a1-9821-0458245a2c1c.jpeg" />
-      <None Include="wwwroot\SeedImages\f2a1ad69-63da-4c81-93d5-d67b58c1b644.png" />
-      <None Include="wwwroot\SeedImages\f7ec5e23bcc148b7807c006b2a36675c.jpeg" />
-    </ItemGroup>
-
 </Project>

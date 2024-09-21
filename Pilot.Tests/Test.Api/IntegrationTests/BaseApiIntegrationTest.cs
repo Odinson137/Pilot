@@ -15,16 +15,16 @@ public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFi
     protected readonly HttpClient ApiClient;
     protected readonly DataContext IdentityContext;
     protected readonly IMapper ReceiverMapper;
-    protected Pilot.Receiver.Data.DataContext AssertReceiverContext 
-        => _receiverScopeService.CreateScope().ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
-    protected readonly Pilot.Receiver.Data.DataContext ReceiverContext;
+    protected Pilot.Worker.Data.DataContext AssertReceiverContext 
+        => _receiverScopeService.CreateScope().ServiceProvider.GetRequiredService<Pilot.Worker.Data.DataContext>();
+    protected readonly Pilot.Worker.Data.DataContext ReceiverContext;
 
     protected BaseApiIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
         ApiTestIdentityFactory identityFactory)
     {
         _receiverScopeService = receiverFactory.Services;
         var receiverScopeService = _receiverScopeService.CreateScope();
-        ReceiverContext = receiverScopeService.ServiceProvider.GetRequiredService<Pilot.Receiver.Data.DataContext>();
+        ReceiverContext = receiverScopeService.ServiceProvider.GetRequiredService<Pilot.Worker.Data.DataContext>();
         ReceiverMapper = receiverScopeService.ServiceProvider.GetRequiredService<IMapper>();
 
         var identityScopeService = identityFactory.Services.CreateScope();

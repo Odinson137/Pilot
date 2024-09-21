@@ -1,6 +1,7 @@
 ﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service;

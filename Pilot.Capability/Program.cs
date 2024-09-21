@@ -1,4 +1,6 @@
 using Pilot.Capability.Data;
+using Pilot.Capability.Interface;
+using Pilot.Capability.Repository;
 using Pilot.Contracts.Data;
 using Pilot.SqrsControllerLibrary;
 
@@ -11,7 +13,14 @@ var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
+builder.AddBaseServices<DataContext, Pilot.Capability.Program, AutoMapperProfile>();
+
+services.AddScoped<IPost, PostRepository>();
+services.AddScoped<ICompanyPost, CompanyPostRepository>();
+services.AddScoped<ISkill, SkillRepository>();
+services.AddScoped<IUserSkill, UserSkillRepository>();
+
+services.AddScoped<ISeed, Seed>();
 
 var app = builder.Build();
 
@@ -23,7 +32,7 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () => "This is skill service");
+app.MapGet("/", () => "This is capability service");
 
 app.Run();
 

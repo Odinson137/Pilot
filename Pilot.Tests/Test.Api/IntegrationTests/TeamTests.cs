@@ -1,5 +1,5 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Receiver.Models;
+using Pilot.Worker.Models;
 using Test.Api.IntegrationTests.Factories;
 
 namespace Test.Api.IntegrationTests;

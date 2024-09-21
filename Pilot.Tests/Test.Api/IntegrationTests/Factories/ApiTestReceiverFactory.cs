@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Data;
-using Pilot.Receiver;
 using Test.Base.IntegrationBase;
 using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
@@ -12,7 +11,7 @@ using Testcontainers.Redis;
 
 namespace Test.Api.IntegrationTests.Factories;
 
-public class ApiTestReceiverFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class ApiTestReceiverFactory : WebApplicationFactory<Pilot.Worker.Program>, IAsyncLifetime
 {
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")

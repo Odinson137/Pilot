@@ -7,7 +7,7 @@ services:
     ports:
       - 8010:8080
     depends_on:
-      receiver_server:
+      worker_server:
         condition: service_started
 
   identity_server:
@@ -20,10 +20,10 @@ services:
       pilot_identity_mysql:
         condition: service_healthy
         
-  receiver_server:
+  worker_server:
     build:
       context: .
-      dockerfile: Pilot.Receiver/Dockerfile
+      dockerfile: Pilot.Worker/Dockerfile
     ports:
       - 8030:8080
     depends_on:
@@ -50,6 +50,16 @@ services:
       pilot_storage_mysql:
         condition: service_healthy
 
+  capability_server:
+    build:
+      context: .
+      dockerfile: Pilot.Capability/Dockerfile
+    ports:
+      - 8060:8080
+    depends_on:
+      pilot_capability_mysql:
+        condition: service_healthy
+        
   rabbitmq:
     container_name: pilot-rabbitmq
     image: rabbitmq:3-management
@@ -119,7 +129,7 @@ services:
     container_name: pilot-capability-mysql
     image: mysql:8.0
     ports:
-      - "3311:3306"
+      - "3312:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678

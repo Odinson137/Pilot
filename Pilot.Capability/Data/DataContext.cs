@@ -19,7 +19,7 @@ public sealed class DataContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<CompanyPost> CompanyPosts { get; set; }
-    public DbSet<UserSkill> EntitySkills { get; set; }
+    public DbSet<UserSkill> UserSkills { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

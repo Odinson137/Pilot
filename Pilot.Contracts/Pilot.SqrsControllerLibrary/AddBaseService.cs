@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Pilot.Contracts.Base;
 using Pilot.SqrsControllerLibrary.Interfaces;
 using Pilot.SqrsControllerLibrary.Services;
 using Serilog;
@@ -21,7 +22,7 @@ public static class AddBaseService
         
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(TProgram).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(WebApplicationBuilder).Assembly);
             cfg.NotificationPublisher = new TaskWhenAllPublisher();
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
@@ -63,6 +64,7 @@ public static class AddBaseService
 
         services.AddAutoMapper(typeof(TMapper));
 
+        services.AddScoped<IModelService, ModelService>();
         services.AddScoped<IFileUrlService, FileUrlService>();
     }
 }

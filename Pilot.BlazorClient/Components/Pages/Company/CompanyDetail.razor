@@ -1,6 +1,134 @@
 ﻿@page "/Company/{id}"
-<h3>Company by @Id</h3>
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject ICompanyDetailPageService PageService
+
+<h3>@_company?.Title</h3>
+
+@if (_company != null)
+{
+    <div class="company-info">
+        <img src="@_company.LogoId" alt="Company Logo" class="company-logo" />
+
+        <h1>@_company.Title</h1>
+
+        <p>@_company.Description</p>
+
+        <h4>Projects: @_company.Projects.Count</h4>
+
+        <div class="gallery">
+            @foreach (var image in _company.InsideImages)
+            {
+                <a href="@image" target="_blank">
+                    <img src="@image" class="inside-image" alt="company office"/>
+                </a>
+            }
+        </div>
+
+        <h3>Open Positions</h3>
+        @if (_companyPosts.Any())
+        {
+            <div class="positions">
+                @foreach (var post in _companyPosts)
+                {
+                    <div class="position-card">
+                        <h4>@post.Post.Title</h4>
+                        <p>@post.Description</p>
+
+                        <h5>Skills Required:</h5>
+                        @if (post.Post.Skills.Any())
+                        {
+                            <ul>
+                                @foreach (var skill in post.Post.Skills)
+                                {
+                                    <li>@skill.Title</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No specific skills required.</p>
+                        }
+
+                        @if (post.IsOpen)
+                        {
+                            <span class="status open">Open</span>
+                        }
+                        else
+                        {
+                            <span class="status closed">Closed</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>No open positions available at the moment.</p>
+        }
+    </div>
+}
+else
+{
+    <p>Loading company data...</p>
+}
 
 @code {
+    private CompanyViewModel _company = null!;
+    private ICollection<CompanyPostViewModel> _companyPosts = null!;
+
     [Parameter] public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _company = await PageService.GetCompanyAsync(Id);
+        _companyPosts = await PageService.GetOpenCompanyPostAsync(Id);
+    }
 }
+
+<style>
+    .company-logo {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .gallery {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .inside-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+    .positions {
+        margin-top: 20px;
+    }
+
+    .position-card {
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .status {
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .status.open {
+        color: green;
+    }
+
+    .status.closed {
+        color: red;
+    }
+</style>

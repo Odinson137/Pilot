@@ -4,8 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Models;
-using Pilot.Receiver.Models;
-using Pilot.Receiver.Models.ModelHelpers;
+using Pilot.Worker.Models;
+using Pilot.Worker.Models.ModelHelpers;
 using Test.Api.IntegrationTests.Factories;
 using Test.Base.IntegrationBase;
 
