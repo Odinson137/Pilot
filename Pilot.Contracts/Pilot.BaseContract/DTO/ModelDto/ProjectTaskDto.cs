@@ -6,7 +6,7 @@ using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.ReceiverServer)]
+[FromService(ServiceName.WorkerServer)]
 public class ProjectTaskDto : BaseDto
 {
     [Required] [MaxLength(50)] public required string Name { get; set; }

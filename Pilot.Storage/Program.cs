@@ -24,7 +24,7 @@ services.AddScoped<IBaseValidatorService, StorageValidateService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
-builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 services.AddScoped<ISeed, Seed>();
 

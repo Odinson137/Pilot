@@ -5,7 +5,7 @@ using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.MessengerServer)]
+[FromService(ServiceName.CapabilityServer)]
 public class PostDto : BaseDto
 {
     [Required] [MaxLength(100)] public string Title { get; set; } = null!;

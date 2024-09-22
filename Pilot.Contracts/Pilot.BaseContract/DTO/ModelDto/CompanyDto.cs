@@ -8,7 +8,7 @@ using Pilot.Contracts.Validation.ValidationAttributes;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.ReceiverServer)]
+[FromService(ServiceName.WorkerServer)]
 public class CompanyDto : BaseDto, IHasFile
 {
     [Required]

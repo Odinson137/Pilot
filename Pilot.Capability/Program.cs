@@ -13,7 +13,7 @@ var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.AddBaseServices<DataContext, Pilot.Capability.Program, AutoMapperProfile>();
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 services.AddScoped<IPost, PostRepository>();
 services.AddScoped<ICompanyPost, CompanyPostRepository>();

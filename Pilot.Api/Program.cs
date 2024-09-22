@@ -25,7 +25,7 @@ var configuration = builder.Configuration;
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
-services.AddHttpClient(ServiceName.ReceiverServer.ToString(),
+services.AddHttpClient(ServiceName.WorkerServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!); });
 
 services.AddHttpClient(ServiceName.MessengerServer.ToString(),
@@ -33,6 +33,9 @@ services.AddHttpClient(ServiceName.MessengerServer.ToString(),
 
 services.AddHttpClient(ServiceName.StorageServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("StorageServerUrl")!); });
+
+services.AddHttpClient(ServiceName.CapabilityServer.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("CapabilityServerUrl")!); });
 
 services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseHttpService, BaseHttpService>();

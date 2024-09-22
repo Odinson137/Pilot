@@ -26,7 +26,7 @@ services.AddSwaggerGen();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 

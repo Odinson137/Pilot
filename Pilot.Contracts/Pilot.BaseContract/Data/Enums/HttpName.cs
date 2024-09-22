@@ -6,9 +6,11 @@ public enum ServiceName
     
     IdentityServer = 1,
 
-    ReceiverServer = 2,
+    WorkerServer = 2,
 
     MessengerServer = 3,
     
     StorageServer = 4,
+    
+    CapabilityServer = 5,
 }

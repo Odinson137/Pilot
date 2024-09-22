@@ -57,7 +57,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: 2, listDepth: 0);
 
-        await GetArrangeDop(values);
+        // await GetArrangeDop(values);
         
         await ReceiverContext.AddRangeAsync(values);
         await ReceiverContext.SaveChangesAsync();
@@ -82,7 +82,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 2;
 
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GetArrangeDop(values);
+        // await GetArrangeDop(values);
 
         await ReceiverContext.AddRangeAsync(values);
         await ReceiverContext.SaveChangesAsync();

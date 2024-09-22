@@ -29,12 +29,12 @@ public class ModelService : BaseHttpService, IModelService
         TDto valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
-            _logger.LogInformation("Get value from cache");
+            _logger.LogInformation("Get value from db");
             valueDto = await SendGetMessage<TDto>(url, token);
         }
         else
         {
-            _logger.LogInformation("Get value from db");
+            _logger.LogInformation("Get value from cache");
             valueDto = cacheValue.FromJson<TDto>();
         }
 

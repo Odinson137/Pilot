@@ -32,7 +32,7 @@ services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
-builder.AddBaseServices<DataContext, Program, AutoMapperProfile>();
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });

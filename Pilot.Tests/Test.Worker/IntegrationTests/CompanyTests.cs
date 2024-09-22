@@ -12,12 +12,13 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
     {
     }
     
+    // TODO потом просто сделать так, как я сделал в тестировании fileurl для всех моделей
     protected override async ValueTask GetArrangeDop(ICollection<Company> values)
     {
         foreach (var company in values)
         {
             company.LogoId = 1;
-            company.InsideImagesId = [1];
+            company.InsideImagesId = [2];
         }
     }
 }

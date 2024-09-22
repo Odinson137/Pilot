@@ -14,12 +14,6 @@ public abstract class BaseMappingProfile : Profile
     protected void Mapping<T, TDto>() where T : BaseModel, new() where TDto : BaseDto
     {
         CreateMap<T?, T?>();
-        CreateMap<T?, int>()
-            .ForMember(c => c, c =>
-            {
-                c.Condition(x => x != null);
-                c.MapFrom(x => x!.Id);
-            });
         CreateMap<T?, TDto?>();
         CreateMap<TDto?, T?>()
             .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));

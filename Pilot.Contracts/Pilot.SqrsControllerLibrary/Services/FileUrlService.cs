@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Reflection;
+using MassTransit.Caching;
 using MassTransit.Internals;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver.Linq;
@@ -69,6 +70,8 @@ public class FileUrlService : IFileUrlService
                 return;
         }
 
+        if (!fileUrlsSet.Any()) return;
+        
         var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToArray());
         
         var files = await _modelService.GetValuesAsync<FileDto>("Url", filter);
@@ -100,9 +103,11 @@ public class FileUrlService : IFileUrlService
         foreach (var property in properties)
         {
             var value = property.GetValue(response);
-
-            if (value is IEnumerable values)
+            
+            if (value is ICollection<int> values)
             {
+                if (!values.Any()) continue;
+                
                 foreach (var id in values)
                 {
                     fileUrls.Add((int)id, (property, response)!);
@@ -110,6 +115,8 @@ public class FileUrlService : IFileUrlService
             }
             else
             {
+                if (value == null) continue;
+
                 fileUrls.Add((int)value!, (property, response)!);
             }
         }

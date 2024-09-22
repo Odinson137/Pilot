@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using AutoMapper;
 using MassTransit;
+using MediatR;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -15,17 +16,30 @@ namespace Pilot.SqrsControllerLibrary;
 
 public static class AddBaseService
 {
-    public static void AddBaseServices<TDb, TProgram, TMapper>(this WebApplicationBuilder builder) where TDb : DbContext where TMapper : Profile
+    public static void AddBaseServices<TDb, TMapper, TProgram>(this WebApplicationBuilder builder) where TDb : DbContext where TMapper : Profile
     {
         var services = builder.Services;
         var configuration = builder.Configuration;
         
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(WebApplicationBuilder).Assembly);
+            cfg.RegisterServicesFromAssembly(typeof(TProgram).Assembly);
             cfg.NotificationPublisher = new TaskWhenAllPublisher();
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
+        
+        // Handlers registration
+        // var handlerInterface = typeof(IRequestHandler<,>);
+        //
+        // var handlerTypes = typeof(TProgram).Assembly.GetTypes()
+        //     .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerInterface))
+        //     .ToList();
+        //
+        // foreach (var handlerType in handlerTypes)
+        // {
+        //     var implementedInterface = handlerType.GetInterfaces().First(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerInterface);
+        //     services.AddTransient(implementedInterface, handlerType);
+        // }
         
         services.AddDbContext<TDb>(option => option.UseMySql(
                 configuration["MySql:ConnectionString"],
@@ -45,7 +59,7 @@ public static class AddBaseService
         {
             x.SetKebabCaseEndpointNameFormatter();
 
-            var baseModelType = typeof(TProgram);
+            var baseModelType = typeof(WebApplicationBuilder);
             var assembly = Assembly.GetAssembly(baseModelType);
 
             var consumers = assembly!.GetTypes()

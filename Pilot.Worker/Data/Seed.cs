@@ -37,6 +37,8 @@ public class Seed : ISeed
     
     public async Task Seeding()
     {
+        if (_context.Companies.Any()) return;
+        
         var transaction = await _context.Database.BeginTransactionAsync();
         
         // Добавляем базовые роли для всех компаниях

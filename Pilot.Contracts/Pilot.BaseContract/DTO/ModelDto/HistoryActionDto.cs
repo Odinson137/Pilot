@@ -5,7 +5,7 @@ using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.ReceiverServer)]
+[FromService(ServiceName.WorkerServer)]
 public class HistoryActionDto : BaseDto
 {
     [Required] public required BaseDto CompanyUser { get; set; }

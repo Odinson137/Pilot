@@ -5,7 +5,7 @@ using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.ReceiverServer)]
+[FromService(ServiceName.WorkerServer)]
 public class ProjectDto : BaseDto
 {
     [Required] [MaxLength(100)] public string Name { get; set; } = null!;
