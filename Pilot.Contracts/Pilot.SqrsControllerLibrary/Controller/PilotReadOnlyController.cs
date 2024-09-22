@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Services;
 using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Controller;
@@ -13,10 +14,10 @@ public abstract class PilotReadOnlyController<TDto>(IMediator mediator) : BaseCo
 
     [HttpGet]
     [ProducesResponseType(200)]
-    public virtual async Task<IActionResult> GetAllValues(CancellationToken token, [FromBody] BaseFilter? filter = null)
+    public virtual async Task<IActionResult> GetAllValues(CancellationToken token, [FromQuery] string? filter = null)
     {
-        filter ??= new BaseFilter();
-        var result = await Mediator.Send(new GetValuesQuery<TDto>(filter.Value), token);
+        var baseFilter = filter?.FromJson<BaseFilter>() ?? new BaseFilter();
+        var result = await Mediator.Send(new GetValuesQuery<TDto>(baseFilter), token);
         return Ok(result);
     }
 

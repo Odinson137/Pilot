@@ -4,15 +4,19 @@
 @inject ICompanyPageService PageService
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #4B0082;">Компания</h2>
+    <h2 class="text-center mb-4" style="color: #1e3a8a;">Компания</h2>
 
     @if (_companies.Any())
     {
         @foreach (var company in _companies)
         {
-            <div class="card mb-4 shadow-lg" style="border-radius: 10px; background-color: #f8f9fa;">
+            <div class="card mb-4 shadow-lg" style="border-radius: 10px; background-color: #ffffff; border: 1px solid #1e3a8a;">
                 <div class="card-body">
-                    <h3 class="card-title" style="color: #4B0082;">@company.Title</h3>
+                    <h3 class="card-title" style="color: #1e3a8a;">
+                        <a href="/Company/@company.Id" style="text-decoration: none; color: #1e3a8a;">
+                            @company.Title
+                        </a>
+                    </h3>
 
                     @if (!string.IsNullOrEmpty(company.Description))
                     {
@@ -24,13 +28,13 @@
                         <img src="@company.LogoId" alt="Company Logo" class="img-fluid" style="max-width: 150px;" />
                     }
 
-                    <h5 class="mt-4" style="color: #4B0082;">Проекты</h5>
+                    <h5 class="mt-4" style="color: #1e3a8a;">Проекты</h5>
                     @if (company.Projects.Any())
                     {
                         <ul class="list-group list-group-flush">
                             @foreach (var project in company.Projects)
                             {
-                                <li class="list-group-item">@project.Name</li>
+                                <li class="list-group-item" style="border: none; background-color: #ffffff;">@project.Name</li>
                             }
                         </ul>
                     }

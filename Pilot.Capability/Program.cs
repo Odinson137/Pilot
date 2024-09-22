@@ -12,6 +12,7 @@ var configuration = builder.Configuration;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+services.AddControllers();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
@@ -22,6 +23,7 @@ services.AddScoped<IUserSkill, UserSkillRepository>();
 
 services.AddScoped<ISeed, Seed>();
 
+
 var app = builder.Build();
 
 await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
@@ -30,6 +32,7 @@ await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().See
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => "This is capability service");

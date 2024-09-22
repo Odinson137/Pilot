@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Pilot.Worker.Models;
@@ -47,6 +48,34 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         return companyUser;
     }
 
+    [Fact]
+    public virtual async void GetAllValuesTest_FilterWithIdsReturnOk()
+    {
+        #region Arrange
+
+        const int count = 3;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+
+        await ReceiverContext.AddRangeAsync(values);
+        await ReceiverContext.SaveChangesAsync();
+
+        var filter = new BaseFilter
+        {
+            Ids = values.Select(c => c.Id).ToList(),
+        };
+        
+        #endregion
+
+        // Act
+        var result = await ReceiverClient.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count >= count);
+    }
+    
     protected virtual async ValueTask GetArrangeDop(ICollection<T> values) {}
     
     [Fact]
@@ -55,7 +84,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         #region Arrange
 
         const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<T>(count: 2, listDepth: 0);
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
 
         // await GetArrangeDop(values);
         
@@ -73,7 +102,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
     }
-
+    
     [Fact]
     public virtual async void GetValue_ReturnOk()
     {

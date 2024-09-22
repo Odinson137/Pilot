@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
-namespace Pilot.SqrsControllerLibrary.Behaviors;
+namespace Pilot.Api.Behaviors;
 
 public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

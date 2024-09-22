@@ -77,12 +77,13 @@ else
     private CompanyViewModel _company = null!;
     private ICollection<CompanyPostViewModel> _companyPosts = null!;
 
-    [Parameter] public int Id { get; set; }
+    [Parameter] public string Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _company = await PageService.GetCompanyAsync(Id);
-        _companyPosts = await PageService.GetOpenCompanyPostAsync(Id);
+        var companyId = int.Parse(Id);
+        _company = await PageService.GetCompanyAsync(companyId);
+        _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
     }
 }
 

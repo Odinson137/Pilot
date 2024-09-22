@@ -3,7 +3,7 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;
 
-public struct BaseFilter(int skip, int take)
+public class BaseFilter(int skip, int take)
 {
     public BaseFilter() : this(0, 10) { }
 

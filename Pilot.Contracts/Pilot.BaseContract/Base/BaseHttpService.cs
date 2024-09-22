@@ -40,22 +40,20 @@ public class BaseHttpService(
 
         if (url != null) stringBuilder.Append($"/{url}");
         
-        if (!queryParams.Any()) return stringBuilder.ToString();
+        // if (!queryParams.Any()) return stringBuilder.ToString();
 
-        stringBuilder.Append("?");
-
-        // TODO добавить в тело 
-        // if (filter.HasValue)
-        // {
-        //     stringBuilder.Append($"filter={filter.ToJson()}");
-        // }
-        
-        foreach (var param in queryParams)
+        if (filter != null)
         {
-            stringBuilder.Append($"{param.Item1}={param.Item2}&");
+            stringBuilder.Append("?");
+            stringBuilder.Append($"filter={filter.ToJson()}");
         }
-
-        stringBuilder.Remove(stringBuilder.Length-1, 1);
+        
+        // foreach (var param in queryParams)
+        // {
+        //     stringBuilder.Append($"{param.Item1}={param.Item2}&");
+        // }
+        //
+        // stringBuilder.Remove(stringBuilder.Length-1, 1);
         
         return stringBuilder.ToString();
     }

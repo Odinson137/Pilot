@@ -24,7 +24,7 @@ public class Seed : ISeed
     {
         if (await _context.Files.AnyAsync()) return;
         
-        await _storageService.DeleteFolderAsync(FileFormat.Image.ToString());
+        await _storageService.DeleteFolderAsync(FileFormat.Image.ToString().ToLower());
         
         var imagesDictionary = GetFilesFromDirectory("wwwroot/SeedImages/UserProfileLogos", "wwwroot/SeedImages/CompanyLogos");
 

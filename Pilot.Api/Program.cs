@@ -14,6 +14,8 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.SqrsControllerLibrary.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -90,6 +92,9 @@ services.AddMassTransit(x =>
 
 services.AddTransient<ISeed, Seed>();
 services.AddTransient<IToken, TokenService>();
+
+services.AddScoped<IModelService, ModelService>();
+services.AddScoped<IFileUrlService, FileUrlService>();
 
 var app = builder.Build();
 

@@ -26,6 +26,8 @@ services.AddScoped<IMessageService, MessageService>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
+services.AddControllers();
+
 services.AddScoped<ISeed, Seed>();
 
 // services.AddBaseQueryHandlers(typeof(Program).Assembly);
@@ -39,6 +41,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.MapGet("/", () => "Storage service!");
 

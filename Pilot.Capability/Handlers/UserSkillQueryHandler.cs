@@ -5,9 +5,9 @@ using Pilot.SqrsControllerLibrary.Handlers;
 
 namespace Pilot.Capability.Handlers;
 
-public class UserSkillQueryHandler : ModelQueryHandler<Skill, SkillDto>
+public class UserSkillQueryHandler : ModelQueryHandler<UserSkill, UserSkillDto>
 {
-    public UserSkillQueryHandler(ISkill repository, ILogger<UserSkillQueryHandler> logger) : base(repository, logger)
+    public UserSkillQueryHandler(IUserSkill repository, ILogger<UserSkillQueryHandler> logger) : base(repository, logger)
     {
     }
 }

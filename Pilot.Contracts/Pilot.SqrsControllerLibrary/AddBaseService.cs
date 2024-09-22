@@ -28,19 +28,6 @@ public static class AddBaseService
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
         
-        // Handlers registration
-        // var handlerInterface = typeof(IRequestHandler<,>);
-        //
-        // var handlerTypes = typeof(TProgram).Assembly.GetTypes()
-        //     .Where(t => t.IsClass && !t.IsAbstract && t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerInterface))
-        //     .ToList();
-        //
-        // foreach (var handlerType in handlerTypes)
-        // {
-        //     var implementedInterface = handlerType.GetInterfaces().First(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerInterface);
-        //     services.AddTransient(implementedInterface, handlerType);
-        // }
-        
         services.AddDbContext<TDb>(option => option.UseMySql(
                 configuration["MySql:ConnectionString"],
                 new MySqlServerVersion(new Version(8, 0, 11))
@@ -77,8 +64,5 @@ public static class AddBaseService
         });
 
         services.AddAutoMapper(typeof(TMapper));
-
-        services.AddScoped<IModelService, ModelService>();
-        services.AddScoped<IFileUrlService, FileUrlService>();
     }
 }

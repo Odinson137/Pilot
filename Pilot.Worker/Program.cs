@@ -49,7 +49,6 @@ services.AddScoped<ISeed, Seed>();
 
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 await services.AddRedis(configuration);
 

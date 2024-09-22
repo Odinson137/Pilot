@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver.Linq;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary.Interfaces;
@@ -33,8 +34,15 @@ public class FileUrlService : IFileUrlService
         if (type.IsGenericType)
         {
             isList = true;
-            var first = ((ICollection<object>)response).First();
-            type = first.GetType();
+            var enumerable = response as IEnumerable;
+    
+            // ReSharper disable once GenericEnumeratorNotDisposed
+            var enumerator = enumerable?.GetEnumerator();
+            if (enumerator != null && enumerator.MoveNext())
+            {
+                var first = enumerator.Current;
+                type = first!.GetType()!;
+            }
         }
         
         var hasFileType = typeof(IHasFile);
@@ -74,7 +82,7 @@ public class FileUrlService : IFileUrlService
         
         var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToArray());
         
-        var files = await _modelService.GetValuesAsync<FileDto>("Url", filter);
+        var files = await _modelService.GetValuesAsync<FileDto>(filter);
         foreach (var file in files)
         {
             var (property, currentValue) = fileUrlsSet[file.Id];

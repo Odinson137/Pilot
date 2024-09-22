@@ -27,8 +27,6 @@ public class FileService : IFileService
         var fileName = Guid.NewGuid().ToString();
         fileDto.Name = fileName;
         
-        _logger.LogClassInfo(fileDto);
-        
         var fileModel = _mapper.Map<File>(fileDto);
         fileModel.Size = fileDto.ByteFormFile.GetSize();
 

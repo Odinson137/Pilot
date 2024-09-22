@@ -5,8 +5,8 @@ using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.Capability.Queries;
 
-public record GetOpenCompanyPost<TDto>(BaseFilter Filter)
-    : BaseQuery, IRequest<TDto> where TDto : CompanyPostDto
+public record GetOpenCompanyPost(BaseFilter Filter)
+    : BaseQuery, IRequest<ICollection<CompanyPostDto>>
 {
 }
 
