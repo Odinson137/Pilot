@@ -1,15 +1,11 @@
 ﻿using System.Reflection;
 using AutoMapper;
 using MassTransit;
-using MediatR;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Pilot.Contracts.Base;
-using Pilot.SqrsControllerLibrary.Interfaces;
-using Pilot.SqrsControllerLibrary.Services;
 using Serilog;
 
 namespace Pilot.SqrsControllerLibrary;

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Pilot.Contracts.Base;
 
 namespace Pilot.BlazorClient.ViewModels;
 

@@ -1,5 +1,4 @@
 ﻿using Pilot.BlazorClient.ViewModels;
-using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Interface;
 

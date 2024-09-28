@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Api.Data;
-using Pilot.Api.Handlers.BaseHandlers;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
 using Pilot.Contracts.Base;

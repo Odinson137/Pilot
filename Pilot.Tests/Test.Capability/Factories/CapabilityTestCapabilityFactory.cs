@@ -1,7 +1,4 @@
-﻿
-using System.Reflection;
-using MassTransit;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +8,8 @@ using Pilot.Capability.Data;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.RabbitMq;
+
+namespace Test.Capability.Factories;
 
 public class CapabilityTestCapabilityFactory : WebApplicationFactory<Pilot.Capability.Program>, IAsyncLifetime
 {

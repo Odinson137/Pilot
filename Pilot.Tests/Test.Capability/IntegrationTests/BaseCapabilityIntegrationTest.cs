@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Capability.Data;
+using Test.Capability.Factories;
 
-namespace Test.Capability;
+namespace Test.Capability.IntegrationTests;
 
 public class BaseCapabilityIntegrationTest : IClassFixture<CapabilityTestCapabilityFactory>
 {

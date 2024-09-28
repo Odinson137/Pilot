@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Worker.Data;
 using Pilot.Worker.Interface;

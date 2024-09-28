@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;
 

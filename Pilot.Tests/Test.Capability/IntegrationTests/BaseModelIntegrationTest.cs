@@ -1,9 +1,9 @@
 ﻿using System.Net.Http.Json;
-using Amazon.SecurityToken.Model;
 using Pilot.Contracts.Base;
 using Test.Base.IntegrationBase;
+using Test.Capability.Factories;
 
-namespace Test.Capability;
+namespace Test.Capability.IntegrationTests;
 
 [Collection(nameof(SequentialCollectionDefinition))]
 public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapabilityIntegrationTest

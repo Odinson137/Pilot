@@ -4,7 +4,6 @@ using Pilot.Capability.Models;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Services;
-using Pomelo.EntityFrameworkCore.MySql.Query.Internal;
 
 namespace Pilot.Capability.Data;
 

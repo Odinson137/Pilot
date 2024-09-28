@@ -2,7 +2,6 @@
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Validation.ValidationAttributes;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 

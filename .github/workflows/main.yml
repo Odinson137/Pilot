@@ -64,7 +64,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Receiver/Test.Receiver.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-build
 
   identity:
     name: Identity

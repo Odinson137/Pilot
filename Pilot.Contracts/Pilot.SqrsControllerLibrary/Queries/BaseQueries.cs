@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
 
 namespace Pilot.SqrsControllerLibrary.Queries;
 
