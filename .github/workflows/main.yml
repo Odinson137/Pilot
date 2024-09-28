@@ -58,10 +58,10 @@ jobs:
         run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
 
       - name: Worker Tests project
-        run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Receiver.csproj
+        run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Worker.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Receiver.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Receiver/Test.Receiver.csproj --configuration Release --no-build
@@ -110,7 +110,7 @@ jobs:
         run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
 
       - name: Worker Tests project
-        run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Receiver.csproj
+        run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Worker.csproj
   
       - name: Restore Test.Messenger project
         run: dotnet restore ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj
