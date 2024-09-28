@@ -23,6 +23,7 @@ services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+services.AddControllers();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
@@ -39,6 +40,7 @@ app.UseSwaggerUI();
 app.MapHub<NotificationHub>("/notificationhub");
 app.MapHub<ChatHub>("/chatHub");
 
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => "Main messenger page!");

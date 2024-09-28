@@ -6,6 +6,6 @@ namespace Test.Api.IntegrationTests;
 
 public class CompanyPostTests(
     ApiTestApiFactory apiFactory,
-    ApiTestReceiverFactory receiverFactory,
+    ApiTestWorkerFactory workerFactory,
     ApiTestIdentityFactory identityFactory)
-    : BaseModelIntegrationTest<CompanyPost, CompanyPostDto>(apiFactory, receiverFactory, identityFactory);
+    : BaseModelIntegrationTest<CompanyPost, CompanyPostDto>(apiFactory, workerFactory, identityFactory);

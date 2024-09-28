@@ -10,7 +10,6 @@ namespace Test.Worker.IntegrationTests;
 public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFactory>,
     IClassFixture<ReceiverTestIdentityFactory>
 {
-    protected readonly DataContext AssertReceiverContext;
     protected readonly HttpClient IdentityClient;
     protected readonly Pilot.Identity.Data.DataContext IdentityContext;
 
@@ -19,15 +18,14 @@ public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFac
     protected readonly DataContext ReceiverContext;
     protected readonly IServiceScope ReceiverScope;
     protected IMapper ReceiverMapper;
-
+    protected DataContext AssertReceiverContext 
+        => ReceiverScope.ServiceProvider.GetRequiredService<DataContext>();
+    
     protected BaseReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory,
         ReceiverTestIdentityFactory identityFactory)
     {
-        // Порядок важен для правильной инициализации подключений к сервисам
-
         ReceiverScope = receiverFactory.Services.CreateScope();
         ReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<DataContext>();
-        AssertReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<DataContext>();
         ReceiverClient = receiverFactory.CreateClient();
         PublishEndpoint = ReceiverScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 

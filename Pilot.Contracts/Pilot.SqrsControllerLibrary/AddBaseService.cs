@@ -17,9 +17,10 @@ public static class AddBaseService
         var services = builder.Services;
         var configuration = builder.Configuration;
         
+        var assembly = typeof(TProgram).Assembly;
         services.AddMediatR(cfg =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(TProgram).Assembly);
+            cfg.RegisterServicesFromAssembly(assembly);
             cfg.NotificationPublisher = new TaskWhenAllPublisher();
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
@@ -42,10 +43,7 @@ public static class AddBaseService
         {
             x.SetKebabCaseEndpointNameFormatter();
 
-            var baseModelType = typeof(WebApplicationBuilder);
-            var assembly = Assembly.GetAssembly(baseModelType);
-
-            var consumers = assembly!.GetTypes()
+            var consumers = assembly.GetTypes()
                 .Where(t => t is { IsClass: true, IsAbstract: false } && t.Name.Contains("Consumer"))
                 .Select(c => c)
                 .ToList();

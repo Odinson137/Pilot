@@ -11,7 +11,7 @@ using Testcontainers.Redis;
 
 namespace Test.Api.IntegrationTests.Factories;
 
-public class ApiTestReceiverFactory : WebApplicationFactory<Pilot.Worker.Program>, IAsyncLifetime
+public class ApiTestWorkerFactory : WebApplicationFactory<Pilot.Worker.Program>, IAsyncLifetime
 {
     private readonly MySqlContainer _mySqlContainer = new MySqlBuilder()
         .WithImage("mysql:8.0")

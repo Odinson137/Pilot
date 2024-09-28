@@ -6,17 +6,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Capability.Data;
 using Pilot.Contracts.Data;
+using Pilot.Identity;
 using Test.Base.IntegrationBase;
+using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 
-namespace Test.Capability.Factories;
+namespace Test.Api.IntegrationTests.Factories;
 
-public class CapabilityTestCapabilityFactory : WebApplicationFactory<Pilot.Capability.Program>, IAsyncLifetime
+public class ApiTestCapabilityFactory : WebApplicationFactory<Pilot.Capability.Program>, IAsyncLifetime
 {
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3")
         .Build();
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
@@ -26,18 +28,18 @@ public class CapabilityTestCapabilityFactory : WebApplicationFactory<Pilot.Capab
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
-            services.AddTransient<ISeed, TestSeed>();
-            
             services.RemoveAll<DbContextOptions<DataContext>>();
             
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
+            
+            services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
+            services.AddTransient<ISeed, TestSeed>();
         });
     }
-
+    
     public async Task InitializeAsync()
     {
         await _rabbitContainer.StartAsync();

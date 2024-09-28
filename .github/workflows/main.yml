@@ -115,8 +115,8 @@ jobs:
       - name: Restore Test.Messenger project
         run: dotnet restore ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj
   
-      - name: Build Test.Receiver project
-        run: dotnet build ./Pilot.Tests/Test.Receiver/Test.Receiver.csproj --configuration Release --no-restore
+      - name: Build Test.Worker project
+        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
   
       - name: Build Test.Messenger project
         run: dotnet build ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-restore

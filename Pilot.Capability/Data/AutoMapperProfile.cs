@@ -12,5 +12,7 @@ public class AutoMapperProfile : BaseMappingProfile
         
         Mapping<Post, PostDto>();
         Mapping<Skill, SkillDto>();
+        Mapping<UserSkill, UserSkillDto>();
+        Mapping<CompanyPost, CompanyPostDto>();
     }
 }

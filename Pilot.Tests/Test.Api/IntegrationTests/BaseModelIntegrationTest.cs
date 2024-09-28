@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Identity.Models;
 using Pilot.Worker.Models;
 using Pilot.Worker.Models.ModelHelpers;
@@ -20,14 +21,14 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
 
-        await ReceiverContext.AddAsync(companyUser);
-        await ReceiverContext.SaveChangesAsync();
+        await GetContext<TDto>().AddAsync(companyUser);
+        await GetContext<TDto>().SaveChangesAsync();
 
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
         user.Id = companyUser.Id;
 
-        await IdentityContext.AddRangeAsync(user);
-        await IdentityContext.SaveChangesAsync();
+        await GetContext<UserDto>().AddRangeAsync(user);
+        await GetContext<UserDto>().SaveChangesAsync();
 
         if (withAuthorization)
         {
@@ -38,8 +39,8 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
         return companyUser;
     }
 
-    public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
-        ApiTestIdentityFactory identityFactory) : base(apiFactory, receiverFactory, identityFactory) {}
+    public BaseModelIntegrationTest(ApiTestApiFactory apiFactory, ApiTestWorkerFactory workerFactory,
+        ApiTestIdentityFactory identityFactory, ApiTestCapabilityFactory capabilityFactory) : base(apiFactory, workerFactory, identityFactory) {}
 
     [Fact]
     public async Task GetAllValuesTest_ReturnOk()
@@ -51,8 +52,8 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
 
-        await ReceiverContext.AddRangeAsync(values);
-        await ReceiverContext.SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(values);
+        await GetContext<TDto>().SaveChangesAsync();
 
         #endregion 
 
@@ -76,8 +77,8 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         var values = GenerateTestEntity.CreateEntities(type, count: count, listDepth: 0);
 
-        await ReceiverContext.AddRangeAsync(values);
-        await ReceiverContext.SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(values);
+        await GetContext<TDto>().SaveChangesAsync();
 
         var id = values.First().Id;
 
@@ -104,7 +105,7 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GenerateTestEntity.FillChildren(value, ReceiverContext);
+        await GenerateTestEntity.FillChildren(value, GetContext<TDto>());
         
         var valueDto = ReceiverMapper.Map<TDto>(value);
         
@@ -133,8 +134,8 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
 
-        await ReceiverContext.AddRangeAsync(value);
-        await ReceiverContext.SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(value);
+        await GetContext<TDto>().SaveChangesAsync();
 
         var valueDto = ReceiverMapper.Map<TDto>(value);
         
@@ -162,8 +163,8 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseApiIntegrationTest
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await ReceiverContext.AddRangeAsync(value);
-        await ReceiverContext.SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(value);
+        await GetContext<TDto>().SaveChangesAsync();
         
         #endregion
 

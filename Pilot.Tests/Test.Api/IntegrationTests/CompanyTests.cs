@@ -7,9 +7,9 @@ namespace Test.Api.IntegrationTests;
 public class CompanyTests : BaseModelIntegrationTest<Company, CompanyDto>
 {
     /// <inheritdoc />
-    public CompanyTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+    public CompanyTests(ApiTestApiFactory apiFactory, ApiTestWorkerFactory workerFactory,
         ApiTestIdentityFactory identityFactory)
-        : base(apiFactory, receiverFactory, identityFactory)
+        : base(apiFactory, workerFactory, identityFactory)
     {
     }
 }

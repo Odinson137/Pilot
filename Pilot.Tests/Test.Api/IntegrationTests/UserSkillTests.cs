@@ -6,6 +6,6 @@ namespace Test.Api.IntegrationTests;
 
 public class UserSkillTests(
     ApiTestApiFactory apiFactory,
-    ApiTestReceiverFactory receiverFactory,
+    ApiTestWorkerFactory workerFactory,
     ApiTestIdentityFactory identityFactory)
-    : BaseModelIntegrationTest<UserSkill, UserSkillDto>(apiFactory, receiverFactory, identityFactory);
+    : BaseModelIntegrationTest<UserSkill, UserSkillDto>(apiFactory, workerFactory, identityFactory);

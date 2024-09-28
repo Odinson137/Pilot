@@ -76,7 +76,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.True(content.Count >= count);
     }
     
-    protected virtual async ValueTask GetArrangeDop(ICollection<T> values) {}
+    // protected virtual async ValueTask GetArrangeDop(ICollection<T> values) {}
     
     [Fact]
     public virtual async void GetAllValuesTest_ReturnOk()
@@ -152,7 +152,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         // Assert
 
-        var result = await ReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
 
         Assert.NotNull(result);
     }
@@ -185,6 +185,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
 
         Assert.NotNull(result);
+        Assert.NotNull(result.ChangeAt);
     }
     
     [Fact]

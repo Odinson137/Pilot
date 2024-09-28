@@ -6,6 +6,6 @@ namespace Test.Api.IntegrationTests;
 
 public class SkillTests(
     ApiTestApiFactory apiFactory,
-    ApiTestReceiverFactory receiverFactory,
+    ApiTestWorkerFactory workerFactory,
     ApiTestIdentityFactory identityFactory)
-    : BaseModelIntegrationTest<Skill, SkillDto>(apiFactory, receiverFactory, identityFactory);
+    : BaseModelIntegrationTest<Skill, SkillDto>(apiFactory, workerFactory, identityFactory);

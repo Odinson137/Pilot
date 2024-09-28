@@ -47,7 +47,6 @@ services.AddControllers();
 
 services.AddScoped<ISeed, Seed>();
 
-// services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 await services.AddRedis(configuration);
@@ -94,5 +93,6 @@ app.Run();
 namespace Pilot.Worker
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Program;
+    // ReSharper disable once PartialTypeWithSinglePart
+    public partial class Program;
 }

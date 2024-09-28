@@ -7,7 +7,7 @@
 // public class FileTests : BaseModelIntegrationTest<File, FileDto>
 // {
 //     /// <inheritdoc />
-//     public FileTests(ApiTestApiFactory apiFactory, ApiTestReceiverFactory receiverFactory,
+//     public FileTests(ApiTestApiFactory apiFactory, ApiTestWorkerFactory receiverFactory,
 //         ApiTestIdentityFactory identityFactory)
 //         : base(apiFactory, receiverFactory, identityFactory)
 //     {

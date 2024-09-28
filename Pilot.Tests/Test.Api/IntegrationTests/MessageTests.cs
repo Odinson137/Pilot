@@ -6,6 +6,6 @@ namespace Test.Api.IntegrationTests;
 
 public class MessageTests(
     ApiTestApiFactory apiFactory,
-    ApiTestReceiverFactory receiverFactory,
+    ApiTestWorkerFactory workerFactory,
     ApiTestIdentityFactory identityFactory)
-    : BaseModelIntegrationTest<Message, MessageDto>(apiFactory, receiverFactory, identityFactory);
+    : BaseModelIntegrationTest<Message, MessageDto>(apiFactory, workerFactory, identityFactory);

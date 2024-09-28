@@ -4,17 +4,17 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Pilot.Capability.Data;
 using Pilot.Contracts.Data;
+using Pilot.Messenger.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.RabbitMq;
 
-namespace Test.Capability.Factories;
+namespace Test.Messenger.IntegrationTests.Factories;
 
-public class CapabilityTestCapabilityFactory : WebApplicationFactory<Pilot.Capability.Program>, IAsyncLifetime
+public class MessageTestCapabilityFactory : WebApplicationFactory<Pilot.Messenger.Program>, IAsyncLifetime
 {
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
-        .WithImage("rabbitmq:3")
+        .WithImage("rabbitmq:3-management")
         .Build();
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
