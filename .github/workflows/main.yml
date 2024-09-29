@@ -142,7 +142,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Development --no-build
   
   base:
     name: Base
