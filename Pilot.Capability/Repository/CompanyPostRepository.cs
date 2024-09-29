@@ -11,6 +11,8 @@ namespace Pilot.Capability.Repository;
 
 public class CompanyPostRepository(DataContext context, IMapper mapper) : BaseRepository<CompanyPost>(context, mapper), ICompanyPost
 {
+    private readonly IMapper _mapper = mapper;
+
     public async Task<ICollection<CompanyPostDto>> GetOpenPostsAsync(BaseFilter filter, CancellationToken token)
     {
         var query = DbSet
@@ -18,7 +20,7 @@ public class CompanyPostRepository(DataContext context, IMapper mapper) : BaseRe
             .Skip(filter.Skip)
             .Take(filter.Take)
             .OrderByDescending(c => c.Id)
-            .ProjectTo<CompanyPostDto>(mapper.ConfigurationProvider);
+            .ProjectTo<CompanyPostDto>(_mapper.ConfigurationProvider);
 
         if (filter.Ids != null)
         {

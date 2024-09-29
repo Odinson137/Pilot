@@ -8,14 +8,16 @@ namespace Pilot.Storage.Service;
 
 public class GoogleStorageService : IStorageService
 {
+    private readonly ILogger<GoogleStorageService> _logger;
     private readonly string _bucketName;
     private readonly string _cloudUrl;
     private readonly StorageClient _storageClient;
 
-    public GoogleStorageService(IConfiguration configuration)
+    public GoogleStorageService(IConfiguration configuration, ILogger<GoogleStorageService> logger)
     {
+        _logger = logger;
         var credential = configuration.GetValue<string>("Credential")!;
-        var googleCredential = GoogleCredential.FromFile(credential);
+        var googleCredential = GoogleCredential.FromJson(credential);
         _storageClient = StorageClient.Create(googleCredential);
         _cloudUrl = configuration.GetValue<string>("GoogleUrl")!;
         _bucketName = configuration.GetValue<string>("BucketName")!;
