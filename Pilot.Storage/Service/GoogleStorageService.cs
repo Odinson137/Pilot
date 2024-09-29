@@ -17,7 +17,9 @@ public class GoogleStorageService : IStorageService
     {
         _logger = logger;
         var credential = configuration.GetValue<string>("Credential")!;
-        var googleCredential = GoogleCredential.FromJson(credential);
+        _logger.LogInformation(credential);
+        
+        var googleCredential = GoogleCredential.FromFile(credential);
         _storageClient = StorageClient.Create(googleCredential);
         _cloudUrl = configuration.GetValue<string>("GoogleUrl")!;
         _bucketName = configuration.GetValue<string>("BucketName")!;
