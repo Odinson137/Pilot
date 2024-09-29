@@ -132,17 +132,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore Test.Storage project
-        run: dotnet restore ./Pilot.Tests/Test.Storage/Test.Storage.csproj
-
-      - name: Build Test.Storage project
-        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
-
-      - name: Build Test.Storage project
-        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
-
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Debug --no-build
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Debug --restore --build
   
   base:
     name: Base
