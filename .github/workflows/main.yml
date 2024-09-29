@@ -136,7 +136,7 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Storage/Test.Storage.csproj
 
       - name: Build Test.Storage project
-        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Storage/Pilot.Storage.csproj --configuration Release --no-restore
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Debug --no-build
