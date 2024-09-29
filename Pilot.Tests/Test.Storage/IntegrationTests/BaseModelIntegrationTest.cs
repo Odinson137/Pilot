@@ -27,7 +27,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseStorageInt
         #endregion
         
         // Act
-        var result = await CapabilityClient.GetAsync($"api/{typeof(T).Name}");
+        var result = await Client.GetAsync($"api/{typeof(T).Name}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -53,7 +53,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseStorageInt
         #endregion
 
         // Act
-        var result = await CapabilityClient.GetAsync($"api/{typeof(T).Name}/{id}");
+        var result = await Client.GetAsync($"api/{typeof(T).Name}/{id}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);

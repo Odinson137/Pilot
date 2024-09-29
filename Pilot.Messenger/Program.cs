@@ -14,7 +14,6 @@ var configuration = builder.Configuration;
 
 services.AddScoped<IMessageRepository, MessageRepository>();
 services.AddScoped<IBaseValidatorService, MessengerValidateService>();
-services.AddScoped<IModelService, ModelService>();
 services.AddScoped<INotificationService, NotificationService>();
 
 services.AddSignalR();
@@ -50,5 +49,5 @@ app.Run();
 namespace Pilot.Messenger
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Program;
+    public partial class Program;
 }

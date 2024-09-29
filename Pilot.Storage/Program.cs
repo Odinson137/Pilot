@@ -30,8 +30,6 @@ services.AddControllers();
 
 services.AddScoped<ISeed, Seed>();
 
-// services.AddBaseQueryHandlers(typeof(Program).Assembly);
-
 var app = builder.Build();
 
 await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
