@@ -133,7 +133,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Debug --restore --build
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Debug
   
   base:
     name: Base
