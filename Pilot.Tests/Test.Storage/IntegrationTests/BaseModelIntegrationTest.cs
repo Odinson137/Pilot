@@ -10,11 +10,11 @@ namespace Test.Storage.IntegrationTests;
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    private readonly ITestOutputHelper _testOutputHelper;
+    protected readonly ITestOutputHelper TestOutputHelper;
 
     public BaseModelIntegrationTest(StorageTestStorageFactory factory, ITestOutputHelper testOutputHelper) : base(factory)
     {
-        _testOutputHelper = testOutputHelper;
+        TestOutputHelper = testOutputHelper;
     }
         
     [Fact]
@@ -33,7 +33,7 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegration
         // Act
         var result = await Client.GetAsync($"api/{typeof(T).Name}");
         
-        _testOutputHelper.WriteLine(await result.Content.ReadAsStringAsync());
+        TestOutputHelper.WriteLine(await result.Content.ReadAsStringAsync());
         
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -43,7 +43,7 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegration
     }
 
     [Fact]
-    public virtual async Task GetValue_ReturnOk()
+    public virtual async Task GetValueTest_ReturnOk()
     {
         #region Arrange
 

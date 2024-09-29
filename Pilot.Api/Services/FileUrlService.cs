@@ -1,14 +1,14 @@
 ﻿using System.Collections;
 using System.Reflection;
 using MassTransit.Internals;
-using Microsoft.Extensions.Logging;
+using Pilot.Api.Interfaces;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
-namespace Pilot.SqrsControllerLibrary.Services;
+namespace Pilot.Api.Services;
 
 public class FileUrlService : IFileUrlService
 {

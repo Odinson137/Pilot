@@ -40,8 +40,8 @@ public class GoogleStorageService : IStorageService
         
         foreach (var storageObject in _storageClient.ListObjects(_bucketName, folderName))
         {
-            var a = _storageClient.DeleteObjectAsync(_bucketName, storageObject.Name);
-            awaitList.Add(a);
+            var task = _storageClient.DeleteObjectAsync(_bucketName, storageObject.Name);
+            awaitList.Add(task);
             Console.WriteLine($"Deleted {storageObject.Name}.");
         }
 

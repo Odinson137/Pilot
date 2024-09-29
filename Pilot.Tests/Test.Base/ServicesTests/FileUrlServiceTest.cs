@@ -2,6 +2,7 @@
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Pilot.Api.Services;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;

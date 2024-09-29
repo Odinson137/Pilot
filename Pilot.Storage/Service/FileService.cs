@@ -24,6 +24,7 @@ public class FileService : IFileService
 
     public async Task<int> UploadFileAsync(FileDto fileDto)
     {
+        _logger.LogInformation("Upload file");
         var fileName = Guid.NewGuid().ToString();
         fileDto.Name = fileName;
         
@@ -40,6 +41,8 @@ public class FileService : IFileService
 
     public async Task ChangeFileAsync(FileDto fileDto)
     {
+        _logger.LogInformation("Change file");
+
         var fileModel = fileDto.Id != 0 ? await _fileRepository.GetRequiredByIdAsync(fileDto.Id) : throw new Exception("Поиск сущности с id = 0");
 
         var fileName = Guid.NewGuid().ToString();
@@ -56,6 +59,8 @@ public class FileService : IFileService
 
     public async Task DeleteFileAsync(int id)
     {
+        _logger.LogInformation($"Delete file with id {id}");
+
         var file = await _fileRepository.GetRequiredByIdAsync(id);
         await _storageService.DeleteFileAsync(file.Name);
         _fileRepository.Delete(file);
@@ -64,6 +69,8 @@ public class FileService : IFileService
     
     public async Task<FileDto> GetFileAsync(int id)
     {
+        _logger.LogInformation($"Get file with id {id}");
+
         var file = await _fileRepository.GetRequiredByIdAsync<FileDto>(id);
         file.ByteFormFile = await _storageService.GetFileAsync(file.Name);
         return file;
@@ -71,6 +78,8 @@ public class FileService : IFileService
 
     public async Task<FileDto> GetUrlAsync(int id)
     {
+        _logger.LogInformation($"Get file url with id {id}");
+
         var file = await _fileRepository.GetRequiredByIdAsync<FileDto>(id);
         file.Url = _storageService.GetUrl(file.Name, file.Format, file.Type);
         return file;
@@ -78,6 +87,8 @@ public class FileService : IFileService
     
     public async Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter filter)
     {
+        _logger.LogInformation($"Get file urls");
+
         var files = await _fileRepository.GetValuesAsync<FileDto>(filter);
         foreach (var file in files)
         {

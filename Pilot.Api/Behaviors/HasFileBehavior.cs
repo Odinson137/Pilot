@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.Api.Interfaces;
 
 namespace Pilot.Api.Behaviors;
 
