@@ -7,8 +7,8 @@ namespace Test.Worker.IntegrationTests;
 public class ProjectTests : BaseModelReceiverIntegrationTest<Project, ProjectDto>
 {
     /// <inheritdoc />
-    public ProjectTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) :
-        base(receiverFactory, identityFactory)
+    public ProjectTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory) :
+        base(workerTestWorkerFactory, identityFactory)
     {
     }
 }

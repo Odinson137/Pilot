@@ -7,33 +7,33 @@ using Test.Worker.IntegrationTests.Factories;
 
 namespace Test.Worker.IntegrationTests;
 
-public class BaseReceiverIntegrationTest : IClassFixture<ReceiverTestReceiverFactory>,
-    IClassFixture<ReceiverTestIdentityFactory>
+public class BaseReceiverIntegrationTest : IClassFixture<WorkerTestWorkerFactory>,
+    IClassFixture<WorkerTestIdentityFactory>
 {
     protected readonly HttpClient IdentityClient;
     protected readonly Pilot.Identity.Data.DataContext IdentityContext;
 
     protected readonly IPublishEndpoint PublishEndpoint;
-    protected readonly HttpClient ReceiverClient;
-    protected readonly DataContext ReceiverContext;
-    protected readonly IServiceScope ReceiverScope;
-    protected IMapper ReceiverMapper;
+    protected readonly HttpClient Client;
+    protected readonly DataContext WorkerContext;
+    protected readonly IServiceScope WorkerScope;
+    protected readonly IMapper WorkerMapper;
     protected DataContext AssertReceiverContext 
-        => ReceiverScope.ServiceProvider.GetRequiredService<DataContext>();
+        => WorkerScope.ServiceProvider.GetRequiredService<DataContext>();
     
-    protected BaseReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory,
-        ReceiverTestIdentityFactory identityFactory)
+    protected BaseReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
+        WorkerTestIdentityFactory identityFactory)
     {
-        ReceiverScope = receiverFactory.Services.CreateScope();
-        ReceiverContext = ReceiverScope.ServiceProvider.GetRequiredService<DataContext>();
-        ReceiverClient = receiverFactory.CreateClient();
-        PublishEndpoint = ReceiverScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        WorkerScope = workerTestWorkerFactory.Services.CreateScope();
+        WorkerContext = WorkerScope.ServiceProvider.GetRequiredService<DataContext>();
+        Client = workerTestWorkerFactory.CreateClient();
+        PublishEndpoint = WorkerScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
         var identityScopeService = identityFactory.Services.CreateScope();
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         IdentityClient = identityFactory.CreateClient();
 
-        ReceiverMapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
+        WorkerMapper = WorkerScope.ServiceProvider.GetRequiredService<IMapper>();
 
         HttpSingleTone.Init.HttpClients["IdentityServer"] = IdentityClient;
     }

@@ -12,8 +12,8 @@ namespace Test.Worker.IntegrationTests;
 public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
     /// <inheritdoc />
-    public CompanyUserTests(ReceiverTestReceiverFactory receiverFactory, ReceiverTestIdentityFactory identityFactory) :
-        base(receiverFactory, identityFactory)
+    public CompanyUserTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory) :
+        base(workerTestWorkerFactory, identityFactory)
     {
     }
 
@@ -24,7 +24,7 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
 
         var companyUser = await CreateCompanyUser();
 
-        var mapper = ReceiverScope.ServiceProvider.GetRequiredService<IMapper>();
+        var mapper = WorkerScope.ServiceProvider.GetRequiredService<IMapper>();
         var valueDto = mapper.Map<CompanyUserDto>(companyUser);
 
         #endregion

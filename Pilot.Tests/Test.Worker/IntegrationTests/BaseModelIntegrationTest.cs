@@ -15,8 +15,8 @@ namespace Test.Worker.IntegrationTests;
 public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public BaseModelReceiverIntegrationTest(ReceiverTestReceiverFactory receiverFactory,
-        ReceiverTestIdentityFactory identityFactory) : base(receiverFactory, identityFactory)
+    public BaseModelReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
+        WorkerTestIdentityFactory identityFactory) : base(workerTestWorkerFactory, identityFactory)
     {
     }
 
@@ -36,8 +36,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
 
-        await ReceiverContext.AddAsync(companyUser);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddAsync(companyUser);
+        await WorkerContext.SaveChangesAsync();
 
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
         user.Id = companyUser.Id;
@@ -56,8 +56,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
 
-        await ReceiverContext.AddRangeAsync(values);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddRangeAsync(values);
+        await WorkerContext.SaveChangesAsync();
 
         var filter = new BaseFilter
         {
@@ -67,7 +67,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         #endregion
 
         // Act
-        var result = await ReceiverClient.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+        var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -88,13 +88,13 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         // await GetArrangeDop(values);
         
-        await ReceiverContext.AddRangeAsync(values);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddRangeAsync(values);
+        await WorkerContext.SaveChangesAsync();
 
         #endregion
 
         // Act
-        var result = await ReceiverClient.GetAsync($"api/{EntityName}");
+        var result = await Client.GetAsync($"api/{EntityName}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -113,15 +113,15 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
         // await GetArrangeDop(values);
 
-        await ReceiverContext.AddRangeAsync(values);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddRangeAsync(values);
+        await WorkerContext.SaveChangesAsync();
 
         var id = values.First().Id;
 
         #endregion
 
         // Act
-        var result = await ReceiverClient.GetAsync($"api/{EntityName}/{id}");
+        var result = await Client.GetAsync($"api/{EntityName}/{id}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -139,9 +139,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GenerateTestEntity.FillChildren(valueModel, ReceiverContext);
+        await GenerateTestEntity.FillChildren(valueModel, WorkerContext);
 
-        var value = ReceiverMapper.Map<TDto>(valueModel);
+        var value = WorkerMapper.Map<TDto>(valueModel);
 
         #endregion
 
@@ -168,10 +168,10 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
 
-        await ReceiverContext.AddAsync(value);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddAsync(value);
+        await WorkerContext.SaveChangesAsync();
 
-        var valueDto = ReceiverMapper.Map<TDto>(value);
+        var valueDto = WorkerMapper.Map<TDto>(value);
 
         #endregion
 
@@ -197,8 +197,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await ReceiverContext.AddAsync(value);
-        await ReceiverContext.SaveChangesAsync();
+        await WorkerContext.AddAsync(value);
+        await WorkerContext.SaveChangesAsync();
 
         #endregion
 
