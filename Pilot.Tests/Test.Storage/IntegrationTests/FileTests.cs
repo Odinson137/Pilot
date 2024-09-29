@@ -4,5 +4,5 @@ using File = Pilot.Storage.Models.File;
 
 namespace Test.Storage.IntegrationTests;
 
-public class FileTests(FileTestStorageFactory factory)
-    : BaseModelReceiverIntegrationTest<File, FileDto>(factory);
+public class FileTests(StorageTestStorageFactory factory)
+    : BaseModelIntegrationTest<File, FileDto>(factory);

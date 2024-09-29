@@ -4,7 +4,7 @@ using Test.Storage.IntegrationTests.Factories;
 
 namespace Test.Storage.IntegrationTests;
 
-public class BaseStorageIntegrationTest : IClassFixture<FileTestStorageFactory>
+public class BaseStorageIntegrationTest : IClassFixture<StorageTestStorageFactory>
 {
     protected readonly DataContext DataContext;
     protected readonly HttpClient Client;
@@ -13,7 +13,7 @@ public class BaseStorageIntegrationTest : IClassFixture<FileTestStorageFactory>
     protected DataContext AssertContext 
         => StorageScope.ServiceProvider.GetRequiredService<DataContext>();
     
-    protected BaseStorageIntegrationTest(FileTestStorageFactory factory)
+    protected BaseStorageIntegrationTest(StorageTestStorageFactory factory)
     {
         StorageScope = factory.Services.CreateScope();
         DataContext = StorageScope.ServiceProvider.GetRequiredService<DataContext>();

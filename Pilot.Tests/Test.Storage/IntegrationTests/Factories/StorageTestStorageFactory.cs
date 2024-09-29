@@ -11,7 +11,7 @@ using Testcontainers.RabbitMq;
 
 namespace Test.Storage.IntegrationTests.Factories;
 
-public class FileTestStorageFactory : WebApplicationFactory<Pilot.Storage.Program>, IAsyncLifetime
+public class StorageTestStorageFactory : WebApplicationFactory<Pilot.Storage.Program>, IAsyncLifetime
 {
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3-management")

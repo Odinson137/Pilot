@@ -6,10 +6,10 @@ using Test.Storage.IntegrationTests.Factories;
 namespace Test.Storage.IntegrationTests;
 
 [Collection(nameof(SequentialCollectionDefinition))]
-public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseStorageIntegrationTest
+public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public BaseModelReceiverIntegrationTest(FileTestStorageFactory factory) : base(factory)
+    public BaseModelIntegrationTest(StorageTestStorageFactory factory) : base(factory)
     {
     }
         
