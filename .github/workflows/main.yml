@@ -138,6 +138,14 @@ jobs:
       - name: Build Test.Storage project
         run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
 
+      - name: Create Google credentials file
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > ./pilot-credentials.json
+        shell: bash
+    
+      - name: Set up GOOGLE_APPLICATION_CREDENTIALS environment variable
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/credentials.json" >> $GITHUB_ENV
+          
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
   
