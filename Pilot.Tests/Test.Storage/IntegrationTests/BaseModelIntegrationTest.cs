@@ -2,6 +2,7 @@
 using Pilot.Contracts.Base;
 using Test.Base.IntegrationBase;
 using Test.Storage.IntegrationTests.Factories;
+using Xunit.Abstractions;
 
 namespace Test.Storage.IntegrationTests;
 
@@ -9,8 +10,11 @@ namespace Test.Storage.IntegrationTests;
 public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public BaseModelIntegrationTest(StorageTestStorageFactory factory) : base(factory)
+    private readonly ITestOutputHelper _testOutputHelper;
+
+    public BaseModelIntegrationTest(StorageTestStorageFactory factory, ITestOutputHelper testOutputHelper) : base(factory)
     {
+        _testOutputHelper = testOutputHelper;
     }
         
     [Fact]
@@ -28,7 +32,9 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseStorageIntegration
         
         // Act
         var result = await Client.GetAsync($"api/{typeof(T).Name}");
-
+        
+        _testOutputHelper.WriteLine(await result.Content.ReadAsStringAsync());
+        
         // Assert
         Assert.True(result.IsSuccessStatusCode);
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
