@@ -14,7 +14,7 @@ public class HttpIdentityService(
     {
         Logger.LogInformation($"Post message to {url}");
         Logger.LogClassInfo(message);
-        var response = await HttpClient.PostAsJsonAsync(url, message, token);
+        var response = await GetClient<TMessage>().PostAsJsonAsync(url, message, token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -28,7 +28,7 @@ public class HttpIdentityService(
     {
         Logger.LogInformation($"Post message to {url}");
         Logger.LogClassInfo(message);
-        var response = await HttpClient.PostAsJsonAsync(url, message, token);
+        var response = await GetClient<TMessage>().PostAsJsonAsync(url, message, token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
     }

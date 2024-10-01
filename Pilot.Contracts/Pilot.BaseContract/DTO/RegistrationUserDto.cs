@@ -1,5 +1,9 @@
-﻿namespace Pilot.Contracts.DTO;
+﻿using Pilot.Contracts.Attributes;
+using Pilot.Contracts.Data.Enums;
 
+namespace Pilot.Contracts.DTO;
+
+[FromService(ServiceName.IdentityServer)]
 public class RegistrationUserDto
 {
     public required string UserName { get; set; }

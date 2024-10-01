@@ -7,7 +7,7 @@ public class UserPageService(IGateWayApiService apiService, ILogger<UserPageServ
 {
     public async Task Registration(RegistrationUserViewModel registrationUser)
     {
-        var response = await apiService.GetClient<RegistrationUserViewModel>().PostAsJsonAsync("Registration", registrationUser);
+        var response = await apiService.GetClient<RegistrationUserViewModel>().PostAsJsonAsync("api/Registration", registrationUser);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -19,7 +19,7 @@ public class UserPageService(IGateWayApiService apiService, ILogger<UserPageServ
     
     public async Task<AuthUserViewModel> Authorization(AuthorizationUserViewModel authorizationUser)
     {
-        var response = await apiService.GetClient<AuthorizationUserViewModel>().PostAsJsonAsync("Authorization", authorizationUser);
+        var response = await apiService.GetClient<AuthorizationUserViewModel>().PostAsJsonAsync("api/Authorization", authorizationUser);
 
         if (!response.IsSuccessStatusCode)
         {
