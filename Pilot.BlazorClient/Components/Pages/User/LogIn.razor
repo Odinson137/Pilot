@@ -1,6 +1,43 @@
 ﻿@page "/User/Login"
-<h3>LogIn</h3>
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@inject IUserPageService UserPageService
+@inject ILogger<LogIn> Logger
+
+<h3>Log In to Pilot</h3>
+
+<p>Sign in to access your projects and teams.</p>
+
+<EditForm Model="@authorizationUser" OnValidSubmit="@HandleLogin">
+
+    <div class="form-group">
+        <label for="UserName">Username</label>
+        <InputText id="UserName" class="form-control" @bind-Value="authorizationUser.UserName" />
+    </div>
+
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <InputText id="Password" type="password" class="form-control" @bind-Value="authorizationUser.Password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log In</button>
+</EditForm>
+
+<p>Don't have an account? <a href="/User/Registration">Register</a></p>
 
 @code {
-    
+    private AuthorizationUserViewModel authorizationUser = new();
+
+    private async Task HandleLogin()
+    {
+        try
+        {
+            var auth = await UserPageService.Authorization(authorizationUser);
+            // Handle successful login, e.g., navigate to dashboard
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during login");
+        }
+    }
 }

@@ -7,8 +7,8 @@ namespace Test.Worker.IntegrationTests;
 public class TaskInfoTests : BaseModelReceiverIntegrationTest<TaskInfo, TaskInfoDto>
 {
     /// <inheritdoc />
-    public TaskInfoTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory) :
-        base(workerTestWorkerFactory, identityFactory)
+    public TaskInfoTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) :
+        base(workerTestWorkerFactory, identityFactory, storageFactory)
     {
     }
 }

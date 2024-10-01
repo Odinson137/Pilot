@@ -4,7 +4,6 @@ using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
-using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
@@ -57,7 +56,6 @@ services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).As
 // services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 services.AddControllers();
 

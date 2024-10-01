@@ -48,5 +48,5 @@ app.Run();
 namespace Pilot.Storage
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Program;
+    public partial class Program;
 }

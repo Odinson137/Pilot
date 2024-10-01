@@ -23,7 +23,6 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         var response = await next();
 
         _logger.LogInformation($"Handled {typeof(TResponse).Name}");
-        _logger.LogClassInfo(response);
 
         return response;
     }

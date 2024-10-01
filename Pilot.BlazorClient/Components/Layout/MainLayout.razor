@@ -39,7 +39,9 @@
     </div>
 </nav>
 
-@Body
+<div class="container mx-auto mt-4">
+    @Body
+</div>
 
 <footer class="bg-light text-primary mt-auto" style="background-color: #f8f9fa;">
     <div class="container p-4">
@@ -89,7 +91,6 @@
     }
 </style>
 
-
 <div id="blazor-error-ui">
     An unhandled error has occurred.
     <a href="" class="reload">Reload</a>
@@ -98,7 +99,6 @@
 
 @code {
     private bool _isAuthenticated;
-
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

@@ -7,4 +7,6 @@ public interface IBaseHttpService
 
     public Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default,
         params (string, string)[] queryParams) where TOut : BaseDto;
+
+    public HttpClient GetClient<T>();
 }

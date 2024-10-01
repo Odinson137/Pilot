@@ -12,8 +12,8 @@ namespace Test.Worker.IntegrationTests;
 public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, CompanyUserDto>
 {
     /// <inheritdoc />
-    public CompanyUserTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory) :
-        base(workerTestWorkerFactory, identityFactory)
+    public CompanyUserTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) :
+        base(workerTestWorkerFactory, identityFactory, storageFactory)
     {
     }
 

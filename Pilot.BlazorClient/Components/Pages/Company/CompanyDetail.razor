@@ -3,12 +3,10 @@
 @using Pilot.BlazorClient.ViewModels
 @inject ICompanyDetailPageService PageService
 
-<h3>@_company?.Title</h3>
-
 @if (_company != null)
 {
     <div class="company-info">
-        <img src="@_company.LogoId" alt="Company Logo" class="company-logo" />
+        <img src="@_company.LogoUrl" alt="Company Logo" class="company-logo" />
 
         <h1>@_company.Title</h1>
 
@@ -77,13 +75,20 @@ else
     private CompanyViewModel _company = null!;
     private ICollection<CompanyPostViewModel> _companyPosts = null!;
 
-    [Parameter] public string Id { get; set; }
+    [Parameter] public string? Id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var companyId = int.Parse(Id);
-        _company = await PageService.GetCompanyAsync(companyId);
-        _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
+        if (Id != null && int.TryParse(Id, out var companyId))
+        {
+            _company = await PageService.GetCompanyAsync(companyId);
+            _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
+        }
+        else
+        {
+            throw new Exception("Не удается получить id из url");
+        }
+        
     }
 }
 

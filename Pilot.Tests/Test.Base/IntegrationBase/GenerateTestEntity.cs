@@ -2,7 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Worker.Models;
 
 namespace Test.Base.IntegrationBase;
@@ -86,6 +88,65 @@ public static class GenerateTestEntity
 
         await context.SaveChangesAsync();
     }
+
+    public static async Task FillImage<T, TDto>(T model, DbContext storageContext)
+    {
+        var dtoType = typeof(TDto);
+        var modelType = typeof(T);
+        
+        var properties = dtoType.GetProperties();
+
+        foreach (var property in properties)
+        {
+            var hasFileAttr = property.GetCustomAttributes(typeof(HasFileAttribute), false).FirstOrDefault();
+            if (hasFileAttr is not HasFileAttribute) continue;
+            
+            if (typeof(ICollection<int>).IsAssignableFrom(property.PropertyType))
+            {
+                var modelAtr = modelType.GetProperties().First(c => c.Name == property.Name);
+
+                var fileIds = new List<int>();
+                for (var i = 0; i < 2; i++)
+                {
+                    var file = new Pilot.Storage.Models.File
+                    {
+                        Name = Guid.NewGuid().ToString(),
+                        Type = ".png",
+                        Format = FileFormat.Image,
+                        Size = 500
+                    };
+                    await storageContext.AddAsync(file);
+                    await storageContext.SaveChangesAsync();
+                    fileIds.Add(file.Id);
+                }
+
+                modelAtr.SetValue(model, fileIds);
+            }
+            else if (property.PropertyType == typeof(int?))
+            {
+                var modelAtr = modelType.GetProperties().First(c => c.Name == property.Name);
+
+                var file = new Pilot.Storage.Models.File
+                {
+                    Name = Guid.NewGuid().ToString(),
+                    Type = ".png",
+                    Format = FileFormat.Image,
+                    Size = 250
+                };
+                await storageContext.AddAsync(file);
+                await storageContext.SaveChangesAsync();
+
+                modelAtr.SetValue(model, file.Id);
+            }
+        }
+    }
+
+    public static async Task FillImage<T, TDto>(ICollection<T> models, DbContext storageContext)
+    {
+        foreach (var model in models)
+            await FillImage<T, TDto>(model, storageContext);
+    }
+
 
     private static object CreateEntity(object entity, Type type, int listDepth, int listElementCount)
     {

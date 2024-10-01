@@ -20,6 +20,8 @@ public class AutoMapperProfile : Profile
         Mapping<HistoryActionViewModel, HistoryActionDto>();
         Mapping<CompanyRoleViewModel, CompanyRoleDto>();
         Mapping<TaskInfoViewModel, TaskInfoDto>();
+        Mapping<CompanyPostViewModel, CompanyPostDto>();
+        Mapping<PostViewModel, PostDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

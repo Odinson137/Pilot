@@ -14,21 +14,8 @@ public class BaseHttpService(
 {
     protected readonly ILogger<BaseHttpService> Logger = logger;
 
-    private HttpClient? _httpClient;
-    protected readonly IHttpClientFactory HttpClientFactory = httpClientFactory;
-
-    protected HttpClient HttpClient
-    {
-        get
-        {
-            if (_httpClient == null)
-                throw new NullReferenceException("Null http client");
-
-            return _httpClient;
-        }
-        set => _httpClient = value;
-    }
-
+    protected HttpClient? HttpClient;
+    
     protected static string GetFullUrl<TDto>(string? url, params (string, string)[] queryParams) where TDto : BaseDto
     {
         return GetFullUrl<TDto>(url, null, queryParams);
@@ -62,9 +49,7 @@ public class BaseHttpService(
     {
         Logger.LogInformation($"Send message to {typeof(TOut)}");
 
-        HttpClientInit<TOut>();
-
-        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, filter, queryParams), token);
+        var response = await GetClient<TOut>().GetAsync(GetFullUrl<TOut>(url, filter, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -77,10 +62,8 @@ public class BaseHttpService(
     public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message by id = {url}");
-
-        HttpClientInit<TOut>();
         
-        var response = await HttpClient.GetAsync(GetFullUrl<TOut>(url, null, queryParams), token);
+        var response = await GetClient<TOut>().GetAsync(GetFullUrl<TOut>(url, null, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -96,13 +79,21 @@ public class BaseHttpService(
     /// <typeparam name="TOut"></typeparam>
     protected virtual void HttpClientInit<TOut>()
     {
-        if (_httpClient != null) return;
+        if (HttpClient != null) return;
 
         var clientName = HttpNameService.GetHttpClientName(typeof(TOut));
 
         // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
-        _httpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
+        HttpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
             ? HttpSingleTone.Init.HttpClients[clientName]
-            : HttpClientFactory.CreateClient(clientName);
+            : CreateClient(clientName);
+    }
+
+    protected HttpClient CreateClient(string clientName) => httpClientFactory.CreateClient(clientName);
+
+    public virtual HttpClient GetClient<T>()
+    {
+        HttpClientInit<T>();
+        return HttpClient!;
     }
 }

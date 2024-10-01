@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Pilot.Api.Interfaces;
+using Pilot.SqrsControllerLibrary.Interfaces;
 
-namespace Pilot.Api.Behaviors;
+namespace Pilot.SqrsControllerLibrary.Behaviors;
 
 public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
@@ -18,7 +18,6 @@ public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     {
         var response = await next();
         await _fileUrlService.GetUrlAsync(response);
-
         return response;
     }
 }

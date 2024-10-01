@@ -12,6 +12,8 @@ using Pilot.Worker.Repository;
 using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.SqrsControllerLibrary.Services;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +34,9 @@ services.AddScoped<IBaseValidatorService, ValidatorService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
+services.AddScoped<IModelService, ModelService>();
+services.AddScoped<IFileUrlService, FileUrlService>();
+
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
@@ -48,6 +53,7 @@ services.AddControllers();
 services.AddScoped<ISeed, Seed>();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 await services.AddRedis(configuration);
 

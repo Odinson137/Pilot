@@ -81,7 +81,7 @@ public class FileService : IFileService
         _logger.LogInformation($"Get file url with id {id}");
 
         var file = await _fileRepository.GetRequiredByIdAsync<FileDto>(id);
-        file.Url = _storageService.GetUrl(file.Name, file.Format, file.Type);
+        file.Url = _storageService.GetUrl(file.Name, file.Format);
         return file;
     }
     
@@ -92,7 +92,7 @@ public class FileService : IFileService
         var files = await _fileRepository.GetValuesAsync<FileDto>(filter);
         foreach (var file in files)
         {
-            file.Url = _storageService.GetUrl(file.Name, file.Format, file.Type);
+            file.Url = _storageService.GetUrl(file.Name, file.Format);
         }
         return files;
     }

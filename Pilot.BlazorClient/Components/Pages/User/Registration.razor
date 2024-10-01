@@ -1,6 +1,51 @@
 ﻿@page "/User/Registration"
-<h3>Registration</h3>
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@inject IUserPageService UserPageService
+@inject ILogger<LogIn> Logger
+
+<h3>Register for Pilot</h3>
+
+<p>Join the Pilot platform to manage your projects efficiently. Create an account to get started.</p>
+
+<EditForm Model="@RegistrationUser" method="post" OnValidSubmit="@HandleRegistration" FormName="customer" Enhance>
+    <div class="form-group">
+        <label for="UserName">Username</label>
+        <InputText id="UserName" class="form-control" @bind-Value="RegistrationUser.UserName" />
+    </div>
+
+    <div class="form-group">
+        <label for="Name">First Name</label>
+        <InputText id="Name" class="form-control" @bind-Value="RegistrationUser.Name" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastName">Last Name</label>
+        <InputText id="LastName" class="form-control" @bind-Value="RegistrationUser.LastName" />
+    </div>
+
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <InputText id="Password" type="password" class="form-control" @bind-Value="RegistrationUser.Password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Register</button>
+</EditForm>
+
+<p>Already have an account? <a href="/User/Login">Log In</a></p>
 
 @code {
-    
+    [SupplyParameterFromForm] private RegistrationUserViewModel RegistrationUser { get; set; } = new();
+
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            await UserPageService.Registration(RegistrationUser);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during registration");
+        }
+    }
 }

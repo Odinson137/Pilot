@@ -19,6 +19,7 @@ services.AddHttpClient(ServiceName.ApiServer.ToString(),
 services.AddScoped<IGateWayApiService, GateWayApiService>();
 services.AddScoped<ICompanyPageService, CompanyPageService>();
 services.AddScoped<ICompanyDetailPageService, CompanyDetailPageService>();
+services.AddScoped<IUserPageService, UserPageService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()

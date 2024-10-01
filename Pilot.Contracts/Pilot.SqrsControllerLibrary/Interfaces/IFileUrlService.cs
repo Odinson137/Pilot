@@ -1,4 +1,4 @@
-﻿namespace Pilot.Api.Interfaces;
+﻿namespace Pilot.SqrsControllerLibrary.Interfaces;
 
 public interface IFileUrlService
 {

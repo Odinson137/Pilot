@@ -17,8 +17,6 @@ public class GoogleStorageService : IStorageService
     {
         _logger = logger;
         var credential = configuration.GetValue<string>("Credential")!;
-        _logger.LogInformation(credential);
-        
         var googleCredential = GoogleCredential.FromFile(credential);
         _storageClient = StorageClient.Create(googleCredential);
         _cloudUrl = configuration.GetValue<string>("GoogleUrl")!;
@@ -59,8 +57,8 @@ public class GoogleStorageService : IStorageService
         return memoryStream.ToArray();
     }
 
-    public string GetUrl(string fileName, FileFormat format, string type)
+    public string GetUrl(string fileName, FileFormat format)
     {
-        return $"{_cloudUrl}/{_bucketName}/{type}/{fileName}.{format}";
+        return $"{_cloudUrl}/{_bucketName}/{format.ToString().ToLower()}/{fileName}";
     }
 }

@@ -13,5 +13,5 @@ public interface IStorageService
 
     public Task<byte[]> GetFileAsync(string fileName);
     
-    public string GetUrl(string fileName, FileFormat format, string type);
+    public string GetUrl(string fileName, FileFormat format);
 }

@@ -2,13 +2,107 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<!-- Главный блок с названием и описанием -->
+<div class="text-center">
+    <h1 class="display-4">Pilot</h1>
+    <p class="lead">
+        Pilot is a modern tool for project management. It is centered around companies that can be created to achieve various goals, such as developing software or building services. Employees can be hired into companies to work in teams on projects. Each project consists of tasks, with notifications and chats to keep communication smooth. Task changes are tracked for transparent management and control.
+    </p>
+    <img src="Images/Home/main_home.png" alt="Main Image" class="img-fluid mt-4"/>
+</div>
 
-}
+<!-- Блок с функционалом проекта -->
+<section id="features" class="mt-5">
+    <h2 class="text-center text-uppercase fw-bold mb-5">What Pilot Can Do</h2>
+    <div class="row justify-content-between feature-section">
+        <!-- Первый блок с функционалом -->
+        <div class="col-md-5 feature-block feature-left">
+            <div class="feature-content">
+                <h5>Create Companies</h5>
+                <p>Set up companies to manage teams and projects for any goal.</p>
+            </div>
+            <img src="Images/Home/66f8705c1383b3000179ba84_sd3-turbo_result.webp" alt="Feature 1" class="img-fluid feature-img"/>
+        </div>
+
+        <!-- Второй блок с функционалом -->
+        <div class="col-md-5 feature-block feature-right">
+            <img src="Images/Home/667bf17c2126de0001348083_sd3-turbo_result.webp" alt="Feature 2" class="img-fluid feature-img"/>
+            <div class="feature-content">
+                <h5>Manage Projects</h5>
+                <p>Create projects within companies, track progress, and assign tasks to teams.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center feature-section">
+        <!-- Третий блок с функционалом -->
+        <div class="col-md-5 feature-block feature-left">
+            <div class="feature-content">
+                <h5>Real-time Communication</h5>
+                <p>Use the integrated chat and notification system to keep teams connected.</p>
+            </div>
+            <img src="Images/Home/You Can Now Manage Accounts on Facebook, Instagram and Facebook Messenger Via One App.jfif" alt="Feature 3" class="img-fluid feature-img"/>
+        </div>
+    </div>
+</section>
+
+<style>
+    .text-center {
+        text-align: center;
+        padding: 50px 20px;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+
+    #features {
+        padding: 60px 20px;
+    }
+
+    .feature-section {
+        margin-bottom: 50px;
+    }
+
+    .feature-block {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .feature-left .feature-content {
+        order: 1;
+    }
+
+    .feature-left img {
+        order: 2;
+        margin-left: 20px;
+    }
+
+    .feature-right .feature-content {
+        order: 2;
+    }
+
+    .feature-right img {
+        order: 1;
+        margin-right: 20px;
+    }
+
+    .feature-content {
+        max-width: 50%;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+</style>
 
 @code{
-    protected override async Task OnInitializedAsync()
+protected override async Task OnInitializedAsync()
     {
-        
+    // Initialization logic, if needed
     }
 }

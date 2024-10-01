@@ -1,14 +1,15 @@
 ﻿using System.Collections;
 using System.Reflection;
 using MassTransit.Internals;
-using Pilot.Api.Interfaces;
+using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
-namespace Pilot.Api.Services;
+namespace Pilot.SqrsControllerLibrary.Services;
 
 public class FileUrlService : IFileUrlService
 {
@@ -79,7 +80,7 @@ public class FileUrlService : IFileUrlService
         
         var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToArray());
         
-        var files = await _modelService.GetValuesAsync<FileDto>(filter);
+        var files = await _modelService.GetValuesAsync<FileDto>(Urls.FileUrl, filter);
         foreach (var file in files)
         {
             var (property, currentValue) = fileUrlsSet[file.Id];
