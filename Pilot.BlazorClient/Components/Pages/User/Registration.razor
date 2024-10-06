@@ -1,8 +1,12 @@
 ﻿@page "/User/Registration"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @inject IUserPageService UserPageService
 @inject ILogger<LogIn> Logger
+@inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <h3>Register for Pilot</h3>
 
@@ -39,13 +43,9 @@
 
     private async Task HandleRegistration()
     {
-        try
-        {
-            await UserPageService.Registration(RegistrationUser);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error during registration");
-        }
+        await UserPageService.Registration(RegistrationUser);
+        await ProtectedSessionStore.SetAsync(ClientConstants.RegistrationUser, RegistrationUser);
+
+        NavigationManager.NavigateTo("/User/Login");
     }
 }

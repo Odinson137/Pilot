@@ -35,15 +35,11 @@ services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
 services.AddScoped<IModelService, ModelService>();
-services.AddScoped<IFileUrlService, FileUrlService>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
-
-services.AddHttpClient(ServiceName.StorageServer.ToString(),
-    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("StorageServerUrl")!); });
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
@@ -53,7 +49,6 @@ services.AddControllers();
 services.AddScoped<ISeed, Seed>();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 await services.AddRedis(configuration);
 

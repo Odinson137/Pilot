@@ -4,7 +4,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 
-namespace Pilot.BlazorClient.Service;
+namespace Pilot.BlazorClient.Service.Pages;
 
 public class CompanyDetailPageService(IGateWayApiService apiService) : ICompanyDetailPageService
 {

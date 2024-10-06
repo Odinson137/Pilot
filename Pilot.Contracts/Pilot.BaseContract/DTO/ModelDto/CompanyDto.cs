@@ -23,15 +23,11 @@ public class CompanyDto : BaseDto, IHasFile
     public ICollection<BaseDto> CompanyRoles { get; set; } = new List<BaseDto>();
     
     [HasFile(nameof(LogoUrl))]
-    [Newtonsoft.Json.JsonIgnore]
-    [JsonIgnore]
     public int? LogoId { get; set; }
 
     public string? LogoUrl { get; set; }
 
     [HasFile(nameof(InsideImagesUrl))]
-    [Newtonsoft.Json.JsonIgnore]
-    [JsonIgnore]
     public ICollection<int> InsideImagesId { get; set; } = [];
 
     public ICollection<string> InsideImagesUrl { get; set; } = [];

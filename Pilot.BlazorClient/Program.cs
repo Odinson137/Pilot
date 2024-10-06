@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using Pilot.BlazorClient.Components;
 using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.Service;
+using Pilot.BlazorClient.Service.Pages;
 using Pilot.Contracts.Data.Enums;
 using Serilog;
 
@@ -29,6 +31,19 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/User/Login"; // URL страницы входа
+        options.LogoutPath = "/User/Logout"; // URL для выхода
+        options.AccessDeniedPath = "/AccessDenied"; // URL для ошибки доступа
+    });
+
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+builder.Services.AddScoped<TokenAuthenticationStateProvider>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,6 +55,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseStaticFiles();
 app.UseAntiforgery();

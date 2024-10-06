@@ -35,13 +35,6 @@ public class BaseHttpService(
             stringBuilder.Append($"filter={filter.ToJson()}");
         }
         
-        // foreach (var param in queryParams)
-        // {
-        //     stringBuilder.Append($"{param.Item1}={param.Item2}&");
-        // }
-        //
-        // stringBuilder.Remove(stringBuilder.Length-1, 1);
-        
         return stringBuilder.ToString();
     }
 
@@ -49,7 +42,8 @@ public class BaseHttpService(
     {
         Logger.LogInformation($"Send message to {typeof(TOut)}");
 
-        var response = await GetClient<TOut>().GetAsync(GetFullUrl<TOut>(url, filter, queryParams), token);
+        var client = await GetClientAsync<TOut>();
+        var response = await client.GetAsync(GetFullUrl<TOut>(url, filter, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
@@ -62,13 +56,13 @@ public class BaseHttpService(
     public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default, params (string, string)[] queryParams) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message by id = {url}");
-        
-        var response = await GetClient<TOut>().GetAsync(GetFullUrl<TOut>(url, null, queryParams), token);
+        var client = await GetClientAsync<TOut>();
+        var response = await client.GetAsync(GetFullUrl<TOut>(url, null, queryParams), token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
         var content = await response.Content.ReadFromJsonAsync<TOut>(token);
-        if (content == null) throw new NotFoundException("User is not found");
+        if (content == null) throw new NotFoundException("Value not found");
 
         return content;
     }
@@ -91,9 +85,9 @@ public class BaseHttpService(
 
     protected HttpClient CreateClient(string clientName) => httpClientFactory.CreateClient(clientName);
 
-    public virtual HttpClient GetClient<T>()
+    public virtual ValueTask<HttpClient> GetClientAsync<T>()
     {
         HttpClientInit<T>();
-        return HttpClient!;
+        return ValueTask.FromResult(HttpClient!);
     }
 }

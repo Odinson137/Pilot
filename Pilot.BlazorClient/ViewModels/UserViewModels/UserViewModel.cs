@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Pilot.Contracts.Attributes;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Interfaces;
 
-namespace Pilot.Contracts.DTO.ModelDto;
+namespace Pilot.BlazorClient.ViewModels.UserViewModels;
 
-[FromService(ServiceName.IdentityServer)]
-public class UserDto : BaseDto, IHasFile
+public class UserViewModel : BaseViewModel
 {
     [Required] [MaxLength(50)] public string UserName { get; set; } = null!;
     
@@ -27,6 +24,8 @@ public class UserDto : BaseDto, IHasFile
     [MaxLength(100)] public string? City { get; set; }
     
     [HasFile(nameof(AvatarUrl))]
+    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public int? AvatarId { get; set; }
     
     [MaxLength(100)] public string? AvatarUrl { get; set; }

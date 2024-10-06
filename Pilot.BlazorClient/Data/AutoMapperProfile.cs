@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 
@@ -22,6 +23,7 @@ public class AutoMapperProfile : Profile
         Mapping<TaskInfoViewModel, TaskInfoDto>();
         Mapping<CompanyPostViewModel, CompanyPostDto>();
         Mapping<PostViewModel, PostDto>();
+        Mapping<UserViewModel, UserDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

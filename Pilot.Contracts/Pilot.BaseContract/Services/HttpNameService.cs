@@ -7,10 +7,6 @@ public static class HttpNameService
 {
     public static string GetHttpClientName(Type type)
     {
-        var baseType = typeof(BaseDto);
-        if (!type.IsSubclassOf(baseType))
-            throw new System.Exception("Пока не реализовано. И не известно: будет ли вообще реализовано");
-
         var attribute = type.GetCustomAttributes(false).OfType<FromServiceAttribute>().SingleOrDefault();
 
         if (attribute == null)

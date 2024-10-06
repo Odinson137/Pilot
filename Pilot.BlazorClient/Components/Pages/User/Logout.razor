@@ -1,0 +1,12 @@
+﻿@page "/User/Logout"
+@using Pilot.BlazorClient.Service
+@inject TokenAuthenticationStateProvider AuthenticationService
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override async void OnInitialized()
+    {
+        await AuthenticationService.MarkUserAsLoggedOut();
+        NavigationManager.NavigateTo("", forceLoad: true);
+    }
+}

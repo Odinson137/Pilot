@@ -10,4 +10,9 @@
       <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
+    </ItemGroup>
+
 </Project>

@@ -1,23 +1,38 @@
 ﻿@page "/User/Login"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @inject IUserPageService UserPageService
 @inject ILogger<LogIn> Logger
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+@inject TokenAuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Log In to Pilot</h3>
 
+@if (_authorizedMessageVisible)
+{
+    <div class="alert alert-success">
+        Dear @_userName, You are now authorized. Please, log in.
+    </div>
+}
+
 <p>Sign in to access your projects and teams.</p>
 
-<EditForm Model="@authorizationUser" OnValidSubmit="@HandleLogin">
+<EditForm Model="@AuthorizationUser" method="post" OnValidSubmit="@HandleLogin" FormName="login" Enhance>
 
     <div class="form-group">
         <label for="UserName">Username</label>
-        <InputText id="UserName" class="form-control" @bind-Value="authorizationUser.UserName" />
+        <InputText id="UserName" class="form-control" @bind-Value="AuthorizationUser.UserName" />
     </div>
 
     <div class="form-group">
         <label for="Password">Password</label>
-        <InputText id="Password" type="password" class="form-control" @bind-Value="authorizationUser.Password" />
+        <InputText id="Password" type="password" class="form-control" @bind-Value="AuthorizationUser.Password" />
     </div>
 
     <button type="submit" class="btn btn-primary">Log In</button>
@@ -26,14 +41,38 @@
 <p>Don't have an account? <a href="/User/Registration">Register</a></p>
 
 @code {
-    private AuthorizationUserViewModel authorizationUser = new();
+    public readonly AuthorizationUserViewModel AuthorizationUser = new();
+    private bool _authorizedMessageVisible;
+    private string? _userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var registerUser = await ProtectedSessionStore.GetAsync<RegistrationUserViewModel>(ClientConstants.RegistrationUser);
+
+        if (registerUser.Success)
+        {
+            AuthorizationUser.UserName = registerUser.Value!.UserName;
+            AuthorizationUser.Password = registerUser.Value.Password;
+            _userName = registerUser.Value.Name;
+            _authorizedMessageVisible = true;
+            await ProtectedSessionStore.DeleteAsync(ClientConstants.RegistrationUser);
+        }
+    }
 
     private async Task HandleLogin()
     {
         try
         {
-            var auth = await UserPageService.Authorization(authorizationUser);
-            // Handle successful login, e.g., navigate to dashboard
+            var auth = await UserPageService.Authorization(AuthorizationUser);
+            // var auth = new AuthUserViewModel
+            // {
+            //     UserId = 1,
+            //     Token = "token"
+            // };
+            await ProtectedSessionStore.SetAsync(ClientConstants.Token, auth.Token);
+
+            await AuthenticationStateProvider.MarkUserAsAuthenticated(auth.Token, auth.UserId);
+            NavigationManager.NavigateTo("/Account", true);
         }
         catch (Exception ex)
         {

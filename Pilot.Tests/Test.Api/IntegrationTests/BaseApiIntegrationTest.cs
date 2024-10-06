@@ -13,7 +13,7 @@ using Test.Api.IntegrationTests.Factories;
 namespace Test.Api.IntegrationTests;
 
 public class BaseApiIntegrationTest : IClassFixture<ApiTestApiFactory>, IClassFixture<ApiTestWorkerFactory>,
-    IClassFixture<ApiTestIdentityFactory>, IClassFixture<ApiTestCapabilityFactory>
+    IClassFixture<ApiTestIdentityFactory>
 {
     private readonly IServiceProvider _receiverScopeService;
     protected readonly IToken TokenService;

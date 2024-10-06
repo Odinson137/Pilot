@@ -1,0 +1,68 @@
+﻿@page "/Account/Edit"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@inject IUserPageService UserPageService
+@inject NavigationManager NavigationManager
+
+<h3>Edit User Account</h3>
+
+@if (_user == null)
+{
+<p>Loading user information...</p>
+}
+else
+{
+<EditForm Model="_user" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="userName">Username</label>
+        <InputText id="userName" @bind-Value="_user.UserName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="name">First Name</label>
+        <InputText id="name" @bind-Value="_user.Name" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <InputText id="lastName" @bind-Value="_user.LastName" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="_user.Email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <InputTextArea id="description" @bind-Value="_user.Description" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+</EditForm>
+}
+
+@code {
+    private UserViewModel? _user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await UserPageService.GetUserAsync();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        // Логика сохранения обновлений
+        // await UserPageService.UpdateUserAsync(_user);
+        NavigationManager.NavigateTo("/Account");
+    }
+
+    private void CancelEdit()
+    {
+        NavigationManager.NavigateTo("/Account");
+    }
+}

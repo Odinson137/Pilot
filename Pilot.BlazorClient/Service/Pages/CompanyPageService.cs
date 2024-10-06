@@ -3,7 +3,7 @@ using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 
-namespace Pilot.BlazorClient.Service;
+namespace Pilot.BlazorClient.Service.Pages;
 
 public class CompanyPageService(IGateWayApiService apiService) : ICompanyPageService
 {

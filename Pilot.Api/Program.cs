@@ -43,6 +43,8 @@ services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
+services.AddScoped<IFileUrlService, FileUrlService>();
+
 await services.AddRedis(configuration);
 
 builder.Logging.ClearProviders();
@@ -56,6 +58,7 @@ services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).As
 // services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
 
 services.AddControllers();
 

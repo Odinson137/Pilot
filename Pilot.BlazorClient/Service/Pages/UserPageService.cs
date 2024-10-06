@@ -1,13 +1,17 @@
-﻿using Pilot.BlazorClient.Interface;
+﻿using AutoMapper;
+using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 
-namespace Pilot.BlazorClient.Service;
+namespace Pilot.BlazorClient.Service.Pages;
 
-public class UserPageService(IGateWayApiService apiService, ILogger<UserPageService> logger) : IUserPageService
+public class UserPageService(IGateWayApiService apiService, ILogger<UserPageService> logger, IMapper mapper) : IUserPageService
 {
     public async Task Registration(RegistrationUserViewModel registrationUser)
     {
-        var response = await apiService.GetClient<RegistrationUserViewModel>().PostAsJsonAsync("api/Registration", registrationUser);
+        var client = await apiService.GetClientAsync<AuthorizationUserViewModel>();
+        var response = await client.PostAsJsonAsync("api/User/Registration", registrationUser);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -19,7 +23,8 @@ public class UserPageService(IGateWayApiService apiService, ILogger<UserPageServ
     
     public async Task<AuthUserViewModel> Authorization(AuthorizationUserViewModel authorizationUser)
     {
-        var response = await apiService.GetClient<AuthorizationUserViewModel>().PostAsJsonAsync("api/Authorization", authorizationUser);
+        var client = await apiService.GetClientAsync<AuthorizationUserViewModel>();
+        var response = await client.PostAsJsonAsync("api/User/Authorization", authorizationUser);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -36,5 +41,13 @@ public class UserPageService(IGateWayApiService apiService, ILogger<UserPageServ
         }
         
         return auth;
+    }
+    
+    public async Task<UserViewModel> GetUserAsync()
+    {
+        var user = await apiService.SendGetMessage<UserDto>("");
+
+        var userViewModel = user.Map<UserViewModel>(mapper);
+        return userViewModel;
     }
 }

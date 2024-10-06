@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Net.Http.Headers;
+using AutoMapper;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
@@ -7,9 +8,15 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service;
 
-public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFactory httpClientFactory, IMapper mapper)
+public class GateWayApiService(
+    ILogger<BaseHttpService> logger, 
+    IHttpClientFactory httpClientFactory, 
+    IMapper mapper,
+    TokenAuthenticationStateProvider tokenAuthenticationStateProvider)
     : BaseHttpService(logger, httpClientFactory), IGateWayApiService
 {
+    public bool Authorizate { get; set; } = true;
+    
     public async Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
         string? url = null,
         BaseFilter? filter = null,
@@ -33,9 +40,9 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
     public async Task SendPostMessage<TMessage>(string? url, TMessage message, CancellationToken token)
         where TMessage : BaseDto
     {
-        HttpClientInit<TMessage>();
-
-        var response = await GetClient<TMessage>().PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
+        var client = await GetClientAsync<TMessage>();
+        
+        var response = await client.PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -48,9 +55,8 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
     public async Task SendPutMessage<TMessage>(string? url, TMessage message, CancellationToken token)
         where TMessage : BaseDto
     {
-        HttpClientInit<TMessage>();
-
-        var response = await GetClient<TMessage>().PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
+        var client = await GetClientAsync<TMessage>();
+        var response = await client.PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -62,9 +68,8 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
 
     public async Task SendDeleteMessage<TMessage>(string? url, CancellationToken token) where TMessage : BaseDto
     {
-        HttpClientInit<TMessage>();
-
-        var response = await GetClient<TMessage>().DeleteAsync(GetFullUrl<TMessage>(url), token);
+        var client = await GetClientAsync<TMessage>();
+        var response = await client.DeleteAsync(GetFullUrl<TMessage>(url), token);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -78,5 +83,16 @@ public class GateWayApiService(ILogger<BaseHttpService> logger, IHttpClientFacto
     {
         if (HttpClient != null) return;
         HttpClient = CreateClient(ServiceName.ApiServer.ToString());
+    }
+    
+    public override async ValueTask<HttpClient> GetClientAsync<T>()
+    {
+        HttpClientInit<T>();
+        if (!Authorizate) return HttpClient!;
+        
+        var token = await tokenAuthenticationStateProvider.GetTokenAsync();
+        logger.LogInformation($"Token: {token}");
+        HttpClient!.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        return HttpClient!;
     }
 }
