@@ -1,5 +1,6 @@
 using MediatR;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Messenger.Data;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;
@@ -29,8 +30,11 @@ services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
+services.AddScoped<ISeed, Seed>();
 
 var app = builder.Build();
+
+await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
