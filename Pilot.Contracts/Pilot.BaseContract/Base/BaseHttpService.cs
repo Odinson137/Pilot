@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Json;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Services;
 
@@ -15,6 +14,8 @@ public class BaseHttpService(
     protected readonly ILogger<BaseHttpService> Logger = logger;
 
     protected HttpClient? HttpClient;
+
+    protected string? ClientName;
     
     protected static string GetFullUrl<TDto>(string? url, params (string, string)[] queryParams) where TDto : BaseDto
     {
@@ -73,14 +74,11 @@ public class BaseHttpService(
     /// <typeparam name="TOut"></typeparam>
     protected virtual void HttpClientInit<TOut>()
     {
-        if (HttpClient != null) return;
-
         var clientName = HttpNameService.GetHttpClientName(typeof(TOut));
-
-        // Для тестов. По другому не придумал, как микросервисы дебажить, а Debug в тестах я люблю
-        HttpClient = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Test"
-            ? HttpSingleTone.Init.HttpClients[clientName]
-            : CreateClient(clientName);
+        if (ClientName == clientName) return;
+        
+        HttpClient = CreateClient(clientName);
+        ClientName = clientName;
     }
 
     protected HttpClient CreateClient(string clientName) => httpClientFactory.CreateClient(clientName);

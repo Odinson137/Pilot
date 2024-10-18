@@ -11,14 +11,7 @@ public class ProjectViewModel : BaseViewModel
 
     public ICollection<TeamViewModel> Teams { get; set; } = new List<TeamViewModel>();
 
-    [Required] public CompanyViewModel Company { get; set; } = null!;
-    
     [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
     
     public ProjectStatus ProjectStatus { get; set; }
-    
-    public void AddCompanyUser(CompanyUserViewModel companyUserViewModel)
-    {
-        CreatedBy = companyUserViewModel;
-    }
 }

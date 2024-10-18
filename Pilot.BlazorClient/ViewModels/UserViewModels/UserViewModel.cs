@@ -33,4 +33,6 @@ public class UserViewModel : BaseViewModel
     public Gender Gender { get; set; }
     
     public DateTime? Birthday { get; set; }
+
+    public string FullName => $"{LastName} {Name} ({UserName})";
 }

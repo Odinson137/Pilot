@@ -9,6 +9,7 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Data;
 using Test.Api.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
 
 namespace Test.Api.IntegrationTests;
 

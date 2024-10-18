@@ -12,20 +12,20 @@ public static class ClassPrinterService
         this ILogger<T1> logger,
         T2? logClass)
     {
-        var builder = new StringBuilder();
-        if (logClass == null)
-        {
-            logger.LogInformation("Empty");
-            return;
-        }
-
-        var type = typeof(T2);
-
-        builder.AppendLine($"{type}:");
-
-        CreateMessage(logClass, builder, type);
-
-        logger.LogInformation(builder.ToString());
+        // var builder = new StringBuilder();
+        // if (logClass == null)
+        // {
+        //     logger.LogInformation("Empty");
+        //     return;
+        // }
+        //
+        // var type = typeof(T2);
+        //
+        // builder.AppendLine($"{type}:");
+        //
+        // CreateMessage(logClass, builder, type);
+        //
+        // logger.LogInformation(builder.ToString());
     }
 
     private static void CreateMessage<T2>(

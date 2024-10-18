@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections;
+using System.Text.Json.Serialization;
 using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;
@@ -8,6 +9,11 @@ public class BaseFilter(int skip, int take)
     public BaseFilter() : this(0, 10) { }
 
     public BaseFilter(params int[] ids) : this(0, int.MaxValue)
+    {
+        Ids = ids;
+    }
+    
+    public BaseFilter(ICollection<int> ids) : this(0, int.MaxValue)
     {
         Ids = ids;
     }

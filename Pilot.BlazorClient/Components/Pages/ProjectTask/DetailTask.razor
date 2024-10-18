@@ -1,0 +1,298 @@
+﻿@page "/task/{Id:int}"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.Contracts.Data.Enums
+@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
+@using Pilot.BlazorClient.Components.Pages.User
+@inject IProjectTaskPageService ProjectTaskPageService;
+@inject NavigationManager NavigationManager;
+
+<AuthCheck/>
+
+@if (_task != null)
+{
+    <div class="task-background">
+        <h2>Task Details: @_task?.Name - Number @_task?.Id</h2>
+
+        <div class="task-details-window">
+            <div class="task-main-info">
+                <!-- Название и описание задачи -->
+                <h3>@_task!.Name</h3>
+                <p>@_task.Description</p>
+
+                <!-- Ответственный за задачу и создатель -->
+                <div class="task-people">
+                    <div class="task-owner">
+                        <b>Assigned to:</b>
+                        <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
+                            <img src="@_userViewModel?.AvatarUrl" alt="avatar"/>
+                            @_userViewModel?.FullName
+                        </a>
+                    </div>
+                    <div class="task-creator">
+                        <b>Created by:</b>
+                        <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
+                            <img src="@_createdUserViewModel?.AvatarUrl" alt="avatar"/>
+                            @_createdUserViewModel?.FullName
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Приоритет и статус задачи -->
+                <div class="task-status-priority">
+                    <p style="color: @GetPriorityColor(_task.Priority)">
+                        <b>Priority:</b> @GetPriorityLabel(_task.Priority)
+                    </p>
+                    <p style="color: @GetStatusColor(_task.TaskStatus)">
+                        <b>Status:</b> @_task.TaskStatus
+                    </p>
+                    <p>
+                        <b>Created on:</b> @_task.CreateAt
+                    </p>
+                </div>
+
+                <!-- Кнопки редактирования -->
+                <button class="btn edit-btn" @onclick="EnableEditing">Edit Task</button>
+
+                <!-- Форма редактирования -->
+                @if (_isEditing)
+                {
+                    <div class="task-edit-form">
+                        <label>Task Name:</label>
+                        <input @bind="_task.Name"/>
+                        <label>Description:</label>
+                        <textarea @bind="_task.Description"></textarea>
+                        <label>Priority:</label>
+                        <select @bind="_task.Priority">
+                            <option value="TaskPriority.Low">Low</option>
+                            <option value="TaskPriority.Middle">Middle</option>
+                            <option value="TaskPriority.High">High</option>
+                        </select>
+                        <label>Status:</label>
+                        <select @bind="_task.TaskStatus">
+                            <option value="TaskStatus.ToDo">To Do</option>
+                            <option value="TaskStatus.Work">In Progress</option>
+                            <option value="TaskStatus.Completed">Completed</option>
+                        </select>
+                        <div class="task-edit-buttons">
+                            <button class="btn save-btn" @onclick="SaveTask">Save</button>
+                            <button class="btn cancel-btn" @onclick="CancelEditing">Cancel</button>
+                            <button class="btn delete-btn" @onclick="DeleteTask">Delete</button>
+                        </div>
+                    </div>
+                }
+
+                <!-- Добавление новой информации -->
+                <div class="add-task-info">
+                    <h4>Add new progress update</h4>
+                    <textarea @bind="_newTaskInfoDescription" style="height: 150px" placeholder="Enter task update"></textarea>
+                    <label class="upload-label">
+                        <input type="file" @onchange="HandleFileUpload"/>
+                        Upload Photo
+                    </label>
+                    <button class="btn add-info-btn" @onclick="AddNewTaskInfo">Add Update</button>
+                </div>
+
+                <!-- Информация о ходе выполнения задачи -->
+                <div class="task-progress">
+                    <h4>Task Progress</h4>
+                    @if (_task?.TaskInfos is { Count: > 0 })
+                    {
+                        @foreach (var info in _task.TaskInfos)
+                        {
+                            <div class="task-info-card">
+                                <p>@info.Description</p>
+                                <p>
+                                    <b>Added by:</b> @_userViewModels[info.CreatedBy.Id].FullName
+                                </p>
+                                <p>
+                                    <b>Date:</b> @info.CreateAt
+                                </p>
+                                @if (info.FileId.HasValue)
+                                {
+                                    <img src="@GetFileUrl(info.FileId.Value)" alt="file"/>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No progress updates yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div>Task not available</div>
+}
+
+@code {
+    private ProjectTaskViewModel? _task;
+    private bool _isEditing;
+    private string _newTaskInfoDescription = string.Empty;
+
+    private UserViewModel? _createdUserViewModel;
+    private UserViewModel? _userViewModel;
+    private Dictionary<int, UserViewModel> _userViewModels = [];
+
+    [Parameter] public int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _task = await ProjectTaskPageService.GetUserTaskAsync(Id);
+        var userIds = new List<int> { _task.CreatedBy.Id };
+
+        if (_task.CompanyUser != null)
+            userIds.Add(_task.CompanyUser.Id);
+
+        var userViewModels = await ProjectTaskPageService.GetUsersAsync(userIds);
+        _createdUserViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.CreatedBy.Id);
+        _userViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.CompanyUser?.Id);
+
+        var taskInfosIds = _task.TaskInfos.Select(c => c.Id).ToList();
+        if (taskInfosIds.Any())
+        {
+            _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(taskInfosIds);
+            var taskInfoCreatedByIds = _task.TaskInfos.Select(c => c.CreatedBy.Id).ToList();
+
+            var taskInfoCreatedBy = await ProjectTaskPageService.GetUsersAsync(taskInfoCreatedByIds);
+            foreach (var createdBy in taskInfoCreatedBy)
+            {
+                _userViewModels[createdBy.Id] = createdBy;
+            }
+        }
+    }
+
+    private string GetPriorityLabel(TaskPriority? priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "Low Priority",
+            TaskPriority.Middle => "Middle Priority",
+            TaskPriority.High => "High Priority",
+            _ => "Unknown Priority"
+        };
+    }
+
+    private string GetPriorityColor(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "#6c757d",
+            TaskPriority.Middle => "#ffc107",
+            TaskPriority.High => "#dc3545",
+            _ => "#000000"
+        };
+    }
+
+    private string GetStatusColor(TaskStatus status)
+    {
+        return status switch
+        {
+            TaskStatus.ToDo => "#6c757d",
+            TaskStatus.Work => "#007bff",
+            TaskStatus.Completed => "#28a745",
+            _ => "#000000"
+        };
+    }
+
+    private void EnableEditing() => _isEditing = true;
+    private void CancelEditing() => _isEditing = false;
+
+    private async Task SaveTask()
+    {
+/* Сохранение задачи */
+        _isEditing = false;
+    }
+
+    private async Task DeleteTask()
+    {
+/* Удаление задачи */
+    }
+
+    private async Task AddNewTaskInfo()
+    {
+/* Добавление информации */
+    }
+
+    private async Task HandleFileUpload(ChangeEventArgs e)
+    {
+/* Загрузка файла */
+    }
+
+    private string GetUserProfileLink(int? userId) => $"/user/{userId}";
+    private string GetFileUrl(int fileId) => $"/file/{fileId}";
+}
+
+<style>
+    .task-background {
+        background-color: #f0f0f0;
+        padding: 50px;
+        border-radius: 10px;
+    }
+    .task-details-window {
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    .task-people img {
+        object-fit: cover;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+    }
+    .task-edit-buttons button {
+        margin-right: 10px;
+        border-radius: 8px;
+    }
+    .edit-btn {
+        background-color: #007bff;
+        color: #fff;
+    }
+    .save-btn {
+        background-color: #28a745;
+        color: #fff;
+    }
+    .cancel-btn {
+        background-color: #6c757d;
+        color: #fff;
+    }
+    .delete-btn {
+        background-color: #dc3545;
+        color: #fff;
+    }
+    .task-info-card {
+        background-color: #f9f9f9;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
+    }
+    .add-task-info textarea {
+        border-radius: 8px;
+        padding: 10px;
+        width: 100%;
+    }
+    .add-info-btn {
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 8px;
+    }
+    .upload-label {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .upload-label input {
+        display: none;
+    }
+</style>

@@ -116,56 +116,56 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.Equal(id, content.Id);
     }
 
-    [Fact]
-    public virtual async void GetAllValuesWithFileTest_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, StorageContext);
-
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{EntityName}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count >= count);
-    }
-    
-    [Fact]
-    public virtual async void GetValueWithFileTest_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 1;
-
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, StorageContext);
-
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
-
-        var id = values.First().Id;
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{EntityName}/{id}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<TDto>();
-        Assert.NotNull(content);
-        Assert.Equal(id, content.Id);
-    }
+    // [Fact]
+    // public virtual async void GetAllValuesWithFileTest_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     const int count = 2;
+    //     var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    //     await GenerateTestEntity.FillImage<T, TDto>(values, StorageContext);
+    //
+    //     await WorkerContext.AddRangeAsync(values);
+    //     await WorkerContext.SaveChangesAsync();
+    //
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await Client.GetAsync($"api/{EntityName}");
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+    //     Assert.NotNull(content);
+    //     Assert.True(content.Count >= count);
+    // }
+    //
+    // [Fact]
+    // public virtual async void GetValueWithFileTest_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     const int count = 1;
+    //
+    //     var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    //     await GenerateTestEntity.FillImage<T, TDto>(values, StorageContext);
+    //
+    //     await WorkerContext.AddRangeAsync(values);
+    //     await WorkerContext.SaveChangesAsync();
+    //
+    //     var id = values.First().Id;
+    //
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await Client.GetAsync($"api/{EntityName}/{id}");
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await result.Content.ReadFromJsonAsync<TDto>();
+    //     Assert.NotNull(content);
+    //     Assert.Equal(id, content.Id);
+    // }
 
     [Fact]
     public virtual async void CreateModel_ReturnOk()

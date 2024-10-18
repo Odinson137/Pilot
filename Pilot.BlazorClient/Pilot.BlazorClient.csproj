@@ -15,4 +15,17 @@
       <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\Enums\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Components\Pages\Work\UserGreeting.css">
+        <DependentUpon>UserGreeting.razor</DependentUpon>
+      </None>
+      <None Update="Components\Pages\Work\UserTask.css">
+        <DependentUpon>UserTask.razor</DependentUpon>
+      </None>
+    </ItemGroup>
+
 </Project>

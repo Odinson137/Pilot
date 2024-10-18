@@ -14,5 +14,5 @@ public class CompanyViewModel : BaseViewModel
     
     public string? LogoUrl { get; set; }
 
-    public List<string> InsideImages { get; set; } = [];
+    public List<string> InsideImagesUrl { get; set; } = [];
 }

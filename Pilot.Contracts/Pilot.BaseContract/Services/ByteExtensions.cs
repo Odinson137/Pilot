@@ -1,4 +1,4 @@
-﻿namespace Pilot.Contracts.Services.LogService;
+﻿namespace Pilot.Contracts.Services;
 
 public static class ByteExtensions
 {

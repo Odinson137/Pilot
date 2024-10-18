@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Worker.Models.ModelHelpers;
+using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus;
 
 namespace Pilot.Worker.Models;
 
@@ -21,6 +23,8 @@ public class ProjectTask : BaseModel, IAddCompanyUser
     public int? FileId { get; set; }
     
     public TaskStatus TaskStatus { get; set; }
+    
+    public TaskPriority Priority { get; set; }
 
     public void AddCompanyUser(CompanyUser companyUser)
     {

@@ -1,62 +1,91 @@
 ﻿@page "/Company"
+<PageTitle>Companies</PageTitle>
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject ICompanyPageService PageService
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #1e3a8a;">Компания</h2>
+    <!-- Top section with brief description and photo -->
+    <div class="text-center mb-4">
+        <h2 class="mb-3" style="color: #1e3a8a;">Welcome to Our Collaborative Space</h2>
+        <p class="lead" style="color: #4a5568;">This page highlights the importance of communication and teamwork in building successful companies and projects. Working together fosters innovation, productivity, and shared success.</p>
+        <img src="/Images/Company/Turbotext AI Image 3964441.png" alt="Teamwork Image" class="img-fluid" style="max-width: 300px; border-radius: 10px;" />
+    </div>
 
-    @if (_companies.Any())
+    <!-- Loading indicator -->
+    @if (_isLoading)
     {
-        @foreach (var company in _companies)
-        {
-            <div class="card mb-4 shadow-lg" style="border-radius: 10px; background-color: #ffffff; border: 1px solid #1e3a8a;">
-                <div class="card-body">
-                    <h3 class="card-title" style="color: #1e3a8a;">
-                        <a href="/Company/@company.Id" style="text-decoration: none; color: #1e3a8a;">
-                            @company.Title
-                        </a>
-                    </h3>
-
-                    @if (!string.IsNullOrEmpty(company.Description))
-                    {
-                        <p class="card-text">@company.Description</p>
-                    }
-
-                    @if (company.LogoUrl != null)
-                    {
-                        <img src="@company.LogoUrl" alt="Company Logo" class="img-fluid" style="max-width: 150px;" />
-                    }
-
-                    <h5 class="mt-4" style="color: #1e3a8a;">Проекты</h5>
-                    @if (company.Projects.Any())
-                    {
-                        <ul class="list-group list-group-flush">
-                            @foreach (var project in company.Projects)
-                            {
-                                <li class="list-group-item" style="border: none; background-color: #ffffff;">@project.Name</li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p>Нет проектов.</p>
-                    }
-                </div>
+        <div class="text-center">
+            <p class="text-info">Loading company data...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
-        }
+        </div>
     }
     else
     {
-        <p class="text-center">Нет доступных компаний.</p>
+        <!-- Informative section below the image, visible after companies are loaded -->
+        <div class="text-center mb-5">
+            <h4 class="mb-3" style="color: #1e3a8a;">Discover Opportunities to Grow and Contribute</h4>
+            <p class="lead" style="color: #4a5568;">
+                Browse through our list of companies to explore their projects, values, and missions. 
+                Click on any company’s title to dive deeper into their world, and see how you can contribute and 
+                grow alongside them. It's your chance to become a part of something bigger, where your skills 
+                and passion can make a real impact. Start by exploring the companies below!
+            </p>
+        </div>
+
+        <!-- Company cards -->
+        @if (_companies.Any())
+        {
+            @foreach (var company in _companies)
+            {
+                <div class="card mb-4 shadow-lg" style="border-radius: 10px; background-color: #ffffff; border: 1px solid #1e3a8a;">
+                    <div class="card-body">
+                        <!-- Flex container for logo and title -->
+                        <div class="d-flex align-items-center mb-3">
+                            @if (company.LogoUrl != null)
+                            {
+                                <img src="@company.LogoUrl" alt="Company Logo" class="img-fluid me-3" style="max-width: 80px; border-radius: 5px;" />
+                            }
+                            <h3 class="card-title mb-0" style="color: #1e3a8a;">
+                                <a href="/Company/@company.Id" style="text-decoration: none; color: #1e3a8a;">
+                                    @company.Title
+                                </a>
+                            </h3>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(company.Description))
+                        {
+                            <p class="card-text">@company.Description</p>
+                        }
+
+                        <h5 class="mt-4" style="color: #1e3a8a;">Projects</h5>
+                        <p>Number of projects: @company.Projects.Count()</p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-center">No companies available.</p>
+        }
     }
 </div>
 
 @code {
     private ICollection<CompanyViewModel> _companies = new List<CompanyViewModel>();
+    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _companies = await PageService.GetCompanyListAsync();
+        try
+        {
+            _companies = await PageService.GetCompanyListAsync();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 }

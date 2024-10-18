@@ -1,0 +1,56 @@
+﻿@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject IWorkPageService WorkPageService
+@inject IUserService UserService
+
+<div class="user-greeting">
+    <h2>@GetGreetingMessage(), @UserName! 🌟</h2>
+    
+    @if (_companyUser != null)
+    {
+        <p>Вы работаете в компании <strong>@_companyUser.Company.Title</strong> <strong>@_daysInCompany</strong> дней.</p>
+        @if (_projects != null && _teams != null)
+        {
+            <p>Вы участвуете в <strong>@_projects.Count</strong> проект(ах) и состоите в <strong>@_teams.Count</strong> командах:</p>
+
+            <ul>
+                @foreach (var team in _teams)
+                {
+                    <li><strong>Команда:</strong> @team.Name (Проект: @team.Project.Name)</li>
+                }
+            </ul>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public string? UserName { get; set; }
+    [Parameter] public int UserId { get; set; }
+
+    private CompanyUserViewModel? _companyUser;
+    private int _daysInCompany;
+    private ICollection<ProjectViewModel>? _projects ;
+    private ICollection<TeamViewModel>? _teams;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
+
+        _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
+
+        _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
+
+        var projectIds = _teams.Select(c => c.Project.Id).Distinct().ToList();
+        _projects = await WorkPageService.GetUserProjectsAsync(projectIds);
+
+        Console.WriteLine("Greeting loaded");
+    }
+
+    private string GetGreetingMessage()
+    {
+        var hour = DateTime.Now.Hour;
+        return hour < 12 ? "Доброе утро" :
+            hour < 18 ? "Добрый день" : "Добрый вечер";
+    }
+
+}

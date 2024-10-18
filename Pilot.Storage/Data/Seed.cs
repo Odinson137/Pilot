@@ -26,7 +26,11 @@ public class Seed : ISeed
         
         await _storageService.DeleteFolderAsync(FileFormat.Image.ToString().ToLower());
         
-        var imagesDictionary = GetFilesFromDirectory("wwwroot/SeedImages/UserProfileLogos", "wwwroot/SeedImages/CompanyLogos");
+        var imagesDictionary = GetFilesFromDirectory(
+            "wwwroot/SeedImages/UserProfileLogos", // count - 30
+            "wwwroot/SeedImages/CompanyLogos", // count - 5
+            "wwwroot/SeedImages/CompanyInsides" // count - 50
+            );
 
         if (imagesDictionary.Count < Constants.SeedDataCount) throw new Exception("Данных в сиде меньше, чем должно быть");
 

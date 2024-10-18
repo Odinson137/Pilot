@@ -1,10 +1,14 @@
 ﻿@page "/Account"
+<PageTitle>Account</PageTitle>
 @using Microsoft.AspNetCore.Components.Authorization
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IUserPageService UserPageService
+
+<AuthCheck/>
+
 
 <div class="header-banner">
     <h1>User Account Information</h1>
@@ -13,43 +17,55 @@
 
 @if (_user == null)
 {
-<p>Loading user information...</p>
+    <p>Loading user information...</p>
 }
 else
 {
-<div class="user-info-container">
-    <!-- Левая секция: фотография и ФИО -->
-    <div class="left-section">
-        <div class="avatar-section">
-            @if (!string.IsNullOrEmpty(_user.AvatarUrl))
-            {
-            <img src="@_user.AvatarUrl" alt="User Avatar" class="avatar-img" />
-            }
-            else
-            {
-            <img src="Images/Account/default-avatar.jpg" alt="Default Avatar" class="avatar-img" />
-            }
+    <div class="user-info-container">
+        <!-- Левая секция: фотография и ФИО -->
+        <div class="left-section">
+            <div class="avatar-section">
+                @if (!string.IsNullOrEmpty(_user.AvatarUrl))
+                {
+                    <img src="@_user.AvatarUrl" alt="User Avatar" class="avatar-img"/>
+                }
+                else
+                {
+                    <img src="Images/Account/default-avatar.jpg" alt="Default Avatar" class="avatar-img"/>
+                }
+            </div>
+            <h2>@_user.Name @_user.LastName</h2>
         </div>
-        <h2>@_user.Name @_user.LastName</h2>
+
+        <!-- Правая секция: данные пользователя -->
+        <div class="right-section">
+            <p>
+                <strong>Username:</strong> @_user.UserName
+            </p>
+            <p>
+                <strong>Email:</strong> @(_user.Email ?? "No email provided")
+            </p>
+            <p>
+                <strong>Role:</strong> @_user.Role
+            </p>
+            <p>
+                <strong>Description:</strong> @(_user.Description ?? "No description provided")
+            </p>
+            <p><strong>Location:</strong> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</p>
+            <p>
+                <strong>Gender:</strong> @_user.Gender
+            </p>
+            <p>
+                <strong>Birthday:</strong> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")
+            </p>
+        </div>
     </div>
 
-    <!-- Правая секция: данные пользователя -->
-    <div class="right-section">
-        <p><strong>Username:</strong> @_user.UserName</p>
-        <p><strong>Email:</strong> @(_user.Email ?? "No email provided")</p>
-        <p><strong>Role:</strong> @_user.Role</p>
-        <p><strong>Description:</strong> @(_user.Description ?? "No description provided")</p>
-        <p><strong>Location:</strong> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</p>
-        <p><strong>Gender:</strong> @_user.Gender</p>
-        <p><strong>Birthday:</strong> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")</p>
+    <div class="actions-section">
+        <button class="btn btn-primary" @onclick="EditAccount">Edit Account</button>
+        <button class="btn btn-primary" @onclick="Logout">Log Out</button>
+        <button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
     </div>
-</div>
-
-<div class="actions-section">
-    <button class="btn btn-primary" @onclick="EditAccount">Edit Account</button>
-    <button class="btn btn-primary" @onclick="Logout">Log Out</button>
-    <button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
-</div>
 }
 
 @code {
@@ -78,11 +94,12 @@ else
     {
         // Логика для удаления аккаунта
     }
-    
+
     private async Task EditAccount()
     {
         NavigationManager.NavigateTo("/Account/Edit");
     }
+
 }
 
 <style>
@@ -118,8 +135,8 @@ else
 
     .avatar-img {
         width: 150px;
-        height: 150px;
-        border-radius: 50%;
+        max-height: 400px;
+        border-radius: 10%;
         margin-bottom: 10px;
     }
 

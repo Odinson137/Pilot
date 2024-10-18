@@ -27,7 +27,7 @@ public class UserDto : BaseDto, IHasFile
     [MaxLength(100)] public string? City { get; set; }
     
     [HasFile(nameof(AvatarUrl))]
-    public int? AvatarId { get; set; }
+    public int? AvatarImageId { get; set; }
     
     [MaxLength(100)] public string? AvatarUrl { get; set; }
     

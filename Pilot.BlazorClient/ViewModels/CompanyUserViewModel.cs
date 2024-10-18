@@ -6,9 +6,9 @@ public class CompanyUserViewModel : BaseViewModel
 {
     [Required] public CompanyViewModel Company { get; set; } = null!;
 
-    public List<TeamViewModel> Team { get; set; } = [];
+    public ICollection<TeamViewModel> Teams { get; set; } = [];
 
-    public List<ProjectTaskViewModel> ProjectTasks { get; set; } = [];
+    public ICollection<ProjectTaskViewModel> ProjectTasks { get; set; } = [];
     
     public CompanyRoleViewModel? CompanyRole { get; set; }
 }

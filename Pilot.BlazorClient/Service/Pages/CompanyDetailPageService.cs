@@ -11,14 +11,16 @@ public class CompanyDetailPageService(IGateWayApiService apiService) : ICompanyD
     public async Task<CompanyViewModel> GetCompanyAsync(int id)
     {
         var company = await apiService.SendGetMessage<CompanyDto, CompanyViewModel>(id);
-
-        var idArray = company.Projects.Select(c => c.Id).ToArray();
+        return company;
+    }
+    
+    public async Task<ICollection<ProjectViewModel>> GetProjectsAsync(ICollection<ProjectViewModel> projectsIds)
+    {
+        var idArray = projectsIds.Select(c => c.Id).ToArray();
         var projectViewModels =
             await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(
                 filter: new BaseFilter(idArray));
-        company.Projects = projectViewModels;
-        
-        return company;
+        return projectViewModels;
     }
     
     public async Task<ICollection<CompanyPostViewModel>> GetOpenCompanyPostAsync(int companyId)

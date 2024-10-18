@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Storage.Interface;
 using File = Pilot.Storage.Models.File;

@@ -6,7 +6,7 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class UserPageService(IGateWayApiService apiService, ILogger<UserPageService> logger, IMapper mapper) : IUserPageService
+public class UserPageService(IGateWayApiService apiService, IUserService userService, ILogger<UserPageService> logger, IMapper mapper) : IUserPageService
 {
     public async Task Registration(RegistrationUserViewModel registrationUser)
     {
@@ -45,9 +45,7 @@ public class UserPageService(IGateWayApiService apiService, ILogger<UserPageServ
     
     public async Task<UserViewModel> GetUserAsync()
     {
-        var user = await apiService.SendGetMessage<UserDto>("");
-
-        var userViewModel = user.Map<UserViewModel>(mapper);
-        return userViewModel;
+        var user = await userService.GetCurrentUserAsync();
+        return user;
     }
 }

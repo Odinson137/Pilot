@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
@@ -38,8 +39,8 @@ services.AddHttpClient(ServiceName.StorageServer.ToString(),
 services.AddHttpClient(ServiceName.CapabilityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("CapabilityServerUrl")!); });
 
-services.AddScoped<IModelService, ModelService>();
-services.AddScoped<IBaseHttpService, BaseHttpService>();
+services.AddTransient<IModelService, ModelService>();
+services.AddTransient<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
@@ -95,7 +96,6 @@ services.AddMassTransit(x =>
 services.AddTransient<ISeed, Seed>();
 services.AddTransient<IToken, TokenService>();
 
-services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IFileUrlService, FileUrlService>();
 
 var app = builder.Build();
@@ -139,5 +139,5 @@ app.Run();
 namespace Pilot.Api
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class Program;
+    public partial class Program;
 }

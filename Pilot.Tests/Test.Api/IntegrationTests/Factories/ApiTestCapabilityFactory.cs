@@ -6,9 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Capability.Data;
 using Pilot.Contracts.Data;
-using Pilot.Identity;
 using Test.Base.IntegrationBase;
-using Testcontainers.MySql;
 using Testcontainers.RabbitMq;
 
 namespace Test.Api.IntegrationTests.Factories;

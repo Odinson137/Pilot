@@ -1,12 +1,10 @@
-﻿using System.Net;
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Identity.Models;
-using Pilot.Identity.Services;
 using Test.Api.IntegrationTests.Factories;
 
 namespace Test.Api.UserService;

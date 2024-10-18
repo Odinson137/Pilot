@@ -1,0 +1,201 @@
+﻿@page "/Work/{SectionId?}"
+
+<PageTitle>Work</PageTitle>
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.BlazorClient.Components.Pages.User
+@inject IWorkPageService WorkPageService
+@inject IUserService UserService
+
+<AuthCheck/>
+
+<div class="work-container">
+    <aside class="work-sidebar">
+        <div class="project-menu">
+            <ul>
+                @if (_projects is { Count: > 0 })
+                {
+                    <h5>Projects:</h5>
+                    @foreach (var project in _projects)
+                    {
+                        <li style="padding: 5px">
+                            <span>@project.Name</span>
+                            @if (_teams != null)
+                            {
+                                <h6>Teams:</h6>
+                                <ul>
+                                    @foreach (var team in _teams.Where(c => c.Project.Id == project.Id))
+                                    {
+                                        <li class="team-item" @onclick="() => NavigateToTeam(team.Id)">
+                                            <span>@team.Name</span>
+                                        </li>
+                                    }
+                                </ul>
+                                <br/>
+                            }
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li>No projects available</li>
+                }
+            </ul>
+        </div>
+    </aside>
+
+    <section class="content-wrapper">
+        <nav class="nav-menu">
+            <ul>
+                <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">
+                    Main
+                </li>
+                <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">
+                    Summary
+                </li>
+                <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">
+                    Tasks
+                </li>
+                <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
+                    Employees
+                </li>
+            </ul>
+        </nav>
+
+        <main class="work-main">
+            @if (_user != null)
+            {
+                @switch (_activeTab)
+                {
+                    case 0:
+                        <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
+                        break;
+                    case 1:
+                        <Team/>
+                        break;
+                    case 2:
+                        <UserTask UserId="@_user.Id"/>
+                        break;
+                }
+            }
+        </main>
+    </section>
+</div>
+
+@code {
+    private int _activeTab;
+
+    private UserViewModel? _user;
+
+    private ICollection<ProjectViewModel>? _projects;
+    
+    private ICollection<TeamViewModel>? _teams;
+    
+    [Parameter]
+    public int SectionId { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _user = await UserService.GetCurrentUserAsync();
+        
+        var companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
+
+        _teams = await WorkPageService.GetUserTeamsAsync(companyUser.Teams);
+
+        var projectsIds = _teams.Select(c => c.Project.Id).Distinct().ToList();
+        _projects = await WorkPageService.GetUserProjectsAsync(projectsIds);
+
+        SetActiveTab(SectionId);
+    }
+
+    private void SetActiveTab(int tabId)
+    {
+        _activeTab = tabId;
+    }
+
+    private string GetActiveClass(int tabId)
+    {
+        return _activeTab == tabId ? "active" : string.Empty;
+    }
+
+    private void NavigateToTeam(int teamId)
+    {
+        Console.WriteLine($"Navigating to: {teamId}");
+    }
+
+}
+
+<style>
+    .work-container {
+        display: flex;
+        height: 90vh;
+        width: 100%;
+        margin-bottom: 50px;
+    }
+
+    .content-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .nav-menu ul {
+        list-style-type: none;
+        padding: 0;
+        display: flex;
+    }
+
+    .nav-menu li {
+        margin-right: 20px;
+    }
+
+    .nav-menu {
+        cursor: pointer;
+        text-decoration: none;
+        color: #2980b9;
+    }
+
+    .nav-menu a.active {
+        font-weight: bold;
+        color: #1a5276;
+    }
+
+    .nav-menu a:hover {
+        text-decoration: underline;
+    }
+
+    .work-sidebar {
+        margin: 0 10px;
+        padding: 10px;
+        border-radius: 15px;
+        width: 150px;
+        background-color: #34495e;
+        color: #fff;
+    }
+
+    .work-main {
+        flex-grow: 1;
+        padding: 20px;
+        background-color: #ecf0f1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .project-menu {
+        width: 250px;
+        color: #fff; /* Изменен цвет текста */
+    }
+    .project-menu ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .project-menu li {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .team-item:hover {
+        color: #9acbff;
+    }
+</style>

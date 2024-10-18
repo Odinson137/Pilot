@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Api.Interfaces;
@@ -10,6 +9,7 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Data;
 using Pilot.Identity.Interfaces;
 using Test.Api.IntegrationTests.Factories;
+using Test.Base.IntegrationBase;
 
 namespace Test.Api.UserService;
 

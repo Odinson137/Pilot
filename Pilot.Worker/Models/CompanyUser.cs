@@ -7,7 +7,7 @@ public class CompanyUser : BaseModel
 {
     [Required] public Company Company { get; set; } = null!;
 
-    public List<Team> Team { get; set; } = [];
+    public List<Team> Teams { get; set; } = [];
 
     public List<ProjectTask> ProjectTasks { get; set; } = [];
     

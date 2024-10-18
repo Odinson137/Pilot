@@ -61,6 +61,7 @@ public class TokenAuthenticationStateProvider : AuthenticationStateProvider
     public async Task MarkUserAsLoggedOut()
     {
         await _protectedSessionStore.DeleteAsync(ClientConstants.Token);
+        await _protectedSessionStore.DeleteAsync(ClientConstants.User);
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
     }
     

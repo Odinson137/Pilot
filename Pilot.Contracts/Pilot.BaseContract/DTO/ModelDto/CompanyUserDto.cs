@@ -9,7 +9,7 @@ public class CompanyUserDto : BaseDto
 {
     public BaseDto? Company { get; set; }
 
-    public List<BaseDto> Team { get; set; } = [];
+    public List<BaseDto> Teams { get; set; } = [];
 
     public List<BaseDto> ProjectTasks { get; set; } = [];
     

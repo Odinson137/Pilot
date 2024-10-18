@@ -1,4 +1,4 @@
-﻿namespace Pilot.Contracts.Data;
+﻿namespace Test.Base.IntegrationBase;
 
 public class HttpSingleTone
 {

@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Pilot.Contracts.Data.Enums;
+using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus;
 
 namespace Pilot.BlazorClient.ViewModels;
 
@@ -14,14 +16,11 @@ public class ProjectTaskViewModel : BaseViewModel
 
     [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
     
-    public List<TaskInfoViewModel> TaskInfos { get; set; } = [];
+    public ICollection<TaskInfoViewModel> TaskInfos { get; set; } = [];
 
     public int? FileId { get; set; }
     
     public TaskStatus TaskStatus { get; set; }
-
-    public void AddCompanyUser(CompanyUserViewModel companyUserViewModel)
-    {
-        CreatedBy = companyUserViewModel;
-    }
+    
+    public TaskPriority Priority { get; set; }
 }

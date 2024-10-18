@@ -10,10 +10,5 @@ public class TeamViewModel : BaseViewModel
 
     public List<CompanyUserViewModel> CompanyUsers { get; set; } = [];
 
-    [Required] public ProjectViewModel ProjectViewModel { get; set; } = null!;
-    
-    public void AddCompanyUser(CompanyUserViewModel companyUserViewModel)
-    {
-        CompanyUsers.Add(companyUserViewModel);
-    }
+    [Required] public ProjectViewModel Project { get; set; } = null!;
 }

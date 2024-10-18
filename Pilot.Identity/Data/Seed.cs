@@ -18,7 +18,17 @@ public class Seed : ISeed
         _passwordCoder = passwordCoder;
         _context = context;
     }
-    
+
+    private bool _isMainNameTaken;
+    private string TestUserName
+    {
+        get
+        {
+            _isMainNameTaken = true;
+            return "Austin24";
+        }
+    }
+
     private Faker<User> GetUserFaker()
     {
         var fakeUser = new Faker<User>()
@@ -26,7 +36,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Gender, (f, _) => f.Person.Gender)
                 .RuleFor(u => u.Name, (f, u) => f.Name.FirstName(u.Gender))
                 .RuleFor(u => u.LastName, (f, u) => f.Name.LastName(u.Gender))
-                .RuleFor(u => u.UserName, (f, u) => f.Internet.UserName(u.Name, u.LastName))
+                .RuleFor(u => u.UserName, (f, u) => _isMainNameTaken ? f.Internet.UserName(u.Name, u.LastName) : TestUserName)
                 .RuleFor(u => u.Email, (f, u) => f.Internet.Email(u.Name, u.LastName))
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(1000))
                 .RuleFor(u => u.Country, (f, _) => f.Address.Country())

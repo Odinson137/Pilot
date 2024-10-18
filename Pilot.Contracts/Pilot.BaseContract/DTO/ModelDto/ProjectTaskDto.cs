@@ -15,11 +15,15 @@ public class ProjectTaskDto : BaseDto
 
     [Required] public BaseDto Team { get; set; } = null!;
     
-    [Required] public BaseDto CompanyUser { get; set; } = null!;
+    [Required] public BaseDto? CompanyUser { get; set; }
+    
+    [Required] public BaseDto CreatedBy { get; set; } = null!;
     
     public List<BaseDto> TaskInfos { get; set; } = [];
 
     public int? File { get; set; }
     
     public TaskStatus TaskStatus { get; set; }
+    
+    public TaskPriority Priority { get; set; }
 }

@@ -3,17 +3,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController : BaseController
+public class UserController : PilotReadOnlyController<UserDto>
 {
     private readonly IMediator _mediator;
 
-    public UserController(IMediator mediator)
+    public UserController(IMediator mediator) : base(mediator)
     {
         _mediator = mediator;
     }
@@ -39,11 +42,12 @@ public class UserController : BaseController
     }
     
     [HttpGet]
+    [Route(Urls.CurrentUser)]
     [Authorize]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> GetUser(CancellationToken token)
+    public async Task<IActionResult> GetCurrentUser(CancellationToken token)
     {
         var content =
             await _mediator.Send(new GetUserQuery(UserId), token);

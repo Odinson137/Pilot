@@ -1,12 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Identity.Models;
-using Pilot.Worker.Models;
-using Pilot.Worker.Models.ModelHelpers;
+﻿using Pilot.Contracts.Base;
 using Test.Api.IntegrationTests.Factories;
 using Test.Base.IntegrationBase;
 

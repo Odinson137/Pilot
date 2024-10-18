@@ -1,0 +1,16 @@
+﻿@using Pilot.BlazorClient.Service
+@inject TokenAuthenticationStateProvider AuthenticationService
+@inject NavigationManager NavigationManager
+
+@code {
+
+    protected override async void OnInitialized()
+    {
+        var token = await AuthenticationService.GetTokenAsync();
+        if (token == null)
+        {
+            NavigationManager.NavigateTo("User/Login", forceLoad: true);
+        }
+    }
+
+}

@@ -1,79 +1,169 @@
 ﻿@page "/Company/{id}"
+<PageTitle>@_company.Title</PageTitle>
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject ICompanyDetailPageService PageService
 
-@if (_company != null)
-{
-    <div class="company-info">
-        <img src="@_company.LogoUrl" alt="Company Logo" class="company-logo" />
-
-        <h1>@_company.Title</h1>
-
-        <p>@_company.Description</p>
-
-        <h4>Projects: @_company.Projects.Count</h4>
-
-        <div class="gallery">
-            @foreach (var image in _company.InsideImages)
-            {
-                <a href="@image" target="_blank">
-                    <img src="@image" class="inside-image" alt="company office"/>
-                </a>
-            }
+<div class="container mt-5">
+    <!-- Top section with brief description and photo -->
+    @if (_isLoadingCompany)
+    {
+        <div class="text-center">
+            <p class="text-info">Loading company information...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center mb-4">
+            <img src="@_company.LogoUrl" alt="Company Logo" class="img-fluid company-logo mb-3" style="max-width: 150px;" />
+            <h2 class="mb-3">@_company.Title</h2>
+            <p class="lead">@_company.Description</p>
         </div>
 
-        <h3>Open Positions</h3>
-        @if (_companyPosts.Any())
+        <!-- Gallery Section -->
+        <h3 class="mb-3" style="color: #1e3a8a;">Company Inside Photos</h3>
+        @if (_isLoadingImages)
         {
-            <div class="positions">
-                @foreach (var post in _companyPosts)
-                {
-                    <div class="position-card">
-                        <h4>@post.Post.Title</h4>
-                        <p>@post.Description</p>
-
-                        <h5>Skills Required:</h5>
-                        @if (post.Post.Skills.Any())
-                        {
-                            <ul>
-                                @foreach (var skill in post.Post.Skills)
-                                {
-                                    <li>@skill.Title</li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p>No specific skills required.</p>
-                        }
-
-                        @if (post.IsOpen)
-                        {
-                            <span class="status open">Open</span>
-                        }
-                        else
-                        {
-                            <span class="status closed">Closed</span>
-                        }
-                    </div>
-                }
+            <div class="text-center">
+                <p class="text-info">Loading gallery...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
         }
         else
         {
-            <p>No open positions available at the moment.</p>
+            @if (_company.InsideImagesUrl.Any())
+            {
+                <div class="gallery mb-5">
+                    @foreach (var image in _company.InsideImagesUrl.Take(4)) 
+                    {
+                        <a href="@image" target="_blank">
+                            <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
+                        </a>
+                    }
+                </div>
+
+                @if (_company.InsideImagesUrl.Count > 4 && !_showAllImages)
+                {
+                    <button class="btn btn-primary" @onclick="ShowAllImages" style="margin-bottom: 100px">Show all images</button>
+                }
+
+                @if (_showAllImages)
+                {
+                    <div class="gallery mb-5">
+                        @foreach (var image in _company.InsideImagesUrl.Skip(4)) 
+                        {
+                            <a href="@image" target="_blank">
+                                <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
+                            </a>
+                        }
+                    </div>
+                }
+                
+                @if (_showAllImages)
+                {
+                    <button class="btn btn-primary" @onclick="HideImages" style="margin-bottom: 100px">Hide images</button>
+                }
+            }
+            else
+            {
+                <p class="text-center">No images available for this company.</p>
+            }
         }
-    </div>
-}
-else
-{
-    <p>Loading company data...</p>
-}
+
+        <!-- Projects Section -->
+        <h3 class="mb-3" style="color: #1e3a8a;">Projects: @_projects.Count</h3>
+        @if (_isLoadingProjects)
+        {
+            <div class="text-center">
+                <p class="text-info">Loading projects...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (_projects.Any())
+            {
+                @foreach (var project in _projects)
+                {
+                    <div class="project-card mb-4 p-3 shadow-sm" style="border-radius: 10px; background-color: #f8f9fa; border: 1px solid #1e3a8a;">
+                        <h4>@project.Name</h4>
+                        <p>@project.Description</p>
+                        <p><strong>Status:</strong> @project.ProjectStatus</p>
+                        <p><strong>Teams involved:</strong> @project.Teams.Count</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">No projects available for this company.</p>
+            }
+        }
+
+
+        <!-- Open Positions Section -->
+        <h3 class="mb-3" style="color: #1e3a8a;">Open Positions</h3>
+        @if (_isLoadingPositions)
+        {
+            <div class="text-center">
+                <p class="text-info">Loading open positions...</p>
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (_companyPosts.Any())
+            {
+                <div class="positions">
+                    @foreach (var post in _companyPosts)
+                    {
+                        <div class="position-card mb-4 p-3 shadow-sm" style="border-radius: 10px; background-color: #e3f2fd; border: 1px solid #1e3a8a;">
+                            <h4>@post.Post.Title</h4>
+                            <p>@post.Description</p>
+                            <h5>Skills Required:</h5>
+                            @if (post.Post.Skills.Any())
+                            {
+                                <ul>
+                                    @foreach (var skill in post.Post.Skills)
+                                    {
+                                        <li>@skill.Title</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p>No specific skills required.</p>
+                            }
+
+                            <span class="badge @(post.IsOpen ? "bg-success" : "bg-danger")">@(post.IsOpen ? "Open" : "Closed")</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-center">No open positions available.</p>
+            }
+        }
+    }
+</div>
 
 @code {
-    private CompanyViewModel _company = null!;
-    private ICollection<CompanyPostViewModel> _companyPosts = null!;
+    private CompanyViewModel _company = new();
+    private ICollection<ProjectViewModel> _projects = new List<ProjectViewModel>();
+    private ICollection<CompanyPostViewModel> _companyPosts = new List<CompanyPostViewModel>();
+    private bool _isLoadingCompany = true;
+    private bool _isLoadingProjects = true;
+    private bool _isLoadingPositions = true;
+    private bool _isLoadingImages = true;
 
     [Parameter] public string? Id { get; set; }
 
@@ -81,60 +171,78 @@ else
     {
         if (Id != null && int.TryParse(Id, out var companyId))
         {
-            _company = await PageService.GetCompanyAsync(companyId);
-            _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
+            await LoadCompanyAsync(companyId);
         }
         else
         {
-            throw new Exception("Не удается получить id из url");
+            throw new Exception("Invalid company ID in URL.");
         }
-        
+    }
+
+    private async Task LoadCompanyAsync(int companyId)
+    {
+        try
+        {
+            _company = await PageService.GetCompanyAsync(companyId);
+            _isLoadingCompany = false;
+
+            // Load each section asynchronously after the company is loaded
+            await LoadImagesAsync();
+            await LoadProjectsAsync(_company.Projects);
+            await LoadOpenPositionsAsync(companyId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading company data: {ex.Message}");
+        }
+    }
+
+    private async Task LoadImagesAsync()
+    {
+        // Simulate loading images (add actual logic if necessary)
+        await Task.Delay(1000);
+        _isLoadingImages = false;
+    }
+
+    private async Task LoadProjectsAsync(ICollection<ProjectViewModel> projectViewModels)
+    {
+        _projects = await PageService.GetProjectsAsync(projectViewModels);
+        _isLoadingProjects = false;
+    }
+
+    private async Task LoadOpenPositionsAsync(int companyId)
+    {
+        _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
+        _isLoadingPositions = false;
+    }
+    
+    private bool _showAllImages;
+
+    private void ShowAllImages()
+    {
+        _showAllImages = true;
+    }
+
+
+    private void HideImages()
+    {
+        _showAllImages = false;
     }
 }
 
+
 <style>
-    .company-logo {
-        width: 150px;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 50%;
-    }
-
     .gallery {
-        display: flex;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки */
         gap: 10px;
-        margin-top: 20px;
     }
-
+    .gallery a {
+        justify-self: center;    
+    }
     .inside-image {
-        width: 100px;
-        height: 100px;
-        object-fit: cover;
-        border-radius: 8px;
-        cursor: pointer;
+        width: 100%; /* чтобы изображения занимали всю ширину в ячейке */
+        height: auto;
     }
 
-    .positions {
-        margin-top: 20px;
-    }
-
-    .position-card {
-        border: 1px solid #ccc;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .status {
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .status.open {
-        color: green;
-    }
-
-    .status.closed {
-        color: red;
-    }
 </style>

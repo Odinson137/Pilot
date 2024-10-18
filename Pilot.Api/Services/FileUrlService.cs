@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Reflection;
 using MassTransit.Internals;
-using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
+using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
-namespace Pilot.SqrsControllerLibrary.Services;
+namespace Pilot.Api.Services;
 
 public class FileUrlService : IFileUrlService
 {
@@ -76,8 +76,11 @@ public class FileUrlService : IFileUrlService
                 return;
         }
 
+        _logger.LogInformation("The Files in Models");
+        _logger.LogClassInfo(fileUrlsSet);
         if (!fileUrlsSet.Any()) return;
         
+        _logger.LogInformation("Exist some files");
         var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToArray());
         
         var files = await _modelService.GetValuesAsync<FileDto>(Urls.FileUrl, filter);

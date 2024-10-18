@@ -10,15 +10,6 @@ public class CompanyPageService(IGateWayApiService apiService) : ICompanyPageSer
     public async Task<ICollection<CompanyViewModel>> GetCompanyListAsync()
     {
         var companies = await apiService.SendGetMessages<CompanyDto, CompanyViewModel>();
-
-        foreach (var company in companies)
-        {
-            var idArray = company.Projects.Select(c => c.Id).ToArray();
-            var projectViewModels =
-                await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(
-                    filter: new BaseFilter(idArray));
-            company.Projects = projectViewModels;
-        }
         
         return companies;
     }

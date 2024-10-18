@@ -1,0 +1,170 @@
+﻿@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
+@inject IWorkPageService WorkPageService;
+@inject NavigationManager NavigationManager;
+<div class="task-board">
+    <!-- Tasks to complete -->
+    <div class="task-column">
+        <h4>ToDo</h4>
+        <div class="tasks-list">
+            @if (_tasks != null)
+            {
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.ToDo))
+                {
+                    <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                        <h4>@task.Name</h4>
+                        <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
+                        <p>@task.Description</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>There are no tasks to complete.</div>
+            }
+        </div>
+    </div>
+
+    <!-- Completing tasks -->
+    <div class="task-column">
+        <h4>Work</h4>
+        <div class="tasks-list">
+            @if (_tasks != null)
+            {
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Work))
+                {
+                    <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                        <h4>@task.Name</h4>
+                        <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
+                        <p>@task.Description</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>There are no tasks to complete.</div>
+            }
+        </div>
+    </div>
+
+    <!-- Finished tasks -->
+    <div class="task-column">
+        <h4>Completed</h4>
+        <div class="tasks-list">
+            @if (_tasks != null)
+            {
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Completed))
+                {
+                    <div class="task-card completed" @onclick="() => NavigateToTask(task.Id)">
+                        <h4>@task.Name</h4>
+                        <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
+                        <p>@task.Description</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div>No finished tasks</div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private ICollection<ProjectTaskViewModel>? _tasks;
+    [Parameter] public int UserId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
+        _tasks = await WorkPageService.GetUserTasksAsync(companyUser.ProjectTasks.Select(c => c.Id).ToList());
+    }
+
+// Получение текста для приоритета задачи
+    private string GetPriorityLabel(TaskPriority priority)
+    {
+        return priority switch
+        {
+            TaskPriority.Low => "Low Priority",
+            TaskPriority.Middle => "Middle Priority",
+            TaskPriority.High => "High Priority",
+            _ => "Unknown Priority"
+        };
+    }
+
+// Навигация на персональную страницу задачи
+    private void NavigateToTask(int taskId)
+    {
+        NavigationManager.NavigateTo($"/task/{taskId}");
+    }
+
+}
+
+<!-- Стили для компактного отображения и прокрутки -->
+<style>
+    .task-board {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+    }
+
+    /* Общие настройки для колонок задач */
+    .task-column {
+        width: 30%;
+        background-color: #f4f6f7;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        max-height: 80vh; /* Ограничиваем высоту столбца */
+        overflow-y: auto;  /* Включаем вертикальную прокрутку */
+    }
+
+    /* Список задач в колонке */
+    .tasks-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    /* Блок задачи */
+    .task-card {
+        background-color: #ecf0f1;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 0.85rem; /* Уменьшаем шрифт */
+        line-height: 1.2rem;
+    }
+
+    .task-card:hover {
+        background-color: #d0d3d4;
+    }
+
+    .completed {
+        background-color: #d1f2eb;
+    }
+
+    /* Заголовок задачи */
+    .task-card h4 {
+        margin: 0 0 5px 0;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #333;
+    }
+
+    /* Отображение приоритета задачи */
+    .task-priority {
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #777;
+    }
+
+    .task-card p {
+        margin: 0;
+    }
+</style>
