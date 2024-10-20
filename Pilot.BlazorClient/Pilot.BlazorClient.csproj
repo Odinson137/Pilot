@@ -12,10 +12,12 @@
 
     <ItemGroup>
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+      <PackageReference Include="Blazored.Modal" Version="7.3.1" />
       <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Components\Forms\ProjectTask\" />
       <Folder Include="Data\Enums\" />
     </ItemGroup>
 
@@ -26,6 +28,11 @@
       <None Update="Components\Pages\Work\UserTask.css">
         <DependentUpon>UserTask.razor</DependentUpon>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Pages\Test\TestEditForm.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Test\UserTask.razor" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.DTO.ModelDto;
@@ -46,6 +47,14 @@ public class UserPageService(IGateWayApiService apiService, IUserService userSer
     public async Task<UserViewModel> GetUserAsync()
     {
         var user = await userService.GetCurrentUserAsync();
+        return user;
+    }
+
+    public async Task<UserViewModel> GetAnotherUserAsync(int userId)
+    {
+        var userDto = await apiService.SendGetMessage<UserDto>(userId.ToString());
+
+        var user = userDto.Map<UserViewModel>(mapper);
         return user;
     }
 }

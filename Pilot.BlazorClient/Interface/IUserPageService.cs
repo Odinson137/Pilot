@@ -9,4 +9,6 @@ public interface IUserPageService
     public Task<AuthUserViewModel> Authorization(AuthorizationUserViewModel authorizationUser);
     
     public Task<UserViewModel> GetUserAsync();
+    
+    public Task<UserViewModel> GetAnotherUserAsync(int userId);
 }

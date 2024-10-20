@@ -1,23 +1,38 @@
-﻿@page "/Account"
+﻿@page "/Account/{UserId:int}"
+@page "/Account"
 <PageTitle>Account</PageTitle>
 @using Microsoft.AspNetCore.Components.Authorization
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.BlazorClient.Components.Helpers
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IUserPageService UserPageService
 
 <AuthCheck/>
 
-
-<div class="header-banner">
-    <h1>User Account Information</h1>
-    <p>Manage your account details below</p>
-</div>
-
-@if (_user == null)
+@if (!UserId.HasValue)
 {
-    <p>Loading user information...</p>
+    <div class="header-banner">
+        <h1>User Account Information</h1>
+        <p>Manage your account details below</p>
+    </div>
+}
+else
+{
+    <div class="header-banner">
+        <h1>Your Employee Account Information</h1>
+        <p>Learn your employees profiles and send message</p>
+    </div>
+}
+
+@if (_isLoading)
+{
+    <Loading/>
+}
+else if (_user == null)
+{
+    <p>User not found.</p>
 }
 else
 {
@@ -61,15 +76,27 @@ else
         </div>
     </div>
 
-    <div class="actions-section">
-        <button class="btn btn-primary" @onclick="EditAccount">Edit Account</button>
-        <button class="btn btn-primary" @onclick="Logout">Log Out</button>
-        <button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
-    </div>
+    @if (UserId.HasValue)
+    {
+        <div class="actions-section">
+            <button class="btn btn-success" @onclick="SendMessage">Send Message</button>
+        </div>
+    }
+    else
+    {
+        <div class="actions-section">
+            <button class="btn btn-primary" @onclick="EditAccount">Edit Account</button>
+            <button class="btn btn-primary" @onclick="Logout">Log Out</button>
+            <button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
+        </div>
+    }
 }
 
 @code {
+    [Parameter] public int? UserId { get; set; }
+
     private UserViewModel? _user;
+    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,11 +105,30 @@ else
 
         if (!isAuthenticated)
         {
-            NavigationManager.NavigateTo("User/Login?ReturnUrl=Account", forceLoad: true);
+            NavigationManager.NavigateTo("User/Login", forceLoad: true);
             return;
         }
 
-        _user = await UserPageService.GetUserAsync();
+        _isLoading = true;
+
+        if (UserId.HasValue)
+        {
+// Получение данных пользователя по UserId
+            _user = await UserPageService.GetAnotherUserAsync(UserId.Value);
+        }
+        else
+        {
+// Получение текущего пользователя
+            _user = await UserPageService.GetUserAsync();
+        }
+
+        _isLoading = false;
+    }
+
+    private void SendMessage()
+    {
+// Переход на страницу с чатом, пока метод-заглушка
+        NavigationManager.NavigateTo($"/Chat/{UserId ?? _user?.Id}");
     }
 
     private async Task Logout()
@@ -92,7 +138,7 @@ else
 
     private async Task DeleteAccount()
     {
-        // Логика для удаления аккаунта
+// Логика для удаления аккаунта
     }
 
     private async Task EditAccount()
@@ -122,7 +168,6 @@ else
         gap: 20px;
     }
 
-    /* Левая секция: фотография и ФИО */
     .left-section {
         display: flex;
         flex-direction: column;
@@ -145,7 +190,6 @@ else
         text-align: center;
     }
 
-    /* Правая секция: данные пользователя */
     .right-section {
         display: flex;
         flex-direction: column;
@@ -159,9 +203,22 @@ else
     .actions-section {
         margin-top: 20px;
         text-align: center;
+        margin-bottom: 100px;
     }
 
     .actions-section button {
         margin-right: 10px;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
     }
 </style>

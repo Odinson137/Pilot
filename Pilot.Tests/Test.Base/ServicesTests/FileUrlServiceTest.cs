@@ -144,7 +144,7 @@ public class FileUrlServiceTest
         }
 
         modelServiceMock
-            .Setup(x => x.GetValuesAsync<FileDto>(It.IsAny<BaseFilter>(), default))
+            .Setup(x => x.GetValuesAsync<FileDto>(It.IsAny<string>(), It.IsAny<BaseFilter>(), default))
             .ReturnsAsync(filesList);
 
         var service = new FileUrlService(loggerMock.Object, modelServiceMock.Object);

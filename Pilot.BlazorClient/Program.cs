@@ -1,3 +1,4 @@
+using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Authorization;
 using Pilot.BlazorClient.Components;
 using Pilot.BlazorClient.Data;
@@ -35,7 +36,7 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
-builder.Services.AddAuthentication("Cookies")
+services.AddAuthentication("Cookies")
     .AddCookie(options =>
     {
         options.LoginPath = "/User/Login"; // URL страницы входа
@@ -43,10 +44,12 @@ builder.Services.AddAuthentication("Cookies")
         options.AccessDeniedPath = "/AccessDenied"; // URL для ошибки доступа
     });
 
-builder.Services.AddAuthorizationCore();
-builder.Services.AddCascadingAuthenticationState();
-builder.Services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
-builder.Services.AddScoped<TokenAuthenticationStateProvider>();
+services.AddAuthorizationCore();
+services.AddCascadingAuthenticationState();
+services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+services.AddScoped<TokenAuthenticationStateProvider>();
+
+services.AddBlazoredModal();
 
 var app = builder.Build();
 

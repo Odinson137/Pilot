@@ -1,0 +1,43 @@
+﻿@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+
+<EditForm Model="Task">
+    <div class="task-edit-form">
+        <label>Task Name:</label>
+        <input @bind="Task.Name"/>
+        <label>Description:</label>
+        <textarea @bind="Task.Description"></textarea>
+        <label>Priority:</label>
+        <select @bind="@Task.Priority">
+            @foreach (var priority in Enum.GetValues(typeof(TaskPriority)))
+            {
+                <option value="@((int)priority)">@priority</option>
+            }
+        </select>
+        <label>Status:</label>
+        <select @bind="@Task.TaskStatus">
+            <option value="0">To Do</option>
+            <option value="1">In Progress</option>
+            <option value="2">Completed</option>
+        </select>
+        <div class="task-edit-buttons">
+            <button class="btn save-btn" @onclick="SaveTask">Save</button>
+            <button class="btn cancel-btn" @onclick="Cancel">Cancel</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public ProjectTaskViewModel? Task { get; set; }
+
+    private void SaveTask()
+    {
+        // Логика сохранения
+    }
+
+    private void Cancel()
+    {
+        // Логика отмены
+    }
+
+}
