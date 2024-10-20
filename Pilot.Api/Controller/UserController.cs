@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pilot.Api.Commands;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.DTO.ModelDto;

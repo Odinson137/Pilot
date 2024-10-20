@@ -7,7 +7,6 @@ using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.SqrsControllerLibrary.Services;
 
 namespace Test.Base.ServicesTests;
 

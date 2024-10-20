@@ -33,7 +33,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         
         await Repository.FastDeleteAsync(model);
 
-        var message = new MessageDto
+        var message = new InfoMessageDto
         {
             Title = "Успешное удаление!",
             Description = $"Успешное удаление сущности {typeof(T).Name}",

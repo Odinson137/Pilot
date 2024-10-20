@@ -1,8 +1,4 @@
-﻿using Bogus;
-using Pilot.Contracts.Data;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Services;
-using Pilot.Messenger.Models;
+﻿using Pilot.Contracts.Data;
 
 namespace Pilot.Messenger.Data;
 
@@ -17,7 +13,7 @@ public class Seed : ISeed
     
     public async Task Seeding()
     {
-        if (_context.Messages.Any()) return;
+        if (_context.InfoMessages.Any()) return;
         
     }
 

@@ -15,7 +15,6 @@ using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Pilot.SqrsControllerLibrary.Interfaces;
-using Pilot.SqrsControllerLibrary.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -5,7 +5,6 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services;
 using Pilot.SqrsControllerLibrary.Controller;
-using Pilot.SqrsControllerLibrary.Queries;
 using Pilot.Storage.Queries;
 
 namespace Pilot.Storage.Controllers;

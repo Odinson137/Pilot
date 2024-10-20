@@ -52,7 +52,7 @@ public abstract class BaseCreatedConsumer<T, TDto>(
 
         await Repository.SaveAsync();
 
-        var message = new MessageDto
+        var message = new InfoMessageDto
         {
             Title = "Успешное создание!",
             Description = $"Успешное создание сущности '{typeof(T).Name}'",

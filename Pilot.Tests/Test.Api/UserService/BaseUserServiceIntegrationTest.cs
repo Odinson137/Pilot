@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Pilot.Api.Interfaces;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Data;
 using Pilot.Identity.Interfaces;

@@ -1,5 +1,4 @@
 ﻿using Pilot.Contracts.Attributes;
-using Pilot.Contracts.Base;
 
 namespace Pilot.Contracts.Services;
 

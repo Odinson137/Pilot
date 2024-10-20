@@ -13,6 +13,9 @@ public class AutoMapperProfile : BaseMappingProfile
         CreateMap<BaseModel, BaseDto>();
         CreateMap<BaseDto, BaseModel>();
 
+        Mapping<InfoMessage, InfoMessageDto>();
         Mapping<Message, MessageDto>();
+        Mapping<Chat, ChatDto>();
+        Mapping<ChatMember, ChatMemberDto>();
     }
 }

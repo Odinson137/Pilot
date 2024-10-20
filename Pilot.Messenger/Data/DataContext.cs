@@ -16,10 +16,18 @@ public sealed class DataContext : DbContext
         }
     }
 
+    public DbSet<InfoMessage> InfoMessages { get; set; }
     public DbSet<Message> Messages { get; set; }
+    public DbSet<Chat> Chats { get; set; }
+    public DbSet<ChatMember> ChatMembers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        base.OnModelCreating(builder);
+        
+        builder.Entity<InfoMessage>().HasQueryFilter(c => c.DeleteAt == null);
         builder.Entity<Message>().HasQueryFilter(c => c.DeleteAt == null);
+        builder.Entity<Chat>().HasQueryFilter(c => c.DeleteAt == null);
+        builder.Entity<ChatMember>().HasQueryFilter(c => c.DeleteAt == null);
     }
 }

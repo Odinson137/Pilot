@@ -31,7 +31,7 @@ public class FileCreatedConsumer(
 
         var fileId = await fileService.UploadFileAsync(value);
 
-        var message = new MessageDto
+        var message = new InfoMessageDto
         {
             Title = "Успешное создание файла!",
             Description = $"Успешное создание сущности '{nameof(File)}'",

@@ -8,7 +8,6 @@ using Pilot.Contracts.Data;
 using Pilot.Identity;
 using Pilot.Identity.Data;
 using Test.Base.IntegrationBase;
-using Testcontainers.MySql;
 
 namespace Test.Worker.IntegrationTests.Factories;
 

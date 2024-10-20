@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using AutoMapper;
+﻿using AutoMapper;
 using MassTransit;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;

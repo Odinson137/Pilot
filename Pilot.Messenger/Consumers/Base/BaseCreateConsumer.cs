@@ -1,25 +1,27 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Messenger.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Messenger.Consumers.Base;
 
-public abstract class BaseCreatedConsumer<T, TDto> : IConsumer<CreateCommandMessage<TDto>>
+public abstract class BaseCreateConsumer<T, TDto> : IConsumer<CreateCommandMessage<TDto>>
     where T : BaseModel
     where TDto : BaseDto
 {
-    // ReSharper disable always MemberCanBePrivate.Global
     protected readonly IBaseValidatorService Validator;
-    protected readonly ILogger<BaseCreatedConsumer<T, TDto>> Logger;
+    protected readonly ILogger<BaseCreateConsumer<T, TDto>> Logger;
     protected readonly IBaseRepository<T> Repository;
     protected readonly IMapper Mapper;
     protected readonly INotificationService NotificationService;
 
-    protected BaseCreatedConsumer(
-        ILogger<BaseCreatedConsumer<T, TDto>> logger,
+    protected BaseCreateConsumer(
+        ILogger<BaseCreateConsumer<T, TDto>> logger,
         IBaseRepository<T> repository,
         IBaseValidatorService validatorService,
         IMapper mapper,
@@ -37,19 +39,28 @@ public abstract class BaseCreatedConsumer<T, TDto> : IConsumer<CreateCommandMess
         Logger.LogInformation($"{typeof(T).Name} create consume");
         Logger.LogClassInfo(context.Message);
 
-        var message = context.Message.Value;
-        var userId = context.Message.UserId;
-
-        await Validator.ValidateAsync<T, TDto>(message);
+        await Validator.ValidateAsync<T, TDto>(context.Message.Value);
 
         var model = Mapper.Map<T>(context.Message.Value);
 
         await Validator.FillValidateAsync(model);
 
+        if (model is IAddUser addingUserModel)
+            addingUserModel.AddUser(context.Message.UserId);
+        
         await Repository.AddValueToContextAsync(model);
 
         await Repository.SaveAsync();
 
-        Logger.LogInformation($"{typeof(T).Name} consumed");
+        var message = new InfoMessageDto
+        {
+            Title = "Успешное создание!",
+            Description = $"Успешное создание сущности '{typeof(T).Name}'",
+            MessagePriority = MessageInfo.Success | MessageInfo.Create,
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
+            EntityId = model.Id
+        };
+        
+        await NotificationService.Notify(context.Message.UserId, message);
     }
 }

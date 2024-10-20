@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Worker.Data;
 using Test.Base.IntegrationBase;

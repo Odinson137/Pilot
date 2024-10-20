@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Base;

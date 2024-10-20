@@ -3,4 +3,4 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.Contracts.Exception;
 
-public class MessageException(MessageDto message) : System.Exception(message.ToJson());
+public class MessageException(InfoMessageDto message) : System.Exception(message.ToJson());

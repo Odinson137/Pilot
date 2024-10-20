@@ -21,7 +21,7 @@ public enum ModelType
 
     [Description(nameof(FileDto))] File = 5,
 
-    [Description(nameof(MessageDto))] Message = 6,
+    [Description(nameof(InfoMessageDto))] InfoMessage = 6,
 
     [Description(nameof(ProjectTaskDto))] ProjectTask = 6,
 
@@ -34,4 +34,10 @@ public enum ModelType
     [Description(nameof(PostDto))] Post = 10,
     
     [Description(nameof(TaskInfoDto))] TaskInfo = 11,
+    
+    [Description(nameof(ChatDto))] Chat = 12,
+    
+    [Description(nameof(MessageDto))] Message = 13,
+    
+    [Description(nameof(ChatMemberDto))] ChatMember = 14,
 }

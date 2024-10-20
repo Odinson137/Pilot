@@ -4,4 +4,4 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class MessageController(IMediator mediator) : PilotController<MessageDto>(mediator);
+public class MessageController(IMediator mediator) : PilotController<InfoMessageDto>(mediator);

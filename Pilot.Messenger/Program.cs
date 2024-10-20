@@ -13,7 +13,10 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddScoped<IInfoMessageRepository, InfoMessageRepository>();
 services.AddScoped<IMessageRepository, MessageRepository>();
+services.AddScoped<IChatRepository, ChatRepository>();
+services.AddScoped<IChatMemberRepository, ChatMemberRepository>();
 services.AddScoped<IBaseValidatorService, MessengerValidateService>();
 services.AddScoped<INotificationService, NotificationService>();
 
@@ -41,7 +44,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapHub<NotificationHub>("/notificationhub");
-app.MapHub<ChatHub>("/chatHub");
+// app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
 app.UseHttpsRedirection();

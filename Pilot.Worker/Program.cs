@@ -12,8 +12,6 @@ using Pilot.Worker.Repository;
 using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Pilot.SqrsControllerLibrary.Interfaces;
-using Pilot.SqrsControllerLibrary.Services;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);

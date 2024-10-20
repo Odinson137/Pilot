@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using Pilot.BlazorClient.ViewModels;
+﻿using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
-using Pilot.Contracts.Base;
 
 namespace Pilot.BlazorClient.Interface;
 

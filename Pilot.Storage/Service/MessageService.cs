@@ -15,7 +15,7 @@ public class MessageService : IMessageService
         _logger = logger;
     }
 
-    public async Task SendMessageAsync(MessageDto message)
+    public async Task SendMessageAsync(InfoMessageDto message)
     {
         _logger.LogInformation("Send message by mass transit using publish");
         await _massTransitService.Publish(message);

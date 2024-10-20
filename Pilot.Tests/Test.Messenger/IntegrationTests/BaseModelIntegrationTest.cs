@@ -1,5 +1,8 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Identity.Models;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Test.Base.IntegrationBase;
 using Test.Messenger.IntegrationTests.Factories;
 
@@ -9,8 +12,18 @@ namespace Test.Messenger.IntegrationTests;
 public abstract class BaseModelTest<T, TDto> : BaseMessageIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public BaseModelTest(MessageTestCapabilityFactory factory) : base(factory)
+    public BaseModelTest(MessageTestMessageFactory factory, MessageTestIdentityFactory identityFactory) : base(factory, identityFactory)
     {
+    }
+    
+    protected async Task<User> CreateUser()
+    {
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+
+        await IdentityDataContext.AddRangeAsync(user);
+        await IdentityDataContext.SaveChangesAsync();
+
+        return user;
     }
         
     [Fact]
@@ -62,84 +75,85 @@ public abstract class BaseModelTest<T, TDto> : BaseMessageIntegrationTest
         Assert.Equal(id, content.Id);
     }
 
-    // [Fact]
-    // public virtual async void CreateModel_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     await GenerateTestEntity.FillChildren(valueModel, DataContext);
-    //
-    //     var value = ReceiverMapper.Map<TDto>(valueModel);
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new CreateCommandMessage<TDto>(value, companyUser.Id));
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //
-    //     var result = await ReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
-    //
-    //     Assert.NotNull(result);
-    // }
-    //
-    // [Fact]
-    // public virtual async void UpdateModelTest_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var companyUser = await CreateCompanyUser();
-    //
-    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
-    //
-    //     await ReceiverContext.AddAsync(value);
-    //     await ReceiverContext.SaveChangesAsync();
-    //
-    //     var valueDto = ReceiverMapper.Map<TDto>(value);
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new UpdateCommandMessage<TDto>(valueDto, companyUser.Id));
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //
-    //     var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-    //
-    //     Assert.NotNull(result);
-    // }
-    //
-    // [Fact]
-    // public virtual async void DeleteModelTest_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var companyUser = await CreateCompanyUser();
-    //
-    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     await ReceiverContext.AddAsync(value);
-    //     await ReceiverContext.SaveChangesAsync();
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, companyUser.Id));
-    //     await Helper.Wait();
-    //     
-    //     // Assert
-    //     
-    //     var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-    //
-    //     Assert.Null(result);
-    // }
+    [Fact]
+    public virtual async Task CreateModel_ReturnOk()
+    {
+        #region Arrange
+    
+        var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+    
+        await GenerateTestEntity.FillChildren(valueModel, DataContext);
+    
+        var value = MessengerMapper.Map<TDto>(valueModel);
+
+        var user = await CreateUser();
+        
+        #endregion
+    
+        // Act
+    
+        await PublishEndpoint.Publish(new CreateCommandMessage<TDto>(value, user.Id));
+        await Helper.Wait();
+    
+        // Assert
+    
+        var result = await AssertContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
+    
+        Assert.NotNull(result);
+    }
+    
+    [Fact]
+    public virtual async Task UpdateModelTest_ReturnOk()
+    {
+        #region Arrange
+    
+        var user = await CreateUser();
+    
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+    
+        await DataContext.AddAsync(value);
+        await DataContext.SaveChangesAsync();
+    
+        var valueDto = MessengerMapper.Map<TDto>(value);
+    
+        #endregion
+    
+        // Act
+    
+        await PublishEndpoint.Publish(new UpdateCommandMessage<TDto>(valueDto, user.Id));
+        await Helper.Wait();
+    
+        // Assert
+    
+        var result = await AssertContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+    
+        Assert.NotNull(result);
+        Assert.NotNull(result.ChangeAt);
+    }
+    
+    [Fact]
+    public virtual async Task DeleteModelTest_ReturnOk()
+    {
+        #region Arrange
+    
+        var user = await CreateUser();
+    
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+    
+        await DataContext.AddAsync(value);
+        await DataContext.SaveChangesAsync();
+    
+        #endregion
+    
+        // Act
+    
+        await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, user.Id));
+        await Helper.Wait();
+        
+        // Assert
+        
+        var result = await AssertContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+    
+        Assert.Null(result);
+    }
 }

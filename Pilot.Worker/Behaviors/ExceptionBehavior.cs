@@ -34,7 +34,7 @@ public class ExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
         {
             _logger.LogInformation($"Arise message exception {typeof(TRequest).Name}");
 
-            var message = e.FromJson<MessageDto>();
+            var message = e.FromJson<InfoMessageDto>();
             
             _logger.LogClassInfo(message);
 

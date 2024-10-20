@@ -4,5 +4,5 @@ namespace Pilot.Messenger.Interfaces;
 
 public interface INotificationClient
 {
-    public Task SendNotificationAsync(MessageDto message);
+    public Task SendNotificationAsync(InfoMessageDto message);
 }

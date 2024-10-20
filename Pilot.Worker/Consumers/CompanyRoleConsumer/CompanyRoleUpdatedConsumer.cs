@@ -3,7 +3,6 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Worker.Consumers.Base;
-using Pilot.Worker.Consumers.CompanyConsumer;
 using Pilot.Worker.Interface;
 using Pilot.Worker.Models;
 

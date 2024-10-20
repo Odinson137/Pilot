@@ -8,4 +8,4 @@ public class MessageTests(
     ApiTestApiFactory apiFactory,
     ApiTestWorkerFactory workerFactory,
     ApiTestIdentityFactory identityFactory)
-    : BaseModelIntegrationTest<Message, MessageDto>(apiFactory, workerFactory, identityFactory);
+    : BaseModelIntegrationTest<InfoMessage, InfoMessageDto>(apiFactory, workerFactory, identityFactory);

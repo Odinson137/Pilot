@@ -7,7 +7,7 @@ namespace Pilot.Messenger.Services;
 
 public class NotificationService(IHubContext<NotificationHub, INotificationClient> hubContext) : INotificationService
 {
-    public Task Notify(int userId, MessageDto message)
+    public Task Notify(int userId, InfoMessageDto message)
     {
         return hubContext.Clients.Group(userId.ToString()).SendNotificationAsync(message);
     }

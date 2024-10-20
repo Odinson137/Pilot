@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
 using Pilot.Contracts.Services;
 
 namespace Test.Base.IntegrationBase;

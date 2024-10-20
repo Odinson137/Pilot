@@ -106,7 +106,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         {
             _logger.LogError($"Value '{typeof(T).Name}' with Id = {modelId} is not exist");
 
-            var message = new MessageDto
+            var message = new InfoMessageDto
             {
                 Title = "Невозможно удалить",
                 Description =
@@ -130,7 +130,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         {
             _logger.LogError($"{typeof(T).Name} has error: \n{isValidate.Error}");
 
-            var message = new MessageDto
+            var message = new InfoMessageDto
             {
                 Title = "Ошибка валидации",
                 Description = isValidate.Error,
@@ -150,7 +150,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         {
             _logger.LogError("User is not found");
 
-            var message = new MessageDto
+            var message = new InfoMessageDto
             {
                 Title = "Ошибка валидации",
                 Description = "Данный локальный пользователь не найден. Попробуйте позже",
@@ -174,7 +174,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         _logger.LogError(
             $"Property {property.PropertyType.Name} - {property.Name} has BAD id that is not contained in db");
 
-        var message = new MessageDto
+        var message = new InfoMessageDto
         {
             Title = "Ошибка связанной сущности",
             Description =

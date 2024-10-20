@@ -11,7 +11,7 @@ using Testcontainers.RabbitMq;
 
 namespace Test.Messenger.IntegrationTests.Factories;
 
-public class MessageTestCapabilityFactory : WebApplicationFactory<Pilot.Messenger.Program>, IAsyncLifetime
+public class MessageTestMessageFactory : WebApplicationFactory<Pilot.Messenger.Program>, IAsyncLifetime
 {
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3-management")
