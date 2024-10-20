@@ -24,8 +24,7 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
 
         var companyUser = await CreateCompanyUser();
 
-        var mapper = WorkerScope.ServiceProvider.GetRequiredService<IMapper>();
-        var valueDto = mapper.Map<CompanyUserDto>(companyUser);
+        var valueDto = WorkerMapper.Map<CompanyUserDto>(companyUser);
 
         #endregion
 

@@ -11,5 +11,5 @@ public interface IBaseValidatorService
     
     public Task FillValidateAsync<T>(T model) where T : BaseModel;
 
-    public Task DeleteValidateAsync<T>(int modelId) where T : BaseModel;
+    public Task<T> DeleteValidateAsync<T>(int modelId) where T : BaseModel;
 }

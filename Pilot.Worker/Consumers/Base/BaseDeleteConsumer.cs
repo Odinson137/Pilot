@@ -29,14 +29,14 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         Logger.LogInformation($"{typeof(T).Name} delete consume");
         Logger.LogClassInfo(context.Message);
         
-        await Validator.DeleteValidateAsync<T>(context.Message.Value);
+        var model = await Validator.DeleteValidateAsync<T>(context.Message.Value);
         
-        var deleteCount = await Repository.FastDeleteAsync(context.Message.Value);
+        await Repository.FastDeleteAsync(model);
 
         var message = new MessageDto
         {
             Title = "Успешное удаление!",
-            Description = $"Успешное удаление сущности {typeof(T).Name}' (Удалено сущностей {deleteCount})",
+            Description = $"Успешное удаление сущности {typeof(T).Name}",
             MessagePriority = MessageInfo.Success | MessageInfo.Delete,
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };

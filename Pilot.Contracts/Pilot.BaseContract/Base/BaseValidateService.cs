@@ -96,13 +96,13 @@ public abstract class BaseValidateService : IBaseValidatorService
         }
     }
 
-    public async Task DeleteValidateAsync<T>(int modelId) where T : BaseModel
+    public async Task<T> DeleteValidateAsync<T>(int modelId) where T : BaseModel
     {
         _logger.LogInformation($"Start delete validate model of {typeof(T).Name}");
         _logger.LogClassInfo(modelId);
 
-        var anyModelExist = await _context.Set<T>().AnyAsync(c => c.Id == modelId);
-        if (!anyModelExist)
+        var model = await _context.Set<T>().FirstOrDefaultAsync(c => c.Id == modelId);
+        if (model == null)
         {
             _logger.LogError($"Value '{typeof(T).Name}' with Id = {modelId} is not exist");
 
@@ -118,6 +118,8 @@ public abstract class BaseValidateService : IBaseValidatorService
 
             throw new MessageException(message);
         }
+
+        return model;
     }
 
     private async Task DefaultValidateAsync<T, TDto>(TDto model) where T : BaseModel where TDto : BaseDto

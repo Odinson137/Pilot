@@ -173,10 +173,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         _task = await ProjectTaskPageService.GetUserTaskAsync(Id);
-        var userIds = new List<int> { _task.CreatedBy.Id };
-
-        if (_task.CompanyUser != null)
-            userIds.Add(_task.CompanyUser.Id);
+        var userIds = new List<int>
+        {
+            _task.CreatedBy.Id,
+            _task.CompanyUser?.Id ?? throw new Exception("Что-то не так было с записью в файл, потому что при получении это значение не может быть null") 
+        };
 
         var userViewModels = await ProjectTaskPageService.GetUsersAsync(userIds);
         _createdUserViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.CreatedBy.Id);

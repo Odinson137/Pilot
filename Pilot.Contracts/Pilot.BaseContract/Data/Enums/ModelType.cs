@@ -32,4 +32,6 @@ public enum ModelType
     [Description(nameof(SkillDto))] Skill = 9,
     
     [Description(nameof(PostDto))] Post = 10,
+    
+    [Description(nameof(TaskInfoDto))] TaskInfo = 11,
 }

@@ -20,29 +20,28 @@ public class BaseReceiverIntegrationTest :
     protected readonly HttpClient Client;
     protected readonly DataContext WorkerContext;
     
-    protected readonly Pilot.Storage.Data.DataContext StorageContext;
-    
-    protected readonly IServiceScope WorkerScope;
+    protected readonly IServiceProvider WorkerService;
     protected readonly IMapper WorkerMapper;
     protected DataContext AssertReceiverContext 
-        => WorkerScope.ServiceProvider.GetRequiredService<DataContext>();
+        => WorkerService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
     
     protected BaseReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
         WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory)
     {
-        WorkerScope = workerTestWorkerFactory.Services.CreateScope();
-        WorkerContext = WorkerScope.ServiceProvider.GetRequiredService<DataContext>();
+        WorkerService = workerTestWorkerFactory.Services;
+        var workerScope = WorkerService.CreateScope();
+        WorkerContext = workerScope.ServiceProvider.GetRequiredService<DataContext>();
         Client = workerTestWorkerFactory.CreateClient();
-        PublishEndpoint = WorkerScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        PublishEndpoint = workerScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
         var identityScopeService = identityFactory.Services.CreateScope();
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         var identityClient = identityFactory.CreateClient();
 
-        StorageContext = storageFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Storage.Data.DataContext>();
+        var storageContext = storageFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Storage.Data.DataContext>();
         var storageClient = storageFactory.CreateClient();
 
-        WorkerMapper = WorkerScope.ServiceProvider.GetRequiredService<IMapper>();
+        WorkerMapper = workerScope.ServiceProvider.GetRequiredService<IMapper>();
 
         HttpSingleTone.Init.HttpClients[ServiceName.IdentityServer.ToString()] = identityClient;
         HttpSingleTone.Init.HttpClients[ServiceName.StorageServer.ToString()] = storageClient;

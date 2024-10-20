@@ -14,7 +14,7 @@ public class ProjectTask : BaseModel, IAddCompanyUser
 
     [Required] public Team Team { get; set; } = null!;
 
-    public CompanyUser? CompanyUser { get; set; }
+    [Required] public CompanyUser CompanyUser { get; set; } = null!;
 
     [Required] public CompanyUser CreatedBy { get; set; } = null!;
     
@@ -29,5 +29,6 @@ public class ProjectTask : BaseModel, IAddCompanyUser
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CreatedBy = companyUser;
+        CompanyUser = companyUser;
     }
 }
