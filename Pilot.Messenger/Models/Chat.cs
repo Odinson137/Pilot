@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
 using Pilot.Messenger.Interfaces;
 
@@ -13,6 +14,8 @@ public class Chat : BaseModel, IAddUser
     [Range(1, int.MaxValue)] [Required] public int CreatedBy { get; set; }
     
     public ICollection<ChatMember> ChatMembers { get; set; } = [];
+
+    public ICollection<Message> Messages { get; set; } = [];
     
     public void AddUser(int userId)
     {

@@ -1,0 +1,98 @@
+﻿<!-- MessageComponent.razor -->
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+
+<div class="message @(IsCurrentUser ? "sent" : "received")">
+    <div class="message-content">
+        <div class="message-header">
+            <a href="@GetUserProfileLink(Message.UserId)">
+                <img src="@SenderImage" alt="avatar"/>
+                <span class="sender-name">@SenderName</span>
+            </a>
+            <span class="message-time">@MessageTime</span>
+        </div>
+        <div class="message-text">
+            @Message.Text
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public MessageViewModel Message { get; set; } = null!;
+
+    [Parameter] public ICollection<UserViewModel> Users { get; set; } = null!;
+
+    [Parameter] public UserViewModel User { get; set; } = null!;
+
+    private string SenderName => Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? "Unknown";
+    private string SenderImage => Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarUrl ?? "failes";
+
+    private bool IsCurrentUser => Message.UserId == User.Id;
+
+    private string MessageTime => Message.CreateAt!.Value.ToString("hh:mm tt"); // Формат времени
+
+    private string GetUserProfileLink(int? userId) => $"/account/{userId}";
+}
+
+<style>
+    .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 10px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    .sent {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+    }
+
+    .received {
+        background-color: #f1f1f1;
+        color: black;
+        align-self: flex-start;
+    }
+
+    .message-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+        color: white;
+    }
+
+    .sender-name {
+        font-weight: bold;
+    }
+
+    .message-time {
+        color: #888;
+    }
+
+    .message-text {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+
+    .message-header img {
+        object-fit: cover;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+    }
+    
+    .sent a {
+        color: white;
+    }
+
+    .received a {
+        color: black;
+    }
+</style>

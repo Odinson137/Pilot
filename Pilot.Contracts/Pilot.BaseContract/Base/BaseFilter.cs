@@ -27,6 +27,8 @@ public class BaseFilter(int skip, int take)
     
     public string? SortAscending { get; set; }
 
+    public ICollection<(string, string)> QueryParams { get; set; } = [];
+
     [Newtonsoft.Json.JsonIgnore]
     [JsonIgnore]
     public string Key => GetHashCode().ToString();

@@ -15,5 +15,5 @@ public interface IFileService
 
     public Task<FileDto> GetUrlAsync(int id);
 
-    Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter filter);
+    Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter? filter);
 }

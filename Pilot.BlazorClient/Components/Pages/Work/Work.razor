@@ -1,15 +1,24 @@
-﻿@page "/Work/{SectionId?}"
+﻿@page "/Work"
+@page "/Work/{SectionId:int}"
 
 <PageTitle>Work</PageTitle>
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Pages.User
+@using Pilot.BlazorClient.Components.Helpers
 @inject IWorkPageService WorkPageService
 @inject IUserService UserService
 
 <AuthCheck/>
 
+@if (_isLoading)
+{
+    <Loading/>
+}
+else
+{
+  
 <div class="work-container">
     <aside class="work-sidebar">
         <div class="project-menu">
@@ -82,9 +91,12 @@
         </main>
     </section>
 </div>
+  
+}
 
 @code {
     private int _activeTab;
+    private bool _isLoading = true;
 
     private UserViewModel? _user;
 
@@ -106,12 +118,15 @@
         var projectsIds = _teams.Select(c => c.Project.Id).Distinct().ToList();
         _projects = await WorkPageService.GetUserProjectsAsync(projectsIds);
 
-        SetActiveTab(SectionId);
+        _activeTab = SectionId;
+
+        _isLoading = false;
     }
 
     private void SetActiveTab(int tabId)
     {
         _activeTab = tabId;
+        SectionId = _activeTab;
     }
 
     private string GetActiveClass(int tabId)

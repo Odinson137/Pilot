@@ -9,42 +9,44 @@
 
 @if (_user == null)
 {
-<p>Loading user information...</p>
+    <p>Loading user information...</p>
 }
 else
 {
-<EditForm Model="_user" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+    <EditForm Model="_user" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator/>
+        <ValidationSummary/>
 
-    <div class="form-group">
-        <label for="userName">Username</label>
-        <InputText id="userName" @bind-Value="_user.UserName" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="userName">Username</label>
+            <InputText id="userName" @bind-Value="_user.UserName" class="form-control"/>
+        </div>
 
-    <div class="form-group">
-        <label for="name">First Name</label>
-        <InputText id="name" @bind-Value="_user.Name" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="name">First Name</label>
+            <InputText id="name" @bind-Value="_user.Name" class="form-control"/>
+        </div>
 
-    <div class="form-group">
-        <label for="lastName">Last Name</label>
-        <InputText id="lastName" @bind-Value="_user.LastName" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <InputText id="lastName" @bind-Value="_user.LastName" class="form-control"/>
+        </div>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <InputText id="email" @bind-Value="_user.Email" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" @bind-Value="_user.Email" class="form-control"/>
+        </div>
 
-    <div class="form-group">
-        <label for="description">Description</label>
-        <InputTextArea id="description" @bind-Value="_user.Description" class="form-control" />
-    </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <InputTextArea id="description" @bind-Value="_user.Description" class="form-control" style="height: 300px"/>
+        </div>
 
-    <button type="submit" class="btn btn-success">Save Changes</button>
-    <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
-</EditForm>
+        <div style="margin-bottom: 100px">
+            <button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+            <button type="submit" class="btn btn-success">Save Changes</button>
+        </div>
+    </EditForm>
 }
 
 @code {
@@ -66,4 +68,5 @@ else
     {
         NavigationManager.NavigateTo("/Account");
     }
+
 }

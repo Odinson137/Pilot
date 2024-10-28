@@ -1,0 +1,27 @@
+﻿@using Pilot.BlazorClient.ViewModels
+<div class="chat-item @GetSelectedChat(ChatId)" @onclick="OpenChat">
+    <div class="chat-title">@ChatTitle</div>
+</div>
+
+@code {
+    [Parameter] public int ChatId { get; set; }
+
+    [Parameter] public string ChatTitle { get; set; } = null!;
+
+    [Parameter] public ChatViewModel? SelectedChat { get; set; }
+
+    [Parameter] public EventCallback<int> OnChatClick { get; set; }
+
+    private async Task OpenChat()
+    {
+        await OnChatClick.InvokeAsync(ChatId);
+    }
+
+    private string GetSelectedChat(int chatId)
+    {
+        if (SelectedChat != null)
+            return "chat-selected";
+        return "";
+    }
+
+}

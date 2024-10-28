@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Pilot.Api.Commands;
 using Pilot.Api.Handlers.BaseHandlers;
+using Pilot.Api.Queries;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 

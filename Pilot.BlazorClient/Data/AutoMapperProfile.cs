@@ -24,6 +24,10 @@ public class AutoMapperProfile : Profile
         Mapping<CompanyPostViewModel, CompanyPostDto>();
         Mapping<PostViewModel, PostDto>();
         Mapping<UserViewModel, UserDto>();
+        Mapping<ChatViewModel, ChatDto>();
+        Mapping<ChatMemberViewModel, ChatMemberDto>();
+        Mapping<InfoMessageViewModel, InfoMessageDto>();
+        Mapping<MessageViewModel, MessageDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

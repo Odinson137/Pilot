@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
@@ -10,30 +12,33 @@ namespace Test.Messenger.IntegrationTests;
 public class MessageTests(MessageTestMessageFactory factory, MessageTestIdentityFactory identityFactory)
     : BaseModelTest<Message, MessageDto>(factory, identityFactory)
 {
-    // [Fact]
-    // public override async Task CreateModel_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var valueModel = GenerateTestEntity.CreateEntities<Message>(count: 1, listDepth: 0).First();
-    //
-    //     await GenerateTestEntity.FillChildren(valueModel, DataContext);
-    //
-    //     var value = MessengerMapper.Map<MessageDto>(valueModel);
-    //
-    //     var user = await CreateUser();
-    //     
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new CreateCommandMessage<MessageDto>(value, user.Id));
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //
-    //     var result = await AssertContext.Set<Message>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
-    //
-    //     Assert.NotNull(result);
-    // }
+    [Fact]
+    public virtual async Task GetUserChatsTest_ReturnOk()
+    {
+        #region Arrange
+
+        var user = await CreateUser();
+
+        const int count = 2;
+        var chat = GenerateTestEntity.CreateEntities<Chat>(count: 1, listDepth: 0).First();
+        var values = GenerateTestEntity.CreateEntities<Message>(count: 2, listDepth: 0);
+
+        chat.AddUser(user.Id);
+
+        chat.Messages = values;
+        
+        await DataContext.AddRangeAsync(chat);
+        await DataContext.SaveChangesAsync();
+
+        #endregion
+
+        // Act
+        var result = await MessengerClient.GetAsync($"api/{nameof(Message)}/{Urls.ChatMessages}/{chat.Id}");
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<MessageDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count >= count);
+    }
 }

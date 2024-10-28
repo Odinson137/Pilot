@@ -1,4 +1,7 @@
+using System.Text;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Messenger.Data;
@@ -35,6 +38,40 @@ builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 services.AddScoped<ISeed, Seed>();
 
+services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = false,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
+        };
+
+        // Позволяем использовать токены в SignalR
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+
 var app = builder.Build();
 
 await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
@@ -43,7 +80,7 @@ await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().See
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapHub<NotificationHub>("/notificationhub");
+app.MapHub<NotificationHub>("/hub");
 // app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();

@@ -1,6 +1,7 @@
 using System.Text;
 using MassTransit;
 using MediatR;
+using MediatR.NotificationPublishers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
@@ -53,7 +54,12 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Debug()
     .CreateLogger());
 
-services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
+services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    cfg.NotificationPublisher = new TaskWhenAllPublisher();
+    cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
+});
 
 // services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
@@ -87,9 +93,16 @@ services.AddAuthentication(options =>
 services.AddAuthorization();
 
 services.AddEndpointsApiExplorer();
+
 services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((_, cfg) => { cfg.Host(configuration["RabbitMQ:ConnectionString"]); });
+    x.SetKebabCaseEndpointNameFormatter();
+
+    x.UsingRabbitMq((ctx, cfg) =>
+    {
+        cfg.Host(configuration["RabbitMQ:ConnectionString"]);
+        cfg.ConfigureEndpoints(ctx);
+    });
 });
 
 services.AddTransient<ISeed, Seed>();

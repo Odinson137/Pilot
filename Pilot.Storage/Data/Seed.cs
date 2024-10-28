@@ -29,7 +29,8 @@ public class Seed : ISeed
         var imagesDictionary = GetFilesFromDirectory(
             "wwwroot/SeedImages/UserProfileLogos", // count - 30
             "wwwroot/SeedImages/CompanyLogos", // count - 5
-            "wwwroot/SeedImages/CompanyInsides" // count - 50
+            "wwwroot/SeedImages/CompanyInsides", // count - 50
+            "wwwroot/SeedImages/TaskInfoImages" // count - 6
             );
 
         if (imagesDictionary.Count < Constants.SeedDataCount) throw new Exception("Данных в сиде меньше, чем должно быть");

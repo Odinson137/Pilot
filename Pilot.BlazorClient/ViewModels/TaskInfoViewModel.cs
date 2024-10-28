@@ -4,7 +4,7 @@ namespace Pilot.BlazorClient.ViewModels;
 
 public class TaskInfoViewModel : BaseViewModel
 {
-    public int? FileId { get; set; }
+    public string? FileUrl { get; set; }
     
     [MaxLength(500)] public string? Description { get; set; }
 

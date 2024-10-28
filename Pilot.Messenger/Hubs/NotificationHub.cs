@@ -1,19 +1,72 @@
 ﻿using System.Data;
+using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Messenger.Interfaces;
+using Pilot.Messenger.Models;
 
 namespace Pilot.Messenger.Hubs;
 
-[Authorize]
 public class NotificationHub : Hub<INotificationClient>
 {
+    private readonly IMessageRepository _messageRepository;
+    private readonly IChatRepository _chatRepository;
+    private readonly IMapper _mapper;
+    private readonly ILogger<NotificationHub> _logger;
+
+    public NotificationHub(IMessageRepository messageRepository, IMapper mapper, IChatRepository chatRepository,
+        ILogger<NotificationHub> logger)
+    {
+        _messageRepository = messageRepository;
+        _mapper = mapper;
+        _chatRepository = chatRepository;
+        _logger = logger;
+    }
+
     public override async Task OnConnectedAsync()
     {
-        var name = Context.User!.Identity!.Name ?? throw new NoNullAllowedException("User name is null error");
+        var userId = Context.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+                     ?? throw new NoNullAllowedException("User name is null error");
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, name);
+        await Groups.AddToGroupAsync(Context.ConnectionId, userId);
 
         await base.OnConnectedAsync();
+    }
+
+    public async Task SendMessage(int chatId, string messageText)
+    {
+        _logger.LogInformation("Start sending message");
+
+        var userId = Context.User?.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+                     ?? throw new NoNullAllowedException("User name is null error");
+        if (string.IsNullOrEmpty(userId)) throw new Exception("User is not identified");
+
+        var chat = await _chatRepository.DbSet.Where(c => c.Id == chatId).Include(c => c.ChatMembers).FirstOrDefaultAsync();
+        if (chat == null) throw new Exception("Chat is not found");
+
+        var message = new Message
+        {
+            Text = messageText,
+            UserId = int.Parse(userId),
+            Chat = chat
+        };
+
+        chat.Messages.Add(message);
+        await _chatRepository.SaveAsync();
+
+        var chatMembers = chat.ChatMembers;
+
+        var messageDto = _mapper.Map<MessageDto>(message);
+        foreach (var member in chatMembers)
+        {
+            _logger.LogInformation($"Send message to {member.UserId}");
+            await Clients.Group($"{member.UserId}").ReceiveMessage(messageDto.ToJson());
+        }
+
+        _logger.LogInformation("End sending message");
     }
 }

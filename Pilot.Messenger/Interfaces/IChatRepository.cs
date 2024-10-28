@@ -1,8 +1,10 @@
 ﻿using Pilot.Contracts.Base;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
 
 namespace Pilot.Messenger.Interfaces;
 
 public interface IChatRepository : IBaseRepository<Chat>
 {
+    public Task<ICollection<ChatDto>> GetUserChatsAsync(int userId, CancellationToken token);
 }

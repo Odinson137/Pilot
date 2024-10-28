@@ -11,4 +11,9 @@ public class NotificationService(IHubContext<NotificationHub, INotificationClien
     {
         return hubContext.Clients.Group(userId.ToString()).SendNotificationAsync(message);
     }
+    
+    public Task SendMessage(int chatId, MessageDto message)
+    {
+        return hubContext.Clients.Group($"chat-{chatId}").SendMessageAsync(message);
+    }
 }

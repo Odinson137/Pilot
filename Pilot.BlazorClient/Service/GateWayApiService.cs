@@ -20,20 +20,19 @@ public class GateWayApiService(
     public async Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
         string? url = null,
         BaseFilter? filter = null,
-        CancellationToken token = default,
-        params (string, string)[] queryParams)
+        CancellationToken token = default)
         where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var models = await SendGetMessages<TOut>(url, filter, token, queryParams);
+        var models = await SendGetMessages<TOut>(url, filter, token);
         return models.MapList<TViewModel>(mapper);
     }
 
     public async Task<TViewModel> SendGetMessage<TOut, TViewModel>(
         int valueId,
-        CancellationToken token = default, params (string, string)[] queryParams)
+        CancellationToken token = default)
         where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var models = await SendGetMessage<TOut>($"{valueId}", token, queryParams);
+        var models = await SendGetMessage<TOut>($"{valueId}", token);
         return models.Map<TViewModel>(mapper);
     }
 

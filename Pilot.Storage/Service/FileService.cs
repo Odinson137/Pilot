@@ -85,7 +85,7 @@ public class FileService : IFileService
         return file;
     }
     
-    public async Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter filter)
+    public async Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter? filter)
     {
         _logger.LogInformation($"Get file urls");
 

@@ -27,6 +27,8 @@ services.AddScoped<ICompanyDetailPageService, CompanyDetailPageService>();
 services.AddScoped<IUserPageService, UserPageService>();
 services.AddScoped<IWorkPageService, WorkPageService>();
 services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();
+services.AddScoped<IChatPageService, ChatPageService>();
+services.AddScoped<IMessengerService, MessengerService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()

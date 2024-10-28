@@ -1,8 +1,293 @@
-﻿@page "/Chat"
+﻿@page "/chat"
+@using AutoMapper
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.Contracts.DTO.ModelDto
+@using Pilot.Contracts.Services
+@inject IChatPageService ChatPageService
+@inject IUserService UserService
+@inject IMessengerService MessengerService
+@inject IJSRuntime JsRuntime
+@inject IMapper Mapper
+
+<PageTitle>Chat Page</PageTitle>
+
+@if (_isLoading)
+{
+    <Loading/>
+}
+else
+{
+    <div class="chat-page d-flex">
+        <!-- Left Sidebar: Chat List -->
+        <div class="sidebar chat-list col-3">
+            <h5 class="sidebar-title">Notification</h5>
+
+            <h5 class="sidebar-title">Chats</h5>
+            <div class="sidebar-section">
+                @foreach (var chat in _chats)
+                {
+                    <TitleChatComponent ChatId="@chat!.Id" SelectedChat="@_selectedChat" ChatTitle="@chat.Title" OnChatClick="HandleTitleChatClick"/>
+                }
+            </div>
+
+            <button class="btn btn-primary create-chat-btn" @onclick="CreateNewChat">Create Chat</button>
+        </div>
+
+        @if (_selectedChat != null)
+        {
+            <!-- Center: Chat Messages and Info -->
+            <div class="chat-main col-7">
+                <!-- Center Header: Chat Title -->
+                <div class="chat-header d-flex justify-content-between align-items-center">
+                    <h4>@(_selectedChat != null ? _selectedChat.Title : "")</h4>
+                    @if (_selectedChat != null)
+                    {
+                        <button class="btn btn-secondary" @onclick="ToggleInfoPanel">Chat Settings</button>
+                    }
+                </div>
+
+                <!-- Chat Content -->
+                <div class="chat-content">
+     
+                    <!-- Messages Section -->
+                    <div class="message-list" @ref="chatListRef" id="chatListRef">
+                        @foreach (var message in _messageViewModels)
+                        {
+                            <MessageComponent Message="@message" Users="@_users" User="@_currentUser"/>
+                        }
+                    </div>
+
+                    <TextboxComponent OnSendMessageClick="HandleSendMessageClick"/>
+                </div>
+            </div>
+            
+            @if (!_isChatLoading)
+            {
+                <!-- Right Sidebar: Chat Settings -->
+                <div class="sidebar chat-info col-3" style="display:@(_showInfoPanel && _selectedChat != null ? "block" : "none")">
+                    <div class="chat-settings">
+                        <h5 class="sidebar-title">Chat Info</h5>
+                        <p>
+                            <strong>Description:</strong> @_selectedChat!.Description
+                        </p>
+                        <p>
+                            <strong>Members:</strong> @_selectedChat.ChatMembers.Count
+                        </p>
+
+                        <h6>Created by</h6>
+                        <a href="@GetUserProfileLink(_selectedChat.CreatedBy)">
+                            <img src="@_users!.First(c => c.Id == _selectedChat.CreatedBy).AvatarUrl" alt="avatar"/>
+                            <span class="sender-name">@_users!.First(c => c.Id == _selectedChat.CreatedBy).UserName</span>
+                        </a>
+
+                        <h6>Participants</h6>
+                        @foreach (var user in _users!)
+                        {
+                            <div class="participant-info">
+                                <img src="@user.AvatarUrl" alt="@user.UserName" class="participant-avatar"/>
+                                <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
+                            </div>
+                        }
+                    </div>
+                    <button class="btn btn-secondary mt-3" @onclick="ToggleInfoPanel">Close</button>
+                </div>
+            }
+
+        }
+        else
+        {
+          
+            <!-- Placeholder Content When No Chat Selected -->
+            <div class="placeholder-content text-center">
+                <h2 style="color: #1e3a8a;">Welcome to Our Chat Page</h2>
+                <p class="lead" style="color: #4a5568;">Here, you can communicate in real time with team members and engage in discussions.</p>
+                <img src="Images/Chat/photo_2024-10-26_21-58-52.jpg" alt="Communication" class="placeholder-img"/>
+                <p class="mt-3" style="color: #4a5568;">Select a chat from the left panel or create a new one to start chatting. Stay connected, stay productive!</p>
+            </div>  
+        }
+
+
+    </div>
+}
 
 @code {
+    private ICollection<ChatViewModel> _chats = [];
+    private ICollection<MessageViewModel> _messageViewModels = [];
+    private ChatViewModel? _selectedChat;
+    private bool _showInfoPanel;
+    private ICollection<UserViewModel>? _users;
+    private UserViewModel _currentUser = null!;
+    private bool _isLoading = true;
+    private bool _isChatLoading;
+    private ElementReference chatListRef;
 
     protected override async Task OnInitializedAsync()
     {
+        _currentUser = await UserService.GetCurrentUserAsync();
+        _chats = await ChatPageService.GetUserChatsAsync();
+
+        await MessengerService.CreateConnectionAsync(_currentUser.Id);
+        
+        MessengerService.OnMessageReceived += async (message) =>  
+        {
+            var messageDto = message.FromJson<MessageDto>(); 
+            if (_selectedChat?.Id == messageDto.Chat.Id)
+            {
+                var messageViewModel = Mapper.Map<MessageViewModel>(messageDto);
+                _messageViewModels.Add(messageViewModel); // Добавляем сообщение в список
+                await InvokeAsync(StateHasChanged);
+                await JsRuntime.InvokeVoidAsync("scrollToBottom", chatListRef);
+            }
+        };
+        
+        _isLoading = false;
+    }
+
+    private async Task HandleTitleChatClick(int chatId)
+    {
+        _isChatLoading = true;
+        _selectedChat = _chats.FirstOrDefault(chat => chat.Id == chatId);
+        if (_selectedChat != null)
+        {
+            _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers);
+            _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50);
+        }
+
+        _isChatLoading = false;
+        await ScrollToBottom();
+    }
+
+    private async Task CreateNewChat()
+    {
+// Logic for creating a new chat
+    }
+
+    private void ToggleInfoPanel()
+    {
+        _showInfoPanel = !_showInfoPanel;
+    }
+
+    private async Task HandleSendMessageClick(string messageText)
+    {
+        if (_selectedChat != null)
+        {
+            await MessengerService.SendMessageAsync(_selectedChat.Id, messageText);
+        }
+    }
+
+    private string GetUserProfileLink(int? userId) => $"/account/{userId}";
+    
+    private async Task ScrollToBottom()
+    {
+        await JsRuntime.InvokeVoidAsync("scrollSidebarToBottom", chatListRef);
     }
 }
+
+<style>
+    .chat-page {
+        display: flex;
+        height: 85vh;
+        margin-bottom: 5vh;
+        font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+        background-color: #f7f7f7;
+        padding: 1rem;
+        border-right: 1px solid #ddd;
+    }
+
+    .chat-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        padding: 0.5rem;
+        color: black;
+    }
+
+    .chat-content {
+        flex-grow: 1;
+        padding: 1rem;
+        height: 80vh;
+    }
+
+    .placeholder-content {
+        width: 80%;
+        margin-top: 5rem;
+    }
+
+    .placeholder-img {
+        width: 500px;
+        border-radius: 20px;
+    }
+
+    .participant-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .participant-avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .sidebar-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .chat-item, .participant-info a {
+        display: block;
+        padding: 0.5rem;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .chat-item:hover, .participant-info a:hover {
+        background-color: #eaeaea;
+    }
+
+    .sidebar img {
+        object-fit: cover;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+    
+    .message-list {
+        height: 90%;
+        overflow-y: auto;
+    }
+</style>
+
+<script>
+    window.scrollToBottom = (element) => {
+        if (element) {
+            element.scrollTop = element.scrollHeight;
+        }
+    };
+
+    window.scrollSidebarToBottom = (sidebarSection) => {
+        if (sidebarSection) {
+            const observer = new MutationObserver((mutationsList, observer) => {
+                const allElementsLoaded = Array.from(sidebarSection.children).every((child) => child.offsetHeight > 0);
+
+                if (allElementsLoaded) {
+                    sidebarSection.scrollTop = sidebarSection.scrollHeight;
+                    observer.disconnect(); 
+                }
+            });
+
+            observer.observe(sidebarSection, { childList: true, subtree: true });
+        }
+    };
+
+</script>

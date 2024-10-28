@@ -120,7 +120,7 @@ public class Seed : ISeed
                 .Where(c => c.Company.Id == company.Id)
                 .ToListAsync();
             
-            var teams = teamFaker.Generate(rand.Next(2, 5)); // 2-5 команд
+            var teams = teamFaker.Generate(6); // 2-5 команд
             foreach (var team in teams)
             {
                 team.Project = projectsDb[rand.Next(0, projectsDb.Count)];
@@ -137,17 +137,14 @@ public class Seed : ISeed
                 _context.Teams.Add(team);
                 
                 // Генерация задач проекта
-                var projectTasks = projectTaskFaker.Generate(rand.Next(5, 15)); // 5-15 задач
+                var projectTasks = projectTaskFaker.Generate(15); // 5-15 задач
                 foreach (var task in projectTasks)
                 {
                     // Получаем случайного пользователя
-                    var randomUserIndex = rand.Next(-1, users.Count);
+                    var randomUserIndex = rand.Next(0, users.Count);
                     var randomCreated = users[rand.Next(0, users.Count)];
 
-                    if (randomUserIndex != -1)
-                    {
-                        task.CompanyUser = users[randomUserIndex];
-                    }
+                    task.CompanyUser = users[randomUserIndex];
                     
                     task.CreatedBy = randomCreated;  // Назначаем пользователя задаче
                     task.Team = team;  // Назначаем команду задаче
@@ -196,6 +193,7 @@ public class Seed : ISeed
 
     private int _logoId = 31; // смотреть в сиде в проекте Storage. Там доступно 5 фотографий компаний
     private int _insideImagesId = 36; // смотреть в сиде в проекте Storage. Там доступно 50 фотографий компаний
+    private const int InsideImagesCount = 50;
     private ICollection<int> FillList()
     {
         const int count = 10;
@@ -237,10 +235,28 @@ public class Seed : ISeed
         return fake;
     }
     
+    private const int TaskInfoImageId = 87; // смотреть в сиде в проекте Storage. Там есит 6 фотографий
+    private const int TaskInfoImageCount = 6;
+
+    private int? GetRandomImageOrNull()
+    {
+        var random = new Random();
+    
+        // Например, 50% вероятность возврата не null
+        if (random.Next(0, 2) == 1)
+        {
+            return random.Next(TaskInfoImageId, TaskInfoImageId + TaskInfoImageCount);
+        }
+
+        return null;
+    }
+
+    
     private Faker<TaskInfo> GetTaskInfoFaker()
     {
         var fake = new Faker<TaskInfo>()
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentences(5).TakeOnly(500))
+                .RuleFor(u => u.FileId, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
         
@@ -265,6 +281,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Name, (f, _) => f.Name.JobArea())
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentences().TakeOnly(500))
                 .RuleFor(u => u.TaskStatus, (f, _) => f.PickRandom<TaskStatus>())
+                .RuleFor(u => u.FileId, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.Priority, (f, _) => f.PickRandom<TaskPriority>())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
