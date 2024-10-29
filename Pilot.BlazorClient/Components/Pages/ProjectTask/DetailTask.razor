@@ -182,7 +182,7 @@ else
         var userIds = new List<int>
         {
             _task.CreatedBy.Id,
-            _task.CompanyUser?.Id ?? throw new Exception("Что-то не так было с записью в бд, потому что при получении это значение не может быть null") 
+            _task.CompanyUser?.Id ?? throw new Exception("Что-то не так было с записью в бд, потому что при получении это значение не может быть null")
         };
 
         var userViewModels = await ProjectTaskPageService.GetUsersAsync(userIds);
@@ -255,9 +255,13 @@ else
         _isEditMode = !_isEditMode;
     }
 
-    private void Save()
+    private async Task Save()
     {
-        _isEditMode = false;
+        if (_task != null)
+        {
+            await ProjectTaskPageService.ChangeTaskAsync(_task);
+            _isEditMode = false;
+        }
     }
 
 }

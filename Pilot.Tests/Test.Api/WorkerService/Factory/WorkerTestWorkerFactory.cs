@@ -13,18 +13,12 @@ using Testcontainers.RabbitMq;
 
 namespace Test.Api.WorkerService.Factory;
 
-public class WorkerTestWorkerFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class WorkerTestWorkerFactory : WebApplicationFactory<Program>
 {
-    private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
-        .WithImage("rabbitmq:3")
-        .Build();
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-        
-        Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
-            _rabbitContainer.GetConnectionString());
         
         builder.ConfigureTestServices(services =>
         {
@@ -43,15 +37,5 @@ public class WorkerTestWorkerFactory : WebApplicationFactory<Program>, IAsyncLif
             services.RemoveAll<IModelService>(); 
             services.AddScoped<IModelService, ModelServiceFaker>();
         });
-    }
-    
-    public async Task InitializeAsync()
-    {
-        await _rabbitContainer.StartAsync();
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await _rabbitContainer.StopAsync();
     }
 }

@@ -5,18 +5,20 @@
 
 <div class="user-greeting">
     <h2>@GetGreetingMessage(), @UserName! 🌟</h2>
-    
+
     @if (_companyUser != null)
     {
-        <p>Вы работаете в компании <strong>@_companyUser.Company.Title</strong> <strong>@_daysInCompany</strong> дней.</p>
+        <p>You have been working at <strong>@_companyUser.Company.Title</strong> for <strong>@_daysInCompany</strong> days.</p>
         @if (_projects != null && _teams != null)
         {
-            <p>Вы участвуете в <strong>@_projects.Count</strong> проект(ах) и состоите в <strong>@_teams.Count</strong> командах:</p>
+            <p>You are participating in <strong>@_projects.Count</strong> project(s) and are a member of <strong>@_teams.Count</strong> teams:</p>
 
             <ul>
                 @foreach (var team in _teams)
                 {
-                    <li><strong>Team:</strong> @team.Name</li>
+                    <li>
+                        <strong>Team:</strong> @team.Name
+                    </li>
                 }
             </ul>
         }
@@ -29,7 +31,7 @@
 
     private CompanyUserViewModel? _companyUser;
     private int _daysInCompany;
-    private ICollection<ProjectViewModel>? _projects ;
+    private ICollection<ProjectViewModel>? _projects;
     private ICollection<TeamViewModel>? _teams;
 
     protected override async Task OnInitializedAsync()
@@ -49,8 +51,7 @@
     private string GetGreetingMessage()
     {
         var hour = DateTime.Now.Hour;
-        return hour < 12 ? "Доброе утро" :
-            hour < 18 ? "Добрый день" : "Добрый вечер";
+        return hour < 12 ? "Good morning" :
+            hour < 18 ? "Good afternoon" : "Good evening";
     }
-
 }

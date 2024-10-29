@@ -16,9 +16,9 @@ public interface IGateWayApiService : IBaseHttpService
         CancellationToken token = default)
         where TOut : BaseDto where TViewModel : BaseViewModel;
     
-    public Task SendPostMessage<TMessage>(string? url, TMessage message, CancellationToken token) where TMessage : BaseDto;
+    public Task SendPostMessage<TMessage>(string? url, TMessage message, CancellationToken token = default) where TMessage : BaseDto;
 
-    public Task SendPutMessage<TMessage>(string? url, TMessage message, CancellationToken token) where TMessage : BaseDto;
+    public Task SendPutMessage<TMessage>(string? url, TMessage message, CancellationToken token = default) where TMessage : BaseDto;
     
-    public Task SendDeleteMessage<TMessage>(string? url, CancellationToken token) where TMessage : BaseDto;
+    public Task SendDeleteMessage<TMessage>(string? url, CancellationToken token = default) where TMessage : BaseDto;
 }

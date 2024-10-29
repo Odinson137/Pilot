@@ -1,4 +1,5 @@
-﻿using Pilot.BlazorClient.Interface;
+﻿using AutoMapper;
+using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
@@ -6,7 +7,7 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class ProjectTaskPageService(IGateWayApiService apiService) : IProjectTaskPageService
+public class ProjectTaskPageService(IGateWayApiService apiService, IMapper mapper) : IProjectTaskPageService
 {
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
@@ -32,5 +33,11 @@ public class ProjectTaskPageService(IGateWayApiService apiService) : IProjectTas
         var filter = new BaseFilter(ids);
         var taskInfoViewModels = await apiService.SendGetMessages<TaskInfoDto, TaskInfoViewModel>(filter: filter);
         return taskInfoViewModels;
+    }
+
+    public async Task ChangeTaskAsync(ProjectTaskViewModel projectTaskViewModel)
+    {
+        var taskDto = mapper.Map<ProjectTaskDto>(projectTaskViewModel);
+        await apiService.SendPutMessage(null, message: taskDto);
     }
 }

@@ -12,4 +12,6 @@ public interface IProjectTaskPageService
     Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids);
 
     Task<ICollection<TaskInfoViewModel>> GetTaskInfoAsync(ICollection<int> ids);
+    
+    Task ChangeTaskAsync(ProjectTaskViewModel projectTaskViewModel);
 }

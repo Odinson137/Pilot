@@ -7,6 +7,7 @@ using Pilot.Api;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
+using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 
 namespace Test.Api.WorkerService.Factory;
@@ -17,20 +18,29 @@ public class WorkerTestApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
         .WithImage("redis:latest")
         .Build();
     
+    private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
+        .WithImage("rabbitmq:3")
+        .Build();
+    
     public async Task InitializeAsync()
     {
+        await _rabbitContainer.StartAsync();
         await _redisContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await _redisContainer.StopAsync();
+        await _rabbitContainer.StopAsync();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
+        Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
+            _rabbitContainer.GetConnectionString());
+        
         Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
             _redisContainer.GetConnectionString());
 

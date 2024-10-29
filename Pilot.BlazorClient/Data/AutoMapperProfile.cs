@@ -32,6 +32,7 @@ public class AutoMapperProfile : Profile
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto
     {
+        CreateMap<TViewModel?, BaseDto?>();
         CreateMap<TViewModel?, TDto?>();
         CreateMap<TDto?, TViewModel?>();
         CreateMap<TDto?, TViewModel?>()
@@ -39,6 +40,15 @@ public class AutoMapperProfile : Profile
         CreateMap<BaseDto?, TViewModel?>().ConvertUsing(src => src == null
             ? null
             : new TViewModel
+            {
+                Id = src.Id,
+                CreateAt = src.CreateAt,
+                ChangeAt = src.ChangeAt,
+                DeleteAt = src.DeleteAt
+            });
+        CreateMap<TViewModel?, BaseDto?>().ConvertUsing(src => src == null
+            ? null
+            : new BaseDto
             {
                 Id = src.Id,
                 CreateAt = src.CreateAt,

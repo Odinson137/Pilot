@@ -15,8 +15,9 @@
     {
         if (!string.IsNullOrEmpty(_messageText))
         {
+            var text = _messageText;
             _messageText = "";
-            await OnSendMessageClick.InvokeAsync(_messageText);
+            await OnSendMessageClick.InvokeAsync(text);
         }
     }
 }

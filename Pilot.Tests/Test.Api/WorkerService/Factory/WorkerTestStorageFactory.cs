@@ -13,19 +13,12 @@ using Testcontainers.RabbitMq;
 
 namespace Test.Api.WorkerService.Factory;
 
-public class WorkerTestStorageFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class WorkerTestStorageFactory : WebApplicationFactory<Program>
 {
-    private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
-        .WithImage("rabbitmq:3")
-        .Build();
-    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
-        Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
-            _rabbitContainer.GetConnectionString());
-        
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
@@ -41,15 +34,5 @@ public class WorkerTestStorageFactory : WebApplicationFactory<Program>, IAsyncLi
             services.RemoveAll<IBaseHttpService>(); 
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
         });
-    }
-    
-    public async Task InitializeAsync()
-    {
-        await _rabbitContainer.StartAsync();
-    }
-
-    public new async Task DisposeAsync()
-    {
-        await _rabbitContainer.StopAsync();
     }
 }

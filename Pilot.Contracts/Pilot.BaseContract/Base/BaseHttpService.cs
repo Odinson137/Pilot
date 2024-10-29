@@ -19,7 +19,7 @@ public class BaseHttpService(
     
     protected static string GetFullUrl<TDto>(string? url) where TDto : BaseDto
     {
-        return GetFullUrl<TDto>(url);
+        return GetFullUrl<TDto>(url, null);
     }
     
     protected static string GetFullUrl<TDto>(string? url, BaseFilter? filter) where TDto : BaseDto
