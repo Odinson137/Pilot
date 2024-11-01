@@ -10,7 +10,7 @@ using Testcontainers.Redis;
 
 namespace Test.Api.UserService.Factory;
 
-public class UserServiceTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class ApiTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")

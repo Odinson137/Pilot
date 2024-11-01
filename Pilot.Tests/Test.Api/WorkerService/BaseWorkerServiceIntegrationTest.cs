@@ -15,8 +15,10 @@ using Test.Base.IntegrationBase;
 namespace Test.Api.WorkerService;
 
 public class BaseWorkerServiceIntegrationTest : 
-    IClassFixture<MessengerTestApiFactory>, 
-    IClassFixture<MessengerTestIdentityFactory>
+    IClassFixture<WorkerTestApiFactory>, 
+    IClassFixture<WorkerTestIdentityFactory>,
+    IClassFixture<WorkerTestWorkerFactory>,
+    IClassFixture<WorkerTestStorageFactory>
 {
     protected readonly HttpClient ApiClient;
     protected readonly IServiceProvider WorkerScopeService;
@@ -46,7 +48,7 @@ public class BaseWorkerServiceIntegrationTest :
         var identityScopeService = identityFactory.Services.CreateScope().ServiceProvider;
         WorkerScopeService = workerFactory.Services.CreateScope().ServiceProvider;
         Mapper = workerFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IMapper>();
-        TokenService = workerFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IToken>();
+        TokenService = apiFactory.Services.CreateScope().ServiceProvider.GetRequiredService<IToken>();
 
         _contexts[ServiceName.IdentityServer] = identityScopeService.GetRequiredService<Pilot.Identity.Data.DataContext>();
         _contexts[ServiceName.StorageServer] = storageFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Storage.Data.DataContext>();
@@ -57,8 +59,5 @@ public class BaseWorkerServiceIntegrationTest :
         HttpSingleTone.Init.HttpClients[ServiceName.IdentityServer.ToString()] = identityFactory.CreateClient();
         HttpSingleTone.Init.HttpClients[ServiceName.StorageServer.ToString()] = storageFactory.CreateClient();
         HttpSingleTone.Init.HttpClients[ServiceName.WorkerServer.ToString()] = workerClient;
-
-        apiFactory.Services.GetRequiredService<IToken>();
-        identityScopeService.GetRequiredService<IPasswordCoder>();
     }
 }

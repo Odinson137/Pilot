@@ -100,7 +100,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     {
         #region Arrange
 
-        await CreateCompanyUser(true);
+        var companyUser = await CreateCompanyUser(true);
 
         var type = typeof(T);
 
@@ -110,6 +110,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         var valueDto = Mapper.Map<TDto>(value);
 
+        var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+        ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        
         #endregion
 
         // Act

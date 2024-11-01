@@ -13,7 +13,7 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [Authorize]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
-    public virtual async Task<IActionResult> AddValue(TDto valueDto, CancellationToken token)
+    public virtual async Task<IActionResult> AddValue([FromBody] TDto valueDto, CancellationToken token)
     {
         await Mediator.Send(new CreateCommand<TDto>(valueDto, UserId), token);
         return Ok($"The {nameof(TDto)} will be adding soon");

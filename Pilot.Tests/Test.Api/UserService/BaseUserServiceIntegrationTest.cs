@@ -7,7 +7,7 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Data;
 using Pilot.Identity.Interfaces;
-using Test.Api.IntegrationTests.Factories;
+using Test.Api.UserService.Factory;
 using Test.Base.IntegrationBase;
 
 namespace Test.Api.UserService;

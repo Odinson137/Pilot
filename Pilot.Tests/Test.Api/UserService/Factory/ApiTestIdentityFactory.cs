@@ -11,7 +11,7 @@ using Test.Base.IntegrationBase;
 
 namespace Test.Api.UserService.Factory;
 
-public class UserServiceTestIdentityFactory : WebApplicationFactory<Program>
+public class ApiTestIdentityFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

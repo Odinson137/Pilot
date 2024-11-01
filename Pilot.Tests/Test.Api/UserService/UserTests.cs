@@ -5,7 +5,7 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Identity.Models;
-using Test.Api.IntegrationTests.Factories;
+using Test.Api.UserService.Factory;
 
 namespace Test.Api.UserService;
 
