@@ -9,6 +9,28 @@
     @if (_companyUser != null)
     {
         <p>You have been working at <strong>@_companyUser.Company.Title</strong> for <strong>@_daysInCompany</strong> days.</p>
+        
+        <div class="today-activity">
+            <h3>Today's Activity</h3>
+            @if (todayActivities.Count > 0)
+            {
+                <div class="today-activity-scroll">
+                    @foreach (var activity in todayActivities)
+                    {
+                        <div class="activity-item">
+                            <span>@activity</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p>No activities recorded today.</p>
+            }
+        </div>
+        
+        <Calendar></Calendar>
+        
         @if (_projects != null && _teams != null)
         {
             <p>You are participating in <strong>@_projects.Count</strong> project(s) and are a member of <strong>@_teams.Count</strong> teams:</p>
@@ -33,7 +55,7 @@
     private int _daysInCompany;
     private ICollection<ProjectViewModel>? _projects;
     private ICollection<TeamViewModel>? _teams;
-
+    private List<string> todayActivities = [];
     protected override async Task OnInitializedAsync()
     {
         _companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
@@ -43,7 +65,6 @@
         _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
 
         _projects = await WorkPageService.GetUserProjectsAsync(_teams);
-
         Console.WriteLine("Greeting loaded");
     }
 

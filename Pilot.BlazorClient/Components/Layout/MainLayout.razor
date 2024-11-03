@@ -42,7 +42,7 @@
             </ul>
         </div>
             <div class="ms-auto">
-                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>Toggle Language</button>
+                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@toggleName</button>
             </div>
     </div>
 </nav>
@@ -98,6 +98,22 @@
     footer {
         margin-top: auto;
     }
+
+    /* Apply to the entire page or specific container */
+    ::-webkit-scrollbar {
+        width: 8px; /* Adjusts the width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1; /* Track background */
+        border-radius: 10px; /* Roundness of the track */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #2980b9; /* Blue color for the scrollbar thumb */
+        border-radius: 10px; /* Roundness of the scrollbar thumb */
+        border: 2px solid #f1f1f1; /* Adds space around the thumb */
+    }
 </style>
 
 <div id="blazor-error-ui">
@@ -108,10 +124,13 @@
 
 @code {
     private bool _isAuthenticated;
+    private string toggleName;
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _isAuthenticated = authState.User.Identity is { IsAuthenticated: true };
+
+        toggleName = Localizer.CurrentCulture == "ru-RU" ? "Русский" : "English";
     }
     
     private void ToggleCulture()

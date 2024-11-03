@@ -1,9 +1,12 @@
-﻿@using Pilot.BlazorClient.Interface
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
 @inject IWorkPageService WorkPageService;
 @inject NavigationManager NavigationManager;
+@inject ProtectedSessionStorage ProtectedSessionStorage;
+
 <div class="task-board">
     <!-- Tasks to complete -->
     <div class="task-column">
@@ -75,11 +78,19 @@
 @code {
     private ICollection<ProjectTaskViewModel>? _tasks;
     [Parameter] public int UserId { get; set; }
+    [Parameter] public int? TeamId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
         _tasks = await WorkPageService.GetUserTasksAsync(companyUser.ProjectTasks.Select(c => c.Id).ToList());
+
+        var teamIdResult = await ProtectedSessionStorage.GetAsync<int>("work:teamId");
+
+        if (teamIdResult.Success)
+        {
+            _tasks = _tasks.Where(c => c.Team.Id == teamIdResult.Value).ToList();
+        }
     }
 
 // Получение текста для приоритета задачи

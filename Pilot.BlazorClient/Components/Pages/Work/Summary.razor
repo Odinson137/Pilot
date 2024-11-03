@@ -1,195 +1,189 @@
-﻿@* @using ChartJs.Blazor.Common *@
-@* @using ChartJs.Blazor.PieChart *@
-@* @using ChartJs.Blazor.Util *@
-@* @using Microsoft.Extensions.Localization *@
-@* @inject IStringLocalizer<WorkPageResource> Localizer *@
-@* *@
-@* <h1>@Localizer["Test"]</h1> *@
-@* <p>На этой странице представлены различные диаграммы, показывающие статистику по задачам и вкладу пользователя в работу команды. Вы можете увидеть распределение задач, время, потраченное на выполнение задач, прогресс и другие метрики.</p> *@
-@* *@
-@* <div class="charts-container"> *@
-@*     <div class="chart-item"> *@
-@*         <h4>Распределение задач по категориям</h4> *@
-@*         <Chart Config="_categoryConfig"></Chart> *@
-@*     </div> *@
-@* *@
-@*     <div class="chart-item"> *@
-@*         <h4>Распределение времени, потраченного на задачи</h4> *@
-@*         <Chart Config="_timeSpentConfig"></Chart> *@
-@*     </div> *@
-@* *@
-@*     <div class="chart-item"> *@
-@*         <h4>Вклад пользователя в работу команды</h4> *@
-@*         <Chart Config="_contributionConfig"></Chart> *@
-@*     </div> *@
-@* *@
-@*     <div class="chart-item"> *@
-@*         <h4>Завершенные задачи по приоритетам</h4> *@
-@*         <Chart Config="_priorityConfig"></Chart> *@
-@*     </div> *@
-@* *@
-@*     <div class="chart-item"> *@
-@*         <h4>Прогресс задач по статусу выполнения</h4> *@
-@*         <Chart Config="_statusConfig"></Chart> *@
-@*     </div> *@
-@* </div> *@
-@* *@
-@* @code { *@
-@*     [Parameter] public int UserId { get; set; } *@
-@* *@
-@*     private PieConfig _categoryConfig; *@
-@*     private PieConfig _timeSpentConfig; *@
-@*     private PieConfig _contributionConfig; *@
-@*     private PieConfig _priorityConfig; *@
-@*     private PieConfig _statusConfig; *@
-@* *@
-@*     protected override void OnInitialized() *@
-@*     { *@
-@*         // 1. Распределение задач по категориям *@
-@*         _categoryConfig = new PieConfig *@
-@*         { *@
-@*             Options = new PieOptions *@
-@*             { *@
-@*                 Responsive = true, *@
-@*                 Title = new OptionsTitle { Display = false, Text = "Распределение задач по категориям" } *@
-@*             } *@
-@*         }; *@
-@* *@
-@*         foreach (var value in new[] { "Завершенные", "В процессе", "Ожидающие" }) *@
-@*         { *@
-@*             _categoryConfig.Data.Labels.Add(value); *@
-@*         } *@
-@*          *@
-@*         _categoryConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 10, 5, 3 }) *@
-@*         { *@
-@*             BackgroundColor = new[] *@
-@*             { *@
-@*                 ColorUtil.ColorHexString(75, 192, 192), *@
-@*                 ColorUtil.ColorHexString(255, 159, 64), *@
-@*                 ColorUtil.ColorHexString(153, 102, 255) *@
-@*             } *@
-@*         }); *@
-@* *@
-@*         // 2. Распределение времени, потраченного на задачи *@
-@*         _timeSpentConfig = new PieConfig *@
-@*         { *@
-@*             Options = new PieOptions *@
-@*             { *@
-@*                 Responsive = true, *@
-@*                 Title = new OptionsTitle { Display = false, Text = "Распределение времени, потраченного на задачи" } *@
-@*             } *@
-@*         }; *@
-@* *@
-@*         foreach (var value in new[] { "Документация", "Разработка", "Тестирование" }) *@
-@*         { *@
-@*             _timeSpentConfig.Data.Labels.Add(value); *@
-@*         } *@
-@*          *@
-@*         _timeSpentConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 25, 10 }) *@
-@*         { *@
-@*             BackgroundColor = new[] *@
-@*             { *@
-@*                 ColorUtil.ColorHexString(255, 205, 86), *@
-@*                 ColorUtil.ColorHexString(54, 162, 235), *@
-@*                 ColorUtil.ColorHexString(255, 99, 132) *@
-@*             } *@
-@*         }); *@
-@* *@
-@*         // 3. Вклад пользователя в работу команды *@
-@*         _contributionConfig = new PieConfig *@
-@*         { *@
-@*             Options = new PieOptions *@
-@*             { *@
-@*                 Responsive = true, *@
-@*                 Title = new OptionsTitle { Display = false, Text = "Вклад пользователя в работу команды" } *@
-@*             }, *@
-@*         }; *@
-@* *@
-@*         foreach (var value in new[] { "Пользователь", "Член команды 1", "Член команды 2", "Член команды 3" }) *@
-@*         { *@
-@*             _contributionConfig.Data.Labels.Add(value); *@
-@*         } *@
-@*          *@
-@*         _contributionConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 30, 20, 25, 25 }) *@
-@*         { *@
-@*             BackgroundColor = new[] *@
-@*             { *@
-@*                 ColorUtil.ColorHexString(75, 192, 192), *@
-@*                 ColorUtil.ColorHexString(54, 162, 235), *@
-@*                 ColorUtil.ColorHexString(255, 99, 132), *@
-@*                 ColorUtil.ColorHexString(153, 102, 255) *@
-@*             } *@
-@*         }); *@
-@* *@
-@*         // 4. Завершенные задачи по приоритетам *@
-@*         _priorityConfig = new PieConfig *@
-@*         { *@
-@*             Options = new PieOptions *@
-@*             { *@
-@*                 Responsive = true, *@
-@*                 Title = new OptionsTitle { Display = false, Text = "Завершенные задачи по приоритетам" } *@
-@*             }, *@
-@*         }; *@
-@* *@
-@*         foreach (var value in new[] { "Высокий", "Средний", "Низкий" }) *@
-@*         { *@
-@*             _priorityConfig.Data.Labels.Add(value); *@
-@*         } *@
-@*          *@
-@*         _priorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 8, 12, 5 }) *@
-@*         { *@
-@*             BackgroundColor = new[] *@
-@*             { *@
-@*                 ColorUtil.ColorHexString(255, 99, 132), *@
-@*                 ColorUtil.ColorHexString(255, 205, 86), *@
-@*                 ColorUtil.ColorHexString(54, 162, 235) *@
-@*             } *@
-@*         }); *@
-@* *@
-@*         // 5. Прогресс задач по статусу выполнения *@
-@*         _statusConfig = new PieConfig *@
-@*         { *@
-@*             Options = new PieOptions *@
-@*             { *@
-@*                 Responsive = true, *@
-@*                 Title = new OptionsTitle { Display = false, Text = "Прогресс задач по статусу выполнения" } *@
-@*             }, *@
-@*         }; *@
-@* *@
-@*         foreach (var value in new[] { "Завершено", "В процессе", "Осталось" }) *@
-@*         { *@
-@*             _statusConfig.Data.Labels.Add(value); *@
-@*         } *@
-@*          *@
-@*         _statusConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 5, 10 }) *@
-@*         { *@
-@*             BackgroundColor = new[] *@
-@*             { *@
-@*                 ColorUtil.ColorHexString(75, 192, 192), *@
-@*                 ColorUtil.ColorHexString(255, 159, 64), *@
-@*                 ColorUtil.ColorHexString(153, 102, 255) *@
-@*             } *@
-@*         }); *@
-@*     } *@
-@* } *@
-@* *@
-@* <style> *@
-@*     .charts-container { *@
-@*         display: grid; *@
-@*         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); *@
-@*         gap: 20px; *@
-@*     } *@
-@*      *@
-@*     .work-main { *@
-@*         overflow-y: auto;  /* Включаем вертикальную прокрутку */ *@
-@*     } *@
-@* *@
-@*     .chart-item { *@
-@*         padding: 10px; *@
-@*         border: 1px solid #ccc; *@
-@*         border-radius: 8px; *@
-@*         background-color: #f9f9f9; *@
-@*         text-align: center; *@
-@*     } *@
-@* *@
-@* </style> *@
+﻿@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.Util
+
+<h1>Итоги</h1>
+<p>На этой странице представлены различные диаграммы, показывающие статистику по задачам и вкладу пользователя в работу команды. Вы можете увидеть распределение задач, время, потраченное на выполнение задач, прогресс и другие метрики.</p>
+
+<div class="charts-container">
+    <div class="chart-item">
+        <h4>Распределение задач по категориям</h4>
+        <Chart Config="_categoryConfig"></Chart>
+    </div>
+
+    <div class="chart-item">
+        <h4>Распределение времени, потраченного на задачи</h4>
+        <Chart Config="_timeSpentConfig"></Chart>
+    </div>
+
+    <div class="chart-item">
+        <h4>Вклад пользователя в работу команды</h4>
+        <Chart Config="_contributionConfig"></Chart>
+    </div>
+
+    <div class="chart-item">
+        <h4>Завершенные задачи по приоритетам</h4>
+        <Chart Config="_priorityConfig"></Chart>
+    </div>
+
+    <div class="chart-item">
+        <h4>Прогресс задач по статусу выполнения</h4>
+        <Chart Config="_statusConfig"></Chart>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+
+    private PieConfig _categoryConfig;
+    private PieConfig _timeSpentConfig;
+    private PieConfig _contributionConfig;
+    private PieConfig _priorityConfig;
+    private PieConfig _statusConfig;
+
+    protected override void OnInitialized()
+    {
+        // 1. Распределение задач по категориям
+        _categoryConfig = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle { Display = false, Text = "Распределение задач по категориям" }
+            }
+        };
+
+        foreach (var value in new[] { "Завершенные", "В процессе", "Ожидающие" })
+        {
+            _categoryConfig.Data.Labels.Add(value);
+        }
+
+        _categoryConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 10, 5, 3 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(75, 192, 192),
+                ColorUtil.ColorHexString(255, 159, 64),
+                ColorUtil.ColorHexString(153, 102, 255)
+            }
+        });
+
+        // 2. Распределение времени, потраченного на задачи
+        _timeSpentConfig = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle { Display = false, Text = "Распределение времени, потраченного на задачи" }
+            }
+        };
+
+        foreach (var value in new[] { "Документация", "Разработка", "Тестирование" })
+        {
+            _timeSpentConfig.Data.Labels.Add(value);
+        }
+
+        _timeSpentConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 25, 10 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 205, 86),
+                ColorUtil.ColorHexString(54, 162, 235),
+                ColorUtil.ColorHexString(255, 99, 132)
+            }
+        });
+
+        // 3. Вклад пользователя в работу команды
+        _contributionConfig = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle { Display = false, Text = "Вклад пользователя в работу команды" }
+            },
+        };
+
+        foreach (var value in new[] { "Пользователь", "Член команды 1", "Член команды 2", "Член команды 3" })
+        {
+            _contributionConfig.Data.Labels.Add(value);
+        }
+
+        _contributionConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 30, 20, 25, 25 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(75, 192, 192),
+                ColorUtil.ColorHexString(54, 162, 235),
+                ColorUtil.ColorHexString(255, 99, 132),
+                ColorUtil.ColorHexString(153, 102, 255)
+            }
+        });
+
+        // 4. Завершенные задачи по приоритетам
+        _priorityConfig = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle { Display = false, Text = "Завершенные задачи по приоритетам" }
+            },
+        };
+
+        foreach (var value in new[] { "Высокий", "Средний", "Низкий" })
+        {
+            _priorityConfig.Data.Labels.Add(value);
+        }
+
+        _priorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 8, 12, 5 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132),
+                ColorUtil.ColorHexString(255, 205, 86),
+                ColorUtil.ColorHexString(54, 162, 235)
+            }
+        });
+
+        // 5. Прогресс задач по статусу выполнения
+        _statusConfig = new PieConfig
+        {
+            Options = new PieOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle { Display = false, Text = "Прогресс задач по статусу выполнения" }
+            },
+        };
+
+        foreach (var value in new[] { "Завершено", "В процессе", "Осталось" })
+        {
+            _statusConfig.Data.Labels.Add(value);
+        }
+
+        _statusConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 5, 10 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(75, 192, 192),
+                ColorUtil.ColorHexString(255, 159, 64),
+                ColorUtil.ColorHexString(153, 102, 255)
+            }
+        });
+    }
+}
+
+<style>
+    .charts-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .chart-item {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        text-align: center;
+    }
+
+</style>

@@ -7,6 +7,8 @@ public interface IJsonLocalizationService
 
     void ChangeCulture(string culture);
     void Toggle();
+    
+    string? CurrentCulture { get; }
 }
 
 public class JsonLocalizationService : IJsonLocalizationService
@@ -14,7 +16,7 @@ public class JsonLocalizationService : IJsonLocalizationService
     private readonly IWebHostEnvironment _env;
     private readonly Dictionary<string, Dictionary<string, string>?> _localizationData = new();
 
-    private string? _currentCulture;
+    private string _currentCulture = "en-US";
     public JsonLocalizationService(IWebHostEnvironment env)
     {
         _env = env;
@@ -34,14 +36,10 @@ public class JsonLocalizationService : IJsonLocalizationService
         _currentCulture = _currentCulture == "en-US" ? "ru-RU" : "en-US";
     }
 
+    public string? CurrentCulture => _currentCulture;
+
     public string GetString(string key, string pageName)
     {
-        var culture = CultureInfo.CurrentCulture.Name;
-        if (_currentCulture == null)
-        {
-            _currentCulture = culture;
-        }
-        
         if (!_localizationData.ContainsKey(pageName) || _isChange)
         {
             LoadLocalizationData(pageName, _currentCulture);

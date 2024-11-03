@@ -1,5 +1,6 @@
 ﻿@page "/chat"
 @using AutoMapper
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
@@ -11,6 +12,7 @@
 @inject IMessengerService MessengerService
 @inject IJSRuntime JsRuntime
 @inject IMapper Mapper
+@inject ProtectedSessionStorage ProtectedSessionStorage;
 
 <PageTitle>Chat Page</PageTitle>
 
@@ -137,11 +139,15 @@ else
             if (_selectedChat?.Id == messageDto.Chat.Id)
             {
                 var messageViewModel = Mapper.Map<MessageViewModel>(messageDto);
-                _messageViewModels.Add(messageViewModel); // Добавляем сообщение в список
+                _messageViewModels.Add(messageViewModel);
                 await InvokeAsync(StateHasChanged);
                 await JsRuntime.InvokeVoidAsync("scrollToBottom", chatListRef);
             }
         };
+        
+        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>("chat:currentChat");
+        if (currentChatStorageResult.Success)
+            await HandleTitleChatClick(currentChatStorageResult.Value);
         
         _isLoading = false;
     }
@@ -157,7 +163,8 @@ else
         }
 
         _isChatLoading = false;
-        await ScrollToBottom();
+        
+        await ProtectedSessionStorage.SetAsync("chat:currentChat", chatId);
     }
 
     private async Task CreateNewChat()

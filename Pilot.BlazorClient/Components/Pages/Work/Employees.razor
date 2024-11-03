@@ -1,0 +1,149 @@
+﻿@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.Contracts.Interfaces
+@inject IWorkPageService WorkPageService
+
+@if (_company != null)
+{
+    <section class="company-info">
+        <div class="company-title">
+            <img src="@_company.LogoUrl" alt="Company Logo" class="company-logo" />
+            <h2>@_company.Title</h2>
+        </div>
+        @if (!string.IsNullOrEmpty(_company.Description))
+        {
+            <p>@_company.Description</p>
+        }
+        <h4>Projects:</h4>
+
+        <div class="projects-container">
+            @foreach (var project in _company.Projects)
+            {
+                <div class="project">
+                    <h5>@project.Name</h5>
+                    <div class="teams-container">
+                        @foreach (var team in project.Teams)
+                        {
+                            <div class="team">
+                                <h6>@team.Name</h6>
+                                <ul class="employees-list">
+                                    @foreach (var employee in team.CompanyUsers)
+                                    {
+                                        <li class="employee-item">
+                                            <span>@employee.User!.FullName</span>
+                                            <span class="work-duration">(@GetWorkDuration(employee))</span>
+                                            <button @onclick="() => SendMessageToUser(employee.User.Id)" class="send-message-btn">Send Message</button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+else
+{
+    <p>Loading company information...</p>
+}
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    
+    [Parameter] public int CompanyId { get; set; }
+    
+    private CompanyViewModel? _company;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _company = await WorkPageService.GetCompanyAsync(CompanyId);
+        await WorkPageService.FillProjectsAsync(_company.Projects);
+        await WorkPageService.FillTeamsAsync(_company.Projects);
+        await WorkPageService.FillCompanyUsersAsync(_company.Projects);
+    }
+
+    private async Task SendMessageToUser(int userId)
+    {
+        // await MessageService.OpenChatWithUserAsync(userId);
+    }
+
+    private string GetWorkDuration(CompanyUserViewModel user)
+    {
+        if (user.CreateAt.HasValue)
+        {
+            var duration = DateTime.Now - user.CreateAt.Value;
+            return $"{duration.Days} days";
+        }
+        return "Unknown";
+    }
+}
+
+
+<style>
+    .company-info {
+        padding: 20px;
+        background-color: #f7f9fc;
+        border-radius: 8px;
+    }
+
+    .company-logo {
+        max-width: 100px;
+        border-radius: 50%;
+        margin: 10px 0;
+    }
+
+    .projects-container {
+        margin-top: 20px;
+    }
+
+    .project {
+        padding: 10px;
+        border: 1px solid #e1e4e8;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .teams-container {
+        margin-left: 15px;
+    }
+
+    .employee-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+
+    .send-message-btn {
+        padding: 5px 10px;
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .send-message-btn:hover {
+        background-color: #1a5276;
+    }
+
+    .work-duration {
+        font-style: italic;
+        color: #7f8c8d;
+    }
+
+    .company-title {
+        display: flex;
+        align-content: space-around;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .company-title img {
+        margin-right: 50px;
+    }
+    
+</style>

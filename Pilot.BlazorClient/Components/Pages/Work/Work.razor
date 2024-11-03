@@ -1,14 +1,17 @@
 ﻿@page "/Work"
-@page "/Work/{SectionId:int}"
-
-<PageTitle>Work</PageTitle>
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @inject IWorkPageService WorkPageService
+@inject ProtectedSessionStorage ProtectedSessionStorage;
 @inject IUserService UserService
+@inject NavigationManager NavigationManager;
+
+<PageTitle>Work</PageTitle>
+
 
 <AuthCheck/>
 
@@ -25,7 +28,7 @@ else
             <ul>
                 @if (_projects is { Count: > 0 })
                 {
-                    <h5>Projects:</h5>
+                    <h5 @onclick="() => ClearTeam()" style="cursor: pointer">Projects:</h5>
                     @foreach (var project in _projects)
                     {
                         <li style="padding: 5px">
@@ -84,7 +87,12 @@ else
                         <Summary UserId="@_user.Id"></Summary>
                         break;
                     case 2:
-                        <UserTask UserId="@_user.Id"/>
+                        <UserTask UserId="@_user.Id" TeamId="@_teamId"/>
+                        break;
+                    case 3:
+                        <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                        break;
+                    case 4:
                         break;
                 }
             }
@@ -99,33 +107,35 @@ else
     private bool _isLoading = true;
 
     private UserViewModel? _user;
+    private CompanyUserViewModel? _companyUser;
 
     private ICollection<ProjectViewModel>? _projects;
     
     private ICollection<TeamViewModel>? _teams;
     
-    [Parameter]
-    public int SectionId { get; set; }
+    private int _teamId;
     
     protected override async Task OnInitializedAsync()
     {
         _user = await UserService.GetCurrentUserAsync();
         
-        var companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
+        _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
 
-        _teams = await WorkPageService.GetUserTeamsAsync(companyUser.Teams);
+        _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
 
         _projects = await WorkPageService.GetUserProjectsAsync(_teams);
 
-        _activeTab = SectionId;
-
+        var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
+        if (currentTabStorageResult.Success)
+            _activeTab = currentTabStorageResult.Value;
+        
         _isLoading = false;
     }
 
     private void SetActiveTab(int tabId)
     {
         _activeTab = tabId;
-        SectionId = _activeTab;
+        ProtectedSessionStorage.SetAsync("work:currentTab", tabId);
     }
 
     private string GetActiveClass(int tabId)
@@ -135,9 +145,26 @@ else
 
     private void NavigateToTeam(int teamId)
     {
+        _teamId = teamId;
+        ProtectedSessionStorage.SetAsync("work:teamId", teamId);
         Console.WriteLine($"Navigating to: {teamId}");
+
+        if (_activeTab == 2)
+        {
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
     }
 
+    private void ClearTeam()
+    {
+        ProtectedSessionStorage.DeleteAsync("work:teamId");
+        Console.WriteLine($"Navigating to: {0}");
+
+        if (_activeTab == 2)
+        {
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+    }
 }
 
 <style>
@@ -211,5 +238,9 @@ else
 
     .team-item:hover {
         color: #9acbff;
+    }
+
+    .work-main {
+        overflow-y: auto;  /* Включаем вертикальную прокрутку */
     }
 </style>

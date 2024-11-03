@@ -17,3 +17,18 @@
         top: 0.5rem;
     }
 
+/* Apply to the entire page or specific container */
+::-webkit-scrollbar {
+    width: 8px; /* Adjusts the width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Track background */
+    border-radius: 10px; /* Roundness of the track */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #2980b9; /* Blue color for the scrollbar thumb */
+    border-radius: 10px; /* Roundness of the scrollbar thumb */
+    border: 2px solid #f1f1f1; /* Adds space around the thumb */
+}

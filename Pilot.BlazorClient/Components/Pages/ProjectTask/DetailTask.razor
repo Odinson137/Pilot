@@ -145,7 +145,7 @@ else
                         <div class="form-group">
                             <label>Status:</label>
                             <select class="form-control" @bind="_task.TaskStatus">
-                                @foreach (var value in Enum.GetValues(typeof(TaskStatus)))
+                                @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3).ToList())
                                 {
                                     <option value="@value">@value</option>
                                 }
