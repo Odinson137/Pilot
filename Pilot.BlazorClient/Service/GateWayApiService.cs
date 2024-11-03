@@ -55,7 +55,7 @@ public class GateWayApiService(
         where TMessage : BaseDto
     {
         var client = await GetClientAsync<TMessage>();
-        var response = await client.PostAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
+        var response = await client.PutAsJsonAsync(GetFullUrl<TMessage>(url), message, token);
 
         if (!response.IsSuccessStatusCode)
         {

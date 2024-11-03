@@ -31,7 +31,7 @@ public class TokenAuthenticationStateProvider : AuthenticationStateProvider
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, "AuthenticatedUser") 
+                new(ClaimTypes.Name, "AuthenticatedUser") 
             };
 
             var identity = new ClaimsIdentity(claims, "Bearer");

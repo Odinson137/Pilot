@@ -49,6 +49,18 @@
 	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=DOTNET_005FENVIRONMENT/@EntryIndexedValue">Test</s:String>
 	<s:Boolean x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=RESHARPER_005FHOST_005FVERSION/@EntryIndexRemoved">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestRunner/EnvironmentVariablesIndexed/=RESHARPER_005FHOST/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FHomePage_002FHomePageResource/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FHomePage_002FHomePageResource/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FHomePage_002FHomePageResource_002Eru_002DUR/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FHomePage_002FHomePageResource_002Eru_002DUR/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FPages_002FHome/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FPages_002FHome/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FPages_002FHomePage/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FPages_002FHomePage/@EntryIndexRemoved">True</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FWorkPageResource/@EntryIndexedValue">False</s:Boolean>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/CheckedGroups/=Pilot_002EClients_002FPilot_002EBlazorClient_002Fwwwroot_002FResources_002FWorkPageResource/@EntryIndexRemoved">True</s:Boolean>
+	<s:String x:Key="/Default/ResxEditorPersonal/DisabledLanguages/@EntryValue">ru-ru</s:String>
+	<s:Boolean x:Key="/Default/ResxEditorPersonal/Initialized/@EntryValue">True</s:Boolean>
 	
 	
 	

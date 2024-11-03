@@ -1,5 +1,8 @@
+using System.Globalization;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Pilot.BlazorClient.Components;
 using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
@@ -29,6 +32,7 @@ services.AddScoped<IWorkPageService, WorkPageService>();
 services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();
 services.AddScoped<IChatPageService, ChatPageService>();
 services.AddScoped<IMessengerService, MessengerService>();
+services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -53,6 +57,11 @@ services.AddScoped<TokenAuthenticationStateProvider>();
 
 services.AddBlazoredModal();
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddMvc()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +71,11 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .AddSupportedCultures(new[] { "en-US", "ru-RU" })
+    .AddSupportedUICultures(new[] { "en-US", "ru-RU" }));
 
 app.UseHttpsRedirection();
 

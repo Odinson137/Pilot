@@ -1,0 +1,12 @@
+﻿{
+  "PageTitle": "Home",
+  "WelcomeMessage": "Welcome to our site",
+  "MainTitle": "Pilot",
+  "MainDescription": "  Pilot is a modern tool for project management. It is centered around companies that can be created to achieve various goals, such as developing software or building services. Employees can be hired into companies to work in teams on projects. Each project consists of tasks, with notifications and chats to keep communication smooth. Task changes are tracked for transparent management and control.",
+  "Feature1.Title": "Create Companies",
+  "Feature1.Description": "Set up companies to manage teams and projects for any goal.",
+  "Feature2.Title": "Manage Projects",
+  "Feature2.Description": "Create projects within companies, track progress, and assign tasks to teams.",
+  "Feature3.Title": "Real-time Communication",
+  "Feature3.Description": "Use the integrated chat and notification system to keep teams connected."
+}

@@ -1,50 +1,48 @@
 ﻿@page "/"
+@inject IJsonLocalizationService Localizer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", HomePageName)</PageTitle>
 
-<!-- Главный блок с названием и описанием -->
 <div class="text-center">
-    <h1 class="display-4">Pilot</h1>
-    <p class="lead">
-        Pilot is a modern tool for project management. It is centered around companies that can be created to achieve various goals, such as developing software or building services. Employees can be hired into companies to work in teams on projects. Each project consists of tasks, with notifications and chats to keep communication smooth. Task changes are tracked for transparent management and control.
-    </p>
+    <h1>@Localizer.GetString("MainTitle", HomePageName)</h1>
+    <p>@Localizer.GetString("MainDescription", HomePageName)</p>
     <img src="Images/Home/main_home.png" alt="Main Image" class="img-fluid mt-4"/>
 </div>
 
-<!-- Блок с функционалом проекта -->
 <section id="features" class="mt-5">
-    <h2 class="text-center text-uppercase fw-bold mb-5">What Pilot Can Do</h2>
+    <h2 class="text-center text-uppercase fw-bold mb-5">@Localizer.GetString("FeaturesTitle", HomePageName)</h2>
     <div class="row justify-content-between feature-section">
-        <!-- Первый блок с функционалом -->
         <div class="col-md-5 feature-block feature-left">
             <div class="feature-content">
-                <h5>Create Companies</h5>
-                <p>Set up companies to manage teams and projects for any goal.</p>
+                <h5>@Localizer.GetString("Feature1.Title", HomePageName)</h5>
+                <p>@Localizer.GetString("Feature1.Description", HomePageName)</p>
             </div>
             <img src="Images/Home/66f8705c1383b3000179ba84_sd3-turbo_result.webp" alt="Feature 1" class="img-fluid feature-img"/>
         </div>
 
-        <!-- Второй блок с функционалом -->
         <div class="col-md-5 feature-block feature-right">
             <img src="Images/Home/667bf17c2126de0001348083_sd3-turbo_result.webp" alt="Feature 2" class="img-fluid feature-img"/>
             <div class="feature-content">
-                <h5>Manage Projects</h5>
-                <p>Create projects within companies, track progress, and assign tasks to teams.</p>
+                <h5>@Localizer.GetString("Feature2.Title", HomePageName)</h5>
+                <p>@Localizer.GetString("Feature2.Description", HomePageName)</p>
             </div>
         </div>
     </div>
 
     <div class="row justify-content-center feature-section">
-        <!-- Третий блок с функционалом -->
         <div class="col-md-5 feature-block feature-left">
             <div class="feature-content">
-                <h5>Real-time Communication</h5>
-                <p>Use the integrated chat and notification system to keep teams connected.</p>
+                <h5>@Localizer.GetString("Feature3.Title", HomePageName)</h5>
+                <p>@Localizer.GetString("Feature3.Description", HomePageName)</p>
             </div>
             <img src="Images/Home/You Can Now Manage Accounts on Facebook, Instagram and Facebook Messenger Via One App.jfif" alt="Feature 3" class="img-fluid feature-img"/>
         </div>
     </div>
 </section>
+
+@code {
+    const string HomePageName = "Home";
+}
 
 <style>
     .text-center {
@@ -99,12 +97,3 @@
         font-size: 2rem;
     }
 </style>
-
-@code{
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Initialization logic, if needed
-    }
-
-}

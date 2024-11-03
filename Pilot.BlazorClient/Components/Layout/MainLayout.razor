@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJsonLocalizationService Localizer
+@inject NavigationManager NavigationManager
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
@@ -18,15 +20,15 @@
                 </li>
                 @if (_isAuthenticated)
                 {
-                    <li class="nav-item">
-                        <a class="nav-link text-primary" href="/Work">Work</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-primary" href="/Chat">Chat</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-primary" href="/Account">Account</a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/Work">Work</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/Chat">Chat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-primary" href="/Account">Account</a>
+                </li>
                 }
                 else
                 {
@@ -39,8 +41,12 @@
                 }
             </ul>
         </div>
+            <div class="ms-auto">
+                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>Toggle Language</button>
+            </div>
     </div>
 </nav>
+
 
 <div class="container mx-auto mt-4">
     @Body
@@ -106,5 +112,16 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         _isAuthenticated = authState.User.Identity is { IsAuthenticated: true };
+    }
+    
+    private void ToggleCulture()
+    {
+        ChangeCultureAndReload();
+    }
+
+    private void ChangeCultureAndReload()
+    {
+        Localizer.Toggle();
+        NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 }

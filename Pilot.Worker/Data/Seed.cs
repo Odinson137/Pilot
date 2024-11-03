@@ -284,6 +284,8 @@ public class Seed : ISeed
                 .RuleFor(u => u.FileId, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.Priority, (f, _) => f.PickRandom<TaskPriority>())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
+                .RuleFor(u => u.EstimatedTime, (f, _) => TimeSpan.FromHours(f.Random.Int(1, 8)))
+                .RuleFor(u => u.TimeSpent, (f, _) => TimeSpan.FromHours(f.Random.Int(0, 8))) 
             ;
         
         return fake;

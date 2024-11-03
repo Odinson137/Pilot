@@ -8,7 +8,7 @@ public interface IWorkPageService
     
     Task<ICollection<ProjectViewModel>> GetUserProjectsAsync<T>(T userProjects) where T : ICollection<BaseViewModel>;
     
-    Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(ICollection<int> userProjects);
+    Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(ICollection<TeamViewModel> userProjects);
     
     Task<ICollection<TeamViewModel>> GetUserTeamsAsync(ICollection<int> userProjects);
     

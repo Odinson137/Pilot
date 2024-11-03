@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,7 +15,11 @@
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
       <PackageReference Include="Blazored.Modal" Version="7.3.1" />
       <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
+      <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
+      <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.6.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Localization" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
+      <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,8 +36,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Components\Pages\Test\TestEditForm.razor" />
-      <_ContentIncludedByDefault Remove="Components\Pages\Test\UserTask.razor" />
+      <_ContentIncludedByDefault Remove="wwwroot\Resources\Home\en-US.json" />
+      <_ContentIncludedByDefault Remove="wwwroot\Resources\Home\ru-RU.json" />
     </ItemGroup>
 
 </Project>

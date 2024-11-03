@@ -42,8 +42,7 @@
 
         _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
 
-        var projectIds = _teams.Select(c => c.Project.Id).Distinct().ToList();
-        _projects = await WorkPageService.GetUserProjectsAsync(projectIds);
+        _projects = await WorkPageService.GetUserProjectsAsync(_teams);
 
         Console.WriteLine("Greeting loaded");
     }
@@ -55,3 +54,33 @@
             hour < 18 ? "Good afternoon" : "Good evening";
     }
 }
+
+
+<style>
+    .user-greeting {
+        padding: 20px;
+        background-color: #f5f6f8;
+        border-radius: 10px;
+        color: #2d3e50;
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        font-size: 16px;
+    }
+
+    .user-greeting h2 {
+        margin-bottom: 10px;
+        color: #34495e;
+    }
+
+    .user-greeting ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .user-greeting li {
+        margin: 5px 0;
+        padding: 10px;
+        background-color: #ecf0f1;
+        border-radius: 5px;
+    }
+
+</style>

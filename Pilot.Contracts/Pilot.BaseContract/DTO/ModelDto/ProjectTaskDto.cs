@@ -26,4 +26,8 @@ public class ProjectTaskDto : BaseDto
     public TaskStatus TaskStatus { get; set; }
     
     public TaskPriority Priority { get; set; }
+    
+    public TimeSpan EstimatedTime { get; set; }
+    
+    public TimeSpan TimeSpent { get; set; }
 }

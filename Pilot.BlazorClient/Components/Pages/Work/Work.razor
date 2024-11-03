@@ -81,7 +81,7 @@ else
                         <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
                         break;
                     case 1:
-                        <Team/>
+                        <Summary UserId="@_user.Id"></Summary>
                         break;
                     case 2:
                         <UserTask UserId="@_user.Id"/>
@@ -115,8 +115,7 @@ else
 
         _teams = await WorkPageService.GetUserTeamsAsync(companyUser.Teams);
 
-        var projectsIds = _teams.Select(c => c.Project.Id).Distinct().ToList();
-        _projects = await WorkPageService.GetUserProjectsAsync(projectsIds);
+        _projects = await WorkPageService.GetUserProjectsAsync(_teams);
 
         _activeTab = SectionId;
 

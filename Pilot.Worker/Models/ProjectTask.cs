@@ -26,6 +26,10 @@ public class ProjectTask : BaseModel, IAddCompanyUser
     
     public TaskPriority Priority { get; set; }
 
+    public TimeSpan EstimatedTime { get; set; }
+    
+    public TimeSpan TimeSpent { get; set; }
+    
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CreatedBy = companyUser;

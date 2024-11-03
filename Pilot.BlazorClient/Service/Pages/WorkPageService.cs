@@ -20,9 +20,9 @@ public class WorkPageService(IGateWayApiService apiService) : IWorkPageService
         return projectViewModels;
     }
 
-    public async Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(ICollection<int> userProjects)
+    public async Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(ICollection<TeamViewModel> userProjects)
     {
-        var filter = new BaseFilter(userProjects.ToArray());
+        var filter = new BaseFilter(userProjects.Select(c => c.Id).Distinct().ToList());
         var projectViewModels = await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(filter: filter);
         return projectViewModels;
     }
