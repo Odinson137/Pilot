@@ -11,7 +11,7 @@ public class CompanyUpdatedConsumer(
     ILogger<CompanyUpdatedConsumer> logger,
     ICompany company,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<Models.Company, CompanyDto>(logger, company, message, validate, mapper)
 {

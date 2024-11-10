@@ -12,7 +12,7 @@ public class TeamUpdatedConsumer(
     ILogger<TeamUpdatedConsumer> logger,
     ITeam repository,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<Team, TeamDto>(logger, repository, message, validate, mapper)
 {

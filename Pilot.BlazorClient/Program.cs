@@ -10,6 +10,7 @@ using Pilot.BlazorClient.Service;
 using Pilot.BlazorClient.Service.Pages;
 using Pilot.Contracts.Data.Enums;
 using Serilog;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -56,6 +57,7 @@ services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider
 services.AddScoped<TokenAuthenticationStateProvider>();
 
 services.AddBlazoredModal();
+services.AddSyncfusionBlazor();
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddMvc()

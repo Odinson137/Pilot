@@ -12,7 +12,7 @@ public class ProjectCreatedConsumer(
     ILogger<ProjectCreatedConsumer> logger,
     IProject repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<Project, ProjectDto>(logger, repository, messageService, validate, mapper, companyUser)

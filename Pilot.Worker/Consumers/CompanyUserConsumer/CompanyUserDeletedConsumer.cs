@@ -11,5 +11,5 @@ public class CompanyUserDeletedConsumer(
     ILogger<CompanyUserDeletedConsumer> logger,
     ICompanyUser companyUser,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, message, validate);

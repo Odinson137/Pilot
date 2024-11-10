@@ -11,7 +11,7 @@ public class CompanyCreatedConsumer(
     ILogger<CompanyCreatedConsumer> logger,
     ICompany company,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<Models.Company, CompanyDto>(logger, company, messageService, validate, mapper, companyUser)

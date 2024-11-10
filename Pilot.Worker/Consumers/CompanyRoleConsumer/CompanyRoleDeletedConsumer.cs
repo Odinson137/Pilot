@@ -11,7 +11,7 @@ public class CompanyRoleDeletedConsumer(
     ILogger<CompanyRoleDeletedConsumer> logger,
     ICompanyRole repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<CompanyRole, CompanyRoleDto>(logger, repository, message, validate)
 {
 }

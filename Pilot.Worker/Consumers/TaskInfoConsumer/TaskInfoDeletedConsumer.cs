@@ -11,7 +11,7 @@ public class TaskInfoDeletedConsumer(
     ILogger<TaskInfoDeletedConsumer> logger,
     ITaskInfo repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<TaskInfo, TaskInfoDto>(logger, repository, message, validate)
 {
 }

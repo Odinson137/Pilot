@@ -12,7 +12,7 @@ public class TaskInfoCreatedConsumer(
     ILogger<TaskInfoCreatedConsumer> logger,
     ITaskInfo repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<TaskInfo, TaskInfoDto>(logger, repository, messageService, validate, mapper, companyUser)

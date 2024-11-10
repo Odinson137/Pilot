@@ -6,6 +6,7 @@ using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
+using Pilot.Worker.Interface;
 
 namespace Pilot.Worker.Consumers.Base;
 
@@ -13,7 +14,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     ILogger<BaseDeleteConsumer<T, TDto>> logger,
     IBaseRepository<T> repository,
     IMessageService messageService,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : IConsumer<DeleteCommandMessage<TDto>>
     where T : BaseModel
     where TDto : BaseDto

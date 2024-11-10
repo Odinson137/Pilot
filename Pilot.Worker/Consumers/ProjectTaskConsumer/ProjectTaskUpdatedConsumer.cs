@@ -12,7 +12,7 @@ public class ProjectTaskUpdatedConsumer(
     ILogger<ProjectTaskUpdatedConsumer> logger,
     IProjectTask repository,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<ProjectTask, ProjectTaskDto>(logger, repository, message, validate, mapper)
 {

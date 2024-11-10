@@ -14,7 +14,6 @@
         <PackageReference Include="Bogus" Version="35.6.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.8" />
-        <PackageReference Include="MongoDB.Driver" Version="2.24.0"/>
         <PackageReference Include="PilotContractsByYuri" Version="2.2.0"/>
         <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.2" />

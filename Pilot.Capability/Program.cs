@@ -1,8 +1,12 @@
 using Pilot.Capability.Data;
 using Pilot.Capability.Interface;
 using Pilot.Capability.Repository;
+using Pilot.Capability.Service;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -20,6 +24,10 @@ services.AddScoped<IPost, PostRepository>();
 services.AddScoped<ICompanyPost, CompanyPostRepository>();
 services.AddScoped<ISkill, SkillRepository>();
 services.AddScoped<IUserSkill, UserSkillRepository>();
+
+services.AddScoped<IMessageService, MessageService>();
+services.AddScoped<IValidatorService, ValidatorService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 services.AddScoped<ISeed, Seed>();
 

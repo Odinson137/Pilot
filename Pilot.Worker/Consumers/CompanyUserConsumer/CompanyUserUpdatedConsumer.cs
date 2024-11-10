@@ -12,7 +12,7 @@ public class CompanyUserUpdatedConsumer(
     ILogger<CompanyUserUpdatedConsumer> logger,
     ICompanyUser companyUser,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<CompanyUser, CompanyUserDto>(logger, companyUser, message, validate, mapper)
 {

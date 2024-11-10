@@ -1,0 +1,116 @@
+﻿@page "/create-chat"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.HelperViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@inject NavigationManager NavigationManager
+@inject IChatPageService ChatPageService
+
+<PageTitle>Create New Chat</PageTitle>
+
+<div class="chat">
+    <h3>Create New Chat</h3>
+
+    <EditForm Model="_newChat" OnValidSubmit="HandleSubmit">
+
+        <div class="form-group">
+            <label for="Title">Title</label>
+            <InputText id="Title" @bind-Value="_newChat.Title" class="form-control"/>
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <InputTextArea id="Description" @bind-Value="_newChat.Description" class="form-control"/>
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="btn btn-primary">Create Chat</button>
+            <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+        </div>
+    </EditForm>
+
+</div>
+
+@code {
+    private ChatViewModel _newChat = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task HandleSubmit()
+    {
+        await ChatPageService.CreateChatAsync(_newChat);
+        NavigationManager.NavigateTo("/chat");
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/chat");
+    }
+
+}
+
+<style>
+    .chat {
+        height: 630px;
+        width: 500px;
+        justify-self: center;
+        margin-bottom: 100px;
+    }
+    
+    .buttons {
+        margin-top: 20px;    
+    }
+    
+    .employee-list {
+        max-height: 430px; /* Adjust height as needed */
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .employee-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .employee-item:last-child {
+        border-bottom: none;
+    }
+
+    .employee-checkbox {
+        margin-right: 10px;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .employee-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .employee-name {
+        font-weight: bold;
+    }
+
+    .employee-username {
+        color: #777;
+        font-size: 0.9em;
+    }
+
+    #Description {
+        min-height: 110px;
+    }
+    
+</style>

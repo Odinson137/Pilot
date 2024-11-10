@@ -4,4 +4,4 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class SkillController(IMediator mediator) : PilotReadOnlyController<SkillDto>(mediator);
+public class SkillController(IMediator mediator) : PilotController<SkillDto>(mediator);

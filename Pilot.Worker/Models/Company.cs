@@ -13,6 +13,8 @@ public class Company : BaseModel
 
     public List<CompanyRole> CompanyRoles { get; set; } = [];
     
+    public ICollection<CompanyUser> CompanyUsers { get; set; } = [];
+    
     public int? LogoId { get; set; }
 
     public List<int> InsideImagesId { get; set; } = [];

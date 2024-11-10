@@ -1,10 +1,12 @@
 ﻿@page "/Account/{UserId:int}"
 @page "/Account"
 <PageTitle>Account</PageTitle>
+@using System.Globalization
 @using Microsoft.AspNetCore.Components.Authorization
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.ViewModels
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IUserPageService UserPageService
@@ -37,7 +39,7 @@ else if (_user == null)
 else
 {
     <div class="user-info-container">
-        <!-- Левая секция: фотография и ФИО -->
+        <!-- Left section: photo and name -->
         <div class="left-section">
             <div class="avatar-section">
                 @if (!string.IsNullOrEmpty(_user.AvatarUrl))
@@ -52,30 +54,41 @@ else
             <h2>@_user.Name @_user.LastName</h2>
         </div>
 
-        <!-- Правая секция: данные пользователя -->
+        <!-- Right section: user details -->
         <div class="right-section">
-            <p>
-                <strong>Username:</strong> @_user.UserName
-            </p>
-            <p>
-                <strong>Email:</strong> @(_user.Email ?? "No email provided")
-            </p>
-            <p>
-                <strong>Role:</strong> @_user.Role
-            </p>
-            <p>
-                <strong>Description:</strong> @(_user.Description ?? "No description provided")
-            </p>
+            <p><strong>Username:</strong> @_user.UserName</p>
+            <p><strong>Email:</strong> @(_user.Email ?? "No email provided")</p>
+            <p><strong>Role:</strong> @_user.Role</p>
+            <p><strong>Description:</strong> @(_user.Description ?? "No description provided")</p>
             <p><strong>Location:</strong> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</p>
-            <p>
-                <strong>Gender:</strong> @_user.Gender
-            </p>
-            <p>
-                <strong>Birthday:</strong> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")
-            </p>
+            <p><strong>Gender:</strong> @_user.Gender</p>
+            <p><strong>Birthday:</strong> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")</p>
         </div>
     </div>
 
+    
+    <!-- Skills Section -->
+    <div class="skills-section">
+        <h3>User Skills</h3>
+        @if (_skills != null && _skills.Any())
+        {
+            <ul class="skills-list">
+                @foreach (var skill in _skills)
+                {
+                    <li class="skill-item">
+                        <strong>@skill.Skill.Title</strong> - 
+                        <span>@(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : "No experience")</span> 
+                        (Level: @skill.SkillLevel)
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No skills available.</p>
+        }
+    </div>
+    
     @if (UserId.HasValue)
     {
         <div class="actions-section">
@@ -96,6 +109,7 @@ else
     [Parameter] public int? UserId { get; set; }
 
     private UserViewModel? _user;
+    private ICollection<UserSkillViewModel>? _skills;
     private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -113,13 +127,16 @@ else
 
         if (UserId.HasValue)
         {
-// Получение данных пользователя по UserId
             _user = await UserPageService.GetAnotherUserAsync(UserId.Value);
         }
         else
         {
-// Получение текущего пользователя
             _user = await UserPageService.GetUserAsync();
+        }
+
+        if (_user != null)
+        {
+            _skills = await UserPageService.GetUserSkillAsync(_user.Id);
         }
 
         _isLoading = false;
@@ -127,7 +144,6 @@ else
 
     private void SendMessage()
     {
-// Переход на страницу с чатом, пока метод-заглушка
         NavigationManager.NavigateTo($"/Chat/{UserId ?? _user?.Id}");
     }
 
@@ -138,17 +154,38 @@ else
 
     private async Task DeleteAccount()
     {
-// Логика для удаления аккаунта
     }
 
     private async Task EditAccount()
     {
         NavigationManager.NavigateTo("/Account/Edit");
     }
-
 }
 
 <style>
+    /* Existing styles */
+
+    .skills-section {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f7f9fc;
+        border-radius: 8px;
+    }
+
+    .skills-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .skill-item {
+        padding: 5px 0;
+        border-bottom: 1px solid #e1e4e8;
+    }
+
+    .skill-item:last-child {
+        border-bottom: none;
+    }
+
     .header-banner {
         background-color: gray;
         height: 200px;

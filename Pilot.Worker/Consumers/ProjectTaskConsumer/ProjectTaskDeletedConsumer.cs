@@ -11,7 +11,7 @@ public class ProjectTaskDeletedConsumer(
     ILogger<ProjectTaskDeletedConsumer> logger,
     IProjectTask repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<ProjectTask, ProjectTaskDto>(logger, repository, message, validate)
 {
 }

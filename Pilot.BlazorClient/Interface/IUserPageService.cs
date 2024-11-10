@@ -1,4 +1,5 @@
-﻿using Pilot.BlazorClient.ViewModels.UserViewModels;
+﻿using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.UserViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
@@ -11,4 +12,6 @@ public interface IUserPageService
     public Task<UserViewModel> GetUserAsync();
     
     public Task<UserViewModel> GetAnotherUserAsync(int userId);
+    
+    public Task<ICollection<UserSkillViewModel>> GetUserSkillAsync(int userId);
 }

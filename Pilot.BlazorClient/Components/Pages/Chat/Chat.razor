@@ -13,6 +13,7 @@
 @inject IJSRuntime JsRuntime
 @inject IMapper Mapper
 @inject ProtectedSessionStorage ProtectedSessionStorage;
+@inject NavigationManager NavigationManager
 
 <PageTitle>Chat Page</PageTitle>
 
@@ -53,9 +54,9 @@ else
 
                 <!-- Chat Content -->
                 <div class="chat-content">
-     
+
                     <!-- Messages Section -->
-                    <div class="message-list" @ref="chatListRef" id="chatListRef">
+                    <div class="message-list" @ref="_chatListRef" id="chatListRef">
                         @foreach (var message in _messageViewModels)
                         {
                             <MessageComponent Message="@message" Users="@_users" User="@_currentUser"/>
@@ -65,7 +66,7 @@ else
                     <TextboxComponent OnSendMessageClick="HandleSendMessageClick"/>
                 </div>
             </div>
-            
+
             @if (!_isChatLoading)
             {
                 <!-- Right Sidebar: Chat Settings -->
@@ -81,12 +82,12 @@ else
 
                         <h6>Created by</h6>
                         <a href="@GetUserProfileLink(_selectedChat.CreatedBy)">
-                            <img src="@_users!.First(c => c.Id == _selectedChat.CreatedBy).AvatarUrl" alt="avatar"/>
-                            <span class="sender-name">@_users!.First(c => c.Id == _selectedChat.CreatedBy).UserName</span>
+                            <img src="@_users.First(c => c.Id == _selectedChat.CreatedBy).AvatarUrl" alt="avatar"/>
+                            <span class="sender-name">@_users.First(c => c.Id == _selectedChat.CreatedBy).UserName</span>
                         </a>
 
                         <h6>Participants</h6>
-                        @foreach (var user in _users!)
+                        @foreach (var user in _users)
                         {
                             <div class="participant-info">
                                 <img src="@user.AvatarUrl" alt="@user.UserName" class="participant-avatar"/>
@@ -95,23 +96,20 @@ else
                         }
                     </div>
                     <button class="btn btn-secondary mt-3" @onclick="ToggleInfoPanel">Close</button>
+                    <button class="btn btn-secondary mt-3" @onclick="UpdateNewChat">Update</button>
                 </div>
             }
-
         }
         else
         {
-          
             <!-- Placeholder Content When No Chat Selected -->
             <div class="placeholder-content text-center">
                 <h2 style="color: #1e3a8a;">Welcome to Our Chat Page</h2>
                 <p class="lead" style="color: #4a5568;">Here, you can communicate in real time with team members and engage in discussions.</p>
                 <img src="Images/Chat/photo_2024-10-26_21-58-52.jpg" alt="Communication" class="placeholder-img"/>
                 <p class="mt-3" style="color: #4a5568;">Select a chat from the left panel or create a new one to start chatting. Stay connected, stay productive!</p>
-            </div>  
+            </div>
         }
-
-
     </div>
 }
 
@@ -120,11 +118,11 @@ else
     private ICollection<MessageViewModel> _messageViewModels = [];
     private ChatViewModel? _selectedChat;
     private bool _showInfoPanel;
-    private ICollection<UserViewModel>? _users;
+    private ICollection<UserViewModel> _users = [];
     private UserViewModel _currentUser = null!;
     private bool _isLoading = true;
     private bool _isChatLoading;
-    private ElementReference chatListRef;
+    private ElementReference _chatListRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,23 +130,23 @@ else
         _chats = await ChatPageService.GetUserChatsAsync();
 
         await MessengerService.CreateConnectionAsync(_currentUser.Id);
-        
-        MessengerService.OnMessageReceived += async (message) =>  
+
+        MessengerService.OnMessageReceived += async (message) =>
         {
-            var messageDto = message.FromJson<MessageDto>(); 
+            var messageDto = message.FromJson<MessageDto>();
             if (_selectedChat?.Id == messageDto.Chat.Id)
             {
                 var messageViewModel = Mapper.Map<MessageViewModel>(messageDto);
                 _messageViewModels.Add(messageViewModel);
                 await InvokeAsync(StateHasChanged);
-                await JsRuntime.InvokeVoidAsync("scrollToBottom", chatListRef);
+                await JsRuntime.InvokeVoidAsync("scrollToBottom", _chatListRef);
             }
         };
-        
+
         var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>("chat:currentChat");
         if (currentChatStorageResult.Success)
             await HandleTitleChatClick(currentChatStorageResult.Value);
-        
+
         _isLoading = false;
     }
 
@@ -158,20 +156,25 @@ else
         _selectedChat = _chats.FirstOrDefault(chat => chat.Id == chatId);
         if (_selectedChat != null)
         {
-            _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers);
+            _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers, _selectedChat.CreatedBy);
             _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50);
         }
 
         _isChatLoading = false;
-        
+
         await ProtectedSessionStorage.SetAsync("chat:currentChat", chatId);
     }
 
     private async Task CreateNewChat()
     {
-// Logic for creating a new chat
+        NavigationManager.NavigateTo("/create-chat");
     }
 
+    private async Task UpdateNewChat()
+    {
+        NavigationManager.NavigateTo($"/update-chat/{_selectedChat!.Id}");
+    }
+    
     private void ToggleInfoPanel()
     {
         _showInfoPanel = !_showInfoPanel;
@@ -186,11 +189,12 @@ else
     }
 
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";
-    
+
     private async Task ScrollToBottom()
     {
-        await JsRuntime.InvokeVoidAsync("scrollSidebarToBottom", chatListRef);
+        await JsRuntime.InvokeVoidAsync("scrollSidebarToBottom", _chatListRef);
     }
+
 }
 
 <style>
@@ -272,6 +276,10 @@ else
     .message-list {
         height: 90%;
         overflow-y: auto;
+    }
+    
+    .create-chat-btn {
+        margin-top: 20px;
     }
 </style>
 

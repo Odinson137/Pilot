@@ -20,6 +20,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Localization" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.10" />
       <PackageReference Include="Microsoft.Extensions.Localization" Version="8.0.10" />
+      <PackageReference Include="Syncfusion.Blazor.Data" Version="27.1.58" />
+      <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="27.1.58" />
     </ItemGroup>
 
     <ItemGroup>

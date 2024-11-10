@@ -1,4 +1,5 @@
-﻿using Pilot.BlazorClient.Interface;
+﻿using AutoMapper;
+using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
@@ -7,12 +8,18 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class ChatPageService(IGateWayApiService apiService) : IChatPageService
+public class ChatPageService(IGateWayApiService apiService, IUserService userService, IMapper mapper) : IChatPageService
 {
     public async Task<ICollection<ChatViewModel>> GetUserChatsAsync()
     {
         var chats = await apiService.SendGetMessages<ChatDto, ChatViewModel>(Urls.UserChats);
         return chats;
+    }
+
+    public async Task<ChatViewModel> GetChatAsync(int chatId)
+    {
+        var chat = await apiService.SendGetMessage<ChatDto, ChatViewModel>(chatId);
+        return chat;
     }
 
     public Task<ICollection<ChatMemberViewModel>> GetChatMembersAsync(ICollection<int> chatMemberIds)
@@ -31,16 +38,28 @@ public class ChatPageService(IGateWayApiService apiService) : IChatPageService
         throw new NotImplementedException();
     }
 
-    public Task<ICollection<InfoMessageViewModel>> GetInfoMessagesAsync(ICollection<int> messagesIds, int start, int end)
+    public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels, int createdBy)
     {
-        throw new NotImplementedException();
-    }
-
-    public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels)
-    {
-        var ids = chatMemberViewModels.Select(c => c.Id).ToArray();
+        var ids = chatMemberViewModels.Select(c => c.Id).ToList();
+        ids.Add(createdBy);
         var filter = new BaseFilter(ids);
         var userViewModels = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
         return userViewModels;
+    }
+
+    public async Task<ICollection<UserViewModel>> GetAllEmployeesAsync()
+    {
+        var user = await userService.GetCurrentUserAsync();
+        var companyUser = await apiService.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(user.Id);
+        var company = await apiService.SendGetMessage<CompanyDto, CompanyViewModel>(companyUser.Company.Id);
+        var filter = new BaseFilter(company.CompanyUsers.Select(c => c.Id).ToArray());
+        var users = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
+        return users;
+    }
+
+    public async Task CreateChatAsync(ChatViewModel chat)
+    {
+        var taskDto = mapper.Map<ChatDto>(chat);
+        await apiService.SendPostMessage(null, message: taskDto);
     }
 }

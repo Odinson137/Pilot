@@ -7,4 +7,5 @@ public class Urls
     public const string CurrentUser = "CurrentUser";
     public const string UserChats = "UserChats";
     public const string ChatMessages = "ChatMessages";
+    public const string UserSkills = "UserSkills";
 }

@@ -12,7 +12,7 @@ public class HistoryActionCreatedConsumer(
     ILogger<HistoryActionCreatedConsumer> logger,
     IHistoryAction repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<HistoryAction, HistoryActionDto>(logger, repository, messageService, validate, mapper,

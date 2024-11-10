@@ -12,7 +12,7 @@ public class TeamCreatedConsumer(
     ILogger<TeamCreatedConsumer> logger,
     ITeam repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<Team, TeamDto>(logger, repository, messageService, validate, mapper, companyUser)

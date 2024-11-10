@@ -11,6 +11,8 @@ using Pilot.Contracts.Validation;
 
 namespace Pilot.Contracts.Base;
 
+// TODO позже разбить валидацию на разные behaviors, а то здесь находится как-то слишком много всего того,
+// TODO чего не должно находится для других сервисов и не находится того, что реально нужно для других сервисов
 public abstract class BaseValidateService : IBaseValidatorService
 {
     private readonly DbContext _context;
@@ -29,22 +31,6 @@ public abstract class BaseValidateService : IBaseValidatorService
         _logger.LogClassInfo(model);
 
         await DefaultValidateAsync<T, TDto>(model);
-
-        _logger.LogInformation($"End validate model of {typeof(T).Name}");
-    }
-    
-    public async Task ValidateAsync<T, TDto, TLocalUser>(TDto model, int userId,
-        bool canUserValidate = true, bool canDefaultValidate = true, bool canLocalUserValidate = true)
-        where T : BaseModel where TDto : BaseDto where TLocalUser : BaseModel
-    {
-        _logger.LogInformation($"Start validate model of {typeof(T).Name}");
-        _logger.LogClassInfo(model);
-
-        if (canDefaultValidate)
-            await DefaultValidateAsync<T, TDto>(model);
-        
-        if (canLocalUserValidate)
-            await LocalUserValidateAsync<T, TLocalUser>(userId);
 
         _logger.LogInformation($"End validate model of {typeof(T).Name}");
     }
@@ -122,7 +108,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         return model;
     }
 
-    private async Task DefaultValidateAsync<T, TDto>(TDto model) where T : BaseModel where TDto : BaseDto
+    protected async Task DefaultValidateAsync<T, TDto>(TDto model) where T : BaseModel where TDto : BaseDto
     {
         var isValidate = await _context.Set<T>().Validate(model);
 
@@ -143,7 +129,7 @@ public abstract class BaseValidateService : IBaseValidatorService
         }
     }
 
-    private async Task LocalUserValidateAsync<T, TLocalUser>(int userId) where T : BaseModel where TLocalUser : BaseModel
+    protected async Task LocalUserValidateAsync<T, TLocalUser>(int userId) where T : BaseModel where TLocalUser : BaseModel
     {
         var companyUser = await _context.Set<TLocalUser>().Where(c => c.Id == userId).AnyAsync();
         if (!companyUser) // Позже добавить ещё проверку на роль пользователя
@@ -161,7 +147,7 @@ public abstract class BaseValidateService : IBaseValidatorService
             throw new MessageException(message);
         }
     }
-
+    
     private async ValueTask<object?> GetSubEntity(Type propertyType, PropertyInfo property, object value)
     {
         var valueId = ((BaseModel)value).Id;

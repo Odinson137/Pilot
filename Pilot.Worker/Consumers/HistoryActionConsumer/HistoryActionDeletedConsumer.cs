@@ -11,7 +11,7 @@ public class HistoryActionDeletedConsumer(
     ILogger<HistoryActionDeletedConsumer> logger,
     IHistoryAction repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate)
 {
 }

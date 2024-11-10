@@ -17,9 +17,11 @@ public class CompanyDto : BaseDto, IHasFile
 
     [MaxLength(500)] public string? Description { get; init; }
 
-    public ICollection<BaseDto> Projects { get; init; } = new List<BaseDto>();
+    public ICollection<BaseDto> Projects { get; init; } = [];
 
-    public ICollection<BaseDto> CompanyRoles { get; set; } = new List<BaseDto>();
+    public ICollection<BaseDto> CompanyRoles { get; set; } = [];
+    
+    public ICollection<BaseDto> CompanyUsers { get; set; } = [];
     
     [HasFile(nameof(LogoUrl))]
     public int? LogoId { get; set; }

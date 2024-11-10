@@ -10,7 +10,7 @@ public class UserSkillDto : BaseDto
 {
     [Required] public BaseDto Skill { get; set; } = null!;
 
-    [Required] [Range(1, int.MaxValue)] public int UserId { get; set; }
+    [Required] public int UserId { get; set; }
     
     public int? ExperienceYears { get; set; }
     

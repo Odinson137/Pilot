@@ -1,8 +1,9 @@
-﻿using Pilot.Contracts.Base;
+﻿using Microsoft.Extensions.Logging;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 
-namespace Pilot.Worker.Service;
+namespace Pilot.SqrsControllerLibrary.Services;
 
 public class MessageService : IMessageService
 {

@@ -12,7 +12,7 @@ public class TaskInfoUpdatedConsumer(
     ILogger<TaskInfoUpdatedConsumer> logger,
     ITaskInfo repository,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<TaskInfo, TaskInfoDto>(logger, repository, message, validate, mapper)
 {

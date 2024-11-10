@@ -28,6 +28,8 @@ public class AutoMapperProfile : Profile
         Mapping<ChatMemberViewModel, ChatMemberDto>();
         Mapping<InfoMessageViewModel, InfoMessageDto>();
         Mapping<MessageViewModel, MessageDto>();
+        Mapping<SkillViewModel, SkillDto>();
+        Mapping<UserSkillViewModel, UserSkillDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

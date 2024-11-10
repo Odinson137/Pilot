@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Pilot.BlazorClient.Interface;
+using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
+using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services;
 
@@ -55,5 +58,20 @@ public class UserPageService(IGateWayApiService apiService, IUserService userSer
 
         var user = userDto.Map<UserViewModel>(mapper);
         return user;
+    }
+
+    public async Task<ICollection<UserSkillViewModel>> GetUserSkillAsync(int userId)
+    {
+        var userSkillsDto = await apiService.SendGetMessages<UserSkillDto, UserSkillViewModel>($"{Urls.UserSkills}/{userId}");
+        var userSkills = userSkillsDto.Map<ICollection<UserSkillViewModel>>(mapper);
+
+        var filter = new BaseFilter(userSkills.Select(c => c.Skill.Id).ToList());
+        var skillsDto = await apiService.SendGetMessages<SkillDto, SkillViewModel>(filter: filter);
+
+        foreach (var userSkill in userSkillsDto)
+        {
+            userSkill.Skill = skillsDto.First(c => c.Id == userSkill.Skill.Id);
+        }
+        return userSkillsDto;
     }
 }

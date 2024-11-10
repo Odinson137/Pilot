@@ -9,7 +9,7 @@ using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.Api.Controller;
 
-public class CompanyPostController(IMediator mediator) : PilotReadOnlyController<CompanyPostDto>(mediator)
+public class CompanyPostController(IMediator mediator) : PilotController<CompanyPostDto>(mediator)
 {
     [HttpGet(Urls.OpenCompanyPost)]
     [ProducesResponseType(200)]

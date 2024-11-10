@@ -12,7 +12,7 @@ public class HistoryActionUpdatedConsumer(
     ILogger<HistoryActionUpdatedConsumer> logger,
     IHistoryAction repository,
     IMessageService message,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : BaseUpdateConsumer<HistoryAction, HistoryActionDto>(logger, repository, message, validate, mapper)
 {

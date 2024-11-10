@@ -11,7 +11,7 @@ public class ProjectDeletedConsumer(
     ILogger<ProjectDeletedConsumer> logger,
     IProject repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<Project, ProjectDto>(logger, repository, message, validate)
 {
 }

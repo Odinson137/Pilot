@@ -4,4 +4,4 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class PostController(IMediator mediator) : PilotReadOnlyController<PostDto>(mediator);
+public class PostController(IMediator mediator) : PilotController<PostDto>(mediator);

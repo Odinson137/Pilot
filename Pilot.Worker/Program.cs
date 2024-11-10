@@ -12,6 +12,7 @@ using Pilot.Worker.Repository;
 using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Pilot.SqrsControllerLibrary.Services;
 using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +28,7 @@ services.AddScoped<ITeam, TeamRepository>();
 services.AddScoped<ICompanyRole, CompanyRoleRepository>();
 services.AddScoped<ITaskInfo, TaskInfoRepository>();
 
-services.AddScoped<IBaseValidatorService, ValidatorService>();
+services.AddScoped<IValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();

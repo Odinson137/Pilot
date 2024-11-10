@@ -11,7 +11,7 @@ public class TeamDeletedConsumer(
     ILogger<TeamDeletedConsumer> logger,
     ITeam repository,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<Team, TeamDto>(logger, repository, message, validate)
 {
 }

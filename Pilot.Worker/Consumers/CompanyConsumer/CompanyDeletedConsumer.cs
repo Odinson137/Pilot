@@ -10,7 +10,7 @@ public class CompanyDeletedConsumer(
     ILogger<CompanyDeletedConsumer> logger,
     ICompany company,
     IMessageService message,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : BaseDeleteConsumer<Models.Company, CompanyDto>(logger, company, message, validate)
 {
 }

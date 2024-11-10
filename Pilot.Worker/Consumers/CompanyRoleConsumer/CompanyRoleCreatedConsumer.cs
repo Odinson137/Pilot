@@ -12,7 +12,7 @@ public class CompanyRoleCreatedConsumer(
     ILogger<CompanyRoleCreatedConsumer> logger,
     ICompanyRole repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper,
     ICompanyUser companyUser)
     : BaseCreatedConsumer<CompanyRole, CompanyRoleDto>(logger, repository, messageService, validate, mapper, companyUser)

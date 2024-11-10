@@ -57,5 +57,5 @@ public class MessengerService : IMessengerService
         await _connection.InvokeAsync("SendMessage", chatId, messageText);
     }
 
-    public event Action<string>? OnMessageReceived; // Подписка на новые сообщения
+    public event Action<string>? OnMessageReceived;
 }
