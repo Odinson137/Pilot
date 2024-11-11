@@ -7,9 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
-        <ProjectReference Include="..\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
-        <ProjectReference Include="..\Pilot.InvalidationCacheRedisLibrary\Pilot.InvalidationCacheRedisLibrary.csproj" />
+      <ProjectReference Include="..\Pilot.InvalidationCacheRedisLibrary\Pilot.InvalidationCacheRedisLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>

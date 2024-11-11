@@ -42,6 +42,11 @@
 
 @code {
     const string HomePageName = "Home";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var asdf = @Localizer.GetString("Feature3.Title", HomePageName);
+    }
 }
 
 <style>

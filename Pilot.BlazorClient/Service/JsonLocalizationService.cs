@@ -42,7 +42,19 @@ public class JsonLocalizationService : IJsonLocalizationService
     {
         if (!_localizationData.ContainsKey(pageName) || _isChange)
         {
-            LoadLocalizationData(pageName, _currentCulture);
+            var names = _localizationData.Select(c => c.Key).ToList();
+            if (names.Count > 1)
+            {
+                foreach (var name in names)
+                {
+                    LoadLocalizationData(name, _currentCulture);
+                }
+            }
+            else
+            {
+                LoadLocalizationData(pageName, _currentCulture);
+            }
+
             _isChange = false;
         }
 
