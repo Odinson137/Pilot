@@ -4,6 +4,9 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Set ASPNETCORE_ENVIRONMENT in the base stage
+ENV ASPNETCORE_ENVIRONMENT=RELEASE
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
@@ -24,4 +27,5 @@ RUN dotnet publish "Pilot.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+# The environment variable from the base stage is inherited here
 ENTRYPOINT ["dotnet", "Pilot.Api.dll"]
