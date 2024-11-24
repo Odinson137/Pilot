@@ -71,7 +71,6 @@ services.AddAuthentication(options =>
         };
     });
 
-
 var app = builder.Build();
 
 await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
