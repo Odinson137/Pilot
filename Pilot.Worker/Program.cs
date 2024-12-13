@@ -13,7 +13,6 @@ using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Pilot.SqrsControllerLibrary.Services;
-using IBaseValidatorService = Pilot.Contracts.Base.IBaseValidatorService;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -76,12 +75,9 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
+
 app.UseSwagger();
 app.UseSwaggerUI();
-// }
 
 app.MapGet("/", () => "Main receiver page!");
 

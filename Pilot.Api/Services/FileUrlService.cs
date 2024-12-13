@@ -39,7 +39,7 @@ public class FileUrlService : IFileUrlService
             if (enumerator != null && enumerator.MoveNext())
             {
                 var first = enumerator.Current;
-                type = first!.GetType()!;
+                type = first!.GetType();
             }
         }
         
