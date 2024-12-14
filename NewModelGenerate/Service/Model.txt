@@ -1,0 +1,8 @@
+﻿using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Models;
+
+public class %ModelName% : BaseModel
+{
+
+}

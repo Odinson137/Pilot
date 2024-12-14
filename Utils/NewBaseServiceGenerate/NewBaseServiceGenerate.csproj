@@ -11,4 +11,15 @@
       <PackageReference Include="YamlDotNet" Version="16.2.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Templates\Consumers\" />
+      <Folder Include="Templates\Controllers\" />
+      <Folder Include="Templates\Data\Enums\" />
+      <Folder Include="Templates\Handlers\" />
+      <Folder Include="Templates\Interface\" />
+      <Folder Include="Templates\Models\" />
+      <Folder Include="Templates\Queries\" />
+      <Folder Include="Templates\Repository\" />
+    </ItemGroup>
+
 </Project>

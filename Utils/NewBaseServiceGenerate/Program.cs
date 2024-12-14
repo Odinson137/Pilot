@@ -35,10 +35,16 @@ internal static class Program
         // Добавление сервиса в compose
         AddServiceToCompose();
 
+        // Добавление сервисы в гит
+        AddFilesToGit();
+        
         Console.WriteLine($"Проект {ProjectFullName} успешно создан!");
-        // Лучшего решения не придумал. Или придется парится с добавлением проекта в workspace райдера
-        Console.WriteLine(
-            "Для отображения проекта в списке проектов тыкните на solution и добавьте в него существующий проект вручную");
+    }
+
+    static void AddFilesToGit()
+    {
+        Console.WriteLine("Создаю в гит проекты...");
+        // RunDotnetCommand("git add .", string.Empty);
     }
 
     static void CreateWebApiProject()
@@ -48,23 +54,69 @@ internal static class Program
         RunDotnetCommand("new webapi", $"-n {ProjectFullName} -o {ProjectNameWithPath}");
 
         Console.WriteLine($"Проект {ProjectFullName} успешно создан.");
-
+        
         IncludeProjectToSolution(ProjectFullName, $"{ProjectFullName}\\{ProjectFullName}.csproj");
+        
+        Console.WriteLine("Добавляю ссылку на Pilot.BaseContract");
+        RunDotnetCommand("add", $"{ProjectNameWithPath} reference {LevelUp}Pilot.Contracts/Pilot.BaseContract");
+
+        Console.WriteLine("Добавляю необходимые библиотеки");
+        AddPackagesToProject();
     }
 
     static void CreateFolders()
     {
         Console.WriteLine("Создаю дополнительные папки...");
 
-        string[] folders = ["Consumers", "Controllers", "Data", "Models", "Interface", "Repository", "Service"];
-        foreach (var folder in folders)
+        const string source = $"{LevelUp}Utils/NewBaseServiceGenerate/Templates";
+        var folders = CopyTemplatesToProject(source, ProjectNameWithPath);
+        AddFoldersToProjectFile($@"{ProjectNameWithPath}\{ProjectFullName}.csproj", folders);
+    }
+    
+    static ICollection<string> CopyTemplatesToProject(string sourceDirectory, string targetDirectory)
+    {
+        if (!Directory.Exists(sourceDirectory))
         {
-            var folderPath = Path.Combine(ProjectNameWithPath, folder);
-            Directory.CreateDirectory(folderPath);
-            Console.WriteLine($"Папка {folder} создана.");
+            throw new DirectoryNotFoundException($"Source directory not found: {sourceDirectory}");
         }
 
-        AddFoldersToProjectFile($@"{ProjectNameWithPath}\{ProjectFullName}.csproj", folders);
+        if (!Directory.Exists(targetDirectory))
+        {
+            Directory.CreateDirectory(targetDirectory);
+        }
+
+        // Коллекция для хранения путей папок
+        ICollection<string> folders = new List<string>();
+
+        // Копируем все директории
+        foreach (var directory in Directory.GetDirectories(sourceDirectory, "*", SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(sourceDirectory, directory);
+            var targetSubDirectory = Path.Combine(targetDirectory, relativePath);
+        
+            Directory.CreateDirectory(targetSubDirectory);
+            folders.Add(relativePath.Replace(Path.DirectorySeparatorChar, '/'));
+        }
+
+        // Копируем и редактируем файлы
+        foreach (var file in Directory.GetFiles(sourceDirectory, "*.*", SearchOption.AllDirectories))
+        {
+            var relativePath = Path.GetRelativePath(sourceDirectory, file);
+            var targetFile = Path.Combine(targetDirectory, relativePath);
+
+            if (Path.GetExtension(file).Equals(".txt", StringComparison.OrdinalIgnoreCase))
+            {
+                targetFile = Path.ChangeExtension(targetFile, ".cs");
+            }
+
+            // Чтение содержимого файла и замена шаблонных переменных
+            var content = File.ReadAllText(file);
+            content = content.Replace("%ProjectFullName%", ProjectFullName);
+
+            File.WriteAllText(targetFile, content);
+        }
+
+        return folders;
     }
 
     static void CreateDockerfile()
@@ -168,6 +220,8 @@ internal static class Program
         Console.WriteLine("Добавляю ссылку на основной проект в тестах...");
         RunDotnetCommand("add", $"{testProjectPath} reference {ProjectNameWithPath}");
 
+        RunDotnetCommand("add", $"{testProjectPath} reference {LevelUp}Pilot.Tests/Test.Base");
+
         Console.WriteLine("Проект с тестами успешно создан и настроен.");
 
         IncludeProjectToSolution(TestProjectFullName,
@@ -262,7 +316,7 @@ internal static class Program
         Console.WriteLine("Проект успешно добавлен в решение.");
     }
     
-    static void AddFoldersToProjectFile(string projectFilePath, string[] folders)
+    static void AddFoldersToProjectFile(string projectFilePath, ICollection<string> folders)
     {
         if (!File.Exists(projectFilePath))
         {
@@ -297,4 +351,27 @@ internal static class Program
         Console.WriteLine("Папки успешно добавлены в файл проекта.");
     }
 
+    static void AddPackagesToProject()
+    {
+        var projectFile = Directory.GetFiles($"{ProjectNameWithPath}", "*.csproj", SearchOption.TopDirectoryOnly).FirstOrDefault();
+        if (projectFile == null)
+        {
+            throw new FileNotFoundException("Project file (.csproj) not found in the target directory.");
+        }
+
+        var lines = File.ReadAllLines(projectFile).ToList();
+
+        var itemGroupIndex = lines.FindIndex(line => line.Contains("<ItemGroup>"));
+        if (itemGroupIndex == -1)
+        {
+            throw new InvalidOperationException("<ItemGroup> section not found in the project file.");
+        }
+
+        lines.InsertRange(itemGroupIndex + 1, [
+            "    <PackageReference Include=\"Microsoft.AspNetCore.OpenApi\" Version=\"8.0.11\" />",
+            "    <PackageReference Include=\"Swashbuckle.AspNetCore\" Version=\"6.6.2\" />"
+        ]);
+
+        File.WriteAllLines(projectFile, lines);
+    }
 }

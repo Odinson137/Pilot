@@ -1,0 +1,11 @@
+using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Data;
+
+public class AutoMapperProfile : BaseMappingProfile
+{
+    public AutoMapperProfile()
+    {
+        BaseMap();
+    }
+}

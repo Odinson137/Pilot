@@ -1,0 +1,6 @@
+@Pilot.BackgroundJobs_HostAddress = http://localhost:5206
+
+GET {{Pilot.BackgroundJobs_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
