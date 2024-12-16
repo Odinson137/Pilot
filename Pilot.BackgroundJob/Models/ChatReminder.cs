@@ -1,4 +1,6 @@
-﻿using Pilot.Contracts.Base;
+using System.ComponentModel.DataAnnotations;
+using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BackgroundJob.Models;
 
@@ -10,9 +12,13 @@ public class ChatReminder : BaseModel
 
     public ICollection<DayOfWeek> DayOfWeeks { get; set; } = [];
     
+    [MaxLength(50)]
     public string? Title { get; set; }
     
+    [MaxLength(500)]
     public string? Message { get; set; }
 
-    public int CreateBy { get; set; }
+    public int CreatedBy { get; set; }
+
+    public ReminderStatus ReminderStatus { get; set; } = ReminderStatus.Work;
 }

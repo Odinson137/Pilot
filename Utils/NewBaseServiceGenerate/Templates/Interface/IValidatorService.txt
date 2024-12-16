@@ -1,0 +1,7 @@
+﻿using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Interface;
+
+public interface IValidatorService : IBaseValidatorService
+{
+}

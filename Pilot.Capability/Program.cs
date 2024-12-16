@@ -20,14 +20,22 @@ services.AddControllers();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
+#region Repository realization
+
 services.AddScoped<IPost, PostRepository>();
 services.AddScoped<ICompanyPost, CompanyPostRepository>();
 services.AddScoped<ISkill, SkillRepository>();
 services.AddScoped<IUserSkill, UserSkillRepository>();
 
+#endregion
+
+#region Service realization
+
 services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IValidatorService, ValidatorService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
+
+#endregion
 
 services.AddScoped<ISeed, Seed>();
 

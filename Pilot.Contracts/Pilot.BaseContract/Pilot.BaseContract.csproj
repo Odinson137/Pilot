@@ -26,4 +26,8 @@
         <PackageReference Include="StackExchange.Redis" Version="2.8.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="DTO\ModelDto\TestDto.cs" />
+    </ItemGroup>
+
 </Project>

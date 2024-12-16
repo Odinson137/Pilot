@@ -1,0 +1,7 @@
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Controller;
+
+namespace %ProjectFullName%.Controllers;
+
+public class %ModelName%Controller(IMediator mediator) : PilotReadOnlyController<%ModelName%Dto>(mediator);

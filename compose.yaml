@@ -125,10 +125,38 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
-  backgroundjobs_service:
+  backgroundjob_service:
     build:
       context: .
-      dockerfile: Pilot.BackgroundJobs/Dockerfile
+      dockerfile: Pilot.BackgroundJob/Dockerfile
+    depends_on:
+      pilot_capability_mysql:
+        condition: service_healthy
     ports:
     - 8070:8080
+  pilot_backgroundjob_mysql:
+    container_name: pilot-backgroundjob-mysql
+    image: mysql:8.0
+    ports:
+      - "3313:3306"
+    environment:
+      MYSQL_DATABASE: PilotDb
+      MYSQL_ROOT_PASSWORD: 12345678
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+  pilot_backgroundjob_hangfire_mssql:
+    container_name: pilot-backgroundjob-hangfire-mssql
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=S3cur3P@ssW0rd!
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "S3cur3P@ssW0rd!" -Q "SELECT 1" || exit 1
+      timeout: 3s
+      retries: 10
+      start_period: 10s
 ...

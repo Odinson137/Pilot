@@ -16,7 +16,6 @@
       <Folder Include="Templates\Controllers\" />
       <Folder Include="Templates\Data\Enums\" />
       <Folder Include="Templates\Handlers\" />
-      <Folder Include="Templates\Interface\" />
       <Folder Include="Templates\Models\" />
       <Folder Include="Templates\Queries\" />
       <Folder Include="Templates\Repository\" />

@@ -1,0 +1,13 @@
+﻿using %ProjectFullName%..Interface;
+using %ProjectFullName%..Models;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.SqrsControllerLibrary.Handlers;
+
+namespace %ProjectFullName%..Handlers;
+
+public class Handler : ModelQueryHandler<%ModelName%, %ModelName%Dto>
+{
+    public Handler(I%ModelName% repository, ILogger<Handler> logger) : base(repository, logger)
+    {
+    }
+}

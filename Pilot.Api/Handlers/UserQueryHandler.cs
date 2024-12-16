@@ -7,7 +7,8 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.Api.Handlers;
 
-public class UserHandler(IModelService modelService) : ModelQueryHandler<UserDto>(modelService), IRequestHandler<GetUserQuery, UserDto>
+public class UserHandler(IModelService modelService) : ModelQueryHandler<UserDto>(modelService), 
+    IRequestHandler<GetUserQuery, UserDto>
 {
     private readonly IModelService _modelService1 = modelService;
 

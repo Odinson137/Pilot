@@ -13,4 +13,6 @@ public enum ServiceName
     StorageServer = 4,
     
     CapabilityServer = 5,
+
+    BackgroundJobService = 6,
 }

@@ -1,0 +1,8 @@
+﻿using %ProjectFullName%.Models;
+using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Interface;
+
+public interface I%ModelName% : IBaseRepository<%ModelName%>
+{
+}

@@ -1,0 +1,12 @@
+﻿using AutoMapper;
+using %ProjectFullName%.Data;
+using %ProjectFullName%.Interface;
+using %ProjectFullName%.Models;
+using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Repository;
+
+public class %ModelName%Repository(DataContext context, IMapper mapper) : BaseRepository<%ModelName%>(context, mapper), I%ModelName%
+{
+
+}

@@ -4,7 +4,7 @@ using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.DTO.ModelDto;
 
-[FromService(ServiceName.WorkerServer)]
+[FromService(ServiceName.%ProjectName%Service)]
 public class %ModelName%Dto : BaseDto
 {
 

@@ -1,0 +1,12 @@
+﻿using %ProjectFullName%.Data;
+using %ProjectFullName%.Interface;
+using Pilot.Contracts.Base;
+
+namespace %ProjectFullName%.Service;
+
+public class ValidatorService(
+    ILogger<ValidatorService> logger,
+    DataContext context)
+    : BaseValidateService(logger, context), IValidatorService
+{
+}

@@ -1,6 +1,14 @@
 using Hangfire;
 using Pilot.BackgroundJob.Data;
+using Pilot.BackgroundJob.Interface;
+using Pilot.BackgroundJob.Models;
+using Pilot.BackgroundJob.Repository;
+using Pilot.BackgroundJob.Service;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Interfaces;
+using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -12,10 +20,29 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 services.AddControllers();
 
-builder.Services.AddHangfire(config =>
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+
+#region Repository realization
+
+services.AddScoped<IChatReminder, ChatReminderRepository>();
+services.AddScoped<IJob, HangfireIJob>();
+
+#endregion
+
+#region Service realization
+
+services.AddScoped<IMessageService, MessageService>();
+services.AddScoped<IValidatorService, ValidatorService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
+
+#endregion
+
+services.AddHangfire(config =>
 {
-    config.UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireConnection"));
+    config.UseSqlServerStorage(configuration["HangfireConnection:ConnectionString"]);
 });
+
+services.AddHangfireServer();
 
 services.AddScoped<ISeed, Seed>();
 
@@ -27,8 +54,12 @@ await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().See
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.MapControllers();
+app.UseRouting();
+
+app.UseHangfireDashboard();
+
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.MapGet("/", () => "This is Pilot.BackgroundJob service");
 
@@ -37,5 +68,7 @@ app.Run();
 namespace Pilot.BackgroundJob
 {
     // ReSharper disable once ClassNeverInstantiated.Global
+    // ReSharper disable once PartialTypeWithSinglePart
+    // ReSharper disable once UnusedType.Global
     public partial class Program;
 }

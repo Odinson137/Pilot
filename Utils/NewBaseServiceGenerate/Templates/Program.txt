@@ -1,5 +1,12 @@
 using %ProjectFullName%.Data;
 using Pilot.Contracts.Data;
+using %ProjectFullName%.Interface;
+using %ProjectFullName%.Service;
+using Pilot.Contracts.Base;
+using Pilot.Contracts.Data;
+using Pilot.Contracts.Interfaces;
+using Pilot.SqrsControllerLibrary;
+using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -10,6 +17,22 @@ var configuration = builder.Configuration;
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 services.AddControllers();
+
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+
+#region Repository realization
+
+
+
+#endregion
+
+#region Service realization
+
+services.AddScoped<IMessageService, MessageService>();
+services.AddScoped<IValidatorService, ValidatorService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
+
+#endregion
 
 services.AddScoped<ISeed, Seed>();
 
@@ -31,5 +54,7 @@ app.Run();
 namespace %ProjectFullName%
 {
     // ReSharper disable once ClassNeverInstantiated.Global
+    // ReSharper disable once PartialTypeWithSinglePart
+    // ReSharper disable once UnusedType.Global
     public partial class Program;
 }

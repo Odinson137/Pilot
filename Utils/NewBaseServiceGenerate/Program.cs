@@ -57,8 +57,9 @@ internal static class Program
         
         IncludeProjectToSolution(ProjectFullName, $"{ProjectFullName}\\{ProjectFullName}.csproj");
         
-        Console.WriteLine("Добавляю ссылку на Pilot.BaseContract");
+        Console.WriteLine("Добавляем ссылки на нужные проекты");
         RunDotnetCommand("add", $"{ProjectNameWithPath} reference {LevelUp}Pilot.Contracts/Pilot.BaseContract");
+        RunDotnetCommand("add", $"{ProjectNameWithPath} reference {LevelUp}Pilot.Contracts/Pilot.SqrsControllerLibrary");
 
         Console.WriteLine("Добавляю необходимые библиотеки");
         AddPackagesToProject();
@@ -187,6 +188,7 @@ internal static class Program
             .Max();
 
         var newPort = lastPort + 10;
+        var name = _projectName.ToLower();
         var newServiceNode = new YamlMappingNode
         {
             {
@@ -196,12 +198,42 @@ internal static class Program
                     { "dockerfile", $"{ProjectFullName}/Dockerfile" }
                 }
             },
-            { "ports", new YamlSequenceNode($"{newPort}:8080") }
+            { "ports", new YamlSequenceNode($"{newPort}:8080") },
+            { "depends_on", new YamlMappingNode
+            {
+                { $"pilot_{name}_mysql", "." },
+                { "dockerfile", $"{ProjectFullName}/Dockerfile" }
+            }}
         };
 
-        var serviceName = _projectName.ToLower() + "_service";
+        var serviceName = name + "_service";
         servicesNode.Add(new YamlScalarNode(serviceName), newServiceNode);
 
+        // не спрашивайте как я это считаю, но это должно работать)
+        var newDbPort = lastPort - 4757 - 9;
+        
+        var newDbServiceNode = new YamlMappingNode
+        {
+            { "container_name", $"pilot-{name}-mysql" },
+            { "image", "mysql:8.0" },
+            { "ports", new YamlSequenceNode($"{newDbPort}:3306") },
+            { "environment", new YamlMappingNode
+                {
+                    { "MYSQL_DATABASE", "PilotDb" },
+                    { "MYSQL_ROOT_PASSWORD", "12345678" }
+                }
+            },
+            { "healthcheck", new YamlMappingNode
+                {
+                    { "test", new YamlSequenceNode("CMD", "mysqladmin", "ping", "-h", "localhost") },
+                    { "timeout", "10s" },
+                    { "retries", "10" }
+                }
+            }
+        };
+
+        var serviceDbName = $"pilot_{name}_mysql";
+        servicesNode.Add(new YamlScalarNode(serviceDbName), newDbServiceNode);
         using (var writer = new StreamWriter(filePath, false))
         {
             yaml.Save(writer, false);
