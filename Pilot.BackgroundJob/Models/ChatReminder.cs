@@ -12,9 +12,6 @@ public class ChatReminder : BaseModel
 
     public ICollection<DayOfWeek> DayOfWeeks { get; set; } = [];
     
-    [MaxLength(50)]
-    public string? Title { get; set; }
-    
     [MaxLength(500)]
     public string? Message { get; set; }
 

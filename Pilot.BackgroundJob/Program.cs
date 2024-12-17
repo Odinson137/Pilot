@@ -25,7 +25,7 @@ builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 #region Repository realization
 
 services.AddScoped<IChatReminder, ChatReminderRepository>();
-services.AddScoped<IJob, HangfireIJob>();
+services.AddScoped<IJob, HangfireJob>();
 
 #endregion
 

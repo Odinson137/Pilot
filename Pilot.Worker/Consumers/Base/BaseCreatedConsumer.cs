@@ -61,6 +61,6 @@ public abstract class BaseCreatedConsumer<T, TDto>(
             EntityId = model.Id
         };
 
-        await MessageService.SendMessageAsync(message);
+        await MessageService.SendInfoMessageAsync(message);
     }
 }

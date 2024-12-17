@@ -38,7 +38,7 @@ public class ExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest
             
             _logger.LogClassInfo(message);
 
-            await _messageService.SendMessageAsync(message);
+            await _messageService.SendInfoMessageAsync(message);
 
             throw;
         }

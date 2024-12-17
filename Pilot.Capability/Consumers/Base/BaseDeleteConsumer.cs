@@ -41,6 +41,6 @@ public abstract class BaseDeleteConsumer<T, TDto>(
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
         };
 
-        await MessageService.SendMessageAsync(message);
+        await MessageService.SendInfoMessageAsync(message);
     }
 }
