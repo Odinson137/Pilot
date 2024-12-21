@@ -8,7 +8,7 @@ using Pilot.Contracts.Interfaces;
 
 namespace Pilot.BackgroundJob.Service;
 
-public class HangfireJobExecution : IJob
+public class HangfireJobExecution : IJobExecution
 {
     private readonly IMessageService _messageService;
     private readonly IChatReminder _chatReminder;
@@ -22,7 +22,7 @@ public class HangfireJobExecution : IJob
         _logger = logger;
     }
 
-    public async void ReminderRecurringJobExecution(string key, int reminderId, Func<string?> cron)
+    public async Task RecurringJobExecution(int reminderId)
     {
         var reminder = await _chatReminder.GetByIdAsync(reminderId);
         if (reminder == null)

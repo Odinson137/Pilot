@@ -20,7 +20,6 @@
     <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsControllerLibrary\Pilot.SqrsControllerLibrary.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Consumers" />
     <Folder Include="Controllers" />
     <Folder Include="Queries" />
     <Folder Include="Repository" />

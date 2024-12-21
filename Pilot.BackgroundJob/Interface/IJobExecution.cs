@@ -2,5 +2,5 @@
 
 public interface IJobExecution
 {
-    public void RecurringJob(string key, int reminderId, Func<string?> cron);
+    public Task RecurringJobExecution(int reminderId);
 }

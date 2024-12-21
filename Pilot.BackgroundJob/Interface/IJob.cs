@@ -2,5 +2,6 @@
 
 public interface IJob
 {
-    public void ReminderRecurringJobExecution(string key, int reminderId, Func<string?> cron);
+    public void AddReminderRecurringJob(string key, int reminderId, string cronExpression);
+    public void RemoveReminderRecurringJob(string key);
 }
