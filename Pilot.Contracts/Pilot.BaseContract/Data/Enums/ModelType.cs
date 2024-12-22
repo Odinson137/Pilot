@@ -40,4 +40,6 @@ public enum ModelType
     [Description(nameof(MessageDto))] Message = 13,
     
     [Description(nameof(ChatMemberDto))] ChatMember = 14,
+
+    [Description(nameof(ChatReminderDto))] ChatReminder = 15,
 }

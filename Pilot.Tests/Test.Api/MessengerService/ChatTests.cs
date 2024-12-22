@@ -17,7 +17,7 @@ public class ChatTests : BaseMessengerServiceIntegrationTest
     private static string EntityName => nameof(Chat);
 
     [Fact]
-    public virtual async void GetUserChatsTest_ReturnOk()
+    public virtual async Task GetUserChatsTest_ReturnOk()
     {
         #region Arrange
     
@@ -43,7 +43,7 @@ public class ChatTests : BaseMessengerServiceIntegrationTest
     }
     
     [Fact]
-    public virtual async void CreateModel_ReturnOk()
+    public virtual async Task CreateModel_ReturnOk()
     {
         #region Arrange
 

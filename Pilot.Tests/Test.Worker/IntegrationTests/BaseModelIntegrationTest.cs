@@ -39,7 +39,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
 
     [Fact]
-    public virtual async void GetAllValuesTest_FilterWithIdsReturnOk()
+    public virtual async Task GetAllValuesTest_FilterWithIdsReturnOk()
     {
         #region Arrange
 
@@ -67,7 +67,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
     
     [Fact]
-    public virtual async void GetAllValuesTest_ReturnOk()
+    public virtual async Task GetAllValuesTest_ReturnOk()
     {
         #region Arrange
 
@@ -90,7 +90,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
     
     [Fact]
-    public virtual async void GetValue_ReturnOk()
+    public virtual async Task GetValue_ReturnOk()
     {
         #region Arrange
 
@@ -168,7 +168,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     // }
 
     [Fact]
-    public virtual async void CreateModel_ReturnOk()
+    public virtual async Task CreateModel_ReturnOk()
     {
         #region Arrange
 
@@ -195,7 +195,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
 
     [Fact]
-    public virtual async void UpdateModelTest_ReturnOk()
+    public virtual async Task UpdateModelTest_ReturnOk()
     {
         #region Arrange
 
@@ -226,7 +226,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
     
     [Fact]
-    public virtual async void DeleteModelTest_ReturnOk()
+    public virtual async Task DeleteModelTest_ReturnOk()
     {
         #region Arrange
 

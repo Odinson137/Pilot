@@ -17,7 +17,7 @@ public class MessageTests : BaseMessengerServiceIntegrationTest
     private static string EntityName => nameof(Message);
 
     [Fact]
-    public virtual async void GetChatMessagesTest_ReturnOk()
+    public virtual async Task GetChatMessagesTest_ReturnOk()
     {
         #region Arrange
     

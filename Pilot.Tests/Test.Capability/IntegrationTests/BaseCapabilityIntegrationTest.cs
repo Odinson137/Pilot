@@ -11,8 +11,8 @@ public class BaseCapabilityIntegrationTest : IClassFixture<CapabilityTestCapabil
     protected readonly HttpClient CapabilityClient;
 
     protected readonly IServiceScope CapabilityScope;
-    protected Pilot.Identity.Data.DataContext AssertContext 
-        => CapabilityScope.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
+    protected DataContext AssertContext 
+        => CapabilityScope.ServiceProvider.GetRequiredService<DataContext>();
     
     protected IMapper ReceiverMapper;
 

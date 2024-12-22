@@ -7,8 +7,6 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
     : BaseReadRepository<T>(context, mapper), IBaseRepository<T>
     where T : BaseModel
 {
-    private readonly DbContext _context = context;
-
     public async Task<T> AddValueToContextAsync(T value, CancellationToken token = default)
     {
         await DbSet.AddAsync(value, token);

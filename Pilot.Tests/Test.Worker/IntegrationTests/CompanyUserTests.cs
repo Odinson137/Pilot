@@ -16,7 +16,7 @@ public class CompanyUserTests : BaseModelReceiverIntegrationTest<CompanyUser, Co
     }
 
     [Fact]
-    public override async void UpdateModelTest_ReturnOk()
+    public override async Task UpdateModelTest_ReturnOk()
     {
         #region Arrange
 

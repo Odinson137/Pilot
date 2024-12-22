@@ -21,7 +21,7 @@ public class UserSkillTests : CapabilityTests<UserSkill, UserSkillDto>
     }
     
     [Fact]
-    public virtual async void GetUserSkillTest_ReturnOk()
+    public virtual async Task GetUserSkillTest_ReturnOk()
     {
         #region Arrange
     

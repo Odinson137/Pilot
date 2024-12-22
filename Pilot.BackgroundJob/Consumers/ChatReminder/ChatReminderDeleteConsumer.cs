@@ -15,7 +15,7 @@ public class ChatReminderDeleteConsumer(
     IChatReminder repository,
     IMessageService messageService,
     IJob job,
-    IBaseValidatorService validate)
+    IValidatorService validate)
     : IConsumer<DeleteCommandMessage<ChatReminderDto>>
 {
     // TODO в случае возникновения связанных сущностей будет возникать ошибка. Придумать как её потом обработать
@@ -32,7 +32,6 @@ public class ChatReminderDeleteConsumer(
         foreach (var dayOfWeek in model.DayOfWeeks)
         {
             var jobId = $"chatReminder-{id}-{dayOfWeek}";
-
             job.RemoveReminderRecurringJob(jobId);
         }
         var message = new InfoMessageDto

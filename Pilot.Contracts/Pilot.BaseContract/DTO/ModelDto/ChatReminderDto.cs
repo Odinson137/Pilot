@@ -12,7 +12,7 @@ public class ChatReminderDto : BaseDto
     
     public TimeOnly Time { get; set; }
 
-    public ICollection<DayOfWeek> DayOfWeeks { get; set; } = [];
+    public List<DayOfWeek> DayOfWeeks { get; set; } = [];
     
     [MaxLength(500)]
     public string? Message { get; set; }

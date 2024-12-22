@@ -23,7 +23,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     private static string EntityName => typeof(T).Name;
 
     [Fact]
-    public virtual async void GetAllValuesWithFileTest_ReturnOk()
+    public virtual async Task GetAllValuesWithFileTest_ReturnOk()
     {
         #region Arrange
     
@@ -47,7 +47,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     }
     
     [Fact]
-    public virtual async void GetValueWithFileTest_ReturnOk()
+    public virtual async Task GetValueWithFileTest_ReturnOk()
     {
         #region Arrange
     
