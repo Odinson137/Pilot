@@ -14,6 +14,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
       - uses: actions/checkout@v4
 
       - name: Restore Messenger project
@@ -43,6 +48,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Messenger project
@@ -72,6 +82,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Messenger project
@@ -95,6 +110,11 @@ jobs:
     timeout-minutes: 30
   
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Identity project
@@ -130,6 +150,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Test.Storage project
@@ -155,6 +180,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Base project
@@ -172,6 +202,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Test.Storage project
@@ -189,6 +224,11 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v4
 
       - name: Restore Test.BackgroundJob project
@@ -207,6 +247,11 @@ jobs:
       pull-requests: write
       checks: write
     steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+          
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
