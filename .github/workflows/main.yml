@@ -274,9 +274,9 @@ jobs:
       - name: sonarQube Scan 1
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"SONAR_PROJECT1_KEY" /d:sonar.token="${{ secrets.SONAR_TOKEN_1 }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"SONAR_PROJECT1_KEY" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
           dotnet build PROJECT1_PATH\SLN_FILE.SLN
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN_1 }}"
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
         # Replace variables with the project key and the path to the project solution file
   sonarQubeScan2:
     name: sonarQube Scan 2
