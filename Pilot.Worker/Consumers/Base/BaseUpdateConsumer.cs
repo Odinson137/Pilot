@@ -55,6 +55,6 @@ public abstract class BaseUpdateConsumer<T, TDto>(
             EntityId = model.Id
         };
 
-        await Message.SendInfoMessageAsync(message);
+        await Message.SendInfoMessageAsync(message, context.Message.UserId);
     }
 }

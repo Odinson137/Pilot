@@ -1,8 +1,17 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using AutoMapper
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Interface
+@using Pilot.Contracts.Services
+
+@using Pilot.Contracts.DTO.ModelDto
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJsonLocalizationService Localizer
 @inject NavigationManager NavigationManager
+@inject IMessengerService MessengerService
+@inject ProtectedSessionStorage ProtectedSessionStorage;
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
@@ -24,7 +33,7 @@
                     <a class="nav-link text-primary" href="/Work">@Localizer.GetString("Work", LocalizeName)</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-primary" href="/Chat">@Localizer.GetString("Chat", LocalizeName)</a>
+                    <a class="nav-link text-primary" href="/Chat">@Localizer.GetString("Chat", LocalizeName) @_notificationCount</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-primary" href="/Account">@Localizer.GetString("Account", LocalizeName)</a>
@@ -42,7 +51,7 @@
             </ul>
         </div>
             <div class="ms-auto">
-                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@toggleName</button>
+                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@_toggleName</button>
             </div>
     </div>
 </nav>
@@ -125,13 +134,33 @@
 @code {
     private bool _isAuthenticated;
     private const string LocalizeName = "Header";
-    private string toggleName;
+    private string _toggleName;
+    private int? _notificationCount;
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        _isAuthenticated = authState.User.Identity is { IsAuthenticated: true };
+        var tokenResult = await ProtectedSessionStorage.GetAsync<string>(ClientConstants.Token);
+        _isAuthenticated = tokenResult.Success;
 
-        toggleName = Localizer.CurrentCulture == "ru-RU" ? "Русский" : "English";
+        _toggleName = Localizer.CurrentCulture == "ru-RU" ? "Русский" : "English";
+
+        if (_isAuthenticated)
+        {
+            _notificationCount = 0;
+            await MessengerService.CreateConnectionAsync();
+            
+            MessengerService.OnReceiveNotification += async message =>
+            {
+                _notificationCount++;
+                var infoMessageDto = message.FromJson<InfoMessageDto>();
+                await InvokeAsync(StateHasChanged);
+            };
+            
+            MessengerService.OnMessageReceived += async (message) =>
+            {
+                _notificationCount++;
+                await InvokeAsync(StateHasChanged);
+            };
+        }
     }
     
     private void ToggleCulture()

@@ -129,8 +129,6 @@ else
         _currentUser = await UserService.GetCurrentUserAsync();
         _chats = await ChatPageService.GetUserChatsAsync();
 
-        await MessengerService.CreateConnectionAsync(_currentUser.Id);
-
         MessengerService.OnMessageReceived += async (message) =>
         {
             var messageDto = message.FromJson<MessageDto>();
@@ -141,6 +139,8 @@ else
                 await InvokeAsync(StateHasChanged);
                 await JsRuntime.InvokeVoidAsync("scrollToBottom", _chatListRef);
             }
+
+            // MessengerService.OnReceiveNotification?.I;
         };
 
         var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>("chat:currentChat");
@@ -157,7 +157,7 @@ else
         if (_selectedChat != null)
         {
             _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers, _selectedChat.CreatedBy);
-            _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50);
+            _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50); // потом реализовать механизм подтягивания сообщений
         }
 
         _isChatLoading = false;

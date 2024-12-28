@@ -60,7 +60,7 @@ public class ChatReminderCreatedConsumer(
             EntityId = reminder.Id
         };
 
-        await messageService.SendInfoMessageAsync(message);
+        await messageService.SendInfoMessageAsync(message, context.Message.UserId);
     }
     
     private static string GetCronExpression(DayOfWeek day, TimeOnly time)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;
 
@@ -9,11 +10,11 @@ public class NotificationService(IHubContext<NotificationHub, INotificationClien
 {
     public Task Notify(int userId, InfoMessageDto message)
     {
-        return hubContext.Clients.Group(userId.ToString()).SendNotificationAsync(message);
+        return hubContext.Clients.Group(userId.ToString()).ReceiveNotification(message.ToJson());
     }
-    
-    public Task SendMessage(int chatId, MessageDto message)
-    {
-        return hubContext.Clients.Group($"chat-{chatId}").SendMessageAsync(message);
-    }
+    //
+    // public Task SendMessage(int chatId, MessageDto message)
+    // {
+    //     return hubContext.Clients.Group($"chat-{chatId}").SendMessageAsync(message);
+    // }
 }

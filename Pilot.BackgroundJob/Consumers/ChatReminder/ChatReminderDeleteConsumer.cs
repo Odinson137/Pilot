@@ -42,6 +42,6 @@ public class ChatReminderDeleteConsumer(
             EntityType = PilotEnumExtensions.GetModelEnumValue<Models.ChatReminder>()
         };
 
-        await messageService.SendInfoMessageAsync(message);
+        await messageService.SendInfoMessageAsync(message, context.Message.UserId);
     }
 }

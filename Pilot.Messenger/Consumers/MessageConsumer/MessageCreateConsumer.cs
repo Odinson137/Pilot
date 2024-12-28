@@ -31,8 +31,7 @@ public class MessageCreateConsumer(
 
         await Validator.FillValidateAsync(model);
 
-        if (model is IAddUser addingUserModel)
-            addingUserModel.AddUser(context.Message.UserId);
+        model.AddUser(context.Message.UserId);
         
         await Repository.AddValueToContextAsync(model);
 
@@ -47,6 +46,6 @@ public class MessageCreateConsumer(
         //     EntityId = model.Id
         // };
         
-        await NotificationService.SendMessage(model.Chat.Id, context.Message.Value);
+        // await NotificationService.SendMessage(model.Chat.Id, context.Message.Value);
     }
 }

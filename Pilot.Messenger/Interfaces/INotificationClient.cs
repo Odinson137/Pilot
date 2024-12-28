@@ -8,4 +8,6 @@ public interface INotificationClient
     public Task SendMessageAsync(MessageDto message);
 
     public Task ReceiveMessage(string message);
+    
+    public Task ReceiveNotification(string message);
 }

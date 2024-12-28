@@ -40,7 +40,7 @@ public class FileCreatedConsumer(
             EntityId = fileId
         };
 
-        await messageService.SendInfoMessageAsync(message);
+        await messageService.SendInfoMessageAsync(message, context.Message.UserId);
 
         logger.LogInformation("File consumed");
     }

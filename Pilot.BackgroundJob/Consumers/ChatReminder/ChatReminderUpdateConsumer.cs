@@ -15,7 +15,7 @@ public class ChatReminderUpdateConsumer(
     ILogger<ChatReminderUpdateConsumer> logger,
     IChatReminder repository,
     IMessageService messageService,
-    IBaseValidatorService validate,
+    IValidatorService validate,
     IMapper mapper)
     : IConsumer<UpdateCommandMessage<ChatReminderDto>>
 {
@@ -48,6 +48,6 @@ public class ChatReminderUpdateConsumer(
             EntityId = model.Id
         };
 
-        await messageService.SendInfoMessageAsync(message);
+        await messageService.SendInfoMessageAsync(message, context.Message.UserId);
     }
 }
