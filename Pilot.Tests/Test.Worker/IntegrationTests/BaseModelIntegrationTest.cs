@@ -18,6 +18,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     public BaseModelReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
         WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) : base(workerTestWorkerFactory, identityFactory, storageFactory)
     {
+        AssertReceiverContext.Database.EnsureDeleted();
+        AssertReceiverContext.Database.EnsureCreated();
     }
 
     public string EntityName => typeof(T).Name;

@@ -219,7 +219,7 @@ jobs:
         run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-build
 
   background_job:
-    name: Storage
+    name: BackgroundJob
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
