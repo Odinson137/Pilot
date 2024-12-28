@@ -4,14 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34309.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Api", "Pilot.Api\Pilot.Api.csproj", "{2C250F33-3846-4A08-A9BB-5A66A051B403}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9CAFA42E-E690-4A52-9515-460F703A542B} = {9CAFA42E-E690-4A52-9515-460F703A542B}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pilot.Worker", "Pilot.Worker\Pilot.Worker.csproj", "{4C5E9F89-1911-4478-87C0-BC5A5A1300E8}"
-	ProjectSection(ProjectDependencies) = postProject
-		{9CAFA42E-E690-4A52-9515-460F703A542B} = {9CAFA42E-E690-4A52-9515-460F703A542B}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.Identity", "Pilot.Identity\Pilot.Identity.csproj", "{F0632566-4226-41E1-AA13-F502FF9BAD17}"
 EndProject
