@@ -238,6 +238,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-restore
 
       - name: Test
+        run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build
 
   code_quality:
     name: Code Quality
