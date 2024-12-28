@@ -29,19 +29,20 @@ public class ChatPageService(IGateWayApiService apiService, IUserService userSer
 
     public async Task<ICollection<MessageViewModel>> GetMessagesAsync(int chatId, int start, int end)
     {
-        var values = await apiService.SendGetMessages<MessageDto, MessageViewModel>($"{Urls.ChatMessages}/{chatId}");
+        var filter = new BaseFilter(start, end);
+        var values = await apiService.SendGetMessages<MessageDto, MessageViewModel>($"{Urls.ChatMessages}/{chatId}", filter);
         return values;
     }
 
-    public Task<ICollection<InfoMessageViewModel>> GetInfoMessagesAsync(int start, int end)
+    public async Task<ICollection<InfoMessageViewModel>> GetInfoMessagesAsync(int start, int end)
     {
-        throw new NotImplementedException();
+        var values = await apiService.SendGetMessages<InfoMessageDto, InfoMessageViewModel>();
+        return values;
     }
 
-    public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels, int createdBy)
+    public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels)
     {
         var ids = chatMemberViewModels.Select(c => c.Id).ToList();
-        ids.Add(createdBy);
         var filter = new BaseFilter(ids);
         var userViewModels = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
         return userViewModels;

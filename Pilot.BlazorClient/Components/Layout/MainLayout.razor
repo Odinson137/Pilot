@@ -16,7 +16,8 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand text-primary fw-bold" href="/">Pilot</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
@@ -29,24 +30,60 @@
                 </li>
                 @if (_isAuthenticated)
                 {
-                <li class="nav-item">
-                    <a class="nav-link text-primary" href="/Work">@Localizer.GetString("Work", LocalizeName)</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-primary" href="/Chat">@Localizer.GetString("Chat", LocalizeName) @_notificationCount</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-primary" href="/Account">@Localizer.GetString("Account", LocalizeName)</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary" href="/Work">@Localizer.GetString("Work", LocalizeName)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary"
+                           href="/Chat">@Localizer.GetString("Chat", LocalizeName)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary"
+                           href="/Account">@Localizer.GetString("Account", LocalizeName)</a>
+                    </li>
+                    <li class="nav-item" style="margin-top: 5px">
+                        <div class="position-relative">
+                            <button class="btn btn-light p-0 position-relative" @onclick="ToggleNotifications">
+                                <img class="bi bi-bell-fill text-primary" src="Images/Chat/free-icon-bell-512234.png" width="30px" alt="bell"/>
+                                @if (_notificationCount > 0)
+                                {
+                                    <span class="badge bg-danger text-white position-absolute top-0 start-100 translate-middle">
+                                        @_notificationCount
+                                    </span>
+                                }
+                            </button>
+                            @if (_showNotifications)
+                            {
+                                <div class="notification-container">
+                                    <h6 class="text-center mb-2">Уведомления</h6>
+                                    @if (_notifications.Count > 0)
+                                    {
+                                        <ul class="list-group list-group-flush">
+                                            @foreach (var notification in _notifications)
+                                            {
+                                                <li class="list-group-item">@notification</li>
+                                            }
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-center text-muted mb-0">Нет новых уведомлений</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </li>
                 }
                 else
                 {
-                <li class="nav-item">
-                    <a class="nav-link text-primary" href="/User/Login">@Localizer.GetString("Log in", LocalizeName)</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-primary" href="/User/Registration">@Localizer.GetString("Sign up", LocalizeName)</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary"
+                           href="/User/Login">@Localizer.GetString("Log in", LocalizeName)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-primary"
+                           href="/User/Registration">@Localizer.GetString("Sign up", LocalizeName)</a>
+                    </li>
                 }
             </ul>
         </div>
@@ -68,7 +105,8 @@
             <div class="col-md-4 mb-4">
                 <h5 class="text-uppercase fw-bold">About the Project</h5>
                 <p>
-                    The Pilot project was created for project management and team collaboration. Our solution helps you track progress and achieve your goals faster.
+                    The Pilot project was created for project management and team collaboration. Our solution helps you
+                    track progress and achieve your goals faster.
                 </p>
             </div>
 
@@ -100,10 +138,12 @@
     html, body {
         height: 100%;
     }
+
     body {
         display: flex;
         flex-direction: column;
     }
+
     footer {
         margin-top: auto;
     }
@@ -123,6 +163,38 @@
         border-radius: 10px; /* Roundness of the scrollbar thumb */
         border: 2px solid #f1f1f1; /* Adds space around the thumb */
     }
+
+    keyframes notification-bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    .notification-animate {
+        animation: notification-bounce 0.5s ease-in-out;
+    }
+
+    .notification-container {
+        position: absolute;
+        top: 40px;
+        right: -140px;
+        z-index: 1050;
+        width: 300px;
+        min-height: 100px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+    .navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
 </style>
 
 <div id="blazor-error-ui">
@@ -136,6 +208,9 @@
     private const string LocalizeName = "Header";
     private string _toggleName;
     private int? _notificationCount;
+    private bool _showNotifications;
+    private List<string> _notifications = new();
+
     protected override async Task OnInitializedAsync()
     {
         var tokenResult = await ProtectedSessionStorage.GetAsync<string>(ClientConstants.Token);
@@ -152,6 +227,7 @@
             {
                 _notificationCount++;
                 var infoMessageDto = message.FromJson<InfoMessageDto>();
+                _notifications.Add(infoMessageDto.Title);
                 await InvokeAsync(StateHasChanged);
             };
             
@@ -163,6 +239,12 @@
         }
     }
     
+    private void ToggleNotifications()
+    {
+        _showNotifications = !_showNotifications;
+        _notificationCount = 0;
+    }
+
     private void ToggleCulture()
     {
         ChangeCultureAndReload();
@@ -172,5 +254,10 @@
     {
         Localizer.Toggle();
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
+    }
+
+    private void CloseNotifications()
+    {
+        _showNotifications = false;
     }
 }

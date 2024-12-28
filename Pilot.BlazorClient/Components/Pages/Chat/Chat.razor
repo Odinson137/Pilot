@@ -26,13 +26,11 @@ else
     <div class="chat-page d-flex">
         <!-- Left Sidebar: Chat List -->
         <div class="sidebar chat-list col-3">
-            <h5 class="sidebar-title">Notification</h5>
-
             <h5 class="sidebar-title">Chats</h5>
             <div class="sidebar-section">
                 @foreach (var chat in _chats)
                 {
-                    <TitleChatComponent ChatId="@chat!.Id" SelectedChat="@_selectedChat" ChatTitle="@chat.Title" OnChatClick="HandleTitleChatClick"/>
+                    <TitleChatComponent ChatId="@chat.Id" SelectedChat="@_selectedChat" ChatTitle="@chat.Title" OnChatClick="HandleTitleChatClick"/>
                 }
             </div>
 
@@ -156,7 +154,7 @@ else
         _selectedChat = _chats.FirstOrDefault(chat => chat.Id == chatId);
         if (_selectedChat != null)
         {
-            _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers, _selectedChat.CreatedBy);
+            _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers);
             _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50); // потом реализовать механизм подтягивания сообщений
         }
 

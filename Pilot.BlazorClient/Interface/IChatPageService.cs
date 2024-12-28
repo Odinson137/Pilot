@@ -14,7 +14,7 @@ public interface IChatPageService
     
     Task<ICollection<InfoMessageViewModel>> GetInfoMessagesAsync(int start, int end); // системные уведомления для пользователя
     
-    Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels, int createdBy);
+    Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels);
     
     Task<ICollection<UserViewModel>> GetAllEmployeesAsync();
     Task CreateChatAsync(ChatViewModel chat);

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Base;
 using Pilot.Messenger.Interfaces;
 
@@ -20,5 +19,6 @@ public class Chat : BaseModel, IAddUser
     public void AddUser(int userId)
     {
         CreatedBy = userId;
+        ChatMembers.Add(new ChatMember { UserId = userId }); // maybe baby
     }
 }

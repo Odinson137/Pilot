@@ -13,4 +13,7 @@ public class ChatCreateConsumer(
     IBaseValidatorService validatorService,
     IMapper mapper,
     INotificationService notificationService)
-    : BaseCreateConsumer<Chat, ChatDto>(logger, repository, validatorService, mapper, notificationService);
+    : BaseCreateConsumer<Chat, ChatDto>(logger, repository, validatorService, mapper, notificationService)
+{
+    
+}
