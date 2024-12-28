@@ -282,9 +282,8 @@ jobs:
       - name: Build and analyze
         shell: pwsh
         run: |
-          ./.sonar/scanner/dotnet-sonarscanner begin /k:"example" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build
-          ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet-sonarscanner end \
+            /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
   
 #  CodeQuality:
 #    runs-on: ubuntu-latest
