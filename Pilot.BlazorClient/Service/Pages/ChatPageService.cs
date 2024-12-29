@@ -44,7 +44,9 @@ public class ChatPageService(IGateWayApiService apiService, IUserService userSer
     {
         var ids = chatMemberViewModels.Select(c => c.Id).ToList();
         var filter = new BaseFilter(ids);
-        var userViewModels = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
+        var filledChatMemberViewModels = await apiService.SendGetMessages<ChatMemberDto, ChatMemberViewModel>(filter: filter);
+        var userFilter = new BaseFilter(filledChatMemberViewModels.Select(c => c.UserId).ToList());
+        var userViewModels = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: userFilter);
         return userViewModels;
     }
 

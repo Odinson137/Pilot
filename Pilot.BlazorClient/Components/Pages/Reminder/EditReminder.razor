@@ -1,0 +1,111 @@
+﻿@page "/edit-reminder/{ReminderId:int?}"
+@inject IReminderService ReminderService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit Reminder</PageTitle>
+
+<h3>@(ReminderId.HasValue ? "Edit Reminder" : "Create Reminder")</h3>
+
+<EditForm Model="_reminder" OnValidSubmit="SaveReminder">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="chatId" class="form-label">Chat ID</label>
+        <InputNumber id="chatId" class="form-control" @bind-Value="_reminder.ChatId" />
+    </div>
+
+    <div class="mb-3">
+        <label for="time" class="form-label">Time</label>
+        <InputTime id="time" class="form-control" @bind-Value="_reminder.Time" />
+    </div>
+
+    <div class="mb-3">
+        <label for="days" class="form-label">Days of Week</label>
+        <InputSelect id="days" class="form-control" @bind-Value="_selectedDay">
+            @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                <option value="@day">@day</option>
+            }
+        </InputSelect>
+        <button type="button" class="btn btn-secondary" @onclick="AddDay">Add</button>
+        <ul>
+            @foreach (var day in _reminder.DayOfWeeks)
+            {
+                <li>
+                    @day
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveDay(day)">Remove</button>
+                </li>
+            }
+        </ul>
+    </div>
+
+    <div class="mb-3">
+        <label for="message" class="form-label">Message</label>
+        <InputTextArea id="message" class="form-control" @bind-Value="_reminder.Message" />
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <InputSelect id="status" class="form-control" @bind-Value="_reminder.ReminderStatus">
+            @foreach (ReminderStatus status in Enum.GetValues(typeof(ReminderStatus)))
+            {
+                <option value="@status">@status</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? ReminderId { get; set; }
+
+    private ChatReminderDto _reminder = new();
+    private DayOfWeek _selectedDay;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (ReminderId.HasValue)
+        {
+            // Загружаем данные для редактирования
+            _reminder = await ReminderService.GetReminderByIdAsync(ReminderId.Value) ?? new ChatReminderDto();
+        }
+    }
+
+    private void AddDay()
+    {
+        if (!_reminder.DayOfWeeks.Contains(_selectedDay))
+        {
+            _reminder.DayOfWeeks.Add(_selectedDay);
+        }
+    }
+
+    private void RemoveDay(DayOfWeek day)
+    {
+        _reminder.DayOfWeeks.Remove(day);
+    }
+
+    private async Task SaveReminder()
+    {
+        if (ReminderId.HasValue)
+        {
+            // Обновление существующего напоминания
+            await ReminderService.UpdateReminderAsync(_reminder);
+        }
+        else
+        {
+            // Создание нового напоминания
+            await ReminderService.CreateReminderAsync(_reminder);
+        }
+
+        NavigationManager.NavigateTo("/reminders");
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/reminders");
+    }
+}

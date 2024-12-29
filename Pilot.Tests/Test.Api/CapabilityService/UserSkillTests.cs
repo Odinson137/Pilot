@@ -2,7 +2,6 @@
 using Pilot.Capability.Models;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Messenger.Models;
 using Test.Api.CapabilityService.Factory;
 using Test.Base.IntegrationBase;
 

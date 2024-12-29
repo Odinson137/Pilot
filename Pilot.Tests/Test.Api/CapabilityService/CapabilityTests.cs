@@ -5,8 +5,6 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Identity.Models;
-using Pilot.Worker.Models;
-using Pilot.Worker.Models.ModelHelpers;
 using Test.Api.CapabilityService.Factory;
 using Test.Base.IntegrationBase;
 using IAddCompanyUser = Pilot.Capability.Models.ModelHelpers.IAddCompanyUser;

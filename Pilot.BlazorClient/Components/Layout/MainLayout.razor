@@ -1,13 +1,14 @@
 ﻿@using AutoMapper
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
+@using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
 
 @using Pilot.Contracts.DTO.ModelDto
 @inherits LayoutComponentBase
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IJsonLocalizationService Localizer
 @inject NavigationManager NavigationManager
 @inject IMessengerService MessengerService
@@ -44,10 +45,12 @@
                     <li class="nav-item" style="margin-top: 5px">
                         <div class="position-relative">
                             <button class="btn btn-light p-0 position-relative" @onclick="ToggleNotifications">
-                                <img class="bi bi-bell-fill text-primary" src="Images/Chat/free-icon-bell-512234.png" width="30px" alt="bell"/>
+                                <img class="bi bi-bell-fill text-primary" src="Images/Chat/free-icon-bell-512234.png"
+                                     width="25px" alt="bell"/>
                                 @if (_notificationCount > 0)
                                 {
-                                    <span class="badge bg-danger text-white position-absolute top-0 start-100 translate-middle">
+                                    <span
+                                        class="badge bg-danger text-white position-absolute top-0 start-100 translate-middle">
                                         @_notificationCount
                                     </span>
                                 }
@@ -58,12 +61,29 @@
                                     <h6 class="text-center mb-2">Уведомления</h6>
                                     @if (_notifications.Count > 0)
                                     {
-                                        <ul class="list-group list-group-flush">
-                                            @foreach (var notification in _notifications)
-                                            {
-                                                <li class="list-group-item">@notification</li>
-                                            }
-                                        </ul>
+                                        <div class="container">
+                                            <div class="row">
+                                                @foreach (var notification in _notifications)
+                                                {
+                                                    <div class="col-12 mb-2">
+                                                        <div class="card shadow-sm border-0">
+                                                            <div class="card-header py-1 px-2 @GetPriorityClass(notification.MessagePriority)">
+                                                                <small class="text-truncate">@notification.Title</small>
+                                                            </div>
+                                                            <div class="card-body py-2 px-2">
+                                                                <p class="mb-1 text-muted small">@notification.Description</p>
+                                                                @if (notification.EntityType == ModelType.Chat)
+                                                                {
+                                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => MoveToChat(notification.EntityId!.Value)">
+                                                                        Go to Chat
+                                                                    </button>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
                                     }
                                     else
                                     {
@@ -87,9 +107,9 @@
                 }
             </ul>
         </div>
-            <div class="ms-auto">
-                <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@_toggleName</button>
-            </div>
+        <div class="ms-auto">
+            <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@_toggleName</button>
+        </div>
     </div>
 </nav>
 
@@ -168,6 +188,7 @@
         0%, 100% {
             transform: translateY(0);
         }
+
         50% {
             transform: translateY(-5px);
         }
@@ -189,12 +210,52 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         border-radius: 5px;
     }
+
     .navbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
 
+    .bg-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .bg-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .bg-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .bg-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .bg-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .bg-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .bg-dark {
+        background-color: #343a40;
+        color: white;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa;
+        color: black;
+    }
 </style>
 
 <div id="blazor-error-ui">
@@ -209,7 +270,7 @@
     private string _toggleName;
     private int? _notificationCount;
     private bool _showNotifications;
-    private List<string> _notifications = new();
+    private List<InfoMessageDto> _notifications = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -222,21 +283,38 @@
         {
             _notificationCount = 0;
             await MessengerService.CreateConnectionAsync();
-            
+
             MessengerService.OnReceiveNotification += async message =>
             {
                 _notificationCount++;
                 var infoMessageDto = message.FromJson<InfoMessageDto>();
-                _notifications.Add(infoMessageDto.Title);
+                _notifications.Add(infoMessageDto);
                 await InvokeAsync(StateHasChanged);
             };
-            
+
             MessengerService.OnMessageReceived += async (message) =>
             {
                 _notificationCount++;
+                var messageDto = message.FromJson<MessageDto>();
+                var newInfoMessage = new InfoMessageDto
+                {
+                    CreateAt = messageDto.CreateAt,
+                    Description = "У вас новое сообщение в чате",
+                    MessagePriority = MessageInfo.Create | MessageInfo.Notification,
+                    EntityType = ModelType.Chat,
+                    EntityId = messageDto.Chat.Id
+                };
+                _notifications.Add(newInfoMessage);
                 await InvokeAsync(StateHasChanged);
             };
         }
+    }
+
+    private async Task MoveToChat(int chatId)
+    {
+        await ProtectedSessionStorage.SetAsync(ClientConstants.CurrentChat, chatId);
+        NavigationManager.NavigateTo("chat");
+
     }
     
     private void ToggleNotifications()
@@ -260,4 +338,22 @@
     {
         _showNotifications = false;
     }
+    
+    private string GetPriorityClass(MessageInfo priority)
+    {
+        return priority switch
+        {
+            MessageInfo.Error => "bg-danger text-white", // Красный
+            MessageInfo.Job => "bg-info text-white",     // Голубой
+            MessageInfo.Invitation => "bg-primary text-white", // Синий
+            MessageInfo.Success => "bg-success text-white", // Зеленый
+            MessageInfo.Create => "bg-warning text-dark", // Желтый
+            MessageInfo.Update => "bg-secondary text-white", // Серый
+            MessageInfo.Delete => "bg-danger text-white", // Красный
+            MessageInfo.Validate => "bg-dark text-white", // Темно-серый
+            MessageInfo.Notification => "bg-light text-dark", // Светло-серый
+            _ => "bg-light text-dark" // По умолчанию
+        };
+    }
+
 }

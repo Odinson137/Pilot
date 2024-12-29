@@ -18,4 +18,10 @@ public interface IRedisService
     public Task DeleteValueAsync(string key);
     
     public Task DeleteValuesAsync(string key);
+
+    Task AddQueueValueAsync<T>(string key, T value) where T : BaseDto;
+
+    Task<long> GetQueueValuesCountAsync<T>(string key) where T : BaseDto;
+    
+    Task<ICollection<T>> GetQueueValuesAsync<T>(string key) where T : BaseDto;
 }

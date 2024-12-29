@@ -68,4 +68,28 @@ public class RedisService(IDatabase redis) : IRedisService
         
         await redis.KeyDeleteAsync(redisValues, flags: CommandFlags.FireAndForget);
     }
+    
+    public async Task AddQueueValueAsync<T>(string key, T value) where T : BaseDto
+    {
+        await redis.ListRightPushAsync($"queue-{typeof(T).Name}-{key}", value.ToJson());
+    }
+    
+    public Task<long> GetQueueValuesCountAsync<T>(string key) where T : BaseDto
+    {
+        return redis.ListLengthAsync($"queue-{typeof(T).Name}-{key}");
+    }
+
+    public async Task<ICollection<T>> GetQueueValuesAsync<T>(string key) where T : BaseDto
+    {
+        var values = new List<T>();
+        for (;;)
+        {
+            RedisValue? redisValue = await redis.ListLeftPopAsync($"queue-{typeof(T).Name}-{key}");
+            if (redisValue.HasValue)
+                values.Add(redisValue.Value!.FromJson<T>());
+            else break;
+        }
+
+        return values;
+    }
 }

@@ -10,4 +10,8 @@ public interface INotificationClient
     public Task ReceiveMessage(string message);
     
     public Task ReceiveNotification(string message);
+    
+    public Task ReceiveNotifications(string message);
+    
+    public Task ReceiveNotificationCount(int count);
 }

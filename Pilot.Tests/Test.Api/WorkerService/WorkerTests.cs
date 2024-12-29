@@ -1,7 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Microsoft.EntityFrameworkCore;
-using Pilot.Api.Services;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;

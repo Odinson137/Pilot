@@ -5,6 +5,7 @@
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Data
 @using Pilot.Contracts.DTO.ModelDto
 @using Pilot.Contracts.Services
 @inject IChatPageService ChatPageService
@@ -35,6 +36,7 @@ else
             </div>
 
             <button class="btn btn-primary create-chat-btn" @onclick="CreateNewChat">Create Chat</button>
+            <button class="btn btn-secondary mt-3 reminders-btn" @onclick="NavigateToReminders">Reminders</button>
         </div>
 
         @if (_selectedChat != null)
@@ -135,13 +137,13 @@ else
                 var messageViewModel = Mapper.Map<MessageViewModel>(messageDto);
                 _messageViewModels.Add(messageViewModel);
                 await InvokeAsync(StateHasChanged);
-                await JsRuntime.InvokeVoidAsync("scrollToBottom", _chatListRef);
+                // await JsRuntime.InvokeVoidAsync("scrollToBottom", _chatListRef);
             }
 
             // MessengerService.OnReceiveNotification?.I;
         };
 
-        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>("chat:currentChat");
+        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
         if (currentChatStorageResult.Success)
             await HandleTitleChatClick(currentChatStorageResult.Value);
 
@@ -160,7 +162,7 @@ else
 
         _isChatLoading = false;
 
-        await ProtectedSessionStorage.SetAsync("chat:currentChat", chatId);
+        await ProtectedSessionStorage.SetAsync(ClientConstants.CurrentChat, chatId);
     }
 
     private async Task CreateNewChat()
@@ -193,6 +195,10 @@ else
         await JsRuntime.InvokeVoidAsync("scrollSidebarToBottom", _chatListRef);
     }
 
+    private async Task NavigateToReminders()
+    {
+        NavigationManager.NavigateTo("/reminders");
+    }
 }
 
 <style>
@@ -279,6 +285,11 @@ else
     .create-chat-btn {
         margin-top: 20px;
     }
+
+    .reminders-btn {
+        margin-top: 10px;
+    }
+
 </style>
 
 <script>

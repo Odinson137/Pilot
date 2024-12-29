@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;

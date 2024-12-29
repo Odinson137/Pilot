@@ -6,9 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
-using Pilot.Storage.Data;
 using Test.Base.IntegrationBase;
-using Testcontainers.RabbitMq;
 using DataContext = Pilot.Messenger.Data.DataContext;
 using Program = Pilot.Messenger.Program;
 

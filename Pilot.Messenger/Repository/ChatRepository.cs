@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using AutoMapper;
+﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;

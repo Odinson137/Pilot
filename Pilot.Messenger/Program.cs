@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Messenger.Data;
 using Pilot.Messenger.Hubs;
 using Pilot.Messenger.Interfaces;
@@ -34,6 +35,7 @@ services.AddControllers();
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+await services.AddRedis(configuration);
 
 // services.AddBaseQueryHandlers(typeof(BaseDto).Assembly);
 services.AddScoped<ISeed, Seed>();

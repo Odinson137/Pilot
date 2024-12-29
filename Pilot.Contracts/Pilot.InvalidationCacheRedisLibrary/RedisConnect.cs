@@ -26,6 +26,6 @@ public static class RedisConnect
         services.AddSingleton(connectionMultiplexer.GetSubscriber);
         services.AddSingleton(connectionMultiplexer.GetDatabase());
         services.AddSingleton<IRedisService, RedisService>();
-        services.AddHostedService<ConsumerService>();
+        // services.AddHostedService<ConsumerService>();
     }
 }

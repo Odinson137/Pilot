@@ -1,0 +1,66 @@
+﻿@page "/reminders"
+@using Pilot.Contracts.DTO.ModelDto
+@inject IReminderService ReminderService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Reminders</PageTitle>
+
+<h3>Reminders</h3>
+
+@if (_isLoading)
+{
+    <p>Loading reminders...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Chat</th>
+            <th>Time</th>
+            <th>Days</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var reminder in _reminders)
+        {
+            <tr>
+                <td>@reminder.ChatId</td>
+                <td>@reminder.Time</td>
+                <td>@string.Join(", ", reminder.DayOfWeeks)</td>
+                <td>@reminder.Message</td>
+                <td>@reminder.ReminderStatus</td>
+                <td>
+                    <button class="btn btn-warning" @onclick="() => EditReminder(reminder.Id)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteReminder(reminder.Id)">Delete</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<ChatReminderDto> _reminders = [];
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _reminders = await ReminderService.GetRemindersAsync();
+        _isLoading = false;
+    }
+
+    private async Task EditReminder(int id)
+    {
+        NavigationManager.NavigateTo($"/edit-reminder/{id}");
+    }
+
+    private async Task DeleteReminder(int id)
+    {
+        await ReminderService.DeleteReminderAsync(id);
+        _reminders = await ReminderService.GetRemindersAsync();
+    }
+}

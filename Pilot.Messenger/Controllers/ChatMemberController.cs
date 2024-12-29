@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.SqrsControllerLibrary.Controller;
 

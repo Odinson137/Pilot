@@ -6,9 +6,7 @@ using Pilot.Api.Interfaces;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Identity.Interfaces;
 using Pilot.Worker.Data;
-using Test.Api.MessengerService.Factory;
 using Test.Api.WorkerService.Factory;
 using Test.Base.IntegrationBase;
 

@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.Messenger.Consumers.Base;
 using Pilot.Messenger.Interfaces;

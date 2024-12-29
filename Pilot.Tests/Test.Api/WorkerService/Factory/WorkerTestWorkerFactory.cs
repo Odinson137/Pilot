@@ -9,7 +9,6 @@ using Pilot.Contracts.Data;
 using Pilot.Worker;
 using Pilot.Worker.Data;
 using Test.Base.IntegrationBase;
-using Testcontainers.RabbitMq;
 
 namespace Test.Api.WorkerService.Factory;
 

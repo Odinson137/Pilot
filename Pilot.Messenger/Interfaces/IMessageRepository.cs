@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
 

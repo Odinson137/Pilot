@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
