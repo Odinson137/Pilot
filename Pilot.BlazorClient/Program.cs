@@ -27,7 +27,6 @@ services.AddScoped<IUserService, UserService>();
 
 services.AddScoped<IGateWayApiService, GateWayApiService>();
 services.AddScoped<ICompanyPageService, CompanyPageService>();
-services.AddScoped<ICompanyDetailPageService, CompanyDetailPageService>();
 services.AddScoped<IUserPageService, UserPageService>();
 services.AddScoped<IWorkPageService, WorkPageService>();
 services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();

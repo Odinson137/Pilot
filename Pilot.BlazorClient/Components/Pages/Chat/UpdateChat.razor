@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _chat = await ChatPageService.GetChatAsync(Id);
+        _chat = await ChatPageService.GetValueAsync(Id);
         var employees = await ChatPageService.GetAllEmployeesAsync();
         _multySelect = MultySelectViewModel<UserViewModel>.GetList(employees);
         var chatIds = _chat.ChatMembers.Select(c => c.Id).ToList();
@@ -72,7 +72,7 @@
     {
         _chat.ChatMembers = _multySelect.Where(c => c.IsSelected)
             .Select(c => new ChatMemberViewModel { UserId = c.Value.Id }).ToList();
-        await ChatPageService.CreateChatAsync(_chat);
+        await ChatPageService.CreateValueAsync(_chat);
         NavigationManager.NavigateTo("/chat");
     }
 

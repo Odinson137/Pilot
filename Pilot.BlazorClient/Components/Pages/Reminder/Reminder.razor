@@ -1,6 +1,7 @@
-﻿@page "/reminders"
-@using Pilot.Contracts.DTO.ModelDto
-@inject IReminderService ReminderService
+﻿@page "/chat-reminders/{chatId:int}"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Reminders</PageTitle>
@@ -44,12 +45,15 @@ else
 }
 
 @code {
-    private ICollection<ChatReminderDto> _reminders = [];
+    private ICollection<ChatReminderViewModel> _reminders = [];
     private bool _isLoading = true;
+    
+    [Parameter]
+    public int ChatId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _reminders = await ReminderService.GetRemindersAsync();
+        _reminders = await ReminderService.GetValuesAsync(predicate: c => c.ChatId == ChatId);
         _isLoading = false;
     }
 
@@ -60,7 +64,7 @@ else
 
     private async Task DeleteReminder(int id)
     {
-        await ReminderService.DeleteReminderAsync(id);
-        _reminders = await ReminderService.GetRemindersAsync();
+        await ReminderService.DeleteValueAsync(id);
+        _reminders = await ReminderService.GetValuesAsync();
     }
 }

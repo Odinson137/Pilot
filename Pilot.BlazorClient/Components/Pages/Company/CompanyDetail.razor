@@ -2,7 +2,7 @@
 <PageTitle>@_company.Title</PageTitle>
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
-@inject ICompanyDetailPageService PageService
+@inject ICompanyPageService PageService
 
 <div class="container mt-5">
     <!-- Top section with brief description and photo -->
@@ -183,7 +183,7 @@
     {
         try
         {
-            _company = await PageService.GetCompanyAsync(companyId);
+            _company = await PageService.GetValueAsync(companyId);
             _isLoadingCompany = false;
 
             // Load each section asynchronously after the company is loaded

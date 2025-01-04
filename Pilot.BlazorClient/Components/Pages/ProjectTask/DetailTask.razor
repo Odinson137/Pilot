@@ -178,7 +178,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _task = await ProjectTaskPageService.GetUserTaskAsync(Id);
+        _task = await ProjectTaskPageService.GetValueAsync(Id);
         var userIds = new List<int>
         {
             _task.CreatedBy.Id,
@@ -259,7 +259,7 @@ else
     {
         if (_task != null)
         {
-            await ProjectTaskPageService.ChangeTaskAsync(_task);
+            await ProjectTaskPageService.UpdateValueAsync(_task);
             _isEditMode = false;
         }
     }

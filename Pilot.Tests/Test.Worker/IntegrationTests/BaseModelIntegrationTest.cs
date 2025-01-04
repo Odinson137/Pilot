@@ -41,7 +41,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     }
 
     [Fact]
-    public virtual async Task GetAllValuesTest_FilterWithIdsReturnOk()
+    public virtual async Task GetAllValuesTest_FilterWithIds_ReturnOk()
     {
         #region Arrange
 
@@ -66,6 +66,34 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
+    }
+    
+    [Fact]
+    public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
+    {
+        #region Arrange
+
+        const int count = 3;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+
+        await WorkerContext.AddRangeAsync(values);
+        await WorkerContext.SaveChangesAsync();
+
+        var filter = new BaseFilter
+        {
+            WhereFilter = (nameof(BaseId.Id), values.Select(c => c.Id).First())
+        };
+        
+        #endregion
+
+        // Act
+        var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count == 1);
     }
     
     [Fact]

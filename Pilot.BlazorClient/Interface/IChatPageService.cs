@@ -3,12 +3,9 @@ using Pilot.BlazorClient.ViewModels.UserViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface IChatPageService
+public interface IChatPageService : IBasePageService<ChatViewModel>
 {
     Task<ICollection<ChatViewModel>> GetUserChatsAsync();
-    Task<ChatViewModel> GetChatAsync(int chatId);
-    
-    Task<ICollection<ChatMemberViewModel>> GetChatMembersAsync(ICollection<int> chatMemberIds);
     
     Task<ICollection<MessageViewModel>> GetMessagesAsync(int chatId, int start, int end);
     
@@ -17,6 +14,4 @@ public interface IChatPageService
     Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels);
     
     Task<ICollection<UserViewModel>> GetAllEmployeesAsync();
-    Task CreateChatAsync(ChatViewModel chat);
-
 }

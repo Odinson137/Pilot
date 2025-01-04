@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,9 +43,26 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
 
         if (filter.Ids != null)
         {
-            query = (IOrderedQueryable<TOut>)query.Where(c => filter.Ids.Contains(c.Id));
+            query = query.Where(c => filter.Ids.Contains(c.Id));
+        }
+        
+        if (filter.WhereFilter.HasValue)
+        {
+            query = query.Where(GetFilterLambda<TOut>(filter.WhereFilter.Value));
         }
         
         return await query.ToListAsync(token);
+    }
+
+    private static Expression<Func<TOut, bool>> GetFilterLambda<TOut>((string, int) filter)
+    {
+        var expNameParameter = Expression.Parameter(typeof(TOut), "e");
+        var expMember = Expression.Property(expNameParameter, filter.Item1);
+        var expValue = Expression.Constant(filter.Item2);
+
+        var eq = Expression.Equal(expMember, expValue);
+
+        var func = Expression.Lambda<Func<TOut, bool>>(eq, expNameParameter);
+        return func;
     }
 }

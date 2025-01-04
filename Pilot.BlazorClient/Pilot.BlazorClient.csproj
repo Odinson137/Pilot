@@ -43,12 +43,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Pages\Reminder\CreateChat.razor" />
-      <AdditionalFiles Include="Components\Pages\Reminder\MessageComponent.razor" />
       <AdditionalFiles Include="Components\Pages\Reminder\Reminder.razor" />
-      <AdditionalFiles Include="Components\Pages\Reminder\TextboxComponent.razor" />
-      <AdditionalFiles Include="Components\Pages\Reminder\TitleChatComponent.razor" />
-      <AdditionalFiles Include="Components\Pages\Reminder\UpdateChat.razor" />
     </ItemGroup>
 
 </Project>

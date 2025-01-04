@@ -40,7 +40,7 @@
 
     private async Task HandleSubmit()
     {
-        await ChatPageService.CreateChatAsync(_newChat);
+        await ChatPageService.CreateValueAsync(_newChat);
         NavigationManager.NavigateTo("/chat");
     }
 

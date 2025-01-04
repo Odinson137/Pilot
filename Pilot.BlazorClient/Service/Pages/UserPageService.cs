@@ -9,7 +9,8 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class UserPageService(IGateWayApiService apiService, IUserService userService, ILogger<UserPageService> logger, IMapper mapper) : IUserPageService
+public class UserPageService(IGateWayApiService apiService, IUserService userService, ILogger<UserPageService> logger, IMapper mapper) 
+    : IUserPageService
 {
     public async Task Registration(RegistrationUserViewModel registrationUser)
     {

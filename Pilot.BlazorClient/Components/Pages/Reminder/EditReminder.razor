@@ -1,5 +1,9 @@
 ﻿@page "/edit-reminder/{ReminderId:int?}"
-@inject IReminderService ReminderService
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@using Pilot.Contracts.DTO.ModelDto
+@inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
 
 <PageTitle>Edit Reminder</PageTitle>
@@ -63,7 +67,7 @@
     [Parameter]
     public int? ReminderId { get; set; }
 
-    private ChatReminderDto _reminder = new();
+    private ChatReminderViewModel _reminder = new();
     private DayOfWeek _selectedDay;
 
     protected override async Task OnInitializedAsync()
@@ -71,7 +75,7 @@
         if (ReminderId.HasValue)
         {
             // Загружаем данные для редактирования
-            _reminder = await ReminderService.GetReminderByIdAsync(ReminderId.Value) ?? new ChatReminderDto();
+            _reminder = await ReminderService.GetValueAsync(ReminderId.Value);
         }
     }
 
@@ -93,12 +97,12 @@
         if (ReminderId.HasValue)
         {
             // Обновление существующего напоминания
-            await ReminderService.UpdateReminderAsync(_reminder);
+            await ReminderService.UpdateValueAsync(_reminder);
         }
         else
         {
             // Создание нового напоминания
-            await ReminderService.CreateReminderAsync(_reminder);
+            await ReminderService.CreateValueAsync(_reminder);
         }
 
         NavigationManager.NavigateTo("/reminders");

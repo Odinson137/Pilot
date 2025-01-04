@@ -1,6 +1,4 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-
-namespace Pilot.BlazorClient.Interface;
+﻿namespace Pilot.BlazorClient.Interface;
 
 public interface IMessengerService
 {

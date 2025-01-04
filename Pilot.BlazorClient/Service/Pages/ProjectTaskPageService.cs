@@ -7,37 +7,27 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class ProjectTaskPageService(IGateWayApiService apiService, IMapper mapper) : IProjectTaskPageService
+public class ProjectTaskPageService(IGateWayApiService apiService, IMapper mapper) : BaseModelService<ProjectTaskDto, ProjectTaskViewModel>(apiService, mapper), IProjectTaskPageService
 {
+    private readonly IGateWayApiService _apiService = apiService;
+
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
-        var companyUserViewModel = await apiService.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(userCompanyId);
+        var companyUserViewModel = await _apiService.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(userCompanyId);
         return companyUserViewModel;
-    }
-
-    public async Task<ProjectTaskViewModel> GetUserTaskAsync(int tasksId)
-    {
-        var taskViewModel = await apiService.SendGetMessage<ProjectTaskDto, ProjectTaskViewModel>(tasksId);
-        return taskViewModel;
     }
 
     public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids)
     {
         var filter = new BaseFilter(ids);
-        var userViewModels = await apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
+        var userViewModels = await _apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
         return userViewModels;
     }
     
     public async Task<ICollection<TaskInfoViewModel>> GetTaskInfoAsync(ICollection<int> ids)
     {
         var filter = new BaseFilter(ids);
-        var taskInfoViewModels = await apiService.SendGetMessages<TaskInfoDto, TaskInfoViewModel>(filter: filter);
+        var taskInfoViewModels = await _apiService.SendGetMessages<TaskInfoDto, TaskInfoViewModel>(filter: filter);
         return taskInfoViewModels;
-    }
-
-    public async Task ChangeTaskAsync(ProjectTaskViewModel projectTaskViewModel)
-    {
-        var taskDto = mapper.Map<ProjectTaskDto>(projectTaskViewModel);
-        await apiService.SendPutMessage(null, message: taskDto);
     }
 }
