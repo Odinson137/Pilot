@@ -82,10 +82,11 @@ public class RedisService(IDatabase redis) : IRedisService
     public async Task<ICollection<T>> GetQueueValuesAsync<T>(string key) where T : BaseDto
     {
         var values = new List<T>();
+        var fullKey = $"queue-{typeof(T).Name}-{key}";
         for (;;)
         {
-            RedisValue? redisValue = await redis.ListLeftPopAsync($"queue-{typeof(T).Name}-{key}");
-            if (redisValue.HasValue)
+            RedisValue? redisValue = await redis.ListLeftPopAsync(fullKey);
+            if (redisValue.Value.HasValue)
                 values.Add(redisValue.Value!.FromJson<T>());
             else break;
         }

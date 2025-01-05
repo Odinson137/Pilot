@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+using Pilot.Contracts.Interfaces;
 using Pilot.Messenger.Data;
 using Test.Messenger.IntegrationTests.Factories;
 
@@ -13,6 +14,7 @@ public class BaseMessageIntegrationTest : IClassFixture<MessageTestMessageFactor
     protected readonly HttpClient MessengerClient;
 
     private readonly IServiceProvider _messageService;
+    public readonly IRedisService RedisService;
     protected DataContext AssertContext 
         => _messageService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
     
@@ -28,6 +30,7 @@ public class BaseMessageIntegrationTest : IClassFixture<MessageTestMessageFactor
         IdentityDataContext = identityFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
 
         PublishEndpoint = messengerScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        RedisService = messengerScope.ServiceProvider.GetRequiredService<IRedisService>();
         MessengerClient = factory.CreateClient();
 
         MessengerMapper = messengerScope.ServiceProvider.GetRequiredService<IMapper>();
