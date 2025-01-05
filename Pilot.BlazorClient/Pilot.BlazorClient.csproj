@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
       <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
       <PackageReference Include="Blazored.Modal" Version="7.3.1" />
       <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
@@ -22,10 +23,6 @@
       <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0" />
       <PackageReference Include="Syncfusion.Blazor.Data" Version="28.1.35" />
       <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="28.1.35" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Data\Enums\" />
     </ItemGroup>
 
     <ItemGroup>

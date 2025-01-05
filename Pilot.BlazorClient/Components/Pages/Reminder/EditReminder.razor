@@ -1,8 +1,11 @@
-﻿@page "/edit-reminder/{ReminderId:int?}"
+﻿@page "/reminder/{ReminderId:int?}"
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
-@using Pilot.Contracts.DTO.ModelDto
+@using BlazorBootstrap
+@using Pilot.BlazorClient.Data
+@inject ProtectedSessionStorage ProtectedSessionStorage;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
 
@@ -11,17 +14,12 @@
 <h3>@(ReminderId.HasValue ? "Edit Reminder" : "Create Reminder")</h3>
 
 <EditForm Model="_reminder" OnValidSubmit="SaveReminder">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="mb-3">
-        <label for="chatId" class="form-label">Chat ID</label>
-        <InputNumber id="chatId" class="form-control" @bind-Value="_reminder.ChatId" />
-    </div>
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
 
     <div class="mb-3">
         <label for="time" class="form-label">Time</label>
-        <InputTime id="time" class="form-control" @bind-Value="_reminder.Time" />
+        <TimeInput id="time" @bind-Value="@_reminder.Time"/>
     </div>
 
     <div class="mb-3">
@@ -32,21 +30,23 @@
                 <option value="@day">@day</option>
             }
         </InputSelect>
-        <button type="button" class="btn btn-secondary" @onclick="AddDay">Add</button>
         <ul>
             @foreach (var day in _reminder.DayOfWeeks)
             {
-                <li>
+                <li style="margin-top: 5px">
                     @day
-                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveDay(day)">Remove</button>
+                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveDay(day)"
+                            style="margin-left: 5px">Remove
+                    </button>
                 </li>
             }
         </ul>
+        <button type="button" class="btn btn-secondary" @onclick="AddDay">Add</button>
     </div>
 
     <div class="mb-3">
         <label for="message" class="form-label">Message</label>
-        <InputTextArea id="message" class="form-control" @bind-Value="_reminder.Message" />
+        <InputTextArea id="message" class="form-control" @bind-Value="_reminder.Message" style="height: 200px"/>
     </div>
 
     <div class="mb-3">
@@ -59,13 +59,14 @@
         </InputSelect>
     </div>
 
-    <button type="submit" class="btn btn-primary">Save</button>
-    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    <div style="margin-bottom: 100px">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </div>
 </EditForm>
 
 @code {
-    [Parameter]
-    public int? ReminderId { get; set; }
+    [Parameter] public int? ReminderId { get; set; }
 
     private ChatReminderViewModel _reminder = new();
     private DayOfWeek _selectedDay;
@@ -94,6 +95,8 @@
 
     private async Task SaveReminder()
     {
+        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
+        _reminder.ChatId = currentChatStorageResult.Value;
         if (ReminderId.HasValue)
         {
             // Обновление существующего напоминания
@@ -105,11 +108,13 @@
             await ReminderService.CreateValueAsync(_reminder);
         }
 
-        NavigationManager.NavigateTo("/reminders");
+        NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
-        NavigationManager.NavigateTo("/reminders");
+        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
+        NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
     }
+
 }

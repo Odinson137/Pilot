@@ -1,4 +1,6 @@
-﻿namespace Pilot.Contracts.Base;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Pilot.Contracts.Base;
 
 public class BaseDto : BaseId
 {

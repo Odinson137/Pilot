@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using Hangfire;
-using Pilot.BackgroundJob.Interface;
+﻿using Pilot.BackgroundJob.Interface;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
@@ -24,6 +22,7 @@ public class HangfireJobExecution : IJobExecution
 
     public async Task RecurringJobExecution(int reminderId)
     {
+        _logger.LogInformation($"Recurring job execution for reminder {reminderId}");
         var reminder = await _chatReminder.GetByIdAsync(reminderId);
         if (reminder == null)
         {

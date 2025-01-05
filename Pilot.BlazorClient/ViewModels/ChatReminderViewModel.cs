@@ -8,7 +8,6 @@ public class ChatReminderViewModel : BaseViewModel
     public int ChatId { get; set; }
     
     public TimeOnly Time { get; set; }
-
     public List<DayOfWeek> DayOfWeeks { get; set; } = [];
     
     [MaxLength(500)]

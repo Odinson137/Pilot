@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services.LogService;
@@ -13,6 +14,7 @@ namespace Pilot.Messenger.Consumers.MessageConsumer;
 public class MessageCreateConsumer(
     ILogger<MessageCreateConsumer> logger,
     IMessageRepository repository,
+    IChatMemberRepository chatMemberRepository,
     IBaseValidatorService validatorService,
     IMapper mapper,
     INotificationService notificationService)
@@ -35,15 +37,13 @@ public class MessageCreateConsumer(
 
         await Repository.SaveAsync();
 
-        // var message = new InfoMessageDto
-        // {
-        //     Title = "Успешное создание!",
-        //     Description = $"Успешное создание сущности '{nameof(MessageDto)}'",
-        //     MessagePriority = MessageInfo.Success | MessageInfo.Create,
-        //     EntityType = PilotEnumExtensions.GetModelEnumValue<Message>(),
-        //     EntityId = model.Id
-        // };
-        
-        // await NotificationService.SendMessage(model.Chat.Id, context.Message.Value);
+        var chatMemberIds = await chatMemberRepository.DbSet.Where(c => c.Chat.Id == model.Chat.Id).Select(c => c.UserId).ToListAsync();
+
+        var messageDto = Mapper.Map<MessageDto>(model);
+        foreach (var memberId in chatMemberIds)
+        {
+            logger.LogInformation($"Send message to {memberId}");
+            await NotificationService.SendMessage(messageDto, memberId);
+        }
     }
 }

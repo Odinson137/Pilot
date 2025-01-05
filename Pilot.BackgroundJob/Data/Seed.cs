@@ -1,5 +1,4 @@
 using Pilot.Contracts.Data;
-using Pilot.Contracts.Services;
 
 namespace Pilot.BackgroundJob.Data;
 

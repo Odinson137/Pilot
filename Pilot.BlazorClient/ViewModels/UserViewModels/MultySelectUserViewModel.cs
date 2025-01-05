@@ -1,9 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using Pilot.Contracts.Attributes;
-using Pilot.Contracts.Data.Enums;
-
-namespace Pilot.BlazorClient.ViewModels.UserViewModels;
+﻿namespace Pilot.BlazorClient.ViewModels.UserViewModels;
 
 public class MultySelectUserViewModel : BaseViewModel
 {

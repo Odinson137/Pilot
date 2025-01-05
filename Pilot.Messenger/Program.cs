@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Interfaces;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Messenger.Data;
 using Pilot.Messenger.Hubs;
@@ -12,10 +13,14 @@ using Pilot.Messenger.Repository;
 using Pilot.Messenger.Services;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Pilot.SqrsControllerLibrary.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
+
+services.AddScoped<IMessageService, MessageService>();
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 services.AddScoped<IInfoMessageRepository, InfoMessageRepository>();
 services.AddScoped<IMessageRepository, MessageRepository>();

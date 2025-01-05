@@ -39,6 +39,9 @@ services.AddHttpClient(ServiceName.StorageServer.ToString(),
 services.AddHttpClient(ServiceName.CapabilityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("CapabilityServerUrl")!); });
 
+services.AddHttpClient(ServiceName.BackgroundJobService.ToString(),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("BackgroundJobServiceUrl")!); });
+
 services.AddTransient<IModelService, ModelService>();
 services.AddTransient<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();

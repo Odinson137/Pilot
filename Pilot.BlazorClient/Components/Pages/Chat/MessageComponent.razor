@@ -1,6 +1,7 @@
 ﻿<!-- MessageComponent.razor -->
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.Contracts.Data.Enums
 
 <div class="message @(IsCurrentUser ? "sent" : "received")">
     <div class="message-content">
@@ -24,8 +25,16 @@
 
     [Parameter] public UserViewModel User { get; set; } = null!;
 
-    private string SenderName => Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? "Unknown";
-    private string SenderImage => Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarUrl ?? "failes";
+    // непроизводительно и плохо - факт, я знаю
+    private string SenderName => Message.UserId != (int)ChatMemberId.Reminder
+        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName
+          ?? "Unknown"
+        : $"{ChatMemberId.Reminder}";
+
+    private string SenderImage => Message.UserId != (int)ChatMemberId.Reminder
+        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarUrl
+          ?? "/Images/Chat/default.jpg"
+        : "/Images/Chat/reminder.png";
 
     private bool IsCurrentUser => Message.UserId == User.Id;
 
@@ -87,7 +96,7 @@
         height: 20px;
         border-radius: 50%;
     }
-    
+
     .sent a {
         color: white;
     }

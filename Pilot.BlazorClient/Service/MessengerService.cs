@@ -52,7 +52,7 @@ public class MessengerService : IMessengerService
 
     public async Task SendMessageAsync(int chatId, string messageText)
     {
-        if (_connection == null)
+        if (_connection == null || _connection.State == HubConnectionState.Disconnected)
         {
             _logger.LogError("Connection not established.");
             return;

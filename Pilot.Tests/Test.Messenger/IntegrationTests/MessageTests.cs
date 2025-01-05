@@ -1,9 +1,7 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
-using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Test.Base.IntegrationBase;
 using Test.Messenger.IntegrationTests.Factories;
 

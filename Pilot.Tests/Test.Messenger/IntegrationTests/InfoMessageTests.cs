@@ -1,5 +1,4 @@
 ﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.InvalidationCacheRedisLibrary.Services;
 using Pilot.Messenger.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Test.Base.IntegrationBase;

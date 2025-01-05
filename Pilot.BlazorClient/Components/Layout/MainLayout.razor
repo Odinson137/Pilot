@@ -1,7 +1,4 @@
-﻿@using AutoMapper
-@using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.Contracts.Data.Enums
@@ -67,11 +64,8 @@
                                                 {
                                                     <div class="col-12 mb-2">
                                                         <div class="card shadow-sm border-0">
-                                                            <div class="card-header py-1 px-2 @GetPriorityClass(notification.MessagePriority)">
-                                                                <small class="text-truncate">@notification.Title</small>
-                                                            </div>
                                                             <div class="card-body py-2 px-2">
-                                                                <p class="mb-1 text-muted small">@notification.Description</p>
+                                                                <p class="mb-1 text-muted small @GetPriorityClass(notification.MessagePriority)">@notification.Description</p>
                                                                 @if (notification.EntityType == ModelType.Chat)
                                                                 {
                                                                     <button class="btn btn-sm btn-outline-primary" @onclick="() => MoveToChat(notification.EntityId!.Value)">

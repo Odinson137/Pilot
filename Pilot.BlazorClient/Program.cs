@@ -1,7 +1,5 @@
-using System.Globalization;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Pilot.BlazorClient.Components;
 using Pilot.BlazorClient.Data;
@@ -32,6 +30,7 @@ services.AddScoped<IWorkPageService, WorkPageService>();
 services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();
 services.AddScoped<IChatPageService, ChatPageService>();
 services.AddScoped<IMessengerService, MessengerService>();
+services.AddScoped<IReminderPageService, ReminderPageService>();
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 
 builder.Logging.ClearProviders();

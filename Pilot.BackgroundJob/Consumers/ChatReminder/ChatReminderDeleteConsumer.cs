@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Pilot.BackgroundJob.Interface;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;

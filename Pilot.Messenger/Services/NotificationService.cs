@@ -12,9 +12,9 @@ public class NotificationService(IHubContext<NotificationHub, INotificationClien
     {
         return hubContext.Clients.Group(userId.ToString()).ReceiveNotification(message.ToJson());
     }
-    //
-    // public Task SendMessage(int chatId, MessageDto message)
-    // {
-    //     return hubContext.Clients.Group($"chat-{chatId}").SendMessageAsync(message);
-    // }
+    
+    public Task SendMessage(MessageDto message, int toUserId)
+    {
+        return hubContext.Clients.Group($"{toUserId}").ReceiveMessage(message.ToJson());
+    }
 }

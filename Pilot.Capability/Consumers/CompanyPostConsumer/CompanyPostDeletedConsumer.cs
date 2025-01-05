@@ -1,7 +1,6 @@
 ﻿using Pilot.Capability.Consumers.Base;
 using Pilot.Capability.Interface;
 using Pilot.Capability.Models;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 

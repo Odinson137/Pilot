@@ -1,0 +1,28 @@
+﻿<InputText
+    class="@Class"
+    @bind-value="TimeString" 
+    type="time" />
+
+@code {
+    [Parameter]
+    public TimeOnly Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TimeOnly> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    private string TimeString
+    {
+        get => Value.ToString("HH:mm");
+        set
+        {
+            if (TimeOnly.TryParse(value, out var time))
+            {
+                Value = time;
+                ValueChanged.InvokeAsync(time);
+            }
+        }
+    }
+}

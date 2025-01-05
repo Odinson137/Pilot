@@ -2,7 +2,6 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Pilot.BackgroundJob.Interface;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
@@ -15,6 +14,7 @@ public class ChatReminderUpdateConsumer(
     ILogger<ChatReminderUpdateConsumer> logger,
     IChatReminder repository,
     IMessageService messageService,
+    IJob job,
     IValidatorService validate,
     IMapper mapper)
     : IConsumer<UpdateCommandMessage<ChatReminderDto>>
@@ -37,6 +37,24 @@ public class ChatReminderUpdateConsumer(
         repository.GetContext.Attach(model);
         repository.GetContext.Entry(model).State = EntityState.Modified;
 
+        foreach (var dayOfWeek in Enum.GetValues<DayOfWeek>())
+        {
+            var jobId = $"chatReminder-{model.Id}-{dayOfWeek}";
+            job.RemoveReminderRecurringJob(jobId);
+        }
+        
+        foreach (var day in model.DayOfWeeks)
+        {
+            var time = model.Time.AddHours(3); // TODO про это не забыть
+            var cronExpression = GetCronExpression(day, time);
+            var jobId = $"chatReminder-{model.Id}-{day}";
+            job.AddReminderRecurringJob(
+                jobId,
+                model.Id,
+                cronExpression
+            );
+        }
+        
         await repository.SaveAsync();
 
         var message = new InfoMessageDto
@@ -50,4 +68,7 @@ public class ChatReminderUpdateConsumer(
 
         await messageService.SendInfoMessageAsync(message, context.Message.UserId);
     }
+    
+    private static string GetCronExpression(DayOfWeek day, TimeOnly time)
+        => $"{time.Minute} {time.Hour} ? * {(int)day}";
 }

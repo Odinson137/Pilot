@@ -37,9 +37,11 @@ public class ChatReminderCreatedConsumer(
 
         await repository.SaveAsync();
 
+        logger.LogInformation($"days of week of {string.Join(",", reminder.DayOfWeeks)}");
         foreach (var day in reminder.DayOfWeeks)
         {
-            var cronExpression = GetCronExpression(day, reminder.Time);
+            var time = reminder.Time.AddHours(3); // UTC +3 for my country TODO придумать потом лучший способ
+            var cronExpression = GetCronExpression(day, time);
 
             // TODO потом перенести куда-то в константы. А на часах 00... поэтому мне лень)
             var jobId = $"chatReminder-{reminder.Id}-{day}";
@@ -49,12 +51,13 @@ public class ChatReminderCreatedConsumer(
                 reminder.Id,
                 cronExpression
             );
+            logger.LogInformation("Schedule job added");
         }
         
         var message = new InfoMessageDto
         {
             Title = "Успешное создание ремайндера!",
-            Description = $"Успешное создание сущности '{nameof(Models.ChatReminder)}'",
+            Description = "Успешное создание ремайндера",
             MessagePriority = MessageInfo.Success | MessageInfo.Create,
             EntityType = PilotEnumExtensions.GetModelEnumValue<Models.ChatReminder>(),
             EntityId = reminder.Id

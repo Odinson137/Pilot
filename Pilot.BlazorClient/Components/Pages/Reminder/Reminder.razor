@@ -1,4 +1,4 @@
-﻿@page "/chat-reminders/{chatId:int}"
+﻿@page "/reminders/{chatId:int}"
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject IReminderPageService ReminderService
@@ -6,7 +6,12 @@
 
 <PageTitle>Reminders</PageTitle>
 
-<h3>Reminders</h3>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Reminders</h3>
+    <div>
+        <button class="btn btn-sm btn-secondary" @onclick="() => EditReminder()">Create Reminder</button>
+    </div>
+</div>
 
 @if (_isLoading)
 {
@@ -53,13 +58,13 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _reminders = await ReminderService.GetValuesAsync(predicate: c => c.ChatId == ChatId);
+        _reminders = await ReminderService.GetValuesAsync(predicate: c => c.ChatId, value: ChatId);
         _isLoading = false;
     }
 
-    private async Task EditReminder(int id)
+    private async Task EditReminder(int? id = null)
     {
-        NavigationManager.NavigateTo($"/edit-reminder/{id}");
+        NavigationManager.NavigateTo($"/reminder/{id}");
     }
 
     private async Task DeleteReminder(int id)

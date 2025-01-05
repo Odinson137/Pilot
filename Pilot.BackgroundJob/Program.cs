@@ -1,7 +1,6 @@
 using Hangfire;
 using Pilot.BackgroundJob.Data;
 using Pilot.BackgroundJob.Interface;
-using Pilot.BackgroundJob.Models;
 using Pilot.BackgroundJob.Repository;
 using Pilot.BackgroundJob.Service;
 using Pilot.Contracts.Base;
