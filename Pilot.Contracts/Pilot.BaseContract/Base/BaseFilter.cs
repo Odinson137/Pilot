@@ -5,6 +5,8 @@ namespace Pilot.Contracts.Base;
 
 public class BaseFilter(int skip, int take)
 {
+    public BaseFilter() : this(null, null) { }
+    
     public BaseFilter(int? skip = null, int? take = null) : this(skip ?? 0, take ?? 10){}
     
     public BaseFilter(params int[] ids) : this(0, int.MaxValue)
