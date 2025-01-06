@@ -40,7 +40,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -81,7 +81,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -116,7 +116,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -163,7 +163,7 @@ jobs:
         run: dotnet build ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-restore
   
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -200,7 +200,7 @@ jobs:
         run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/Pilot.Tests/Test.Storage/bin/Release/net9.0/pilot-credentials.json" >> $GITHUB_ENV
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -226,10 +226,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Base/Test.Base.csproj
 
       - name: Build Base project
-        run: dotnet build ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -255,10 +255,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Capability/Test.Capability.csproj
 
       - name: Build Test.Capability project
-        run: dotnet build ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
@@ -284,10 +284,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj
 
       - name: Build Test.BackgroundJob project
-        run: dotnet build ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release 
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build --logger:trx
 
       - name: Upload Test Results
         if: always()
