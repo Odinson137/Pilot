@@ -3,12 +3,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Pilot.Api;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Serilog;
 using Test.Base.IntegrationBase;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
+using Xunit.Abstractions;
 
 namespace Test.Api.BackgroundJobService.Factory;
 
@@ -21,6 +24,22 @@ public class BackgroundJobTestApiFactory : WebApplicationFactory<Program>, IAsyn
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3")
         .Build();
+    
+    private readonly ITestOutputHelper _output;
+    private readonly Serilog.ILogger _testLogger;
+    
+    public BackgroundJobTestApiFactory(ITestOutputHelper output)
+    {
+        _output = output;
+
+        // Настраиваем Serilog с выводом в тестовый вывод
+        _testLogger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()         // Логи в консоль
+            .WriteTo.Debug()           // Логи в окно Debug
+            .WriteTo.TestOutput(_output) // Логи в xUnit
+            .CreateLogger();
+    }
     
     public async Task InitializeAsync()
     {
@@ -44,6 +63,12 @@ public class BackgroundJobTestApiFactory : WebApplicationFactory<Program>, IAsyn
         Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
             _redisContainer.GetConnectionString());
 
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders(); // Удаляем стандартных провайдеров
+            logging.AddSerilog(_testLogger); // Добавляем Serilog
+        });
+        
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
