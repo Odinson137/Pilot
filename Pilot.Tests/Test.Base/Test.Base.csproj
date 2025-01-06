@@ -49,8 +49,4 @@
         <ProjectReference Include="..\..\Pilot.Storage\Pilot.Storage.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="UnitTestBase\"/>
-    </ItemGroup>
-
 </Project>

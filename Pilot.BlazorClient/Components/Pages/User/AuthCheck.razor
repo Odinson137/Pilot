@@ -4,7 +4,7 @@
 
 @code {
 
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var token = await AuthenticationService.GetTokenAsync();
         if (token == null)

@@ -10,8 +10,13 @@ namespace Test.Api.MessengerService;
 [Collection(nameof(SequentialCollectionDefinition))]
 public class MessageTests : BaseMessengerServiceIntegrationTest
 {
-    public MessageTests(MessengerTestApiFactory apiFactory, MessengerTestIdentityFactory identityFactory, MessengerTestMessengerFactory messengerFactory)
-        : base(apiFactory, identityFactory, messengerFactory) { }
+    public MessageTests(MessengerTestApiFactory apiFactory, MessengerTestIdentityFactory identityFactory,
+        MessengerTestMessengerFactory messengerFactory)
+        : base(apiFactory, identityFactory, messengerFactory)
+    {
+        AssertContext.Database.EnsureDeleted();
+        AssertContext.Database.EnsureCreated();
+    }
 
     private static string EntityName => nameof(Message);
 

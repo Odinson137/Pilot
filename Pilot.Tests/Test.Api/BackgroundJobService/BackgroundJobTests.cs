@@ -20,7 +20,10 @@ public abstract class BackgroundJobTests<T, TDto> : BaseBackgroundJobServiceInte
         BackgroundJobTestBackgroundJobFactory capabilityFactory,
         BackgroundJobTestStorageFactory storageFactory
         )
-        : base(apiFactory, identityFactory, capabilityFactory, storageFactory) { }
+        : base(apiFactory, identityFactory, capabilityFactory, storageFactory) {
+        AssertContext.Database.EnsureDeleted();
+        AssertContext.Database.EnsureCreated();
+    }
 
     protected static string EntityName => typeof(T).Name;
 

@@ -15,8 +15,13 @@ namespace Test.Api.CapabilityService;
 public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public CapabilityTests(CapabilityTestApiFactory apiFactory, CapabilityTestIdentityFactory identityFactory, CapabilityTestCapabilityFactory capabilityFactory, CapabilityTestStorageFactory storageFactory)
-        : base(apiFactory, identityFactory, capabilityFactory, storageFactory) { }
+    public CapabilityTests(CapabilityTestApiFactory apiFactory, CapabilityTestIdentityFactory identityFactory,
+        CapabilityTestCapabilityFactory capabilityFactory, CapabilityTestStorageFactory storageFactory)
+        : base(apiFactory, identityFactory, capabilityFactory, storageFactory)
+    {
+        AssertContext.Database.EnsureDeleted();
+        AssertContext.Database.EnsureCreated();
+    }
 
     protected static string EntityName => typeof(T).Name;
 

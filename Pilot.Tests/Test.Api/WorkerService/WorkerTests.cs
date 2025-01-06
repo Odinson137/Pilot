@@ -16,8 +16,13 @@ namespace Test.Api.WorkerService;
 public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
-    public WorkerTests(WorkerTestApiFactory apiFactory, WorkerTestIdentityFactory identityFactory, WorkerTestWorkerFactory workerFactory, WorkerTestStorageFactory storageFactory)
-        : base(apiFactory, identityFactory, workerFactory, storageFactory) { }
+    public WorkerTests(WorkerTestApiFactory apiFactory, WorkerTestIdentityFactory identityFactory,
+        WorkerTestWorkerFactory workerFactory, WorkerTestStorageFactory storageFactory)
+        : base(apiFactory, identityFactory, workerFactory, storageFactory)
+    {
+        AssertContext.Database.EnsureDeleted();
+        AssertContext.Database.EnsureCreated();
+    }
 
     private static string EntityName => typeof(T).Name;
 

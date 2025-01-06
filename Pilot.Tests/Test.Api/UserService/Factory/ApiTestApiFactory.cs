@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Pilot.Api;
+using Pilot.Api.Interfaces;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.Redis;
@@ -37,6 +39,10 @@ public class ApiTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
+            services.RemoveAll<IHttpIdentityService>(); 
+            services.AddScoped<IHttpIdentityService, HttpIdentityServiceFaker>();
+            services.RemoveAll<IModelService>();
+            services.AddScoped<IModelService, ModelServiceFaker>();
         });
     }
 }

@@ -4,7 +4,7 @@
 @inject NavigationManager NavigationManager
 
 @code {
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         await AuthenticationService.MarkUserAsLoggedOut();
         NavigationManager.NavigateTo("", forceLoad: true);
