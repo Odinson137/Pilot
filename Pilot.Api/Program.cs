@@ -51,12 +51,6 @@ services.AddScoped<IFileUrlService, FileUrlService>();
 
 await services.AddRedis(configuration);
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .CreateLogger());
-
 services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);

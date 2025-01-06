@@ -36,7 +36,6 @@ public static class AddBaseService
         builder.Logging.AddSerilog(new LoggerConfiguration()
             .WriteTo.Console()
             .WriteTo.Debug()
-            .MinimumLevel.Debug()
             .CreateLogger());
 
         services.AddMassTransit(x =>

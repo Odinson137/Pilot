@@ -7,6 +7,7 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

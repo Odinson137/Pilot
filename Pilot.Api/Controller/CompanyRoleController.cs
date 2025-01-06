@@ -4,6 +4,6 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class CompanyRoleController(IMediator mediator) : PilotReadOnlyController<CompanyRoleDto>(mediator)
+public class CompanyRoleController(IMediator mediator) : PilotController<CompanyRoleDto>(mediator)
 {
 }

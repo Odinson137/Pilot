@@ -9,6 +9,7 @@ using Pilot.Worker.Models;
 using Pilot.Worker.Models.ModelHelpers;
 using Test.Api.WorkerService.Factory;
 using Test.Base.IntegrationBase;
+using Xunit.Abstractions;
 
 namespace Test.Api.WorkerService;
 
@@ -16,10 +17,13 @@ namespace Test.Api.WorkerService;
 public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
+    private readonly ITestOutputHelper _testOutputHelper;
+
     public WorkerTests(WorkerTestApiFactory apiFactory, WorkerTestIdentityFactory identityFactory,
-        WorkerTestWorkerFactory workerFactory, WorkerTestStorageFactory storageFactory)
+        WorkerTestWorkerFactory workerFactory, WorkerTestStorageFactory storageFactory, ITestOutputHelper testOutputHelper)
         : base(apiFactory, identityFactory, workerFactory, storageFactory)
     {
+        _testOutputHelper = testOutputHelper;
         AssertContext.Database.EnsureDeleted();
         AssertContext.Database.EnsureCreated();
     }
@@ -42,7 +46,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         // Act
         var result = await ApiClient.GetAsync($"api/{EntityName}");
-    
+        _testOutputHelper.WriteLine($"Status Code: {result.StatusCode}");
+        _testOutputHelper.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
+        
         // Assert
         Assert.True(result.IsSuccessStatusCode);
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
@@ -69,7 +75,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         // Act
         var result = await ApiClient.GetAsync($"api/{EntityName}/{id}");
-    
+        _testOutputHelper.WriteLine($"Status Code: {result.StatusCode}");
+        _testOutputHelper.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
+        
         // Assert
         Assert.True(result.IsSuccessStatusCode);
         var content = await result.Content.ReadFromJsonAsync<TDto>();
