@@ -25,22 +25,22 @@ jobs:
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
 
       - name: Build Messenger project
-        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --no-restore
 
       - name: Restore Identity project
         run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj
 
       - name: Build Identity project
-        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --no-restore
 
       - name: Restore Tests project
         run: dotnet restore ./Pilot.Tests/Test.Api/Test.Api.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --no-build
 
   worker:
     name: Worker
@@ -59,22 +59,22 @@ jobs:
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
 
       - name: Build Messenger project
-        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --no-restore
 
       - name: Restore Identity project
         run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj
 
       - name: Build Identity project
-        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --no-restore
 
       - name: Worker Tests project
         run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Worker.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --no-build
 
   identity:
     name: Identity
@@ -93,16 +93,16 @@ jobs:
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
 
       - name: Build Messenger project
-        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --no-restore
 
       - name: Restore Tests project
         run: dotnet restore ./Pilot.Tests/Test.Identity/Test.Identity.csproj
 
       - name: Build Tests
-        run: dotnet build ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Identity/Test.Identity.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --no-build
 
   messenger:
     name: Messenger
@@ -121,13 +121,13 @@ jobs:
         run: dotnet restore ./Pilot.Identity/Pilot.Identity.csproj
 
       - name: Build Identity project
-        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Identity/Pilot.Identity.csproj --no-restore
 
       - name: Restore Messenger project
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
 
       - name: Build Messenger project
-        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Messenger/Pilot.Messenger.csproj --no-restore
 
       - name: Worker Tests project
         run: dotnet restore ./Pilot.Tests/Test.Worker/Test.Worker.csproj
@@ -136,13 +136,13 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj
   
       - name: Build Test.Worker project
-        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Worker/Test.Worker.csproj --no-restore
   
       - name: Build Test.Messenger project
-        run: dotnet build ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --no-restore
   
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --no-build
   
   storage:
     name: Storage
@@ -161,7 +161,7 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Storage/Test.Storage.csproj
 
       - name: Build Test.Storage project
-        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Storage/Test.Storage.csproj --no-restore
 
       - name: Create Google credentials file
         run: |
@@ -172,7 +172,7 @@ jobs:
         run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/Pilot.Tests/Test.Storage/bin/Release/net9.0/pilot-credentials.json" >> $GITHUB_ENV
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --no-build
   
   base:
     name: Base
@@ -191,10 +191,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Base/Test.Base.csproj
 
       - name: Build Base project
-        run: dotnet build ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Base/Test.Base.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --no-build
 
   capability:
     name: Storage
@@ -213,10 +213,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.Capability/Test.Capability.csproj
 
       - name: Build Test.Capability project
-        run: dotnet build ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.Capability/Test.Capability.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --no-build
 
   background_job:
     name: BackgroundJob
@@ -235,10 +235,10 @@ jobs:
         run: dotnet restore ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj
 
       - name: Build Test.BackgroundJob project
-        run: dotnet build ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-restore
+        run: dotnet build ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --no-restore
 
       - name: Test
-        run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build
+        run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --no-build
 
   code_quality:
     name: Code Quality
