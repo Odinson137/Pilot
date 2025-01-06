@@ -35,6 +35,7 @@ public static class AddBaseService
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(new LoggerConfiguration()
             .WriteTo.Console()
+            .WriteTo.File("logs/test-log.txt")
             .WriteTo.Debug()
             .CreateLogger());
 

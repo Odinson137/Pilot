@@ -42,6 +42,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+            
   worker:
     name: Worker
     runs-on: ubuntu-latest
@@ -76,6 +83,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Worker/Test.Worker.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   identity:
     name: Identity
     runs-on: ubuntu-latest
@@ -104,6 +118,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Identity/Test.Identity.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   messenger:
     name: Messenger
     runs-on: ubuntu-latest
@@ -143,7 +164,14 @@ jobs:
   
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Messenger/Test.Messenger.csproj --configuration Release --no-build
-  
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   storage:
     name: Storage
     runs-on: ubuntu-latest
@@ -173,7 +201,14 @@ jobs:
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Storage/Test.Storage.csproj --configuration Release --no-build
-  
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   base:
     name: Base
     runs-on: ubuntu-latest
@@ -196,6 +231,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   capability:
     name: Storage
     runs-on: ubuntu-latest
@@ -218,6 +260,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Capability/Test.Capability.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   background_job:
     name: BackgroundJob
     runs-on: ubuntu-latest
@@ -240,6 +289,13 @@ jobs:
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results-gateway
+          path: '**/TestResults/*.trx'
+          
   code_quality:
     name: Code Quality
     runs-on: ubuntu-latest
