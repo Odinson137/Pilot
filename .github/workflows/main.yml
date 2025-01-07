@@ -39,6 +39,14 @@ jobs:
       - name: Build Tests
         run: dotnet build ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-restore
 
+      - name: Create Google credentials file
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > ./Pilot.Tests/Test.Api/bin/Release/net9.0/pilot-credentials.json
+        shell: bash
+
+      - name: Set up GOOGLE_APPLICATION_CREDENTIALS environment variable
+        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/Pilot.Tests/Test.Api/bin/Release/net9.0/pilot-credentials.json" >> $GITHUB_ENV
+
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.Api/Test.Api.csproj --configuration Release --no-build --logger:trx
 
@@ -61,14 +69,6 @@ jobs:
           dotnet-version: '9.0.x'
           
       - uses: actions/checkout@v4
-
-      - name: Create Google credentials file
-        run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > ./Pilot.Tests/Test.Api/bin/Release/net9.0/pilot-credentials.json
-        shell: bash
-
-      - name: Set up GOOGLE_APPLICATION_CREDENTIALS environment variable
-        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/Pilot.Tests/Test.Api/bin/Release/net9.0/pilot-credentials.json" >> $GITHUB_ENV
         
       - name: Restore Messenger project
         run: dotnet restore ./Pilot.Messenger/Pilot.Messenger.csproj
