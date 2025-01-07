@@ -17,13 +17,16 @@ namespace Test.Api.WorkerService;
 public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     where T : BaseModel where TDto : BaseDto
 {
+    private readonly ITestOutputHelper _testOutputHelper;
+
     public WorkerTests(
         WorkerTestApiFactory apiFactory, 
         WorkerTestIdentityFactory identityFactory,
         WorkerTestWorkerFactory workerFactory, 
-        WorkerTestStorageFactory storageFactory)
+        WorkerTestStorageFactory storageFactory, ITestOutputHelper testOutputHelper)
         : base(apiFactory, identityFactory, workerFactory, storageFactory)
     {
+        _testOutputHelper = testOutputHelper;
         AssertContext.Database.EnsureDeleted();
         AssertContext.Database.EnsureCreated();
     }
@@ -46,8 +49,8 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         // Act
         var result = await ApiClient.GetAsync($"api/{EntityName}");
-        Console.WriteLine($"Status Code: {result.StatusCode}");
-        Console.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
+        _testOutputHelper.WriteLine($"Status Code: {result.StatusCode}");
+        _testOutputHelper.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
         
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -75,8 +78,8 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         // Act
         var result = await ApiClient.GetAsync($"api/{EntityName}/{id}");
-        Console.WriteLine($"Status Code: {result.StatusCode}");
-        Console.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
+        _testOutputHelper.WriteLine($"Status Code: {result.StatusCode}");
+        _testOutputHelper.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
         
         // Assert
         Assert.True(result.IsSuccessStatusCode);
