@@ -98,8 +98,8 @@ public static class GenerateTestEntity
 
         foreach (var property in properties)
         {
-            var hasFileAttr = property.GetCustomAttributes(typeof(HasFileAttribute), false).FirstOrDefault();
-            if (hasFileAttr is not HasFileAttribute) continue;
+            var hasFileAttr = property.GetCustomAttributes(typeof(FileAttribute), false).FirstOrDefault();
+            if (hasFileAttr is not FileAttribute) continue;
             
             if (typeof(ICollection<int>).IsAssignableFrom(property.PropertyType))
             {

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.ViewModels;
@@ -11,6 +12,8 @@ public class ProjectViewModel : BaseViewModel
 
     public ICollection<TeamViewModel> Teams { get; set; } = new List<TeamViewModel>();
 
+    public BaseDto Company { get; set; } = null!;
+    
     [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
     
     public ProjectStatus ProjectStatus { get; set; }

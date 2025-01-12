@@ -36,10 +36,10 @@
         }
         else
         {
-            @if (_company.InsideImagesUrl.Any())
+            @if (_company.InsideImages.Any())
             {
                 <div class="gallery mb-5">
-                    @foreach (var image in _company.InsideImagesUrl.Take(4)) 
+                    @foreach (var image in _company.InsideImages.Take(4)) 
                     {
                         <a href="@image" target="_blank">
                             <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
@@ -47,7 +47,7 @@
                     }
                 </div>
 
-                @if (_company.InsideImagesUrl.Count > 4 && !_showAllImages)
+                @if (_company.InsideImages.Count > 4 && !_showAllImages)
                 {
                     <button class="btn btn-primary" @onclick="ShowAllImages" style="margin-bottom: 100px">Show all images</button>
                 }
@@ -55,7 +55,7 @@
                 @if (_showAllImages)
                 {
                     <div class="gallery mb-5">
-                        @foreach (var image in _company.InsideImagesUrl.Skip(4)) 
+                        @foreach (var image in _company.InsideImages.Skip(4)) 
                         {
                             <a href="@image" target="_blank">
                                 <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />

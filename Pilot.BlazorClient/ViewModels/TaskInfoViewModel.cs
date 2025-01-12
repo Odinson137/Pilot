@@ -4,9 +4,13 @@ namespace Pilot.BlazorClient.ViewModels;
 
 public class TaskInfoViewModel : BaseViewModel
 {
-    public string? FileUrl { get; set; }
+    [Required] public BaseViewModel ProjectTask { get; set; } = null!;
+
+    public string? File { get; set; }
     
+    public Byte[]? FileBytes { get; set; }
+
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
+    public CompanyUserViewModel? CreatedBy { get; set; }
 }

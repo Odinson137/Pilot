@@ -6,7 +6,10 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class WorkPageService(IGateWayApiService apiService) : IWorkPageService
+public class WorkPageService(
+    IGateWayApiService apiService, 
+    IBaseModelService<ProjectViewModel> projectBaseModelService
+    ) : IWorkPageService
 {
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
@@ -30,10 +33,10 @@ public class WorkPageService(IGateWayApiService apiService) : IWorkPageService
         }
     }
 
-    public async Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(ICollection<TeamViewModel> userProjects)
+    public async Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(int companyId)
     {
-        var filter = new BaseFilter(userProjects.Select(c => c.Id).Distinct().ToList());
-        var projectViewModels = await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(filter: filter);
+        var projectViewModels =
+            await projectBaseModelService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
         return projectViewModels;
     }
 

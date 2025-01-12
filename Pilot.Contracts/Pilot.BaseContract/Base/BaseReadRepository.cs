@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Data;
+using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -57,10 +58,17 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
     private static Expression<Func<TOut, bool>> GetFilterLambda<TOut>((string, int) filter)
     {
         var expNameParameter = Expression.Parameter(typeof(TOut), "e");
-        var expMember = Expression.Property(expNameParameter, filter.Item1);
+        var names = filter.Item1.Split('.');
+        
+        if (names.Length == 0)
+            throw new NoNullAllowedException("Not correct property name");
+        
+        Expression expMember = expNameParameter;
+        foreach (var name in names) expMember = Expression.Property(expMember, name);
+        
         var expValue = Expression.Constant(filter.Item2);
 
-        var eq = Expression.Equal(expMember, expValue);
+        var eq = Expression.Equal(expMember!, expValue);
 
         var func = Expression.Lambda<Func<TOut, bool>>(eq, expNameParameter);
         return func;

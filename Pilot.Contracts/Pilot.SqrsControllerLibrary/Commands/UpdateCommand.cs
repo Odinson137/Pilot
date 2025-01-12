@@ -1,6 +1,6 @@
-﻿using MediatR;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
+using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;
 
-public record UpdateCommand<TDto>(TDto ValueDto, int UserId) : IRequest where TDto : BaseDto;
+public record UpdateCommand<TDto>(TDto ValueDto, int UserId) : ICommand<TDto> where TDto : BaseDto;

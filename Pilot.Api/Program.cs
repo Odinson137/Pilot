@@ -47,7 +47,7 @@ services.AddTransient<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
-services.AddScoped<IFileUrlService, FileUrlService>();
+services.AddScoped<IFileService, FileService>();
 
 await services.AddRedis(configuration);
 
@@ -105,7 +105,7 @@ services.AddMassTransit(x =>
 services.AddTransient<ISeed, Seed>();
 services.AddTransient<IToken, TokenService>();
 
-services.AddScoped<IFileUrlService, FileUrlService>();
+services.AddScoped<IFileService, FileService>();
 
 var app = builder.Build();
 

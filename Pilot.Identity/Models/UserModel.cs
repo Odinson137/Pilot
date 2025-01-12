@@ -28,7 +28,8 @@ public class User : BaseModel
     
     [MaxLength(100)] public string? City { get; set; }
     
-    public int? AvatarImageId { get; set; }
+    [MaxLength(50)]
+    public string? AvatarImage { get; set; }
     
     public Name.Gender Gender { get; set; }
     

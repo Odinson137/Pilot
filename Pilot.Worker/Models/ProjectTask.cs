@@ -20,7 +20,7 @@ public class ProjectTask : BaseModel, IAddCompanyUser
     
     public List<TaskInfo> TaskInfos { get; set; } = [];
 
-    public int? FileId { get; set; }
+    public string? File { get; set; }
     
     public TaskStatus TaskStatus { get; set; }
     

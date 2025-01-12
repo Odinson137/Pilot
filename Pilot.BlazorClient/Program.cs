@@ -6,7 +6,9 @@ using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.Service;
 using Pilot.BlazorClient.Service.Pages;
+using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Serilog;
 using Syncfusion.Blazor;
 
@@ -31,6 +33,10 @@ services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();
 services.AddScoped<IChatPageService, ChatPageService>();
 services.AddScoped<IMessengerService, MessengerService>();
 services.AddScoped<IReminderPageService, ReminderPageService>();
+
+services.AddScoped<IBaseModelService<ProjectViewModel>, BaseModelService<ProjectDto, ProjectViewModel>>();
+services.AddScoped<IBaseModelService<TaskInfoViewModel>, BaseModelService<TaskInfoDto, TaskInfoViewModel>>();
+
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 
 builder.Logging.ClearProviders();

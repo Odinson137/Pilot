@@ -41,9 +41,9 @@ else
         <!-- Left section: photo and name -->
         <div class="left-section">
             <div class="avatar-section">
-                @if (!string.IsNullOrEmpty(_user.AvatarUrl))
+                @if (!string.IsNullOrEmpty(_user.Avatar))
                 {
-                    <img src="@_user.AvatarUrl" alt="User Avatar" class="avatar-img"/>
+                    <img src="@_user.Avatar" alt="User Avatar" class="avatar-img"/>
                 }
                 else
                 {

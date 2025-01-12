@@ -17,5 +17,5 @@ public class Company : BaseModel
     
     public int? LogoId { get; set; }
 
-    public List<int> InsideImagesId { get; set; } = [];
+    public List<string> InsideImages { get; set; } = [];
 }

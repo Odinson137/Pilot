@@ -8,7 +8,8 @@ public class TaskInfo : BaseModel, IAddCompanyUser
 {
     [Required] public ProjectTask ProjectTask { get; set; } = null!;
 
-    public int? FileId { get; set; }
+    [MaxLength(50)]
+    public string? File { get; set; }
     
     [MaxLength(500)] public string? Description { get; set; }
 

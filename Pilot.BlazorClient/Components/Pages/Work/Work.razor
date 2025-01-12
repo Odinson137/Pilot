@@ -33,19 +33,6 @@ else
                     {
                         <li style="padding: 5px">
                             <span>@project.Name</span>
-                            @if (_teams != null)
-                            {
-                                <h6>Teams:</h6>
-                                <ul>
-                                    @foreach (var team in _teams.Where(c => c.Project.Id == project.Id))
-                                    {
-                                        <li class="team-item" @onclick="() => NavigateToTeam(team.Id)">
-                                            <span>@team.Name</span>
-                                        </li>
-                                    }
-                                </ul>
-                                <br/>
-                            }
                         </li>
                     }
                 }
@@ -111,8 +98,6 @@ else
 
     private ICollection<ProjectViewModel>? _projects;
     
-    private ICollection<TeamViewModel>? _teams;
-    
     private int _teamId;
     
     protected override async Task OnInitializedAsync()
@@ -121,10 +106,8 @@ else
         
         _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
 
-        _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
-
-        _projects = await WorkPageService.GetUserProjectsAsync(_teams);
-
+        _projects = await WorkPageService.GetUserProjectsAsync(_companyUser.Company.Id);
+        
         var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
         if (currentTabStorageResult.Success)
             _activeTab = currentTabStorageResult.Value;

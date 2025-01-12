@@ -6,7 +6,7 @@ using Pilot.Contracts.Base;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, IMapper mapper) : IBasePageService<TViewModel>
+public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, IMapper mapper) : IBaseModelService<TViewModel>
     where TDto : BaseDto where TViewModel : BaseViewModel
 {
     public async Task<TViewModel> GetValueAsync(int valueId)
@@ -15,17 +15,16 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
     }
 
     // пока добавил поддержку только для int. Можно легко сделать для T, если надо будет
-    public async Task<ICollection<TViewModel>> GetValuesAsync(int? skip = null, int? take = null, Expression<Func<TViewModel, int>>? predicate = null, int? value = null)
+    public async Task<ICollection<TViewModel>> GetValuesAsync(int? skip = null, int? take = null, Expression<Func<TViewModel, int>>? predicate = null, int? value = default)
     {
         var filter = new BaseFilter(skip, take);
         if (predicate is not null)
         {
-            var sdf = predicate.Body.ToString();
             var fieldsName = predicate.Body.ToString().Split(".").Skip(1).ToList();
             if (value is null) throw new ArgumentNullException("Ты чёт попутал");
             
-            var name = fieldsName.First();
-            filter.WhereFilter = new ValueTuple<string, int>(name, value.Value);
+            var names = string.Join(".", fieldsName);
+            filter.WhereFilter = new ValueTuple<string, int>(names, value.Value);
         }
         
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);

@@ -1,6 +1,9 @@
-﻿using MediatR;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
+using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;
 
-public record DeleteCommand<TDto>(int ValueId, int UserId) : IRequest where TDto : BaseDto;
+public record DeleteCommand<TDto>(int ValueId, int UserId) : ICommand<int> where TDto : BaseDto
+{
+    public int ValueDto { get; init; }
+}

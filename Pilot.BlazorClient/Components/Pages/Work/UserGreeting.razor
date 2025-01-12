@@ -6,9 +6,9 @@
 <div class="user-greeting">
     <h2>@GetGreetingMessage(), @UserName! 🌟</h2>
 
-    @if (_companyUser != null)
+    @if (_companyUser != null && _company != null)
     {
-        <p>You have been working at <strong>@_companyUser.Company.Title</strong> for <strong>@_daysInCompany</strong> days.</p>
+        <p>You have been working at <strong>@_company?.Title</strong> for <strong>@_daysInCompany</strong> days.</p>
         
         <div class="today-activity">
             <h3>Today's Activity</h3>
@@ -31,7 +31,7 @@
         
         @if (_projects != null && _teams != null)
         {
-            <p>You are participating in <strong>@_projects.Count</strong> project(s) and are a member of <strong>@_teams.Count</strong> teams:</p>
+            <p>You are participating in <strong>@_projects.Count</strong> project(s)</p>
 
             <ul>
                 @foreach (var team in _teams)
@@ -50,19 +50,22 @@
     [Parameter] public int UserId { get; set; }
 
     private CompanyUserViewModel? _companyUser;
+    private CompanyViewModel? _company;
     private int _daysInCompany;
     private ICollection<ProjectViewModel>? _projects;
     private ICollection<TeamViewModel>? _teams;
     private List<string> todayActivities = [];
+    
     protected override async Task OnInitializedAsync()
     {
         _companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
+        _company = await WorkPageService.GetCompanyAsync(_companyUser.Company.Id);
 
         _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
 
         _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
 
-        _projects = await WorkPageService.GetUserProjectsAsync(_teams);
+        _projects = await WorkPageService.GetUserProjectsAsync(_companyUser.Id);
         Console.WriteLine("Greeting loaded");
     }
 

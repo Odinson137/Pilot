@@ -91,7 +91,7 @@ else
                         @foreach (var user in _users)
                         {
                             <div class="participant-info">
-                                <img src="@user.AvatarUrl" alt="@user.UserName" class="participant-avatar"/>
+                                <img src="@user.Avatar" alt="@user.UserName" class="participant-avatar"/>
                                 <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
                             </div>
                         }

@@ -7,7 +7,11 @@ using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class ProjectTaskPageService(IGateWayApiService apiService, IMapper mapper) : BaseModelService<ProjectTaskDto, ProjectTaskViewModel>(apiService, mapper), IProjectTaskPageService
+public class ProjectTaskPageService(
+    IGateWayApiService apiService, 
+    IMapper mapper,
+    IBaseModelService<TaskInfoViewModel> taskInfoService
+    ) : BaseModelService<ProjectTaskDto, ProjectTaskViewModel>(apiService, mapper), IProjectTaskPageService
 {
     private readonly IGateWayApiService _apiService = apiService;
 
@@ -29,5 +33,10 @@ public class ProjectTaskPageService(IGateWayApiService apiService, IMapper mappe
         var filter = new BaseFilter(ids);
         var taskInfoViewModels = await _apiService.SendGetMessages<TaskInfoDto, TaskInfoViewModel>(filter: filter);
         return taskInfoViewModels;
+    }
+    
+    public async Task AddTaskInfoAsync(TaskInfoViewModel taskInfo)
+    {
+        await taskInfoService.CreateValueAsync(taskInfo);
     }
 }

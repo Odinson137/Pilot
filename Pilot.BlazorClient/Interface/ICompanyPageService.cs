@@ -2,7 +2,7 @@
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface ICompanyPageService : IBasePageService<CompanyViewModel>
+public interface ICompanyPageService : IBaseModelService<CompanyViewModel>
 {
     Task<ICollection<ProjectViewModel>> GetProjectsAsync(ICollection<ProjectViewModel> projectsIds);
 

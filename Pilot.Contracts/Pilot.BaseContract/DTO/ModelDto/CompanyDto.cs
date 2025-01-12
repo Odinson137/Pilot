@@ -23,13 +23,11 @@ public class CompanyDto : BaseDto, IHasFile
     
     public ICollection<BaseDto> CompanyUsers { get; set; } = [];
     
-    [HasFile(nameof(LogoUrl))]
-    public int? LogoId { get; set; }
+    [File]
+    public string? Logo { get; set; }
 
-    public string? LogoUrl { get; set; }
-
-    [HasFile(nameof(InsideImagesUrl))]
-    public ICollection<int> InsideImagesId { get; set; } = [];
-
+    [File]
     public ICollection<string> InsideImagesUrl { get; set; } = [];
+
+    public Dictionary<string, ICollection<byte[]>>? Files { get; set; }
 }

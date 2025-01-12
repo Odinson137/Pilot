@@ -7,7 +7,6 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @inject IProjectTaskPageService ProjectTaskPageService;
-@inject NavigationManager NavigationManager;
 
 <PageTitle>Task @(_task?.Id ?? 0)</PageTitle>
 
@@ -23,9 +22,9 @@ else if (_task == null)
 }
 else
 {
-    <div class="task-background">
+    <div class="task-background" style="max-width: 800px; justify-self: center">
         <div class="task-header">
-            <h2>Task Details: @_task?.Name - Number @_task?.Id</h2>
+            <h2>@_task?.Id) Task Details: @_task?.Name</h2>
 
             <!-- Переключатель редактирования -->
             <div class="edit-toggle">
@@ -48,14 +47,16 @@ else
                         <div class="task-owner">
                             <b>Assigned to:</b>
                             <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
-                                <img src="@_userViewModel?.AvatarUrl" alt="avatar"/>
+                                <img src="@_userViewModel?.Avatar" style="max-width: 30px;max-height: 30px"
+                                     alt="avatar"/>
                                 @_userViewModel?.FullName
                             </a>
                         </div>
                         <div class="task-creator">
                             <b>Created by:</b>
                             <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
-                                <img src="@_createdUserViewModel?.AvatarUrl" alt="avatar"/>
+                                <img src="@_createdUserViewModel?.Avatar" style="max-width: 30px;max-height: 30px"
+                                     alt="avatar"/>
                                 @_createdUserViewModel?.FullName
                             </a>
                         </div>
@@ -78,9 +79,22 @@ else
                     <div class="add-task-info">
                         <h4>Add new progress update</h4>
                         <textarea @bind="_newTaskInfoDescription" style="height: 150px"
-                          placeholder="Enter task update"></textarea>
+                                  placeholder="Enter task update"></textarea>
+                        @if (_attachedFile != null)
+                        {
+                            <div class="attached-files">
+                                <h5>Attached Files:</h5>
+                                <ul>
+                                    <li>
+                                        @_attachedFile.Value.Item1
+                                        <button class="btn btn-danger btn-sm" @onclick="RemoveAttachedFile">Remove
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
                         <label class="upload-label">
-                            <input type="file" @onchange="HandleFileUpload"/>
+                            <InputFile OnChange="HandleFileUpload" multiple />
                             Upload Photo
                         </label>
                         <button class="btn add-info-btn" @onclick="AddNewTaskInfo">Add Update</button>
@@ -95,9 +109,9 @@ else
                             {
                                 <div class="task-info-card">
                                     <p>@info.Description</p>
-                                    @if (info.FileUrl != null)
+                                    @if (info.File != null)
                                     {
-                                        <img src="@info.FileUrl" alt="file" style="margin-bottom: 20px"/>
+                                        <img src="@info.File" alt="file" style="margin-bottom: 20px; width: 200px"/>
                                     }
                                     <p>
                                         <b>Added by:</b> @_userViewModels[info.CreatedBy.Id].FullName
@@ -118,7 +132,7 @@ else
         }
         else
         {
-            <div class="task-details-window">
+            <div class="task-details-window" style="min-width: 500px">
                 <EditForm Model="_task">
                     <div class="task-edit-form">
                         <div class="form-group">
@@ -129,7 +143,7 @@ else
                         <div class="form-group">
                             <label>Description:</label>
                             <textarea class="form-control" @bind="_task.Description"
-                              placeholder="Enter task description" style="height: 200px"></textarea>
+                                      placeholder="Enter task description" style="height: 200px"></textarea>
                         </div>
 
                         <div class="form-group">
@@ -166,6 +180,10 @@ else
 @code {
     private bool _isLoading = true;
     private ProjectTaskViewModel? _task;
+    private TaskInfoViewModel? _taskInfo;
+    private (string, byte[])? _attachedFile;
+    private string? _errorMessage;
+
     private string _newTaskInfoDescription = string.Empty;
 
     private UserViewModel? _createdUserViewModel;
@@ -240,12 +258,29 @@ else
 
     private async Task AddNewTaskInfo()
     {
-/* Добавление информации */
+        var taskInfo = new TaskInfoViewModel
+        {
+            ProjectTask = new BaseViewModel {Id = _task!.Id},
+            Description = _newTaskInfoDescription,
+            FileBytes = _attachedFile?.Item2
+        };
+
+        await ProjectTaskPageService.AddTaskInfoAsync(taskInfo);
+        
+        // _task!.TaskInfos.Add(taskInfo);
+        _newTaskInfoDescription = string.Empty;
+        _attachedFile = null;
     }
 
-    private async Task HandleFileUpload(ChangeEventArgs e)
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
     {
-/* Загрузка файла */
+        await using var stream = e.File.OpenReadStream(long.MaxValue); 
+        using var ms = new MemoryStream();  
+        await stream.CopyToAsync(ms);  
+        var fileBytes = ms.ToArray();  
+        
+        _attachedFile = (e.File.Name, fileBytes);
+
     }
 
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";
@@ -262,6 +297,11 @@ else
             await ProjectTaskPageService.UpdateValueAsync(_task);
             _isEditMode = false;
         }
+    }
+
+    private void RemoveAttachedFile()
+    {
+        _attachedFile = null;
     }
 
 }
@@ -283,8 +323,8 @@ else
 
     .task-people img {
         object-fit: cover;
-        width: 50px;
-        height: 50px;
+        width: 30px;
+        height: 30px;
         border-radius: 50%;
     }
 
@@ -469,5 +509,24 @@ else
         border-radius: 4px;
         font-size: 12px;
         white-space: nowrap;
+    }
+
+    .attached-files {
+        margin-top: 20px;
+    }
+
+    .attached-files ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .attached-files li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .attached-files li button {
+        margin-left: 10px;
     }
 </style>

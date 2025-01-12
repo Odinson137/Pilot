@@ -3,7 +3,7 @@ using Pilot.BlazorClient.ViewModels.UserViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface IChatPageService : IBasePageService<ChatViewModel>
+public interface IChatPageService : IBaseModelService<ChatViewModel>
 {
     Task<ICollection<ChatViewModel>> GetUserChatsAsync();
     

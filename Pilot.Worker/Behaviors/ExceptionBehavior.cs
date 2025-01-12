@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Exception;
 using Pilot.Contracts.Interfaces;
@@ -9,7 +10,7 @@ using Pilot.SqrsControllerLibrary.Interfaces;
 namespace Pilot.Worker.Behaviors;
 
 public class ExceptionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IBaseCommand
+    where TRequest : ICommand<BaseDto>
 {
     private readonly ILogger<ExceptionBehavior<TRequest, TResponse>> _logger;
     private readonly IMessageService _messageService;

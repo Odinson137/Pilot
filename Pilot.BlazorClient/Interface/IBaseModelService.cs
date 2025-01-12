@@ -3,7 +3,7 @@ using Pilot.BlazorClient.ViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface IBasePageService<TViewModel> where TViewModel : BaseViewModel
+public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
 {
     Task<TViewModel> GetValueAsync(int valueId);
 

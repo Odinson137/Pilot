@@ -1,14 +1,16 @@
 ﻿using MediatR;
+using Pilot.Contracts.Base;
+using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.Api.Behaviors;
 
-public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+public class AddFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : ICommand<BaseDto>
 {
     private readonly IFileService _fileUrlService;
 
-    public HasFileBehavior(IFileService fileUrlService)
+    public AddFileBehavior(IFileService fileUrlService)
     {
         _fileUrlService = fileUrlService;
     }
@@ -16,8 +18,8 @@ public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
+        await _fileUrlService.AddFileAsync(request, cancellationToken);
         var response = await next();
-        await _fileUrlService.GetUrlAsync(response);
         return response;
     }
 }

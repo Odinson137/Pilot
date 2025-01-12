@@ -20,12 +20,6 @@ public class ChatPageService(IGateWayApiService apiService, IUserService userSer
         return chats;
     }
 
-    public async Task<ChatViewModel> GetChatAsync(int chatId)
-    {
-        var chat = await _apiService.SendGetMessage<ChatDto, ChatViewModel>(chatId);
-        return chat;
-    }
-
     public async Task<ICollection<MessageViewModel>> GetMessagesAsync(int chatId, int start, int end)
     {
         var filter = new BaseFilter(start, end);
@@ -57,11 +51,5 @@ public class ChatPageService(IGateWayApiService apiService, IUserService userSer
         var filter = new BaseFilter(company.CompanyUsers.Select(c => c.Id).ToArray());
         var users = await _apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
         return users;
-    }
-
-    public async Task CreateChatAsync(ChatViewModel chat)
-    {
-        var taskDto = _mapper.Map<ChatDto>(chat);
-        await _apiService.SendPostMessage(null, message: taskDto);
     }
 }

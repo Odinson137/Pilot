@@ -2,5 +2,4 @@
 
 public interface IBaseUrl
 {
-    string Url { get; }
 }

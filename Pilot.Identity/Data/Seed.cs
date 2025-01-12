@@ -41,7 +41,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(1000))
                 .RuleFor(u => u.Country, (f, _) => f.Address.Country())
                 .RuleFor(u => u.City, (f, _) => f.Address.City())
-                .RuleFor(u => u.AvatarImageId, (_, _) => _userId) // fileId = userId - в сиде должно совпадать, можно оставить и так 
+                .RuleFor(u => u.AvatarImage, (_, _) => $"{_userId}") // fileId = userId - в сиде должно совпадать, можно оставить и так 
                 .RuleFor(u => u.Password, f => _passwordCoder.GenerateSaltAndHashPassword(f.Internet.Password()).Item1)
                 .RuleFor(u => u.Salt, (_, u) => _passwordCoder.GenerateSaltAndHashPassword(u.Password).Item2)
                 .RuleFor(u => u.Birthday, (f, _) => f.Person.DateOfBirth);

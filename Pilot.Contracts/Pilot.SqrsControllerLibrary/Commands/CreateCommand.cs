@@ -1,6 +1,9 @@
-﻿using MediatR;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
+using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;
 
-public record CreateCommand<TDto>(TDto ValueDto, int UserId) : IRequest where TDto : BaseDto;
+
+public record CreateCommand<TDto>(TDto ValueDto, int UserId) : ICommand<TDto> where TDto : BaseDto
+{
+}

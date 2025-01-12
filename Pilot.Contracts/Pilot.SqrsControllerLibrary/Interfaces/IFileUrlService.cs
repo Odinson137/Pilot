@@ -1,6 +1,10 @@
-﻿namespace Pilot.SqrsControllerLibrary.Interfaces;
+﻿using Pilot.Contracts.Base;
 
-public interface IFileUrlService
+namespace Pilot.SqrsControllerLibrary.Interfaces;
+
+public interface IFileService
 {
-    public Task GetUrlAsync<TResponse>(TResponse response);
+    public ValueTask GetUrlAsync<TResponse>(TResponse response);
+    
+    public ValueTask AddFileAsync<TResponse>(TResponse response, CancellationToken cancellationToken)  where TResponse : ICommand<BaseDto>;
 }

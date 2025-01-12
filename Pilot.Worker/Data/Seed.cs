@@ -194,12 +194,12 @@ public class Seed : ISeed
     private int _logoId = 31; // смотреть в сиде в проекте Storage. Там доступно 5 фотографий компаний
     private int _insideImagesId = 36; // смотреть в сиде в проекте Storage. Там доступно 50 фотографий компаний
     private const int InsideImagesCount = 50;
-    private ICollection<int> FillList()
+    private ICollection<string> FillList()
     {
         const int count = 10;
         var list = Enumerable.Range(_insideImagesId, count).ToList();
         _insideImagesId += count;
-        return list;
+        return list.Select(c => Guid.NewGuid().ToString()).ToList();
     }
 
     private Faker<Company> GetCompanyFaker()
@@ -208,7 +208,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Title, (f, _) => f.Company.CompanyName())
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(500))
                 .RuleFor(u => u.LogoId, (f, _) => _logoId++)
-                .RuleFor(u => u.InsideImagesId, (f, _) => FillList())
+                .RuleFor(u => u.InsideImages, (f, _) => FillList())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
         
@@ -238,14 +238,14 @@ public class Seed : ISeed
     private const int TaskInfoImageId = 87; // смотреть в сиде в проекте Storage. Там есит 6 фотографий
     private const int TaskInfoImageCount = 6;
 
-    private int? GetRandomImageOrNull()
+    private string? GetRandomImageOrNull()
     {
         var random = new Random();
     
         // Например, 50% вероятность возврата не null
         if (random.Next(0, 2) == 1)
         {
-            return random.Next(TaskInfoImageId, TaskInfoImageId + TaskInfoImageCount);
+            return $"{random.Next(TaskInfoImageId, TaskInfoImageId + TaskInfoImageCount)}";
         }
 
         return null;
@@ -256,7 +256,7 @@ public class Seed : ISeed
     {
         var fake = new Faker<TaskInfo>()
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentences(5).TakeOnly(500))
-                .RuleFor(u => u.FileId, (_, _) => GetRandomImageOrNull())
+                .RuleFor(u => u.File, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
         
@@ -281,7 +281,7 @@ public class Seed : ISeed
                 .RuleFor(u => u.Name, (f, _) => f.Name.JobArea())
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentences().TakeOnly(500))
                 .RuleFor(u => u.TaskStatus, (f, _) => f.PickRandom<TaskStatus>())
-                .RuleFor(u => u.FileId, (_, _) => GetRandomImageOrNull())
+                .RuleFor(u => u.File, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.Priority, (f, _) => f.PickRandom<TaskPriority>())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
                 .RuleFor(u => u.EstimatedTime, (f, _) => TimeSpan.FromHours(f.Random.Int(1, 8)))
