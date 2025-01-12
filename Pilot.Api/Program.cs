@@ -62,6 +62,7 @@ services.AddMediatR(cfg =>
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AddFileBehavior<,>));
 
 services.AddControllers();
 
