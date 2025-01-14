@@ -13,7 +13,7 @@ public interface IFileService
 
     public Task<FileDto> GetFileAsync(int id);
 
-    public Task<FileDto> GetUrlAsync(int id);
+    public Task<FileDto> GetUrlAsync(string name);
 
     Task<ICollection<FileDto>> GetUrlsAsync(BaseFilter? filter);
 }

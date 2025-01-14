@@ -2,8 +2,13 @@
 
 namespace Pilot.Contracts.Base;
 
-public class FilterValue(string Value, FilterValueType Type)
+public class FilterValue
 {
+    public FilterValue(string value, FilterValueType type)
+    {
+        Value = value;
+        Type = type;
+    }
     public string Value { get; set; } = null!;
     
     public FilterValueType Type { get; set; }

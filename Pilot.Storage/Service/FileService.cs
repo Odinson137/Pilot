@@ -80,11 +80,11 @@ public class FileService : IFileService
         return file;
     }
 
-    public async Task<FileDto> GetUrlAsync(int id)
+    public async Task<FileDto> GetUrlAsync(string name)
     {
-        _logger.LogInformation($"Get file url with id {id}");
+        _logger.LogInformation($"Get file url with id {name}");
 
-        var file = await _fileRepository.GetRequiredByIdAsync<FileDto>(id);
+        var file = await _fileRepository.GetValueUrlAsync(name);
         file.Url = _storageService.GetUrl(file.Name, file.Format);
         return file;
     }
@@ -97,7 +97,7 @@ public class FileService : IFileService
         if (filter?.Ids != null)
             files = await _fileRepository.GetValuesAsync<FileDto>(filter);
         else if (filter?.JsonValue is { Type: FilterValueType.GetFileValue })
-            files = await _fileRepository.GetValuesUrlAsync<FileDto>(filter.JsonValue.FromJson<ICollection<string>>());
+            files = await _fileRepository.GetValuesUrlAsync(filter.JsonValue.Value.FromJson<ICollection<string>>());
 
         foreach (var file in files)
             file.Url = _storageService.GetUrl(file.Name, file.Format);

@@ -20,7 +20,7 @@ public class FileHandler :
     
     public async Task<FileDto> Handle(GetFileUrlQuery<FileDto> request, CancellationToken cancellationToken)
     {
-        var result = await _fileService.GetUrlAsync(request.Id);
+        var result = await _fileService.GetUrlAsync(request.Name);
         return result;
     }
 

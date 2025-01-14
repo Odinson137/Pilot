@@ -82,7 +82,7 @@ public class FileService : IFileService
             var (property, currentValue) = fileUrlsSet[file.Name];
             var value = property.GetValue(currentValue);
 
-            if (value is IEnumerable)
+            if (value is IEnumerable && property.PropertyType != typeof(string))
             {
                 var currentList = property.GetValue(currentValue);
                 ((List<string>)currentList!).Add(file.Url!);

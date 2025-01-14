@@ -51,17 +51,17 @@ public class FileUrlServiceTest
             var attribute = property.GetCustomAttribute<FileAttribute>();
 
             if (attribute == null) continue;
-            if (property.PropertyType == typeof(int?))
+            if (property.PropertyType == typeof(string))
             {
-                var fileDto = new FileDto { Id = id, Url = $"https://example.com/file{id}.jpg" };
+                var fileDto = new FileDto { Id = id, Name = $"{Guid.NewGuid()}", Url = $"https://example.com/file{id}.jpg" };
                 filesList.Add(fileDto);
-                property.SetValue(dtoInstance, fileDto.Id);
+                property.SetValue(dtoInstance, fileDto.Name);
             }
-            else if (property.PropertyType == typeof(List<int>) || property.PropertyType == typeof(ICollection<int>))
+            else if (property.PropertyType == typeof(List<string>) || property.PropertyType == typeof(ICollection<string>))
             {
-                var fileDto = new FileDto { Id = id, Url = $"https://example.com/file{id}.jpg" };
+                var fileDto = new FileDto { Id = id, Name = $"{Guid.NewGuid()}", Url = $"https://example.com/file{id}.jpg" };
                 filesList.Add(fileDto);
-                property.SetValue(dtoInstance, new List<int> { fileDto.Id });
+                property.SetValue(dtoInstance, new List<string> { fileDto.Name });
             }
             id++;
         }
@@ -78,16 +78,15 @@ public class FileUrlServiceTest
         // Assert
         foreach (var property in fileProperties)
         {
-            if (property.PropertyType == typeof(int?))
+            if (property.PropertyType == typeof(string))
             {
-                var urlValue = property?.GetValue(dtoInstance) as string;
+                var urlValue = property.GetValue(dtoInstance) as string;
                 Assert.NotNull(urlValue);
                 Assert.NotEmpty(urlValue);
             }
-            else if (property.PropertyType == typeof(List<int>) || property.PropertyType == typeof(ICollection<int>))
+            else if (property.PropertyType == typeof(List<string>) || property.PropertyType == typeof(ICollection<string>))
             {
                 var urlList = property.GetValue(dtoInstance) as ICollection<string>;
-        
                 Assert.NotNull(urlList);
                 Assert.NotEmpty(urlList);
             }

@@ -27,7 +27,7 @@ public class CompanyDto : BaseDto, IHasFile
     public string? Logo { get; set; }
 
     [File]
-    public ICollection<string> InsideImagesUrl { get; set; } = [];
+    public ICollection<string> InsideImages { get; set; } = [];
 
     public Dictionary<string, ICollection<byte[]>>? Files { get; set; }
 }

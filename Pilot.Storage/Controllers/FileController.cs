@@ -20,12 +20,12 @@ public class FileController(IMediator mediator) : PilotReadOnlyController<FileDt
         return Ok(result);
     }
     
-    [HttpGet(Urls.FileUrl + "/{id:int}")]
+    [HttpGet(Urls.FileUrl + "/{name}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(404)]
-    public virtual async Task<IActionResult> GetFileUrl(int id, CancellationToken token)
+    public virtual async Task<IActionResult> GetFileUrl(string name, CancellationToken token)
     {
-        var result = await Mediator.Send(new GetFileUrlQuery<FileDto>(id), token);
+        var result = await Mediator.Send(new GetFileUrlQuery<FileDto>(name), token);
         return Ok(result);
     }
 }
