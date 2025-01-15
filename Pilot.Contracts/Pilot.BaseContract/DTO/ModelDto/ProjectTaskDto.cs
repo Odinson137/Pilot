@@ -21,7 +21,7 @@ public class ProjectTaskDto : BaseDto
     
     public List<BaseDto> TaskInfos { get; set; } = [];
 
-    public int? File { get; set; }
+    public string? File { get; set; }
     
     public TaskStatus TaskStatus { get; set; }
     
