@@ -101,11 +101,11 @@ public static class GenerateTestEntity
             var hasFileAttr = property.GetCustomAttributes(typeof(FileAttribute), false).FirstOrDefault();
             if (hasFileAttr is not FileAttribute) continue;
             
-            if (typeof(ICollection<int>).IsAssignableFrom(property.PropertyType))
+            if (typeof(ICollection<string>).IsAssignableFrom(property.PropertyType))
             {
                 var modelAtr = modelType.GetProperties().First(c => c.Name == property.Name);
 
-                var fileIds = new List<int>();
+                var fileIds = new List<string>();
                 for (var i = 0; i < 2; i++)
                 {
                     var file = new Pilot.Storage.Models.File
@@ -117,12 +117,12 @@ public static class GenerateTestEntity
                     };
                     await storageContext.AddAsync(file);
                     await storageContext.SaveChangesAsync();
-                    fileIds.Add(file.Id);
+                    fileIds.Add(file.Name);
                 }
 
                 modelAtr.SetValue(model, fileIds);
             }
-            else if (property.PropertyType == typeof(int?))
+            else if (property.PropertyType == typeof(string))
             {
                 var modelAtr = modelType.GetProperties().First(c => c.Name == property.Name);
 
@@ -136,7 +136,7 @@ public static class GenerateTestEntity
                 await storageContext.AddAsync(file);
                 await storageContext.SaveChangesAsync();
 
-                modelAtr.SetValue(model, file.Id);
+                modelAtr.SetValue(model, file.Name);
             }
         }
     }
@@ -158,7 +158,7 @@ public static class GenerateTestEntity
 
             if (property.PropertyType == typeof(string))
             {
-                property.SetValue(entity, $"Test {property.Name} for {type.Name}");
+                property.SetValue(entity, $"{Guid.NewGuid()}");
             }
             else if (property.PropertyType == typeof(DateTime))
             {

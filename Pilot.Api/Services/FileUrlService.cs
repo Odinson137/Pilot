@@ -155,7 +155,7 @@ public class FileService : IFileService
         isList = response is IEnumerable;
         if (!isList) return type;
 
-        type = ((ICollection<object>)response).First().GetType();
+        type = ((IEnumerable<object>)response).First().GetType();
         return type;
     }
 
