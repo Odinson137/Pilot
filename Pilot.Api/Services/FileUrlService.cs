@@ -155,13 +155,7 @@ public class FileService : IFileService
         isList = response is IEnumerable;
         if (!isList) return type;
 
-        var enumerable = (IEnumerable)response;
-
-        // ReSharper disable once GenericEnumeratorNotDisposed
-        var enumerator = enumerable.GetEnumerator();
-        var first = enumerator.Current;
-        type = first!.GetType();
-
+        type = ((ICollection<object>)response).First().GetType();
         return type;
     }
 

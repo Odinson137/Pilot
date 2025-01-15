@@ -118,17 +118,17 @@ public class FileUrlServiceTest
                 var attribute = property.GetCustomAttribute<FileAttribute>();
 
                 if (attribute == null) continue;
-                if (property.PropertyType == typeof(int?))
+                if (property.PropertyType == typeof(string))
                 {
-                    var fileDto = new FileDto { Id = id, Url = $"https://example.com/file{id}.jpg" };
+                    var fileDto = new FileDto { Id = id, Name = Guid.NewGuid().ToString(), Url = $"https://example.com/file{id}.jpg" };
                     filesList.Add(fileDto);
-                    property.SetValue(dtoInstance, fileDto.Id);
+                    property.SetValue(dtoInstance, fileDto.Name);
                 }
-                else if (property.PropertyType == typeof(List<int>) || property.PropertyType == typeof(ICollection<int>))
+                else if (property.PropertyType == typeof(List<string>) || property.PropertyType == typeof(ICollection<string>))
                 {
-                    var fileDto = new FileDto { Id = id, Url = $"https://example.com/file{id}.jpg" };
+                    var fileDto = new FileDto { Id = id, Name = Guid.NewGuid().ToString(), Url = $"https://example.com/file{id}.jpg" };
                     filesList.Add(fileDto);
-                    property.SetValue(dtoInstance, new List<int> { fileDto.Id });
+                    property.SetValue(dtoInstance, new List<string> { fileDto.Name });
                 }
                 id++;
             }

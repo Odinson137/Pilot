@@ -42,6 +42,9 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=15e1110d_002D246a_002D4a78_002Dbe1d_002Dd701ebb6d8e1/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot" Presentation="&amp;lt;Pilot.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=28122c9e_002D88be_002D4204_002Db97e_002D37671b8a1e7c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Base&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Base" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Base&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e1beb76b_002Db4c1_002D4556_002Db398_002D9011fb8833bf/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetUrlAsync_Should_Fill_FileFields_Correctly" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::60E7C4D5-0598-4E49-8C67-7F485D8CF5D1::net9.0::Test.Base.ServicesTests.FileUrlServiceTest.GetUrlAsync_Should_Fill_FileFields_Correctly&lt;/TestId&gt;&#xD;
