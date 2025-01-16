@@ -15,7 +15,7 @@ public class Company : BaseModel
     
     public ICollection<CompanyUser> CompanyUsers { get; set; } = [];
     
-    public int? LogoId { get; set; }
+    public string? LogoId { get; set; }
 
     public List<string> InsideImages { get; set; } = [];
 }
