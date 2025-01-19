@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
 using Test.Api.CapabilityService.Factory;
 using Test.Base.IntegrationBase;
@@ -47,6 +48,33 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
+    }
+    
+    [Fact]
+    public virtual async Task GetAllValues_FilteredWithProperty_ReturnOk()
+    {
+        #region Arrange
+    
+        const int count = 2;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    
+        await GetContext<SkillDto>().AddRangeAsync(values);
+        await GetContext<SkillDto>().SaveChangesAsync();
+
+        var filter = new BaseFilter
+        {
+            WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
+        };
+        #endregion
+    
+        // Act
+        var result = await ApiClient.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+    
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count == 1);
     }
     
     [Fact]

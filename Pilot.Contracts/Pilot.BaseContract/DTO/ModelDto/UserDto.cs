@@ -26,7 +26,7 @@ public class UserDto : BaseDto, IHasFile
     [MaxLength(100)] public string? City { get; set; }
     
     [File]
-    [MaxLength(100)] public string? Avatar { get; set; }
+    [MaxLength(100)] public string? AvatarImage { get; set; }
     
     public Gender Gender { get; set; }
     

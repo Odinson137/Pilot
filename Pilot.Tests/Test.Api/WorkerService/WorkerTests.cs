@@ -140,6 +140,37 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
             .FirstOrDefaultAsync();
         Assert.NotNull(content);
     }
+    //
+    // [Fact]
+    // public async Task CreateValue_AddWithFile_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     var companyUser = await CreateCompanyUser(true);
+    //
+    //     var type = typeof(T);
+    //
+    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+    //     await GenerateTestEntity.FillChildren(value, GetContext<TDto>());
+    //     await GenerateTestEntity.FillImage<T, TDto>(value, GetContext<FileDto>());
+    //
+    //     var valueDto = Mapper.Map<TDto>(value);
+    //
+    //     var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+    //     ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    //     
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await ApiClient.PostAsJsonAsync($"api/{type.Name}", valueDto);
+    //     await Helper.Wait();
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await AssertContext.Set<T>().Where(c => c.CreateAt == value.CreateAt)
+    //         .FirstOrDefaultAsync();
+    //     Assert.NotNull(content);
+    // }
 
     [Fact]
     public async Task UpdateValue_ReturnOk()

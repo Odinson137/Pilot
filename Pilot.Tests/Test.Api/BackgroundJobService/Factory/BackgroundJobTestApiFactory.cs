@@ -3,15 +3,12 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Pilot.Api;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
-using Serilog;
 using Test.Base.IntegrationBase;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
-using Xunit.Abstractions;
 
 namespace Test.Api.BackgroundJobService.Factory;
 

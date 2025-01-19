@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Data.Enums;
 
@@ -24,7 +23,7 @@ public class UserViewModel : BaseViewModel
     [MaxLength(100)] public string? City { get; set; }
     
     [File]
-    [MaxLength(100)] public string? Avatar { get; set; }
+    [MaxLength(100)] public string? AvatarImage { get; set; }
     
     public Gender Gender { get; set; }
     

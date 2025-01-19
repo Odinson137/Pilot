@@ -1,5 +1,4 @@
 ﻿using Pilot.BackgroundJob.Models;
-using Pilot.Capability.Models;
 using Pilot.Contracts.DTO.ModelDto;
 using Test.Api.BackgroundJobService.Factory;
 

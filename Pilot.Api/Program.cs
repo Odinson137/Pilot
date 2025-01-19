@@ -16,7 +16,6 @@ using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Pilot.SqrsControllerLibrary.Interfaces;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -62,7 +61,7 @@ services.AddMediatR(cfg =>
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AddFileBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ChangeFileBehavior<,>));
 
 services.AddControllers();
 

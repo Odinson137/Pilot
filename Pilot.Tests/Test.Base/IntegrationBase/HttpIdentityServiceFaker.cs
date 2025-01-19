@@ -1,8 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 
 namespace Test.Base.IntegrationBase;

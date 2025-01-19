@@ -18,7 +18,7 @@
     else
     {
         <div class="text-center mb-4">
-            <img src="@_company.LogoUrl" alt="Company Logo" class="img-fluid company-logo mb-3" style="max-width: 150px;" />
+            <img src="@_company.Logo" alt="Company Logo" class="img-fluid company-logo mb-3" style="max-width: 150px;" />
             <h2 class="mb-3">@_company.Title</h2>
             <p class="lead">@_company.Description</p>
         </div>
@@ -105,64 +105,14 @@
                 <p class="text-center">No projects available for this company.</p>
             }
         }
-
-
-        <!-- Open Positions Section -->
-        <h3 class="mb-3" style="color: #1e3a8a;">Open Positions</h3>
-        @if (_isLoadingPositions)
-        {
-            <div class="text-center">
-                <p class="text-info">Loading open positions...</p>
-                <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-        }
-        else
-        {
-            @if (_companyPosts.Any())
-            {
-                <div class="positions">
-                    @foreach (var post in _companyPosts)
-                    {
-                        <div class="position-card mb-4 p-3 shadow-sm" style="border-radius: 10px; background-color: #e3f2fd; border: 1px solid #1e3a8a;">
-                            <h4>@post.Post.Title</h4>
-                            <p>@post.Description</p>
-                            <h5>Skills Required:</h5>
-                            @if (post.Post.Skills.Any())
-                            {
-                                <ul>
-                                    @foreach (var skill in post.Post.Skills)
-                                    {
-                                        <li>@skill.Title</li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <p>No specific skills required.</p>
-                            }
-
-                            <span class="badge @(post.IsOpen ? "bg-success" : "bg-danger")">@(post.IsOpen ? "Open" : "Closed")</span>
-                        </div>
-                    }
-                </div>
-            }
-            else
-            {
-                <p class="text-center">No open positions available.</p>
-            }
-        }
     }
 </div>
 
 @code {
     private CompanyViewModel _company = new();
     private ICollection<ProjectViewModel> _projects = new List<ProjectViewModel>();
-    private ICollection<CompanyPostViewModel> _companyPosts = new List<CompanyPostViewModel>();
     private bool _isLoadingCompany = true;
     private bool _isLoadingProjects = true;
-    private bool _isLoadingPositions = true;
     private bool _isLoadingImages = true;
 
     [Parameter] public string? Id { get; set; }
@@ -189,7 +139,6 @@
             // Load each section asynchronously after the company is loaded
             await LoadImagesAsync();
             await LoadProjectsAsync(_company.Projects);
-            await LoadOpenPositionsAsync(companyId);
         }
         catch (Exception ex)
         {
@@ -210,12 +159,6 @@
         _isLoadingProjects = false;
     }
 
-    private async Task LoadOpenPositionsAsync(int companyId)
-    {
-        _companyPosts = await PageService.GetOpenCompanyPostAsync(companyId);
-        _isLoadingPositions = false;
-    }
-    
     private bool _showAllImages;
 
     private void ShowAllImages()

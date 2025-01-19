@@ -7,7 +7,11 @@ public class Post : BaseModel
 {
     [Required] [MaxLength(100)] public string Title { get; set; } = null!;
 
+    [MaxLength(500)] public string? Description { get; set; }
+
     [Required] [Range(1, int.MaxValue)] public int CompanyId { get; set; }
 
     public ICollection<Skill> Skills { get; set; } = [];
+
+    public ICollection<CompanyPost> CompanyPosts { get; set; } = [];
 }

@@ -32,7 +32,7 @@
         : $"{ChatMemberId.Reminder}";
 
     private string SenderImage => Message.UserId != (int)ChatMemberId.Reminder
-        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.Avatar
+        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage
           ?? "/Images/Chat/default.jpg"
         : "/Images/Chat/reminder.png";
 

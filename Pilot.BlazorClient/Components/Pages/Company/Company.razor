@@ -44,9 +44,9 @@
                     <div class="card-body">
                         <!-- Flex container for logo and title -->
                         <div class="d-flex align-items-center mb-3">
-                            @if (company.LogoUrl != null)
+                            @if (company.Logo != null)
                             {
-                                <img src="@company.LogoUrl" alt="Company Logo" class="img-fluid me-3" style="max-width: 80px; border-radius: 5px;" />
+                                <img src="@company.Logo" alt="Company Logo" class="img-fluid me-3" style="max-width: 80px; border-radius: 5px;" />
                             }
                             <h3 class="card-title mb-0" style="color: #1e3a8a;">
                                 <a href="/Company/@company.Id" style="text-decoration: none; color: #1e3a8a;">

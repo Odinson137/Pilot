@@ -36,13 +36,15 @@ public class Seed : ISeed
         if (imagesDictionary.Count < Constants.SeedDataCount) throw new Exception("Данных в сиде меньше, чем должно быть");
 
         var fileFaker = GetFileDtoFaker();
-        
+
+        var i = 1;
         foreach (var (fileNamePart, value) in imagesDictionary)
         {
             var fileType = fileNamePart.Split(".")[1];
             var fileDto = fileFaker.Generate();
             fileDto.Type = fileType;
             fileDto.ByteFormFile = value;
+            fileDto.Name = $"{i++}";
 
             await _fileService.UploadFileAsync(fileDto);
         }

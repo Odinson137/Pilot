@@ -16,42 +16,39 @@ public class BaseHttpService(
     protected HttpClient? HttpClient;
 
     protected string? ClientName;
-    
+
     protected static string GetFullUrl<TDto>(string? url) where TDto : BaseDto
     {
         return GetFullUrl<TDto>(url, null);
     }
-    
+
     protected static string GetFullUrl<TDto>(string? url, BaseFilter? filter) where TDto : BaseDto
     {
         var stringBuilder = new StringBuilder($"api/{BaseExpendMethods.GetModelName<TDto>()}");
 
-        if (url != null) stringBuilder.Append($"/{url}");
-        
-        // if (!queryParams.Any()) return stringBuilder.ToString();
+        if (!string.IsNullOrEmpty(url)) stringBuilder.Append($"/{url}");
 
         if (filter != null)
-        {
-            stringBuilder.Append("?");
-            stringBuilder.Append($"filter={filter.ToJson()}");
-        }
-        
+            stringBuilder.Append($"?filter={filter.ToJson()}");
+
         return stringBuilder.ToString();
     }
 
-    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, BaseFilter? filter = null, CancellationToken token = default) where TOut : BaseDto
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, BaseFilter? filter = null,
+        CancellationToken token = default) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message to {typeof(TOut)}");
 
         var client = await GetClientAsync<TOut>();
-        var response = await client.GetAsync(GetFullUrl<TOut>(url, filter), token);
+        var requestUrl = GetFullUrl<TOut>(url, filter);
+        Logger.LogInformation($"Full url: {requestUrl}");
+
+        var response = await client.GetAsync(requestUrl, token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 
         var content = await response.Content.ReadFromJsonAsync<List<TOut>>(token);
-        if (content == null) throw new BadRequestException($"Content from {typeof(TOut)} is null");
-
-        return content;
+        return content ?? [];
     }
 
     public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default) where TOut : BaseDto
@@ -76,7 +73,7 @@ public class BaseHttpService(
     {
         var clientName = HttpNameService.GetHttpClientName(typeof(TOut));
         if (ClientName == clientName) return;
-        
+
         HttpClient = CreateClient(clientName);
         ClientName = clientName;
     }

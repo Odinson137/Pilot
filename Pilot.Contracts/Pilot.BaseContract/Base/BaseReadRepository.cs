@@ -43,19 +43,22 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
             .ProjectTo<TOut>(mapper.ConfigurationProvider);
 
         if (filter.Ids != null)
-        {
             query = query.Where(c => filter.Ids.Contains(c.Id));
-        }
         
-        if (filter.WhereFilter.HasValue)
-        {
-            query = query.Where(GetFilterLambda<TOut>(filter.WhereFilter.Value));
-        }
+        if (filter.WhereFilter != null)
+            query = GetFiltersLambda(query, filter.WhereFilter.List);
         
         return await query.ToListAsync(token);
     }
 
-    private static Expression<Func<TOut, bool>> GetFilterLambda<TOut>((string, int) filter)
+    private static IQueryable<TOut> GetFiltersLambda<TOut>(IQueryable<TOut> query, ICollection<(string, object, Type)> list)
+    {
+        foreach (var valueTuple in list)
+            query = query.Where(GetFilterLambda<TOut>(valueTuple));
+        return query;
+    }
+
+    private static Expression<Func<TOut, bool>> GetFilterLambda<TOut>((string, object, Type) filter)
     {
         var expNameParameter = Expression.Parameter(typeof(TOut), "e");
         var names = filter.Item1.Split('.');
@@ -66,7 +69,8 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         Expression expMember = expNameParameter;
         foreach (var name in names) expMember = Expression.Property(expMember, name);
         
-        var expValue = Expression.Constant(filter.Item2);
+        var value = Convert.ChangeType(filter.Item2, expMember.Type);
+        var expValue = Expression.Constant(value);
 
         var eq = Expression.Equal(expMember!, expValue);
 

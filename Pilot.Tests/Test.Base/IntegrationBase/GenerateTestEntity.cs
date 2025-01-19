@@ -96,6 +96,7 @@ public static class GenerateTestEntity
         
         var properties = dtoType.GetProperties();
 
+        var modelProperties = modelType.GetProperties();
         foreach (var property in properties)
         {
             var hasFileAttr = property.GetCustomAttributes(typeof(FileAttribute), false).FirstOrDefault();
@@ -124,7 +125,7 @@ public static class GenerateTestEntity
             }
             else if (property.PropertyType == typeof(string))
             {
-                var modelAtr = modelType.GetProperties().First(c => c.Name == property.Name);
+                var modelAtr = modelProperties.First(c => c.Name == property.Name);
 
                 var file = new Pilot.Storage.Models.File
                 {

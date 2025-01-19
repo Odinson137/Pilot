@@ -31,6 +31,7 @@ public class AutoMapperProfile : Profile
         Mapping<SkillViewModel, SkillDto>();
         Mapping<UserSkillViewModel, UserSkillDto>();
         Mapping<ChatReminderViewModel, ChatReminderDto>();
+        Mapping<JobApplicationViewModel, JobApplicationDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

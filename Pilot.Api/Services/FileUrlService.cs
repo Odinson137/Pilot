@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Net.Mime;
 using System.Reflection;
 using MassTransit.Internals;
 using Pilot.Contracts.Attributes;
@@ -34,6 +33,7 @@ public class FileService : IFileService
         var fileUrlsSet = new Dictionary<string, (PropertyInfo, object)>();
 
         var type = GetInternalValueType(response, out var isList);
+        if (type is null) return;
 
         var hasFileType = typeof(IHasFile);
         switch (isList)
@@ -84,8 +84,8 @@ public class FileService : IFileService
 
             if (value is IEnumerable && property.PropertyType != typeof(string))
             {
-                var currentList = property.GetValue(currentValue);
-                ((List<string>)currentList!).Add(file.Url!);
+                var list = (List<string>)property.GetValue(currentValue)!;
+                list.Add(file.Url!);
             }
             else
                 property.SetValue(currentValue, file.Url);
@@ -93,12 +93,14 @@ public class FileService : IFileService
     }
 
     // эта реализация работает только если TResponse это не коллекция, в ином случае в системе пока и быть не может
-    public async ValueTask AddFileAsync<TRequest>(TRequest response, CancellationToken cancellationToken) where TRequest : ICommand<BaseDto>
+    public async ValueTask ChangeFileAsync<TRequest>(TRequest response, CancellationToken cancellationToken)
+        where TRequest : ICommand<BaseDto>
     {
         var valueDto = response.ValueDto;
         if (valueDto is IHasFile v && v.Files?.Count != 0) return;
 
         var type = GetInternalValueType(response, out _);
+        if (type is null) return;
 
         var value = (IHasFile)valueDto;
 
@@ -106,7 +108,7 @@ public class FileService : IFileService
         {
             var key = fileInfo.Key;
             var bytes = fileInfo.Value;
-            
+
             var propertyInfo = type.GetProperties().Single(c => c.Name == key);
 
             if (propertyInfo.IsDefined(typeof(IEnumerable)))
@@ -149,13 +151,13 @@ public class FileService : IFileService
         }
     }
 
-    private static Type GetInternalValueType<TResponse>(TResponse response, out bool isList)
+    private static Type? GetInternalValueType<TResponse>(TResponse response, out bool isList)
     {
         var type = response!.GetType();
         isList = response is IEnumerable;
         if (!isList) return type;
 
-        type = ((IEnumerable<object>)response).First().GetType();
+        type = ((IEnumerable<object>)response).FirstOrDefault()?.GetType();
         return type;
     }
 
@@ -174,6 +176,8 @@ public class FileService : IFileService
                 {
                     fileUrls.Add(name, (property, response)!);
                 }
+                
+                ((List<string>)value).Clear();
             }
             else
             {

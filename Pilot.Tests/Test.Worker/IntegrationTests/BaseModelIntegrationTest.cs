@@ -16,7 +16,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     where T : BaseModel where TDto : BaseDto
 {
     public BaseModelReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
-        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) : base(workerTestWorkerFactory, identityFactory, storageFactory)
+        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) : base(
+        workerTestWorkerFactory, identityFactory, storageFactory)
     {
         AssertReceiverContext.Database.EnsureDeleted();
         AssertReceiverContext.Database.EnsureCreated();
@@ -55,7 +56,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         {
             Ids = values.Select(c => c.Id).ToList(),
         };
-        
+
         #endregion
 
         // Act
@@ -67,7 +68,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
     }
-    
+
     [Fact]
     public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
     {
@@ -81,9 +82,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         var filter = new BaseFilter
         {
-            WhereFilter = (nameof(BaseId.Id), values.Select(c => c.Id).First())
+            WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
         };
-        
+
         #endregion
 
         // Act
@@ -95,7 +96,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.NotNull(content);
         Assert.True(content.Count == 1);
     }
-    
+
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {
@@ -118,7 +119,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
     }
-    
+
     [Fact]
     public virtual async Task GetValue_ReturnOk()
     {
@@ -219,7 +220,8 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         // Assert
 
-        var result = await AssertReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt)
+            .FirstOrDefaultAsync();
 
         Assert.NotNull(result);
     }
@@ -254,7 +256,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         Assert.NotNull(result);
         Assert.NotNull(result.ChangeAt);
     }
-    
+
     [Fact]
     public virtual async Task DeleteModelTest_ReturnOk()
     {
@@ -273,9 +275,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, companyUser.Id));
         await Helper.Wait();
-        
+
         // Assert
-        
+
         var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
 
         Assert.Null(result);

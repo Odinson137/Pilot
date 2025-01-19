@@ -1,0 +1,133 @@
+﻿@page "/Vacancy"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject ICompanyPostPageService PageService
+@inject NavigationManager Navigation
+
+<div class="container mt-5" style="margin-bottom: 100px">
+    <!-- Top section with brief description and photo -->
+    <div class="text-center mb-4">
+        <h2 class="mb-3" style="color: #1e3a8a;">Welcome to Our Collaborative Space</h2>
+        <p class="lead" style="color: #4a5568;">This page highlights the importance of communication and teamwork in
+            building successful companies and projects. Working together fosters innovation, productivity, and shared
+            success.</p>
+        <img src="/Images/Company/Turbotext AI Image 3964441.png" alt="Teamwork Image" class="img-fluid"
+             style="max-width: 300px; border-radius: 10px;"/>
+    </div>
+
+    <!-- Loading indicator -->
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <p class="text-info">Loading vacancy data...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_companyPost != null)
+    {
+        <!-- Search bar -->
+        <div class="input-group mb-4" style="width: 700px; justify-self: center">
+            <input type="text" class="form-control" placeholder="Search vacancies..." aria-label="Search vacancies"
+                   @bind="_searchQuery">
+            <button class="btn btn-primary" @onclick="SearchVacancies">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+
+        <!-- Vacancy list -->
+        <div class="row" style="width: 850px; justify-self: center">
+            @foreach (var vacancy in _companyPost!)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">@vacancy.Post.Title</h5>
+                            <p class="card-text text-muted">@vacancy.Post.Description</p>
+                            @if (!string.IsNullOrWhiteSpace(vacancy.AdditionalRequirements))
+                            {
+                                <p class="text-secondary small"><strong>Additional
+                                        Requirements:</strong> @vacancy.AdditionalRequirements</p>
+                            }
+                            <div>
+                                <span class="badge bg-success">Applications: @vacancy.Applications.Count</span>
+                            </div>
+                                <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => ToVacancy(vacancy.Id)">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        <nav>
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(_skip == 0 ? "disabled" : "")">
+                    <button class="page-link" @onclick="PreviousPage">&laquo; Previous</button>
+                </li>
+                <li class="page-item @(_companyPost.Count != Take ? "disabled" : "")">
+                    <button class="page-link" @onclick="NextPage">Next &raquo;</button>
+                </li>
+            </ul>
+        </nav>
+    }
+    else
+    {
+        <div class="text-center">
+            <p class="text-muted">No vacancies found. Try adjusting your search criteria.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private ICollection<CompanyPostViewModel>? _companyPost;
+    private bool _isLoading = true;
+    private int _skip;
+    private const int Take = 10;
+    private string _searchQuery = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadVacanciesAsync();
+    }
+
+    private async Task LoadVacanciesAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _companyPost = await PageService.GetVacanciesAsync(_skip, Take, _searchQuery);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task SearchVacancies()
+    {
+        _skip = 0; // Reset pagination
+        await LoadVacanciesAsync();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (_skip > 0)
+        {
+            _skip -= Take;
+            await LoadVacanciesAsync();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        _skip += Take;
+        await LoadVacanciesAsync();
+    }
+
+    private async Task ToVacancy(int vacancyId)
+    {
+        Navigation.NavigateTo($"/Vacancy/{vacancyId}");
+    }
+}

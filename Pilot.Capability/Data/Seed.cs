@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Pilot.Capability.Models;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Services;
 
 namespace Pilot.Capability.Data;
 
@@ -30,9 +29,13 @@ public class Seed : ISeed
         await AssignPostsToCompaniesAsync(posts); // Связывание должностей с компаниями
 
         await _context.SaveChangesAsync();
+
+        await GenerateJobApplicationsAsync(posts); // Генерация заявок на вакансии
+
+        await _context.SaveChangesAsync();
     }
 
-    private List<Skill> _skills; 
+    private List<Skill> _skills;
 
     private readonly List<string> _examplePosts =
     [
@@ -64,7 +67,7 @@ public class Seed : ISeed
         _exampleSkills.Remove(value);
         return value;
     }
-    
+
     private string GetPostTitle()
     {
         var random = new Random();
@@ -86,6 +89,7 @@ public class Seed : ISeed
         return new Faker<Post>()
             .RuleFor(u => u.Title, (_) => GetPostTitle())
             .RuleFor(u => u.Skills, (_) => GetRandomSkills())
+            .RuleFor(u => u.Description, (f, _) => f.Lorem.Letter())
             .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now));
     }
 
@@ -98,7 +102,8 @@ public class Seed : ISeed
     {
         for (var userId = 1; userId <= Constants.SeedDataCount; userId++)
         {
-            var userSkills = _skills.OrderBy(_ => Guid.NewGuid()).Take(5).ToList(); // 5 случайных скила для каждого пользователя
+            var userSkills =
+                _skills.OrderBy(_ => Guid.NewGuid()).Take(5).ToList(); // 5 случайных скила для каждого пользователя
             var userSkillEntities = userSkills.Select(skill => new UserSkill
             {
                 UserId = userId,
@@ -115,26 +120,52 @@ public class Seed : ISeed
     {
         for (var companyId = 1; companyId <= 5; companyId++)
         {
-            var randomPosts = posts.Skip(2 * (companyId-1)).Take(2).ToList();
-
-            var faker = GetCompanyPostFaker();
+            var randomPosts = posts.Skip(2 * (companyId - 1)).Take(2).ToList();
 
             foreach (var post in randomPosts)
             {
-                var companyPost = faker.Generate();
+                var companyPost = GetCompanyPostFaker().Generate();
                 companyPost.Post = post;
-                
+                companyPost.IsOpen = true; // Все вакансии открыты по умолчанию
+
                 post.CompanyId = companyId;
-                
-                await _context.AddRangeAsync(companyPost);
+
+                await _context.AddAsync(companyPost);
             }
         }
     }
-    
+
     private Faker<CompanyPost> GetCompanyPostFaker()
     {
         return new Faker<CompanyPost>()
-            .RuleFor(s => s.Description, f => f.Lorem.Paragraphs().TakeOnly(500))
-            ;
+            .RuleFor(s => s.AdditionalRequirements, f => f.Lorem.Sentence(10));
+    }
+
+    private async Task GenerateJobApplicationsAsync(ICollection<Post> posts)
+    {
+        var faker = GetJobApplicationFaker();
+
+        foreach (var post in posts)
+        {
+            var companyPosts = _context.CompanyPosts.Where(cp => cp.Post == post).ToList();
+            foreach (var companyPost in companyPosts)
+            {
+                for (var i = 0; i < 3; i++) // Генерируем по 3 заявки на каждую вакансию
+                {
+                    var jobApplication = faker.Generate();
+                    jobApplication.CompanyPost = companyPost;
+                    jobApplication.UserId = new Random().Next(1, Constants.SeedDataCount);
+                    jobApplication.Status = (ApplicationStatus)new Random().Next(0, 3);
+
+                    await _context.AddAsync(jobApplication);
+                }
+            }
+        }
+    }
+
+    private Faker<JobApplication> GetJobApplicationFaker()
+    {
+        return new Faker<JobApplication>()
+            .RuleFor(a => a.Message, f => f.Lorem.Sentences(2));
     }
 }

@@ -27,8 +27,6 @@ public class FileService : IFileService
     public async Task<int> UploadFileAsync(FileDto fileDto)
     {
         _logger.LogInformation("Upload file");
-        var fileName = Guid.NewGuid().ToString();
-        fileDto.Name = fileName;
 
         var fileModel = _mapper.Map<File>(fileDto);
         fileModel.Size = fileDto.ByteFormFile.GetSize();

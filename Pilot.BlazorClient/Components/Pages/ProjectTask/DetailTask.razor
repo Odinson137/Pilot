@@ -47,7 +47,7 @@ else
                         <div class="task-owner">
                             <b>Assigned to:</b>
                             <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
-                                <img src="@_userViewModel?.Avatar" style="max-width: 30px;max-height: 30px"
+                                <img src="@_userViewModel?.AvatarImage" style="max-width: 30px;max-height: 30px"
                                      alt="avatar"/>
                                 @_userViewModel?.FullName
                             </a>
@@ -55,7 +55,7 @@ else
                         <div class="task-creator">
                             <b>Created by:</b>
                             <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
-                                <img src="@_createdUserViewModel?.Avatar" style="max-width: 30px;max-height: 30px"
+                                <img src="@_createdUserViewModel?.AvatarImage" style="max-width: 30px;max-height: 30px"
                                      alt="avatar"/>
                                 @_createdUserViewModel?.FullName
                             </a>

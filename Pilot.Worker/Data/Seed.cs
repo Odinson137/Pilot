@@ -199,7 +199,7 @@ public class Seed : ISeed
         const int count = 10;
         var list = Enumerable.Range(_insideImagesId, count).ToList();
         _insideImagesId += count;
-        return list.Select(c => Guid.NewGuid().ToString()).ToList();
+        return list.Select(c => $"{c}").ToList();
     }
 
     private Faker<Company> GetCompanyFaker()
@@ -207,7 +207,7 @@ public class Seed : ISeed
         var fake = new Faker<Company>()
                 .RuleFor(u => u.Title, (f, _) => f.Company.CompanyName())
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Paragraphs().TakeOnly(500))
-                .RuleFor(u => u.LogoId, (f, _) => $"{_logoId++}")
+                .RuleFor(u => u.Logo, (f, _) => $"{_logoId++}")
                 .RuleFor(u => u.InsideImages, (f, _) => FillList())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;

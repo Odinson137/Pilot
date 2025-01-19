@@ -20,9 +20,14 @@ public sealed class DataContext : DbContext
     public DbSet<Skill> Skills { get; set; }
     public DbSet<CompanyPost> CompanyPosts { get; set; }
     public DbSet<UserSkill> UserSkills { get; set; }
+    public DbSet<JobApplication> JobApplications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<CompanyPost>()
+            .HasMany(c => c.Applications)
+            .WithOne(c => c.CompanyPost);
     }
 }

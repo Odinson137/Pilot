@@ -1,4 +1,6 @@
 using Blazored.Modal;
+using Blazored.Toast;
+using BlazorStrap;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Pilot.BlazorClient.Components;
@@ -33,6 +35,7 @@ services.AddScoped<IProjectTaskPageService, ProjectTaskPageService>();
 services.AddScoped<IChatPageService, ChatPageService>();
 services.AddScoped<IMessengerService, MessengerService>();
 services.AddScoped<IReminderPageService, ReminderPageService>();
+services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
 
 services.AddScoped<IBaseModelService<ProjectViewModel>, BaseModelService<ProjectDto, ProjectViewModel>>();
 services.AddScoped<IBaseModelService<TaskInfoViewModel>, BaseModelService<TaskInfoDto, TaskInfoViewModel>>();
@@ -67,6 +70,8 @@ builder.Services.AddLocalization(options => options.ResourcesPath = "Resources")
 builder.Services.AddMvc()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
+
+builder.Services.AddBlazoredToast();
 
 var app = builder.Build();
 

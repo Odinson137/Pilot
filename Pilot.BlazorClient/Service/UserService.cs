@@ -38,4 +38,15 @@ public class UserService : IUserService
         await _protectedSessionStore.SetAsync(ClientConstants.User, user);
         return user;
     }
+    
+    public async Task<bool> IsUserAuthorizationAsync()
+    {
+        var storageResult = await _protectedSessionStore.GetAsync<string>(ClientConstants.Token);
+        if (storageResult.Success)
+        {
+            return !string.IsNullOrEmpty(storageResult.Value);
+        }
+
+        return false;
+    }
 }

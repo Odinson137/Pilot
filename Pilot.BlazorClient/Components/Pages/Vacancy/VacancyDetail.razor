@@ -1,0 +1,154 @@
+﻿@page "/Vacancy/{vacancyId:int}"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject ICompanyPostPageService PageService
+@inject NavigationManager Navigation
+@inject IUserService UserService
+@inject IToastService ToastService
+
+<div class="container mt-5" style="width: 700px; margin-bottom: 200px">
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <p class="text-info">Loading vacancy details...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_vacancy != null && _company != null)
+    {
+        <!-- Company Info Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <img src="@_company.Logo" alt="Company Logo" class="rounded-circle me-3" style="width: 80px; height: 80px;" />
+                <div>
+                    <h4 class="card-title mb-1">@_company.Title</h4>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="() => NavigateToCompany(_company.Id)">
+                        View Company Page
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vacancy Info Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title text-primary">@_vacancy.Post.Title</h3>
+                <h6 class="text-secondary @(_vacancy.IsOpen ? "open" : "")">Status: @( _vacancy.IsOpen ? "Open" : "Closed")</h6>
+                <p class="card-text mt-3">@_vacancy.Post.Description</p>
+                @if (!string.IsNullOrEmpty(_vacancy.AdditionalRequirements))
+                {
+                    <div class="alert alert-warning">
+                        <strong>Additional Requirements:</strong> @_vacancy.AdditionalRequirements
+                    </div>
+                }
+                <p class="text-muted mt-2">Posted on: @_vacancy.CreateAt!.Value.ToShortDateString()</p>
+            </div>
+        </div>
+
+        <!-- Required Skills Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Required Skills:</h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var skill in _skills ?? Enumerable.Empty<SkillViewModel>())
+                    {
+                        <li class="list-group-item">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i> @skill.Title
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Application Form Section -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary">Submit Your Application</h5>
+                <textarea class="form-control mb-3" rows="4" placeholder="Write a cover letter..." @bind="_coverLetter"></textarea>
+                <button class="btn btn-success" @onclick="SubmitApplication">
+                    <i class="bi bi-send-fill me-1"></i> Submit Application
+                </button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-danger">Vacancy not found.</p>
+    }
+</div>
+
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Тест</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Тест
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int VacancyId { get; set; }
+
+    private CompanyPostViewModel? _vacancy;
+    private ICollection<SkillViewModel>? _skills;
+    private CompanyViewModel? _company;
+    private bool _isLoading = true;
+    private string _coverLetter = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _vacancy = await PageService.GetVacancyAsync(VacancyId);
+            if (_vacancy != null)
+            {
+                _skills = await PageService.GetPostSkillsAsync(_vacancy.Post);
+                _company = await PageService.GetCompanyAsync(_vacancy.Post.CompanyId);
+            }
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task SubmitApplication()
+    {
+        if (_vacancy != null)
+        {
+            var isAuthorized = await UserService.IsUserAuthorizationAsync();
+            if (isAuthorized)
+            {
+                await PageService.SubmitApplicationAsync(VacancyId, _coverLetter);
+                Navigation.NavigateTo("/Vacancy");
+            }
+            else
+            {
+                ToastService.ShowWarning("You need to be authorized to submit an application.");
+            }
+        }
+    }
+
+    // private void ShowMessage(string title, string message)
+    // {
+    //     var modalElement = document.getElementById("messageModal");
+    //     var modal = new bootstrap.Modal(modalElement);
+    //     modal.show();
+    // }
+    
+    private void NavigateToCompany(int companyId)
+    {
+        Navigation.NavigateTo($"/Company/{companyId}");
+    }
+}

@@ -1,16 +1,15 @@
 ﻿using MediatR;
 using Pilot.Contracts.Base;
-using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.Api.Behaviors;
 
-public class AddFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : ICommand<BaseDto>
+public class ChangeFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+    where TRequest : IRequest
 {
     private readonly IFileService _fileUrlService;
 
-    public AddFileBehavior(IFileService fileUrlService)
+    public ChangeFileBehavior(IFileService fileUrlService)
     {
         _fileUrlService = fileUrlService;
     }
@@ -18,7 +17,9 @@ public class AddFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        await _fileUrlService.AddFileAsync(request, cancellationToken);
+        if (request is ICommand<BaseDto> command)
+            await _fileUrlService.ChangeFileAsync(command, cancellationToken);
+
         var response = await next();
         return response;
     }

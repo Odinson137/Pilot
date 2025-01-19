@@ -7,7 +7,6 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Interfaces;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Services;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -27,6 +26,7 @@ services.AddScoped<IPost, PostRepository>();
 services.AddScoped<ICompanyPost, CompanyPostRepository>();
 services.AddScoped<ISkill, SkillRepository>();
 services.AddScoped<IUserSkill, UserSkillRepository>();
+services.AddScoped<IJobApplication, JobApplicationRepository>();
 
 #endregion
 

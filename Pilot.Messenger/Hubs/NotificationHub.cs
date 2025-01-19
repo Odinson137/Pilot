@@ -1,14 +1,11 @@
 ﻿using System.Data;
 using System.Security.Claims;
-using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Messenger.Interfaces;
-using Pilot.Messenger.Models;
 
 namespace Pilot.Messenger.Hubs;
 

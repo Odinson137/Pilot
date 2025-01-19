@@ -28,7 +28,7 @@ else
             <ul>
                 @if (_projects is { Count: > 0 })
                 {
-                    <h5 @onclick="() => ClearTeam()" style="cursor: pointer">Projects:</h5>
+                    <h5 @onclick="ClearTeam" style="cursor: pointer">Projects:</h5>
                     @foreach (var project in _projects)
                     {
                         <li style="padding: 5px">
@@ -140,7 +140,7 @@ else
 
     private void ClearTeam()
     {
-        ProtectedSessionStorage.DeleteAsync("work:teamId");
+        // ProtectedSessionStorage.DeleteAsync("work:teamId");
         Console.WriteLine($"Navigating to: {0}");
 
         if (_activeTab == 2)

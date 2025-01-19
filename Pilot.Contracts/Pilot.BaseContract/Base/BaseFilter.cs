@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Services;
+﻿using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.Contracts.Base;
 
@@ -37,9 +35,20 @@ public class BaseFilter(int skip, int take)
 
     public ICollection<(string, string)> QueryParams { get; set; } = [];
 
-    public (string, int)? WhereFilter { get; set; }
+    public WhereFilter? WhereFilter { get; set; }
 
     public FilterValue? JsonValue { get; set; }
-    
-    public override string ToString() => this.ToJson();
+}
+
+public class WhereFilter
+{
+    public WhereFilter() { }
+
+    public WhereFilter(params (string, object)[] queryParams)
+    {
+        foreach (var param in queryParams)
+            List.Add(new ValueTuple<string, object, Type>(param.Item1, param.Item2, param.Item2.GetType()));
+    }
+
+    public ICollection<(string, object, Type)> List { get; set; } = [];
 }

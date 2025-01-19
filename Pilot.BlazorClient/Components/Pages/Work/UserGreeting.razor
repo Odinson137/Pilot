@@ -29,18 +29,9 @@
             }
         </div>
         
-        @if (_projects != null && _teams != null)
+        @if (_projects != null)
         {
             <p>You are participating in <strong>@_projects.Count</strong> project(s)</p>
-
-            <ul>
-                @foreach (var team in _teams)
-                {
-                    <li>
-                        <strong>Team:</strong> @team.Name
-                    </li>
-                }
-            </ul>
         }
     }
 </div>
@@ -62,8 +53,6 @@
         _company = await WorkPageService.GetCompanyAsync(_companyUser.Company.Id);
 
         _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
-
-        _teams = await WorkPageService.GetUserTeamsAsync(_companyUser.Teams);
 
         _projects = await WorkPageService.GetUserProjectsAsync(_companyUser.Id);
         Console.WriteLine("Greeting loaded");
