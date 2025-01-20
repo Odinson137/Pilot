@@ -114,7 +114,7 @@ public class UserTests : BaseUserServiceIntegrationTest
         await GetContext<UserDto>().AddAsync(existingUser);
         await GetContext<UserDto>().SaveChangesAsync();
 
-        var token = TokenService.GenerateToken(existingUser.Id, Role.User);
+        var token = TokenService.GenerateToken(existingUser.Id, Role.Junior);
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         // Act
@@ -144,7 +144,7 @@ public class UserTests : BaseUserServiceIntegrationTest
         await GetContext<UserDto>().AddAsync(existingUser);
         await GetContext<UserDto>().SaveChangesAsync();
 
-        var token = TokenService.GenerateToken(existingUser.Id, Role.User);
+        var token = TokenService.GenerateToken(existingUser.Id, Role.Junior);
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         // Act

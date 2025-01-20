@@ -1,0 +1,104 @@
+﻿@page "/Management"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.Contracts.Data.Enums
+@inject IWorkPageService WorkPageService
+@inject ProtectedSessionStorage ProtectedSessionStorage
+@inject IUserService UserService
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5" style="width: 1000px; margin-bottom: 200px">
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <p class="text-info">Loading employee details...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_employees != null)
+    {
+        @foreach (var employee in _employees)
+        {
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title text-primary"></h4>
+                    <p><strong>Projects:</strong>)
+                        <button class="btn btn-outline-success btn-sm ms-2" @onclick="() => AddEmployeeToProject(employee.Id)">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                    </p>
+                    <p><strong>Teams:</strong> @string.Join(", ", employee.Teams.Select(t => t.Name))
+                        <button class="btn btn-outline-success btn-sm ms-2" @onclick="() => AddEmployeeToTeam(employee.Id)">
+                            <i class="bi bi-plus-circle"></i>
+                        </button>
+                    </p>
+                    <div>
+                        <strong>Tasks:</strong>
+                        <div class="row">
+                            <div class="col">To Do:</div>
+                            <div class="col">In Progress:</div>
+                            <div class="col">Done:</div>
+                        </div>
+                    </div>
+                    <div>
+                        <strong>Role:</strong>
+                        <select class="form-select form-select-sm" @bind="employee.User">
+                            @foreach (Role role in Enum.GetValues(typeof(Role)))
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </select>
+                    </div>
+                    <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => AddProject(employee.Id)">Add Project</button>
+                    <button class="btn btn-outline-secondary btn-sm mt-3" @onclick="() => AddTeam(employee.Id)">Add Team</button>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-danger">No employees found.</p>
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+    private ICollection<CompanyUserViewModel>? _employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            // _employees = await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id);
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void AddEmployeeToProject(int employeeId)
+    {
+        // Логика для добавления сотрудника в проект
+    }
+
+    private void AddEmployeeToTeam(int employeeId)
+    {
+        // Логика для добавления сотрудника в команду
+    }
+
+    private void AddProject(int employeeId)
+    {
+        // Логика для добавления проекта
+    }
+
+    private void AddTeam(int employeeId)
+    {
+        // Логика для добавления команды
+    }
+}

@@ -1,7 +1,11 @@
 ﻿namespace Pilot.Contracts.Data.Enums;
 
+// пока пусть будет так, потом доделаю
 public enum Role
 {
-    User = 0,
-    Admin = 1
+    Junior = 0,
+    Owner = 1,
+    Director = 2,
+    Middle = 3,
+    Senior = 4,
 }

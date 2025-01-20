@@ -40,7 +40,7 @@ public class BaseMessengerServiceIntegrationTest :
 
         Mapper = messengerFactory.Services.GetRequiredService<IMapper>();
         var tokenService = apiFactory.Services.GetRequiredService<IToken>();
-        var token = tokenService.GenerateToken(1, Role.User);
+        var token = tokenService.GenerateToken(1, Role.Junior);
         
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         

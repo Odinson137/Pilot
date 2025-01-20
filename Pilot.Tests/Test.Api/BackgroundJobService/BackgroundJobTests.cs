@@ -87,7 +87,7 @@ public abstract class BackgroundJobTests<T, TDto> : BaseBackgroundJobServiceInte
     
         if (withAuthorization)
         {
-            var token = TokenService.GenerateToken(user.Id, Role.User);
+            var token = TokenService.GenerateToken(user.Id, Role.Junior);
             ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
         
@@ -109,7 +109,7 @@ public abstract class BackgroundJobTests<T, TDto> : BaseBackgroundJobServiceInte
 
         var valueDto = Mapper.Map<TDto>(value);
 
-        var token = TokenService.GenerateToken(user.Id, Role.User);
+        var token = TokenService.GenerateToken(user.Id, Role.Junior);
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         #endregion

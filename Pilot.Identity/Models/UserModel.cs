@@ -20,7 +20,7 @@ public class User : BaseModel
     
     [Required] [MaxLength(100)] public string Salt { get; set; } = null!;
     
-    [Required] [MaxLength(100)] public Role Role { get; init; } = Role.User;
+    [Required] [MaxLength(100)] public Role Role { get; init; } = Role.Junior;
 
     [MaxLength(1000)] public string? Description { get; set; }
     

@@ -103,7 +103,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         if (withAuthorization)
         {
-            var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+            var token = TokenService.GenerateToken(companyUser.Id, Role.Junior);
             ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
         
@@ -125,7 +125,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         var valueDto = Mapper.Map<TDto>(value);
 
-        var token = TokenService.GenerateToken(companyUser.Id, Role.User);
+        var token = TokenService.GenerateToken(companyUser.Id, Role.Junior);
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         #endregion

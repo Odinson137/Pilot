@@ -5,13 +5,13 @@
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
+@using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage;
 @inject IUserService UserService
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Work</PageTitle>
-
 
 <AuthCheck/>
 
@@ -38,7 +38,7 @@ else
                 }
                 else
                 {
-                    <li>No projects available</li>
+                    <li>No projects</li>
                 }
             </ul>
         </div>
@@ -59,6 +59,12 @@ else
                 <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
                     Employees
                 </li>
+                @if (new List<Role> { Role.Owner, Role.Director }.Contains(_user!.Role))
+                {
+                    <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)">
+                        Management
+                    </li>    
+                }
             </ul>
         </nav>
 
@@ -80,6 +86,9 @@ else
                         <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                         break;
                     case 4:
+                        <Management UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                        break;
+                    case 5:
                         break;
                 }
             }

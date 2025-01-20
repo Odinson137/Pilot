@@ -113,7 +113,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
     
         if (withAuthorization)
         {
-            var token = TokenService.GenerateToken(user.Id, Role.User);
+            var token = TokenService.GenerateToken(user.Id, Role.Junior);
             ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
         
@@ -135,7 +135,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
 
         var valueDto = Mapper.Map<TDto>(value);
 
-        var token = TokenService.GenerateToken(user.Id, Role.User);
+        var token = TokenService.GenerateToken(user.Id, Role.Junior);
         ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         
         #endregion
