@@ -3,7 +3,7 @@ using Pilot.BlazorClient.ViewModels.UserViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface IProjectTaskPageService : IBaseModelService<ProjectTaskViewModel>
+public interface IProjectTaskPageService : IBasePageService<ProjectTaskViewModel>
 {
     Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId);
     

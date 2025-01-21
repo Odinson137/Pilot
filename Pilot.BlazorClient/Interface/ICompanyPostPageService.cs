@@ -2,7 +2,7 @@
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface ICompanyPostPageService : IBaseModelService<CompanyPostViewModel>
+public interface ICompanyPostPageService : IBasePageService<CompanyPostViewModel>
 {
     Task<ICollection<CompanyPostViewModel>> GetVacanciesAsync(int take, int skip, string? search = null);
     

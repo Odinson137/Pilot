@@ -8,30 +8,28 @@ using Pilot.Contracts.DTO.ModelDto;
 namespace Pilot.BlazorClient.Service.Pages;
 
 public class ProjectTaskPageService(
-    IGateWayApiService apiService, 
-    IMapper mapper,
+    IBaseModelService<ProjectTaskViewModel> projectTaskService, 
+    IBaseModelService<UserViewModel> userService, 
+    IBaseModelService<CompanyUserViewModel> companyUserService, 
     IBaseModelService<TaskInfoViewModel> taskInfoService
-    ) : BaseModelService<ProjectTaskDto, ProjectTaskViewModel>(apiService, mapper), IProjectTaskPageService
+    ) : BasePageService<ProjectTaskViewModel>(projectTaskService), IProjectTaskPageService
 {
-    private readonly IGateWayApiService _apiService = apiService;
 
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
-        var companyUserViewModel = await _apiService.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(userCompanyId);
+        var companyUserViewModel = await companyUserService.GetValueAsync(userCompanyId);
         return companyUserViewModel;
     }
 
     public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids)
     {
-        var filter = new BaseFilter(ids);
-        var userViewModels = await _apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
+        var userViewModels = await userService.GetValuesAsync(ids);
         return userViewModels;
     }
     
     public async Task<ICollection<TaskInfoViewModel>> GetTaskInfoAsync(ICollection<int> ids)
     {
-        var filter = new BaseFilter(ids);
-        var taskInfoViewModels = await _apiService.SendGetMessages<TaskInfoDto, TaskInfoViewModel>(filter: filter);
+        var taskInfoViewModels = await taskInfoService.GetValuesAsync(ids);
         return taskInfoViewModels;
     }
     

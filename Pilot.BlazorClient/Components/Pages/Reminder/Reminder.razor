@@ -1,6 +1,7 @@
 ﻿@page "/reminders/{chatId:int}"
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Base
 @inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
 
@@ -58,7 +59,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _reminders = await ReminderService.GetValuesAsync(predicate: c => c.ChatId, value: ChatId);
+        _reminders = await ReminderService.GetReminderAsync(ChatId);
         _isLoading = false;
     }
 

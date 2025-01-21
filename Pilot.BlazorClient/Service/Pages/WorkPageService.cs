@@ -7,43 +7,46 @@ using Pilot.Contracts.DTO.ModelDto;
 namespace Pilot.BlazorClient.Service.Pages;
 
 public class WorkPageService(
-    IGateWayApiService apiService, 
-    IBaseModelService<ProjectViewModel> projectBaseModelService
+    IBaseModelService<CompanyUserViewModel> companyUserService, 
+    IBaseModelService<CompanyViewModel> companyService, 
+    IBaseModelService<ProjectTaskViewModel> projectTaskService, 
+    IBaseModelService<UserViewModel> userBaseService, 
+    IBaseModelService<TeamViewModel> teamService, 
+    IBaseModelService<ProjectViewModel> projectService
     ) : IWorkPageService
 {
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
-        var companyUserViewModel = await apiService.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(userCompanyId);
+        var companyUserViewModel = await companyUserService.GetValueAsync(userCompanyId);
         return companyUserViewModel;
     }
 
     public async Task<CompanyViewModel> GetCompanyAsync(int companyId)
     {
-        return await apiService.SendGetMessage<CompanyDto, CompanyViewModel>(companyId);
+        return await companyService.GetValueAsync(companyId);
     }
 
     public async Task FillProjectsAsync(ICollection<ProjectViewModel> userProjects)
     {
         var filter = new BaseFilter(userProjects.Select(c => c.Id).ToArray());
         userProjects.Clear();
-        var values = await apiService.SendGetMessages<ProjectDto, ProjectViewModel>(filter: filter);
+        var values = await projectService.GetValuesAsync(filter: filter);
         foreach (var model in values)
-        {
             userProjects.Add(model);
-        }
     }
 
     public async Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(int companyId)
     {
         var projectViewModels =
-            await projectBaseModelService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
+            await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
         return projectViewModels;
     }
 
     public async Task FillTeamsAsync(ICollection<ProjectViewModel> projects)
     {
-        var filter = new BaseFilter(projects.SelectMany(c => c.Teams).Select(c => c.Id).Distinct().ToArray());
-        var teamViewModels = await apiService.SendGetMessages<TeamDto, TeamViewModel>(filter: filter);
+        var teamViewModels = 
+            await teamService.GetValuesAsync(
+                projects.SelectMany(c => c.Teams).Select(c => c.Id).Distinct().ToArray());
         foreach (var project in projects)
         {
             var ids = project.Teams.Select(c => c.Id).ToList();
@@ -54,9 +57,8 @@ public class WorkPageService(
     public async Task FillCompanyUsersAsync(ICollection<ProjectViewModel> projects)
     {
         var filter = new BaseFilter(projects.SelectMany(c => c.Teams).SelectMany(c => c.CompanyUsers).Select(c => c.Id).Distinct().ToArray());
-        
-        var task1 = apiService.SendGetMessages<CompanyUserDto, CompanyUserViewModel>(filter: filter);
-        var task2 = apiService.SendGetMessages<UserDto, UserViewModel>(filter: filter);
+        var task1 = companyUserService.GetValuesAsync(filter);
+        var task2 = userBaseService.GetValuesAsync(filter);
 
         await Task.WhenAll(task1, task2);
 
@@ -80,21 +82,21 @@ public class WorkPageService(
     public async Task<ICollection<TeamViewModel>> GetUserTeamsAsync<T>(T teamsIds) where T : ICollection<TeamViewModel>
     {
         var filter = new BaseFilter(teamsIds.Select(c => c.Id).ToArray());
-        var teamViewModels = await apiService.SendGetMessages<TeamDto, TeamViewModel>(filter: filter);
+        var teamViewModels = await teamService.GetValuesAsync(filter: filter);
         return teamViewModels;
     }
 
     public async Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync<T>(T tasksIds)where T : ICollection<BaseViewModel>
     {
         var filter = new BaseFilter(tasksIds.Select(c => c.Id).ToArray());
-        var taskViewModels = await apiService.SendGetMessages<ProjectTaskDto, ProjectTaskViewModel>(filter: filter);
+        var taskViewModels = await projectTaskService.GetValuesAsync(filter: filter);
         return taskViewModels;
     }
 
     public async Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(ICollection<int> tasksIds)
     {
         var filter = new BaseFilter(tasksIds.Distinct().ToArray());
-        var taskViewModels = await apiService.SendGetMessages<ProjectTaskDto, ProjectTaskViewModel>(filter: filter);
+        var taskViewModels = await projectTaskService.GetValuesAsync(filter: filter);
         return taskViewModels;
     }
 }

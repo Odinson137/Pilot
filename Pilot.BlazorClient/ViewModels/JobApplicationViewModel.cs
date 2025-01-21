@@ -5,7 +5,7 @@ namespace Pilot.BlazorClient.ViewModels;
 
 public class JobApplicationViewModel : BaseViewModel
 {
-    [Required] public BaseViewModel Post { get; set; } = null!;
+    [Required] public BaseViewModel CompanyPost { get; set; } = null!;
 
     [Required] public int UserId { get; set; }
 

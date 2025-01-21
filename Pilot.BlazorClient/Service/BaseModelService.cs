@@ -4,7 +4,7 @@ using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
 
-namespace Pilot.BlazorClient.Service.Pages;
+namespace Pilot.BlazorClient.Service;
 
 public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, IMapper mapper)
     : IBaseModelService<TViewModel>
@@ -34,11 +34,16 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }
 
-    public async Task<ICollection<TViewModel>> GetValuesAsync(params int[] ints)
+    public async Task<ICollection<TViewModel>> GetValuesAsync(ICollection<int> ids)
     {
-        return await apiService.SendGetMessages<TDto, TViewModel>(filter: new BaseFilter(ints));
+        return await apiService.SendGetMessages<TDto, TViewModel>(filter: new BaseFilter(ids));
     }
 
+    public async Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? filter)
+    {
+        return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
+    }
+    
     public async Task CreateValueAsync(TViewModel value)
     {
         await apiService.SendPostMessage(null, message: mapper.Map<TDto>(value));
@@ -53,4 +58,6 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
     {
         await apiService.SendDeleteMessage<TDto>(id.ToString());
     }
+
+    public IGateWayApiService Client { get; } = apiService;
 }

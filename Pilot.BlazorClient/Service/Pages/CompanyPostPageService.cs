@@ -7,15 +7,19 @@ using Pilot.Contracts.DTO.ModelDto;
 namespace Pilot.BlazorClient.Service.Pages;
 
 public class CompanyPostPageService(
-    IGateWayApiService apiService, 
-    IMapper mapper)
-    : BaseModelService<CompanyPostDto, CompanyPostViewModel>(apiService, mapper), ICompanyPostPageService
+    IBaseModelService<CompanyPostViewModel> companyPostService,
+    IBaseModelService<CompanyViewModel> companyService,
+    IBaseModelService<SkillViewModel> skillService,
+    IBaseModelService<JobApplicationViewModel> jobApplicationViewModelService,
+    IBaseModelService<PostViewModel> postService
+) : BasePageService<CompanyPostViewModel>(companyPostService), ICompanyPostPageService
 {
+    private readonly IBaseModelService<CompanyPostViewModel> _companyPostService = companyPostService;
+
     public async Task<ICollection<CompanyPostViewModel>> GetVacanciesAsync(int skip, int take, string? search = null)
     {
-        var companyPosts = await GetValuesAsync(skip: skip, take: take);
-        var ids = companyPosts.Select(c => c.Id).ToArray();
-        var posts = await apiService.SendGetMessages<PostDto, PostViewModel>(filter: new BaseFilter(ids));
+        var companyPosts = await _companyPostService.GetValuesAsync(skip, take);
+        var posts = await postService.GetValuesAsync(companyPosts.Select(c => c.Id).ToArray());
         foreach (var companyPost in companyPosts)
         {
             companyPost.Post = posts.First(p => p.Id == companyPost.Post.Id);
@@ -27,32 +31,31 @@ public class CompanyPostPageService(
     public async Task<CompanyPostViewModel> GetVacancyAsync(int vacancyId)
     {
         var companyPost = await GetValueAsync(vacancyId);
-        companyPost.Post = await apiService.SendGetMessage<PostDto, PostViewModel>(companyPost.Post.Id);
+        companyPost.Post = await postService.GetValueAsync(companyPost.Post.Id);
         return companyPost;
     }
-    
+
     public async Task<ICollection<SkillViewModel>> GetPostSkillsAsync(PostViewModel post)
     {
-        var filter = new BaseFilter(post.Skills.Select(s => s.Id).ToArray());
-        var skills = await apiService.SendGetMessages<SkillDto, SkillViewModel>(filter: filter);
+        var skills = await skillService.GetValuesAsync(post.Skills.Select(s => s.Id).ToArray());
         return skills;
     }
-    
-    
+
+
     public async Task<CompanyViewModel> GetCompanyAsync(int companyId)
     {
-        var companyViewModel = await apiService.SendGetMessage<CompanyDto, CompanyViewModel>(companyId);
+        var companyViewModel = await companyService.GetValueAsync(companyId);
         return companyViewModel;
     }
 
     public async Task SubmitApplicationAsync(int vacancyId, string letter)
     {
-        var jobApplication = new JobApplicationDto
+        var jobApplication = new JobApplicationViewModel
         {
-            CompanyPost = new BaseDto {Id = vacancyId},
+            CompanyPost = new BaseViewModel { Id = vacancyId },
             Message = letter
         };
-        
-        await apiService.SendPostMessage(null, jobApplication);
+
+        await jobApplicationViewModelService.CreateValueAsync(jobApplication);
     }
 }

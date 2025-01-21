@@ -1,0 +1,101 @@
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@inject IWorkPageService WorkPageService
+
+<div class="applications-container">
+    <div class="applications-header">
+        <h2>Job Applications</h2>
+        <div class="filters">
+            <div class="search-box">
+                <input type="text" placeholder="Search applications..." @bind="searchTerm" @bind:event="oninput" />
+                <i class="fas fa-search"></i>
+            </div>
+            <select @bind="statusFilter">
+                <option value="">All Statuses</option>
+                @foreach (var status in Enum.GetValues(typeof(ApplicationStatus)))
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="applications-grid">
+        @if (applications.Any())
+        {
+            @foreach (var application in applications)
+            {
+                <div class="application-card">
+                    <div class="applicant-info">
+                        <div class="avatar">
+                            @if (!string.IsNullOrEmpty(application.UserId.ToString()))
+                            {
+                                <img src="@application.UserId.ToString()" alt="@application.UserId" />
+                            }
+        
+                        </div>
+                        <div class="details">
+                            <h3>@application.UserId</h3>
+                            <p>@application.CompanyPost.Id</p>
+                            <span class="application-date">Applied: @application.CreateAt!.Value.ToShortDateString()</span>
+                        </div>
+                    </div>
+                    <div class="application-status @application.Status.ToString().ToLower()">
+                        @application.Status
+                    </div>
+                    <div class="actions">
+                        <button @onclick="() => ViewApplication(application)" class="btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        <button @onclick="() => UpdateStatus(application)" class="btn-status">
+                            <i class="fas fa-edit"></i> Update Status
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-applications">
+                <i class="fas fa-inbox"></i>
+                <p>No job applications found</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<JobApplicationViewModel> applications;
+    private string searchTerm = "";
+    private ApplicationStatus? statusFilter;
+
+    // private IEnumerable<JobApplicationViewModel> FilteredApplications =>
+    //     applications?.Where(a =>
+    //         (string.IsNullOrEmpty(searchTerm) ||
+    //          a.ApplicantName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+    //          a.Position.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
+    //         (!statusFilter.HasValue || a.Status == statusFilter.Value)
+    //     ) ?? Enumerable.Empty<JobApplicationViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // TODO: Implement loading of applications
+        await LoadApplications();
+    }
+
+    private async Task LoadApplications()
+    {
+        // TODO: Implement method to load applications from service
+    }
+
+    private async Task ViewApplication(JobApplicationViewModel application)
+    {
+        // TODO: Implement application viewing logic
+    }
+
+    private async Task UpdateStatus(JobApplicationViewModel application)
+    {
+        // TODO: Implement status update logic
+    }
+}

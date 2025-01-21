@@ -37,8 +37,25 @@ services.AddScoped<IMessengerService, MessengerService>();
 services.AddScoped<IReminderPageService, ReminderPageService>();
 services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
 
+// Base model service registrations
 services.AddScoped<IBaseModelService<ProjectViewModel>, BaseModelService<ProjectDto, ProjectViewModel>>();
 services.AddScoped<IBaseModelService<TaskInfoViewModel>, BaseModelService<TaskInfoDto, TaskInfoViewModel>>();
+services.AddScoped<IBaseModelService<ChatViewModel>, BaseModelService<ChatDto, ChatViewModel>>();
+services.AddScoped<IBaseModelService<ChatMemberViewModel>, BaseModelService<ChatMemberDto, ChatMemberViewModel>>();
+services.AddScoped<IBaseModelService<ChatReminderViewModel>, BaseModelService<ChatReminderDto, ChatReminderViewModel>>();
+services.AddScoped<IBaseModelService<CompanyViewModel>, BaseModelService<CompanyDto, CompanyViewModel>>();
+services.AddScoped<IBaseModelService<CompanyPostViewModel>, BaseModelService<CompanyPostDto, CompanyPostViewModel>>();
+services.AddScoped<IBaseModelService<CompanyRoleViewModel>, BaseModelService<CompanyRoleDto, CompanyRoleViewModel>>();
+services.AddScoped<IBaseModelService<CompanyUserViewModel>, BaseModelService<CompanyUserDto, CompanyUserViewModel>>();
+services.AddScoped<IBaseModelService<HistoryActionViewModel>, BaseModelService<HistoryActionDto, HistoryActionViewModel>>();
+services.AddScoped<IBaseModelService<InfoMessageViewModel>, BaseModelService<InfoMessageDto, InfoMessageViewModel>>();
+services.AddScoped<IBaseModelService<JobApplicationViewModel>, BaseModelService<JobApplicationDto, JobApplicationViewModel>>();
+services.AddScoped<IBaseModelService<MessageViewModel>, BaseModelService<MessageDto, MessageViewModel>>();
+services.AddScoped<IBaseModelService<PostViewModel>, BaseModelService<PostDto, PostViewModel>>();
+services.AddScoped<IBaseModelService<ProjectTaskViewModel>, BaseModelService<ProjectTaskDto, ProjectTaskViewModel>>();
+services.AddScoped<IBaseModelService<SkillViewModel>, BaseModelService<SkillDto, SkillViewModel>>();
+services.AddScoped<IBaseModelService<TeamViewModel>, BaseModelService<TeamDto, TeamViewModel>>();
+services.AddScoped<IBaseModelService<UserSkillViewModel>, BaseModelService<UserSkillDto, UserSkillViewModel>>();
 
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 
@@ -47,57 +64,3 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
     .CreateLogger());
-
-services.AddAutoMapper(typeof(AutoMapperProfile));
-
-services.AddAuthentication("Cookies")
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/User/Login"; // URL страницы входа
-        options.LogoutPath = "/User/Logout"; // URL для выхода
-        options.AccessDeniedPath = "/AccessDenied"; // URL для ошибки доступа
-    });
-
-services.AddAuthorizationCore();
-services.AddCascadingAuthenticationState();
-services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
-services.AddScoped<TokenAuthenticationStateProvider>();
-
-services.AddBlazoredModal();
-services.AddSyncfusionBlazor();
-
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-builder.Services.AddMvc()
-    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
-    .AddDataAnnotationsLocalization();
-
-builder.Services.AddBlazoredToast();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-
-app.UseRequestLocalization(new RequestLocalizationOptions()
-    .AddSupportedCultures(new[] { "en-US", "ru-RU" })
-    .AddSupportedUICultures(new[] { "en-US", "ru-RU" }));
-
-app.UseHttpsRedirection();
-
-app.UseCookiePolicy();
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.Run();

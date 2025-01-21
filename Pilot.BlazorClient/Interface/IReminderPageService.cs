@@ -2,7 +2,7 @@
 
 namespace Pilot.BlazorClient.Interface;
 
-public interface IReminderPageService : IBaseModelService<ChatReminderViewModel>
+public interface IReminderPageService : IBasePageService<ChatReminderViewModel>
 {
-    
+    Task<ICollection<ChatReminderViewModel>> GetReminderAsync(int chatId);
 }
