@@ -10,7 +10,7 @@ public interface IWorkPageService
 
     Task FillProjectsAsync(ICollection<ProjectViewModel> userProjects);
     
-    Task<ICollection<ProjectViewModel>> GetUserProjectsAsync(int companyId);
+    Task<ICollection<ProjectViewModel>> GetProjectsAsync(int companyId);
     
     Task<ICollection<TeamViewModel>> GetUserTeamsAsync<T>(T userProjects) where T : ICollection<TeamViewModel>;
 
@@ -21,4 +21,6 @@ public interface IWorkPageService
     Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync<T>(T tasksIds) where T : ICollection<BaseViewModel>;
     
     Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(ICollection<int> tasksIds);
+    
+    Task<ICollection<CompanyUserViewModel>> GetCompanyEmployeesAsync(int companyId);
 }

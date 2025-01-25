@@ -96,59 +96,59 @@ public class FileService : IFileService
     public async ValueTask ChangeFileAsync<TRequest>(TRequest response, CancellationToken cancellationToken)
         where TRequest : ICommand<BaseDto>
     {
-        var valueDto = response.ValueDto;
-        if (valueDto is IHasFile v && v.Files?.Count != 0) return;
-
-        var type = GetInternalValueType(response, out _);
-        if (type is null) return;
-
-        var value = (IHasFile)valueDto;
-
-        foreach (var fileInfo in value.Files!)
-        {
-            var key = fileInfo.Key;
-            var bytes = fileInfo.Value;
-
-            var propertyInfo = type.GetProperties().Single(c => c.Name == key);
-
-            if (propertyInfo.IsDefined(typeof(IEnumerable)))
-            {
-                foreach (var fileByte in bytes)
-                {
-                    var name = Guid.NewGuid().ToString();
-                    var file = new FileDto
-                    {
-                        Name = name,
-                        Type = string.Empty, // TODO придумать потом
-                        Format = FileFormat.Image,
-                        ByteFormFile = fileByte
-                    };
-
-                    await _massTransitService.Publish(
-                        new CreateCommandMessage<FileDto>(file, response.UserId), cancellationToken);
-                }
-
-                propertyInfo.SetValue(value, null);
-            }
-            else
-            {
-                var name = Guid.NewGuid().ToString();
-                var file = new FileDto
-                {
-                    Name = name,
-                    Type = string.Empty, // TODO придумать потом
-                    Format = FileFormat.Image,
-                    ByteFormFile = bytes.First()
-                };
-
-                propertyInfo.SetValue(value, name);
-
-                await _massTransitService.Publish(
-                    new CreateCommandMessage<FileDto>(file, 0), cancellationToken);
-            }
-
-            propertyInfo.SetValue(value, null);
-        }
+        // var valueDto = response.ValueDto;
+        // if (valueDto is IHasFile v && v.Files?.Count != 0) return;
+        //
+        // var type = GetInternalValueType(response, out _);
+        // if (type is null) return;
+        //
+        // var value = (IHasFile)valueDto;
+        //
+        // foreach (var fileInfo in value.Files!)
+        // {
+        //     var key = fileInfo.Key;
+        //     var bytes = fileInfo.Value;
+        //
+        //     var propertyInfo = type.GetProperties().Single(c => c.Name == key);
+        //
+        //     if (propertyInfo.IsDefined(typeof(IEnumerable)))
+        //     {
+        //         foreach (var fileByte in bytes)
+        //         {
+        //             var name = Guid.NewGuid().ToString();
+        //             var file = new FileDto
+        //             {
+        //                 Name = name,
+        //                 Type = string.Empty, // TODO придумать потом
+        //                 Format = FileFormat.Image,
+        //                 ByteFormFile = fileByte
+        //             };
+        //
+        //             await _massTransitService.Publish(
+        //                 new CreateCommandMessage<FileDto>(file, response.UserId), cancellationToken);
+        //         }
+        //
+        //         propertyInfo.SetValue(value, null);
+        //     }
+        //     else
+        //     {
+        //         var name = Guid.NewGuid().ToString();
+        //         var file = new FileDto
+        //         {
+        //             Name = name,
+        //             Type = string.Empty, // TODO придумать потом
+        //             Format = FileFormat.Image,
+        //             ByteFormFile = bytes.First()
+        //         };
+        //
+        //         propertyInfo.SetValue(value, name);
+        //
+        //         await _massTransitService.Publish(
+        //             new CreateCommandMessage<FileDto>(file, 0), cancellationToken);
+        //     }
+        //
+        //     propertyInfo.SetValue(value, null);
+        // }
     }
 
     private static Type? GetInternalValueType<TResponse>(TResponse response, out bool isList)

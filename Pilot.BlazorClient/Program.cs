@@ -1,6 +1,5 @@
 using Blazored.Modal;
 using Blazored.Toast;
-using BlazorStrap;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Pilot.BlazorClient.Components;
@@ -9,6 +8,7 @@ using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.Service;
 using Pilot.BlazorClient.Service.Pages;
 using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Serilog;
@@ -38,6 +38,7 @@ services.AddScoped<IReminderPageService, ReminderPageService>();
 services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
 
 // Base model service registrations
+services.AddScoped<IBaseModelService<UserViewModel>, BaseModelService<UserDto, UserViewModel>>();
 services.AddScoped<IBaseModelService<ProjectViewModel>, BaseModelService<ProjectDto, ProjectViewModel>>();
 services.AddScoped<IBaseModelService<TaskInfoViewModel>, BaseModelService<TaskInfoDto, TaskInfoViewModel>>();
 services.AddScoped<IBaseModelService<ChatViewModel>, BaseModelService<ChatDto, ChatViewModel>>();
@@ -56,6 +57,7 @@ services.AddScoped<IBaseModelService<ProjectTaskViewModel>, BaseModelService<Pro
 services.AddScoped<IBaseModelService<SkillViewModel>, BaseModelService<SkillDto, SkillViewModel>>();
 services.AddScoped<IBaseModelService<TeamViewModel>, BaseModelService<TeamDto, TeamViewModel>>();
 services.AddScoped<IBaseModelService<UserSkillViewModel>, BaseModelService<UserSkillDto, UserSkillViewModel>>();
+services.AddScoped<IBaseModelService<FileViewModel>, BaseModelService<FileDto, FileViewModel>>();
 
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 
@@ -64,3 +66,57 @@ builder.Logging.AddSerilog(new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.Debug()
     .CreateLogger());
+
+services.AddAutoMapper(typeof(AutoMapperProfile));
+
+services.AddAuthentication("Cookies")
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/User/Login"; // URL страницы входа
+        options.LogoutPath = "/User/Logout"; // URL для выхода
+        options.AccessDeniedPath = "/AccessDenied"; // URL для ошибки доступа
+    });
+
+services.AddAuthorizationCore();
+services.AddCascadingAuthenticationState();
+services.AddScoped<AuthenticationStateProvider, TokenAuthenticationStateProvider>();
+services.AddScoped<TokenAuthenticationStateProvider>();
+
+services.AddBlazoredModal();
+services.AddSyncfusionBlazor();
+
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddMvc()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
+    .AddDataAnnotationsLocalization();
+
+builder.Services.AddBlazoredToast();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .AddSupportedCultures(new[] { "en-US", "ru-RU" })
+    .AddSupportedUICultures(new[] { "en-US", "ru-RU" }));
+
+app.UseHttpsRedirection();
+
+app.UseCookiePolicy();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseStaticFiles();
+app.UseAntiforgery();
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();

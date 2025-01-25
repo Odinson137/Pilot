@@ -17,7 +17,8 @@ public class HasFileBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         CancellationToken cancellationToken)
     {
         var response = await next();
-        await _fileUrlService.GetUrlAsync(response);
+     // пока отключил
+        // await _fileUrlService.GetUrlAsync(response);
         return response;
     }
 }

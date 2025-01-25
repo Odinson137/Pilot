@@ -1,5 +1,6 @@
 ﻿@page "/Company/{id}"
 <PageTitle>@_company.Title</PageTitle>
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject ICompanyPageService PageService
@@ -18,7 +19,7 @@
     else
     {
         <div class="text-center mb-4">
-            <img src="@_company.Logo" alt="Company Logo" class="img-fluid company-logo mb-3" style="max-width: 150px;" />
+            <img src="@TempFileService.GetUrl(_company.Logo)" alt="Company Logo" class="img-fluid company-logo mb-3" style="max-width: 150px;" />
             <h2 class="mb-3">@_company.Title</h2>
             <p class="lead">@_company.Description</p>
         </div>
@@ -42,7 +43,7 @@
                     @foreach (var image in _company.InsideImages.Take(4)) 
                     {
                         <a href="@image" target="_blank">
-                            <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
+                            <img src="@TempFileService.GetUrl(image)" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
                         </a>
                     }
                 </div>

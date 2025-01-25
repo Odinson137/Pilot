@@ -12,4 +12,6 @@ public interface IProjectTaskPageService : IBasePageService<ProjectTaskViewModel
     Task<ICollection<TaskInfoViewModel>> GetTaskInfoAsync(ICollection<int> ids);
 
     Task AddTaskInfoAsync(TaskInfoViewModel taskInfo);
+
+    Task UploadFileAsync(FileViewModel fileV);
 }

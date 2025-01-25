@@ -28,6 +28,4 @@ public class CompanyDto : BaseDto, IHasFile
 
     [File]
     public ICollection<string> InsideImages { get; set; } = [];
-
-    public Dictionary<string, ICollection<byte[]>>? Files { get; set; }
 }

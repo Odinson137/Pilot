@@ -8,8 +8,6 @@ public class TaskInfoViewModel : BaseViewModel
 
     public string? File { get; set; }
     
-    public Byte[]? FileBytes { get; set; }
-
     [MaxLength(500)] public string? Description { get; set; }
 
     public CompanyUserViewModel? CreatedBy { get; set; }

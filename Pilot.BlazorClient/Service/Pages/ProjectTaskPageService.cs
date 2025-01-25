@@ -11,7 +11,8 @@ public class ProjectTaskPageService(
     IBaseModelService<ProjectTaskViewModel> projectTaskService, 
     IBaseModelService<UserViewModel> userService, 
     IBaseModelService<CompanyUserViewModel> companyUserService, 
-    IBaseModelService<TaskInfoViewModel> taskInfoService
+    IBaseModelService<TaskInfoViewModel> taskInfoService,
+    IBaseModelService<FileViewModel> fileService
     ) : BasePageService<ProjectTaskViewModel>(projectTaskService), IProjectTaskPageService
 {
 
@@ -36,5 +37,10 @@ public class ProjectTaskPageService(
     public async Task AddTaskInfoAsync(TaskInfoViewModel taskInfo)
     {
         await taskInfoService.CreateValueAsync(taskInfo);
+    }
+
+    public async Task UploadFileAsync(FileViewModel file)
+    {
+        await fileService.CreateValueAsync(file);
     }
 }

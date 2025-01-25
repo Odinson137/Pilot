@@ -1,0 +1,54 @@
+@page "/no-company"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject NavigationManager NavigationManager
+@inject ICompanyPageService CompanyPageService
+
+<div class="no-company-container">
+    <div class="message-box">
+        <h2>You are not a member of any company</h2>
+        <p>You can either join an existing company through vacancies or create your own company.</p>
+
+        <div class="options-container">
+            <div class="option">
+                <h3>Find a Company</h3>
+                <p>Browse open positions in existing companies</p>
+                <button class="btn btn-primary" @onclick="NavigateToVacancies">View Vacancies</button>
+            </div>
+
+            <div class="option">
+                <h3>Create Your Company</h3>
+                <p>Start your own company</p>
+                <div class="create-company-form">
+                    <input type="text" @bind="newCompanyName" placeholder="Enter company name" class="form-control" />
+                    <button class="btn btn-success" @onclick="CreateCompany" disabled="@string.IsNullOrWhiteSpace(newCompanyName)">
+                        Create Company
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string newCompanyName = "";
+
+    private void NavigateToVacancies()
+    {
+        NavigationManager.NavigateTo("/vacancies");
+    }
+
+    private async Task CreateCompany()
+    {
+        if (!string.IsNullOrWhiteSpace(newCompanyName))
+        {
+            var company = new CompanyViewModel
+            {
+                Title = newCompanyName
+            };
+
+            await CompanyPageService.CreateValueAsync(company);
+            NavigationManager.NavigateTo("/work");
+        }
+    }
+}

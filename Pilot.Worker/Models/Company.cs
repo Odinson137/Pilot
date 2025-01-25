@@ -9,9 +9,9 @@ public class Company : BaseModel
 
     [MaxLength(500)] public string? Description { get; init; }
 
-    public List<Project> Projects { get; set; } = [];
+    public ICollection<Project> Projects { get; set; } = [];
 
-    public List<CompanyRole> CompanyRoles { get; set; } = [];
+    public ICollection<CompanyRole> CompanyRoles { get; set; } = [];
     
     public ICollection<CompanyUser> CompanyUsers { get; set; } = [];
     

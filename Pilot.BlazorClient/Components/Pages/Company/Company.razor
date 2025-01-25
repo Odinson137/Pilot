@@ -1,5 +1,6 @@
 ﻿@page "/Company"
 <PageTitle>Companies</PageTitle>
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject ICompanyPageService PageService
@@ -46,7 +47,7 @@
                         <div class="d-flex align-items-center mb-3">
                             @if (company.Logo != null)
                             {
-                                <img src="@company.Logo" alt="Company Logo" class="img-fluid me-3" style="max-width: 80px; border-radius: 5px;" />
+                                <img src="@TempFileService.GetUrl(company.Logo)" alt="Company Logo" class="img-fluid me-3" style="max-width: 80px; border-radius: 5px;" />
                             }
                             <h3 class="card-title mb-0" style="color: #1e3a8a;">
                                 <a href="/Company/@company.Id" style="text-decoration: none; color: #1e3a8a;">
@@ -61,7 +62,7 @@
                         }
 
                         <h5 class="mt-4" style="color: #1e3a8a;">Projects</h5>
-                        <p>Number of projects: @company.Projects.Count()</p>
+                        <p>Number of projects: @company.Projects.Count</p>
                     </div>
                 </div>
             }

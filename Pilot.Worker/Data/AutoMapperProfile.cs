@@ -9,10 +9,9 @@ public class AutoMapperProfile : BaseMappingProfile
     public AutoMapperProfile()
     {
         BaseMap();
-        
-        Mapping<Models.Company, CompanyDto>();
+
         Mapping<CompanyUser, CompanyUserDto>();
-        
+
         Mapping<CompanyUser, UserDto>();
 
         Mapping<Project, ProjectDto>();

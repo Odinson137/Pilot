@@ -5,6 +5,7 @@
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.ViewModels
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -43,7 +44,7 @@ else
             <div class="avatar-section">
                 @if (!string.IsNullOrEmpty(_user.AvatarImage))
                 {
-                    <img src="@_user.AvatarImage" alt="User Avatar" class="avatar-img"/>
+                    <img src="@TempFileService.GetUrl(_user.AvatarImage)" alt="User Avatar" class="avatar-img"/>
                 }
                 else
                 {

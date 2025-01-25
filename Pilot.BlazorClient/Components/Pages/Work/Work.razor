@@ -21,106 +21,122 @@
 }
 else
 {
-  
-<div class="work-container">
-    <aside class="work-sidebar">
-        <div class="project-menu">
-            <ul>
-                @if (_projects is { Count: > 0 })
-                {
-                    <h5 @onclick="ClearTeam" style="cursor: pointer">Projects:</h5>
-                    @foreach (var project in _projects)
+    <div class="work-container">
+        <aside class="work-sidebar">
+            <div class="project-menu">
+                <ul>
+                    @if (_projects is { Count: > 0 })
                     {
-                        <li style="padding: 5px">
-                            <span>@project.Name</span>
+                        <h5 @onclick="ClearTeam" style="cursor: pointer">Projects:</h5>
+                        @foreach (var project in _projects)
+                        {
+                            <li style="padding: 5px">
+                                <span>@project.Name</span>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>No projects</li>
+                    }
+                </ul>
+            </div>
+        </aside>
+
+        <section class="content-wrapper">
+            <nav class="nav-menu">
+                <ul>
+                    @if (_companyUser == null)
+                    {
+                        <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(1)">
+                            Main
                         </li>
                     }
-                }
-                else
-                {
-                    <li>No projects</li>
-                }
-            </ul>
-        </div>
-    </aside>
+                    else
+                    {
+                        <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">
+                            Main
+                        </li>
+                        <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">
+                            Summary
+                        </li>
+                        <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
+                            Tasks
+                        </li>
+                        <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)">
+                            Employees
+                        </li>
+                        @* @if (new List<Role> { Role.Owner, Role.Director }.Contains(_user!.Role)) *@
+                        @* { *@
+                        <li @onclick="() => SetActiveTab(5)" class="@GetActiveClass(5)">
+                            Management
+                        </li>
+                        // }
+                    }
+                </ul>
+            </nav>
 
-    <section class="content-wrapper">
-        <nav class="nav-menu">
-            <ul>
-                <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">
-                    Main
-                </li>
-                <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">
-                    Summary
-                </li>
-                <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">
-                    Tasks
-                </li>
-                <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
-                    Employees
-                </li>
-                @if (new List<Role> { Role.Owner, Role.Director }.Contains(_user!.Role))
+            <main class="work-main">
+                @if (_user != null)
                 {
-                    <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)">
-                        Management
-                    </li>    
+                    @switch (_activeTab)
+                    {
+                        case 0:
+                            <NoCompany/>
+                            break;
+                        case 1:
+                            <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
+                            break;
+                        case 2:
+                            <Summary UserId="@_user.Id"></Summary>
+                            break;
+                        case 3:
+                            <UserTask UserId="@_user.Id" TeamId="@_teamId"/>
+                            break;
+                        case 4:
+                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            break;
+                        case 5:
+                            <Management UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            break;
+                        case 6:
+                            break;
+                    }
                 }
-            </ul>
-        </nav>
-
-        <main class="work-main">
-            @if (_user != null)
-            {
-                @switch (_activeTab)
-                {
-                    case 0:
-                        <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
-                        break;
-                    case 1:
-                        <Summary UserId="@_user.Id"></Summary>
-                        break;
-                    case 2:
-                        <UserTask UserId="@_user.Id" TeamId="@_teamId"/>
-                        break;
-                    case 3:
-                        <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                        break;
-                    case 4:
-                        <Management UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                        break;
-                    case 5:
-                        break;
-                }
-            }
-        </main>
-    </section>
-</div>
-  
+            </main>
+        </section>
+    </div>
 }
 
 @code {
-    private int _activeTab;
+    private int _activeTab = 1;
     private bool _isLoading = true;
 
     private UserViewModel? _user;
     private CompanyUserViewModel? _companyUser;
 
     private ICollection<ProjectViewModel>? _projects;
-    
+
     private int _teamId;
-    
+
     protected override async Task OnInitializedAsync()
     {
         _user = await UserService.GetCurrentUserAsync();
-        
-        _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
 
-        _projects = await WorkPageService.GetUserProjectsAsync(_companyUser.Company.Id);
-        
+        try
+        {
+            _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
+            _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
+        }
+        catch (Exception ex)
+        {
+            _activeTab = 0;
+        }
+
         var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
         if (currentTabStorageResult.Success)
             _activeTab = currentTabStorageResult.Value;
-        
+
         _isLoading = false;
     }
 
@@ -157,6 +173,7 @@ else
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
     }
+
 }
 
 <style>
@@ -219,10 +236,12 @@ else
         width: 250px;
         color: #fff; /* Изменен цвет текста */
     }
+
     .project-menu ul {
         list-style-type: none;
         padding-left: 0;
     }
+
     .project-menu li {
         padding: 5px;
         cursor: pointer;
@@ -233,6 +252,6 @@ else
     }
 
     .work-main {
-        overflow-y: auto;  /* Включаем вертикальную прокрутку */
+        overflow-y: auto; /* Включаем вертикальную прокрутку */
     }
 </style>

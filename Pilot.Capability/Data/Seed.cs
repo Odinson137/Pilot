@@ -89,7 +89,7 @@ public class Seed : ISeed
         return new Faker<Post>()
             .RuleFor(u => u.Title, (_) => GetPostTitle())
             .RuleFor(u => u.Skills, (_) => GetRandomSkills())
-            .RuleFor(u => u.Description, (f, _) => f.Lorem.Letter())
+            .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentence(10))
             .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now));
     }
 

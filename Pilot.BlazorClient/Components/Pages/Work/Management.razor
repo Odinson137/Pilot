@@ -1,4 +1,6 @@
 ﻿@page "/Management"
+@using System.Collections
+@using BlazorStrap.Extensions
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
@@ -27,12 +29,14 @@
                 <div class="card-body">
                     <h4 class="card-title text-primary"></h4>
                     <p><strong>Projects:</strong>)
-                        <button class="btn btn-outline-success btn-sm ms-2" @onclick="() => AddEmployeeToProject(employee.Id)">
+                        <button class="btn btn-outline-success btn-sm ms-2"
+                                @onclick="() => AddEmployeeToProject(employee.Id)">
                             <i class="bi bi-plus-circle"></i>
                         </button>
                     </p>
                     <p><strong>Teams:</strong> @string.Join(", ", employee.Teams.Select(t => t.Name))
-                        <button class="btn btn-outline-success btn-sm ms-2" @onclick="() => AddEmployeeToTeam(employee.Id)">
+                        <button class="btn btn-outline-success btn-sm ms-2"
+                                @onclick="() => AddEmployeeToTeam(employee.Id)">
                             <i class="bi bi-plus-circle"></i>
                         </button>
                     </p>
@@ -46,15 +50,17 @@
                     </div>
                     <div>
                         <strong>Role:</strong>
-                        <select class="form-select form-select-sm" @bind="employee.User">
-                            @foreach (Role role in Enum.GetValues(typeof(Role)))
-                            {
-                                <option value="@role">@role</option>
-                            }
-                        </select>
+                        @foreach (Role role in _roles)
+                        {
+                            <li value="@role.ToString()">@role</li>
+                        }
                     </div>
-                    <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => AddProject(employee.Id)">Add Project</button>
-                    <button class="btn btn-outline-secondary btn-sm mt-3" @onclick="() => AddTeam(employee.Id)">Add Team</button>
+                    <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => AddProject(employee.Id)">Add
+                        Project
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm mt-3" @onclick="() => AddTeam(employee.Id)">Add
+                        Team
+                    </button>
                 </div>
             </div>
         }
@@ -66,15 +72,23 @@
 </div>
 
 @code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+
     private bool _isLoading = true;
     private ICollection<CompanyUserViewModel>? _employees;
+    private Role[] _roles;
+    private ICollection<ProjectViewModel>? _projects;
 
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
         try
         {
-            // _employees = await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id);
+            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+            await WorkPageService.FillTeamsAsync(_projects);
+            _roles = Enum.GetValues<Role>();
         }
         finally
         {
@@ -101,4 +115,5 @@
     {
         // Логика для добавления команды
     }
+
 }

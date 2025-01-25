@@ -6,6 +6,7 @@
 @using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Data
 @inject IProjectTaskPageService ProjectTaskPageService;
 
 <PageTitle>Task @(_task?.Id ?? 0)</PageTitle>
@@ -47,7 +48,8 @@ else
                         <div class="task-owner">
                             <b>Assigned to:</b>
                             <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
-                                <img src="@_userViewModel?.AvatarImage" style="max-width: 30px;max-height: 30px"
+                                <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)"
+                                     style="max-width: 30px;max-height: 30px"
                                      alt="avatar"/>
                                 @_userViewModel?.FullName
                             </a>
@@ -55,7 +57,8 @@ else
                         <div class="task-creator">
                             <b>Created by:</b>
                             <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
-                                <img src="@_createdUserViewModel?.AvatarImage" style="max-width: 30px;max-height: 30px"
+                                <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)"
+                                     style="max-width: 30px;max-height: 30px"
                                      alt="avatar"/>
                                 @_createdUserViewModel?.FullName
                             </a>
@@ -94,7 +97,7 @@ else
                             </div>
                         }
                         <label class="upload-label">
-                            <InputFile OnChange="HandleFileUpload" multiple />
+                            <InputFile OnChange="HandleFileUpload" multiple/>
                             Upload Photo
                         </label>
                         <button class="btn add-info-btn" @onclick="AddNewTaskInfo">Add Update</button>
@@ -111,7 +114,8 @@ else
                                     <p>@info.Description</p>
                                     @if (info.File != null)
                                     {
-                                        <img src="@info.File" alt="file" style="margin-bottom: 20px; width: 200px"/>
+                                        <img src="@TempFileService.GetUrl(info.File)" alt="file"
+                                             style="margin-bottom: 20px; width: 200px"/>
                                     }
                                     <p>
                                         <b>Added by:</b> @_userViewModels[info.CreatedBy.Id].FullName
@@ -258,29 +262,45 @@ else
 
     private async Task AddNewTaskInfo()
     {
+        var fileName = _attachedFile?.Item2 is null ? null : Guid.NewGuid().ToString();
         var taskInfo = new TaskInfoViewModel
         {
-            ProjectTask = new BaseViewModel {Id = _task!.Id},
+            ProjectTask = new BaseViewModel
+            {
+                Id = _task!.Id
+            },
+            File = fileName,
             Description = _newTaskInfoDescription,
-            FileBytes = _attachedFile?.Item2
+            CreatedBy = null,
         };
 
         await ProjectTaskPageService.AddTaskInfoAsync(taskInfo);
-        
-        // _task!.TaskInfos.Add(taskInfo);
+
+        if (fileName is not null)
+        {
+            var file = new FileViewModel
+            {
+                Name = fileName,
+                Type = "png", // пока так
+                Format = FileFormat.Image,
+                ByteFormFile = _attachedFile?.Item2
+            };
+
+            await ProjectTaskPageService.UploadFileAsync(file);
+        }
+
         _newTaskInfoDescription = string.Empty;
         _attachedFile = null;
     }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
     {
-        await using var stream = e.File.OpenReadStream(long.MaxValue); 
-        using var ms = new MemoryStream();  
-        await stream.CopyToAsync(ms);  
-        var fileBytes = ms.ToArray();  
-        
-        _attachedFile = (e.File.Name, fileBytes);
+        await using var stream = e.File.OpenReadStream(long.MaxValue);
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms);
+        var fileBytes = ms.ToArray();
 
+        _attachedFile = (e.File.Name, fileBytes);
     }
 
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";

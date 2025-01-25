@@ -1,4 +1,5 @@
 ﻿<!-- MessageComponent.razor -->
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.Contracts.Data.Enums
@@ -7,7 +8,7 @@
     <div class="message-content">
         <div class="message-header">
             <a href="@GetUserProfileLink(Message.UserId)">
-                <img src="@SenderImage" alt="avatar"/>
+                <img src="@TempFileService.GetUrl(SenderImage)" alt="avatar"/>
                 <span class="sender-name">@SenderName</span>
             </a>
             <span class="message-time">@MessageTime</span>
@@ -53,12 +54,14 @@
     }
 
     .sent {
+        justify-self: right;
         background-color: #007bff;
         color: white;
         align-self: flex-end;
     }
 
     .received {
+        justify-self: left;
         background-color: #f1f1f1;
         color: black;
         align-self: flex-start;
