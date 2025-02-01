@@ -1,0 +1,21 @@
+﻿@inherits ErrorBoundary
+@inject ILogger<CustomErrorBoundary> Logger
+@inject IToastService ToastService
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is not null)
+{
+    @ErrorContent(CurrentException)
+}
+
+@code {
+    protected override Task OnErrorAsync(Exception ex)
+    {
+        Logger.LogError(ex.Message);
+        ToastService.ShowError(ex.Message);
+        return Task.CompletedTask;
+    }
+}

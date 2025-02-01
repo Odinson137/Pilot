@@ -1,6 +1,7 @@
 using Blazored.Modal;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Pilot.BlazorClient.Components;
 using Pilot.BlazorClient.Data;
@@ -60,6 +61,8 @@ services.AddScoped<IBaseModelService<UserSkillViewModel>, BaseModelService<UserS
 services.AddScoped<IBaseModelService<FileViewModel>, BaseModelService<FileDto, FileViewModel>>();
 
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
+
+builder.Services.AddScoped<IErrorBoundaryLogger, GlobalErrorHandler>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()

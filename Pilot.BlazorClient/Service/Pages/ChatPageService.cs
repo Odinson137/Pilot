@@ -12,6 +12,7 @@ public class ChatPageService(
     IBaseModelService<CompanyViewModel> companyService,
     IBaseModelService<ChatMemberViewModel> chatMemberService,
     IBaseModelService<InfoMessageViewModel> infoMessageViewService,
+    IBaseModelService<CompanyUserViewModel> companyUserService,
     IBaseModelService<UserViewModel> userBaseService,
     IUserService userService) : BasePageService<ChatViewModel>(chatService), IChatPageService
 {
@@ -49,7 +50,7 @@ public class ChatPageService(
     public async Task<ICollection<UserViewModel>> GetAllEmployeesAsync()
     {
         var user = await userService.GetCurrentUserAsync();
-        var companyUser = await companyService.Client.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(user.Id);
+        var companyUser = await companyUserService.Client.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(user.Id);
         var company = await companyService.Client.SendGetMessage<CompanyDto, CompanyViewModel>(companyUser.Company.Id);
         var users = 
             await userBaseService.GetValuesAsync(company.CompanyUsers.Select(c => c.Id).ToArray());

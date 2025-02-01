@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Authentication;
+using AutoMapper;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
@@ -19,9 +20,9 @@ public class UserPageService(IGateWayApiService apiService, IUserService userSer
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Ошибка при отправке данных на сервер");
+            logger.LogError("Ошибка при отправке данных на сервер");
             var error = await response.Content.ReadAsStringAsync();
-            throw new Exception(error);
+            throw new AuthenticationException(error);
         }
     }
     
@@ -32,9 +33,9 @@ public class UserPageService(IGateWayApiService apiService, IUserService userSer
 
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogInformation("Ошибка при отправке данных на сервер");
+            logger.LogError("Ошибка при отправке данных на сервер");
             var error = await response.Content.ReadAsStringAsync();
-            throw new Exception(error);
+            throw new AuthenticationException(error);
         }
 
         var auth = await response.Content.ReadFromJsonAsync<AuthUserViewModel>();

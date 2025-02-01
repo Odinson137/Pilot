@@ -12,7 +12,7 @@ public class CompanyViewModel : BaseViewModel
 
     public ICollection<CompanyRoleViewModel> CompanyRoles { get; set; } = [];
     
-    public ICollection<CompanyViewModel> CompanyUsers { get; set; } = [];
+    public ICollection<CompanyUserViewModel> CompanyUsers { get; set; } = [];
 
     public string? Logo { get; set; }
 

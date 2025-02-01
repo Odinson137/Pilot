@@ -21,8 +21,9 @@ public class ValidatorService(
         if (canDefaultValidate)
             await DefaultValidateAsync<T, TDto>(model);
         
-        if (canLocalUserValidate)
-            await LocalUserValidateAsync<T, TLocalUser>(userId);
+        // TODO потом делать запросы в сервис с юзером и проверять всю валидность через него, включая роль
+        // if (canLocalUserValidate)
+        //     await LocalUserValidateAsync<T, TLocalUser>(userId);
 
         logger.LogInformation($"End validate model of {typeof(T).Name}");
     }

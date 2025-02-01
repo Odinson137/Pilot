@@ -1,4 +1,5 @@
 ﻿@page "/update-chat/{Id:int}"
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.HelperViewModels
@@ -6,10 +7,10 @@
 @inject NavigationManager NavigationManager
 @inject IChatPageService ChatPageService
 
-<PageTitle>Create New Chat</PageTitle>
+<PageTitle>Update New Chat</PageTitle>
 
 <div class="chat">
-    <h3>Create New Chat</h3>
+    <h3>Update New Chat</h3>
 
     <EditForm Model="_chat" OnValidSubmit="HandleSubmit">
 
@@ -27,8 +28,15 @@
             @foreach (var user in _multySelect)
             {
                 <div class="employee-item">
-                    <input type="checkbox" @bind="@user.IsSelected" class="employee-checkbox"/>
-                    <img src="@user.Value.AvatarImage" alt="User Avatar" class="avatar"/>
+                    @if (user.Value.Id == _chat.CreatedBy)
+                    {
+                        <input type="checkbox" class="employee-checkbox" checked disabled/>
+                    }
+                    else
+                    {
+                        <input type="checkbox" @bind="@(user.IsSelected)" class="employee-checkbox"/>
+                    }
+                    <img src="@TempFileService.GetUrl(user.Value.AvatarImage)" alt="User Avatar" class="avatar"/>
                     <div class="employee-info">
                         <div class="employee-name">@user.Value.FullName</div>
                         <div class="employee-username">@user.Value.UserName</div>
@@ -38,7 +46,7 @@
         </div>
 
         <div class="buttons">
-            <button type="submit" class="btn btn-primary">Create Chat</button>
+            <button type="submit" class="btn btn-primary">Update Chat</button>
             <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
         </div>
     </EditForm>
@@ -49,6 +57,7 @@
     [Parameter] public int Id { get; set; }
 
     private ChatViewModel _chat = new();
+    private bool _isCreator = true;
 
     private ICollection<MultySelectViewModel<UserViewModel>> _multySelect = [];
 
@@ -72,7 +81,7 @@
     {
         _chat.ChatMembers = _multySelect.Where(c => c.IsSelected)
             .Select(c => new ChatMemberViewModel { UserId = c.Value.Id }).ToList();
-        await ChatPageService.CreateValueAsync(_chat);
+        await ChatPageService.UpdateValueAsync(_chat);
         NavigationManager.NavigateTo("/chat");
     }
 
@@ -80,6 +89,7 @@
     {
         NavigationManager.NavigateTo("/chat");
     }
+
 }
 
 <style>
@@ -88,11 +98,11 @@
         justify-self: center;
         margin-bottom: 100px;
     }
-    
+
     .buttons {
-        margin-top: 20px;    
+        margin-top: 20px;
     }
-    
+
     .employee-list {
         max-height: 400px; /* Adjust height as needed */
         overflow-y: auto;
@@ -142,5 +152,5 @@
     #Description {
         min-height: 110px;
     }
-    
+
 </style>

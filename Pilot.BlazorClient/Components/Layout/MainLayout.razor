@@ -84,7 +84,8 @@
                                                                 <p class="mb-1 text-muted small @GetPriorityClass(notification.MessagePriority)">@notification.Description</p>
                                                                 @if (notification.EntityType == ModelType.Chat)
                                                                 {
-                                                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => MoveToChat(notification.EntityId!.Value)">
+                                                                    <button class="btn btn-sm btn-outline-primary"
+                                                                            @onclick="() => MoveToChat(notification.EntityId!.Value)">
                                                                         Go to Chat
                                                                     </button>
                                                                 }
@@ -125,7 +126,9 @@
 
 
 <div class="container mx-auto mt-4">
-    @Body
+    <CustomErrorBoundary>
+        @Body
+    </CustomErrorBoundary>
 </div>
 
 <footer class="bg-light text-primary mt-auto" style="background-color: #f8f9fa;">
@@ -324,7 +327,6 @@
                     await InvokeAsync(StateHasChanged);
                     ToastService.ShowSuccess(newInfoMessage.Description);
                 }
-     
             };
         }
     }
@@ -333,9 +335,8 @@
     {
         await ProtectedSessionStorage.SetAsync(ClientConstants.CurrentChat, chatId);
         NavigationManager.NavigateTo("chat");
-
     }
-    
+
     private void ToggleNotifications()
     {
         _showNotifications = !_showNotifications;
@@ -357,13 +358,13 @@
     {
         _showNotifications = false;
     }
-    
+
     private string GetPriorityClass(MessageInfo priority)
     {
         return priority switch
         {
             MessageInfo.Error => "bg-danger text-white", // Красный
-            MessageInfo.Job => "bg-info text-white",     // Голубой
+            MessageInfo.Job => "bg-info text-white", // Голубой
             MessageInfo.Invitation => "bg-primary text-white", // Синий
             MessageInfo.Success => "bg-success text-white", // Зеленый
             MessageInfo.Create => "bg-warning text-dark", // Желтый

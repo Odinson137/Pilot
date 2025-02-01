@@ -20,8 +20,8 @@
                 <h3>Create Your Company</h3>
                 <p>Start your own company</p>
                 <div class="create-company-form">
-                    <input type="text" @bind="newCompanyName" placeholder="Enter company name" class="form-control" />
-                    <button class="btn btn-success" @onclick="CreateCompany" disabled="@string.IsNullOrWhiteSpace(newCompanyName)">
+                    <input type="text" @bind="_newCompanyName" placeholder="Enter company name" class="form-control" />
+                    <button class="btn btn-success" @onclick="CreateCompany" disabled="@string.IsNullOrWhiteSpace(_newCompanyName)">
                         Create Company
                     </button>
                 </div>
@@ -31,20 +31,20 @@
 </div>
 
 @code {
-    private string newCompanyName = "";
+    private string _newCompanyName = "";
 
     private void NavigateToVacancies()
     {
-        NavigationManager.NavigateTo("/vacancies");
+        NavigationManager.NavigateTo("/Vacancy");
     }
 
     private async Task CreateCompany()
     {
-        if (!string.IsNullOrWhiteSpace(newCompanyName))
+        if (!string.IsNullOrWhiteSpace(_newCompanyName))
         {
             var company = new CompanyViewModel
             {
-                Title = newCompanyName
+                Title = _newCompanyName
             };
 
             await CompanyPageService.CreateValueAsync(company);
