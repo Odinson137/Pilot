@@ -9,44 +9,146 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-<h3>Register for Pilot</h3>
+<div style="max-width: 400px; margin: 10px auto 100px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    <h3 style="text-align: center; margin-bottom: 20px;">Register for Pilot</h3>
 
-<p>Join the Pilot platform to manage your projects efficiently. Create an account to get started.</p>
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24; border-radius: 4px;">
+            @errorMessage
+        </div>
+    }
 
-<EditForm Model="@RegistrationUser" method="post" OnValidSubmit="@HandleRegistration" FormName="customer" Enhance>
-    <div class="form-group">
-        <label for="UserName">Username</label>
-        <InputText id="UserName" class="form-control" @bind-Value="RegistrationUser.UserName" />
-    </div>
+    <p style="text-align: center;">Join the Pilot platform to manage your projects efficiently. Create an account to get started.</p>
 
-    <div class="form-group">
-        <label for="Name">First Name</label>
-        <InputText id="Name" class="form-control" @bind-Value="RegistrationUser.Name" />
-    </div>
+    <EditForm Model="@RegistrationUser" method="post" OnValidSubmit="@HandleRegistration" FormName="customer">
+        <div style="margin-bottom: 15px; position: relative;">
+            <label for="UserName">Username</label>
+            <div style="position: relative;">
+                <i class="fas fa-user" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                <InputText id="UserName" 
+                         style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" 
+                         @bind-Value="RegistrationUser.UserName" />
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label for="LastName">Last Name</label>
-        <InputText id="LastName" class="form-control" @bind-Value="RegistrationUser.LastName" />
-    </div>
+        <div style="margin-bottom: 15px; position: relative;">
+            <label for="Name">First Name</label>
+            <div style="position: relative;">
+                <i class="fas fa-id-card" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                <InputText id="Name" 
+                         style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" 
+                         @bind-Value="RegistrationUser.Name" />
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label for="Password">Password</label>
-        <InputText id="Password" type="password" class="form-control" @bind-Value="RegistrationUser.Password" />
-    </div>
+        <div style="margin-bottom: 15px; position: relative;">
+            <label for="LastName">Last Name</label>
+            <div style="position: relative;">
+                <i class="fas fa-id-card" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                <InputText id="LastName" 
+                         style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" 
+                         @bind-Value="RegistrationUser.LastName" />
+            </div>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Register</button>
-</EditForm>
+        <div style="margin-bottom: 15px; position: relative;">
+            <label for="Password">Password</label>
+            <div style="position: relative;">
+                <i class="fas fa-lock" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                <InputText id="Password" 
+                         type="password" 
+                         style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" 
+                         @bind-Value="RegistrationUser.Password" />
+            </div>
+        </div>
 
-<p>Already have an account? <a href="/User/Login">Log In</a></p>
+        <div style="margin-bottom: 15px; position: relative;">
+            <label for="ConfirmPassword">Confirm Password</label>
+            <div style="position: relative;">
+                <i class="fas fa-lock" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                <InputText id="ConfirmPassword" 
+                         type="password" 
+                         style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);" 
+                         @bind-Value="RegistrationUser.ConfirmPassword" />
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: flex; align-items: center;">
+                <input type="checkbox" style="margin-right: 8px;" @bind="RegistrationUser.AgreeToTerms" />
+                <span>I&nbsp;agree&nbsp;to&nbsp;the&nbsp;</span>
+                <a href="/terms" style="color: #007bff; text-decoration: none;">Terms&nbsp;of&nbsp;Service</a>
+                <span>&nbsp;and&nbsp;</span>
+                <a href="/privacy" style="color: #007bff; text-decoration: none;">Privacy&nbsp;Policy</a>
+            </label>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px; position: relative;">
+            <button type="submit" 
+                    style="padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+                    disabled="@(isLoading)">
+                @if (isLoading)
+                {
+                    <span>
+                        <i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i>
+                        Processing...
+                    </span>
+                }
+                else
+                {
+                    <span>Register</span>
+                }
+            </button>
+        </div>
+    </EditForm>
+
+    <p style="margin-top: 20px; text-align: center;">
+        Already have an account? <a href="/User/Login" style="color: #007bff; text-decoration: none;">Log In</a>
+    </p>
+</div>
 
 @code {
-    [SupplyParameterFromForm] private RegistrationUserViewModel RegistrationUser { get; set; } = new();
+    [SupplyParameterFromForm] 
+    private RegistrationUserViewModel RegistrationUser { get; set; } = new();
+    private bool isLoading = false;
+    private string errorMessage = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        // Инициализация при необходимости
+    }
 
     private async Task HandleRegistration()
     {
-        await UserPageService.Registration(RegistrationUser);
-        await ProtectedSessionStore.SetAsync(ClientConstants.RegistrationUser, RegistrationUser);
+        try 
+        {
+            if (RegistrationUser.Password != RegistrationUser.ConfirmPassword)
+            {
+                errorMessage = "Passwords do not match";
+                return;
+            }
 
-        NavigationManager.NavigateTo("/User/Login");
+            if (!RegistrationUser.AgreeToTerms)
+            {
+                errorMessage = "You must agree to the terms and conditions";
+                return;
+            }
+
+            isLoading = true;
+            errorMessage = string.Empty;
+            await UserPageService.Registration(RegistrationUser);
+            await ProtectedSessionStore.SetAsync(ClientConstants.RegistrationUser, RegistrationUser);
+            NavigationManager.NavigateTo("/User/Login");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Registration failed. Please try again.";
+            Logger.LogError(ex, "Error during registration");
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
