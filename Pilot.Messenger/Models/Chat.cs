@@ -10,7 +10,7 @@ public class Chat : BaseModel, IAddUser
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Range(1, int.MaxValue)] [Required] public int CreatedBy { get; set; }
+    [Required] public int CreatedBy { get; set; }
     
     public ICollection<ChatMember> ChatMembers { get; set; } = [];
 

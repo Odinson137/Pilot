@@ -104,7 +104,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
         Assert.Equal(id, content.Id);
     }
 
-    protected async Task<User> CreateUser(bool withAuthorization = false)
+    protected async Task<User> CreateUser(bool withAuthorization = true)
     {
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
     
@@ -125,7 +125,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
     {
         #region Arrange
 
-        var user = await CreateUser(true);
+        var user = await CreateUser();
 
         var type = typeof(T);
 
@@ -156,7 +156,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
     {
         #region Arrange
 
-        var user = await CreateUser(true);
+        var user = await CreateUser();
 
         var type = typeof(T);
 
@@ -187,7 +187,7 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
     {
         #region Arrange
 
-        await CreateUser(true);
+        await CreateUser();
 
         var type = typeof(T);
 

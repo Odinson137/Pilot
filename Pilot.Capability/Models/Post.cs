@@ -9,7 +9,7 @@ public class Post : BaseModel
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] [Range(1, int.MaxValue)] public int CompanyId { get; set; }
+    [Required] public int CompanyId { get; set; }
 
     public ICollection<Skill> Skills { get; set; } = [];
 
