@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Pilot.BlazorClient.Interface;
+﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;

@@ -270,8 +270,7 @@ else
                 Id = _task!.Id
             },
             File = fileName,
-            Description = _newTaskInfoDescription,
-            CreatedBy = null,
+            Description = _newTaskInfoDescription
         };
 
         await ProjectTaskPageService.AddTaskInfoAsync(taskInfo);

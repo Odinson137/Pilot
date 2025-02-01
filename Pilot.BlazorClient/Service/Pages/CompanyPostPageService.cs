@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using Pilot.BlazorClient.Interface;
+﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
@@ -52,7 +49,7 @@ public class CompanyPostPageService(
     {
         var jobApplication = new JobApplicationViewModel
         {
-            CompanyPost = new BaseViewModel { Id = vacancyId },
+            CompanyPost = new CompanyPostViewModel { Id = vacancyId },
             Message = letter
         };
 

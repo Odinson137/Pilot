@@ -38,9 +38,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         filter ??= new BaseFilter(0, int.MaxValue);
         var query = DbSet
             .Skip(filter.Skip)
-            .Take(filter.Take)
-            .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
-            .ProjectTo<TOut>(mapper.ConfigurationProvider);
+            .Take(filter.Take);
 
         if (filter.Ids != null)
             query = query.Where(c => filter.Ids.Contains(c.Id));
@@ -48,19 +46,22 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         if (filter.WhereFilter != null)
             query = GetFiltersLambda(query, filter.WhereFilter.List);
         
-        return await query.ToListAsync(token);
+        return await query
+            .ProjectTo<TOut>(mapper.ConfigurationProvider)
+            .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
+            .ToListAsync(token);
     }
 
-    private static IQueryable<TOut> GetFiltersLambda<TOut>(IQueryable<TOut> query, ICollection<(string, object, Type)> list)
+    private static IQueryable<T> GetFiltersLambda(IQueryable<T> query, ICollection<(string, object, Type)> list)
     {
         foreach (var valueTuple in list)
-            query = query.Where(GetFilterLambda<TOut>(valueTuple));
+            query = query.Where(GetFilterLambda(valueTuple));
         return query;
     }
 
-    private static Expression<Func<TOut, bool>> GetFilterLambda<TOut>((string, object, Type) filter)
+    private static Expression<Func<T, bool>> GetFilterLambda((string, object, Type) filter)
     {
-        var expNameParameter = Expression.Parameter(typeof(TOut), "e");
+        var expNameParameter = Expression.Parameter(typeof(T), "e");
         var names = filter.Item1.Split('.');
         
         if (names.Length == 0)
@@ -74,7 +75,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
 
         var eq = Expression.Equal(expMember!, expValue);
 
-        var func = Expression.Lambda<Func<TOut, bool>>(eq, expNameParameter);
+        var func = Expression.Lambda<Func<T, bool>>(eq, expNameParameter);
         return func;
     }
 }

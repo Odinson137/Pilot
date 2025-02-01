@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using Pilot.BlazorClient.Interface;
+﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
-using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 

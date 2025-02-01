@@ -91,11 +91,7 @@ public class FileService : IFileService
     {
         _logger.LogInformation("Get file urls");
 
-        ICollection<FileDto> files = [];
-        if (filter?.Ids != null)
-            files = await _fileRepository.GetValuesAsync<FileDto>(filter);
-        else if (filter?.JsonValue is { Type: FilterValueType.GetFileValue })
-            files = await _fileRepository.GetValuesUrlAsync(filter.JsonValue.Value.FromJson<ICollection<string>>());
+        var files = await _fileRepository.GetValuesAsync<FileDto>(filter);
 
         foreach (var file in files)
             file.Url = _storageService.GetUrl(file.Name, file.Format);

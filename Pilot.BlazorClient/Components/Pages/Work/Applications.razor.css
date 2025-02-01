@@ -1,19 +1,49 @@
 .applications-container {
-    padding: 2rem;
+    padding: 2.5rem;
     max-width: 1200px;
     margin: 0 auto;
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
 }
 
 .applications-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    font-weight: 700;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid #4a90e2;
+}
+
+.command-description {
+    background: #f8f9fa;
+    border-left: 4px solid #4a90e2;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.command-description h3 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.command-description p {
+    color: #666;
+    margin: 0;
+    line-height: 1.6;
 }
 
 .filters {
     display: flex;
-    gap: 1rem;
+    gap: 1.2rem;
+    align-items: center;
 }
 
 .search-box {
@@ -21,10 +51,18 @@
 }
 
 .search-box input {
-    padding: 0.5rem 2rem 0.5rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    padding: 0.8rem 2.5rem 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
     width: 300px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    outline: none;
 }
 
 .search-box i {
@@ -36,29 +74,53 @@
 }
 
 select {
-    padding: 0.5rem 1rem;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
+    padding: 0.8rem 2rem 0.8rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
     background-color: white;
+    font-size: 1rem;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    outline: none;
 }
 
 .applications-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
 }
 
 .application-card {
     background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 15px;
+    padding: 1.8rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #eaeaea;
+    position: relative;
+    overflow: hidden;
+}
+
+.application-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #4a90e2, #67b26f);
 }
 
 .application-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    border-color: #4a90e2;
 }
 
 .applicant-info {
@@ -69,10 +131,12 @@ select {
 }
 
 .avatar {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     overflow: hidden;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .avatar img {
@@ -84,18 +148,49 @@ select {
 .avatar-placeholder {
     width: 100%;
     height: 100%;
-    background: #e0e0e0;
+    background: linear-gradient(135deg, #4a90e2, #67b26f);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    color: #666;
+    font-size: 1.8rem;
+    color: white;
 }
 
 .details h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.3rem;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.details p {
     margin: 0;
-    font-size: 1.1rem;
-    color: #333;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+.status-active {
+    background-color: #e1f5fe;
+    color: #0288d1;
+}
+
+.status-completed {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-pending {
+    background-color: #fff3e0;
+    color: #ef6c00;
 }
 
 .details p {

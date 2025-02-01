@@ -5,7 +5,7 @@
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
-@using Pilot.Contracts.Data.Enums
+@using Pilot.BlazorClient.Data
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage;
 @inject IUserService UserService
@@ -27,11 +27,11 @@ else
                 <ul>
                     @if (_projects is { Count: > 0 })
                     {
-                        <h5 @onclick="ClearTeam" style="cursor: pointer">Projects:</h5>
+                        <h5 @onclick="ClearProject" style="cursor: pointer">Projects:</h5>
                         @foreach (var project in _projects)
                         {
                             <li style="padding: 5px">
-                                <span>@project.Name</span>
+                                <span @onclick="() => NavigateToProject(project.Id)">@project.Name</span>
                             </li>
                         }
                     }
@@ -63,15 +63,16 @@ else
                         <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
                             Tasks
                         </li>
-                        <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)">
-                            Employees
-                        </li>
+                        @* <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)"> *@
+                        @*     Employees *@
+                        @* </li> *@
                         @* @if (new List<Role> { Role.Owner, Role.Director }.Contains(_user!.Role)) *@
-                        @* { *@
                         <li @onclick="() => SetActiveTab(5)" class="@GetActiveClass(5)">
                             Management
                         </li>
-                        // }
+                        <li @onclick="() => SetActiveTab(6)" class="@GetActiveClass(6)">
+                            Applications
+                        </li>
                     }
                 </ul>
             </nav>
@@ -91,7 +92,7 @@ else
                             <Summary UserId="@_user.Id"></Summary>
                             break;
                         case 3:
-                            <UserTask UserId="@_user.Id" TeamId="@_teamId"/>
+                            <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
                             break;
                         case 4:
                             <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
@@ -100,6 +101,7 @@ else
                             <Management UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                         case 6:
+                            <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                     }
                 }
@@ -117,7 +119,7 @@ else
 
     private ICollection<ProjectViewModel>? _projects;
 
-    private int _teamId;
+    private int _projectId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -151,24 +153,22 @@ else
         return _activeTab == tabId ? "active" : string.Empty;
     }
 
-    private void NavigateToTeam(int teamId)
+    private void NavigateToProject(int projectId)
     {
-        _teamId = teamId;
-        ProtectedSessionStorage.SetAsync("work:teamId", teamId);
-        Console.WriteLine($"Navigating to: {teamId}");
+        _projectId = projectId;
+        ProtectedSessionStorage.SetAsync(ClientConstants.SelectProject, projectId);
 
-        if (_activeTab == 2)
+        if (_activeTab == 3)
         {
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
     }
 
-    private void ClearTeam()
+    private void ClearProject()
     {
-        // ProtectedSessionStorage.DeleteAsync("work:teamId");
-        Console.WriteLine($"Navigating to: {0}");
+        ProtectedSessionStorage.DeleteAsync(ClientConstants.SelectProject);
 
-        if (_activeTab == 2)
+        if (_activeTab == 3)
         {
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
@@ -206,7 +206,7 @@ else
         color: #2980b9;
     }
 
-    .nav-menu a.active {
+    .active {
         font-weight: bold;
         color: #1a5276;
     }

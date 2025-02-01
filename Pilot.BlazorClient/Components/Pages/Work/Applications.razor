@@ -1,3 +1,4 @@
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
@@ -5,13 +6,13 @@
 
 <div class="applications-container">
     <div class="applications-header">
-        <h2>Job Applications</h2>
+        <h2 style="margin-right: 10px">Job Applications</h2>
         <div class="filters">
             <div class="search-box">
-                <input type="text" placeholder="Search applications..." @bind="searchTerm" @bind:event="oninput" />
+                <input type="text" placeholder="Search applications..." @bind="_searchTerm" @bind:event="oninput"/>
                 <i class="fas fa-search"></i>
             </div>
-            <select @bind="statusFilter">
+            <select @bind="_statusFilter">
                 <option value="">All Statuses</option>
                 @foreach (var status in Enum.GetValues(typeof(ApplicationStatus)))
                 {
@@ -22,23 +23,23 @@
     </div>
 
     <div class="applications-grid">
-        @if (applications.Any())
+        @if (_applications.Any())
         {
-            @foreach (var application in applications)
+            @foreach (var application in _applications)
             {
                 <div class="application-card">
                     <div class="applicant-info">
                         <div class="avatar">
                             @if (!string.IsNullOrEmpty(application.UserId.ToString()))
                             {
-                                <img src="@application.UserId.ToString()" alt="@application.UserId" />
+                                <img src="@TempFileService.GetUrl(_users.First(c => c.Id == application.UserId).User!.AvatarImage)" alt="@application.UserId"/>
                             }
-        
                         </div>
                         <div class="details">
-                            <h3>@application.UserId</h3>
-                            <p>@application.CompanyPost.Id</p>
-                            <span class="application-date">Applied: @application.CreateAt!.Value.ToShortDateString()</span>
+                            <h3>@_users.First(c => c.Id == application.UserId).User!.Name</h3>
+                            <p>@application.CompanyPost.Post.Title</p>
+                            <span
+                                class="application-date">Applied: @application.CreateAt!.Value.ToShortDateString()</span>
                         </div>
                     </div>
                     <div class="application-status @application.Status.ToString().ToLower()">
@@ -66,27 +67,18 @@
 </div>
 
 @code {
-    private List<JobApplicationViewModel> applications;
-    private string searchTerm = "";
-    private ApplicationStatus? statusFilter;
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
 
-    // private IEnumerable<JobApplicationViewModel> FilteredApplications =>
-    //     applications?.Where(a =>
-    //         (string.IsNullOrEmpty(searchTerm) ||
-    //          a.ApplicantName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-    //          a.Position.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) &&
-    //         (!statusFilter.HasValue || a.Status == statusFilter.Value)
-    //     ) ?? Enumerable.Empty<JobApplicationViewModel>();
+    private ICollection<JobApplicationViewModel> _applications = [];
+    private ICollection<CompanyUserViewModel> _users = [];
+    private string _searchTerm = "";
+    private ApplicationStatus? _statusFilter;
 
     protected override async Task OnInitializedAsync()
     {
-        // TODO: Implement loading of applications
-        await LoadApplications();
-    }
-
-    private async Task LoadApplications()
-    {
-        // TODO: Implement method to load applications from service
+        _applications = await WorkPageService.GetCompanyJobApplicationsAsync(CompanyId);
+        _users = await WorkPageService.GetJobApplicationUsersAsync(_applications);
     }
 
     private async Task ViewApplication(JobApplicationViewModel application)
@@ -98,4 +90,5 @@
     {
         // TODO: Implement status update logic
     }
+
 }

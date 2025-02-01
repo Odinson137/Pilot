@@ -1,69 +1,113 @@
-﻿@page "/Management"
-@using System.Collections
-@using BlazorStrap.Extensions
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
-@using Pilot.BlazorClient.ViewModels.UserViewModels
-@using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
 
-<div class="container mt-5" style="width: 1000px; margin-bottom: 200px">
+<div class="container mt-5 mb-5" style="max-width: 1000px;">
+    <!-- Page Description -->
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">Company Management</h1>
+        <p class="text-muted">Easily manage employees, projects, and teams within your company.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <div class="input-group">
+            <input @bind="_searchQuery" class="form-control" placeholder="Search projects, teams, or employees..." />
+            <button class="btn btn-outline-primary" type="button">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Projects Section -->
+    <div class="mb-5">
+        <h3 class="text-success">Projects</h3>
+        @if (_projects != null && _projects.Any())
+        {
+            @foreach (var project in _projects)
+            {
+                <div class="card mb-3 border-success shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">@project.Name</h5>
+                        <p class="card-text">@project.Description</p>
+                        <p class="text-muted"><strong>Status:</strong> <span class="badge bg-info">@project.ProjectStatus</span></p>
+                        <h6>Teams:</h6>
+                        @if (project.Teams.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var team in project.Teams)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><strong>@team.Name</strong> - @team.Description</span>
+                                        <div>
+                                            <button class="btn btn-outline-primary btn-sm" @onclick="() => EditTeam(team.Id)">Edit</button>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No teams in this project.</p>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No projects found.</p>
+        }
+        <button class="btn btn-success" @onclick="AddProject">
+            <i class="bi bi-plus-circle"></i> Add New Project
+        </button>
+    </div>
+
+    <!-- Employees Section -->
     @if (_isLoading)
     {
         <div class="text-center">
             <p class="text-info">Loading employee details...</p>
             <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
+                <span class="visually-hidden">Loading...</span>
             </div>
         </div>
     }
     else if (_employees != null)
     {
-        @foreach (var employee in _employees)
-        {
-            <div class="card mb-4 shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title text-primary"></h4>
-                    <p><strong>Projects:</strong>)
-                        <button class="btn btn-outline-success btn-sm ms-2"
-                                @onclick="() => AddEmployeeToProject(employee.Id)">
-                            <i class="bi bi-plus-circle"></i>
-                        </button>
-                    </p>
-                    <p><strong>Teams:</strong> @string.Join(", ", employee.Teams.Select(t => t.Name))
-                        <button class="btn btn-outline-success btn-sm ms-2"
-                                @onclick="() => AddEmployeeToTeam(employee.Id)">
-                            <i class="bi bi-plus-circle"></i>
-                        </button>
-                    </p>
-                    <div>
-                        <strong>Tasks:</strong>
-                        <div class="row">
-                            <div class="col">To Do:</div>
-                            <div class="col">In Progress:</div>
-                            <div class="col">Done:</div>
-                        </div>
-                    </div>
-                    <div>
-                        <strong>Role:</strong>
-                        @foreach (Role role in _roles)
+        <div class="mb-5">
+            <h3 class="text-primary">Employees</h3>
+            @foreach (var employee in _employees.Where(e => string.IsNullOrWhiteSpace(_searchQuery) || e.User!.FullName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)))
+            {
+                <div class="card mb-4 border-primary shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title text-primary">@employee.User?.FullName</h4>
+                        <p><strong>Projects:</strong></p>
+                        @if (_projects != null && _projects.Any())
                         {
-                            <li value="@role.ToString()">@role</li>
+                            @foreach (var project in _projects)
+                            {
+                                <button class="btn btn-outline-success btn-sm ms-2" @onclick="() => AddEmployeeToProject(employee.Id, project.Id)">
+                                    <i class="bi bi-plus-circle"></i> Add to @project.Name
+                                </button>
+                            }
                         }
+                        else
+                        {
+                            <p class="text-muted">No projects available to assign.</p>
+                        }
+                        <p><strong>Teams:</strong> @string.Join(", ", employee.Teams.Select(t => t.Name))</p>
+                        <button class="btn btn-outline-secondary btn-sm mt-3" @onclick="() => AddTeam(employee.Id)">
+                            <i class="bi bi-people"></i> Add to Team
+                        </button>
                     </div>
-                    <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => AddProject(employee.Id)">Add
-                        Project
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm mt-3" @onclick="() => AddTeam(employee.Id)">Add
-                        Team
-                    </button>
                 </div>
-            </div>
-        }
+            }
+        </div>
     }
     else
     {
@@ -76,8 +120,8 @@
     [Parameter] public int CompanyId { get; set; }
 
     private bool _isLoading = true;
+    private string _searchQuery = string.Empty;
     private ICollection<CompanyUserViewModel>? _employees;
-    private Role[] _roles;
     private ICollection<ProjectViewModel>? _projects;
 
     protected override async Task OnInitializedAsync()
@@ -87,8 +131,6 @@
         {
             _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
             _projects = await WorkPageService.GetProjectsAsync(CompanyId);
-            await WorkPageService.FillTeamsAsync(_projects);
-            _roles = Enum.GetValues<Role>();
         }
         finally
         {
@@ -96,24 +138,23 @@
         }
     }
 
-    private void AddEmployeeToProject(int employeeId)
+    private void AddProject()
     {
-        // Логика для добавления сотрудника в проект
-    }
-
-    private void AddEmployeeToTeam(int employeeId)
-    {
-        // Логика для добавления сотрудника в команду
-    }
-
-    private void AddProject(int employeeId)
-    {
-        // Логика для добавления проекта
+        // Logic for adding a new project
     }
 
     private void AddTeam(int employeeId)
     {
-        // Логика для добавления команды
+        // Logic for adding a new team
     }
 
+    private void AddEmployeeToProject(int employeeId, int projectId)
+    {
+        // Logic for adding an employee to a project
+    }
+
+    private void EditTeam(int teamId)
+    {
+        // Logic for editing a team
+    }
 }

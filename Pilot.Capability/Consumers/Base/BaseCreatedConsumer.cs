@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Pilot.Capability.Interface;
+using Pilot.Capability.Models.ModelHelpers;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
@@ -39,6 +40,9 @@ public abstract class BaseCreatedConsumer<T, TDto>(
 
         await Validator.FillValidateAsync(model);
 
+        if (model is IAddCompanyUser addingUserModel)
+            addingUserModel.AddCompanyUser(context.Message.UserId);
+        
         await Repository.AddValueToContextAsync(model);
 
         await Repository.SaveAsync();

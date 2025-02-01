@@ -11,6 +11,9 @@ public class WorkPageService(
     IBaseModelService<ProjectTaskViewModel> projectTaskService,
     IBaseModelService<UserViewModel> userBaseService,
     IBaseModelService<TeamViewModel> teamService,
+    IBaseModelService<JobApplicationViewModel> jobApplicationService,
+    IBaseModelService<CompanyPostViewModel> companyPostService,
+    IBaseModelService<PostViewModel> postService,
     IBaseModelService<ProjectViewModel> projectService
 ) : IWorkPageService
 {
@@ -86,17 +89,28 @@ public class WorkPageService(
         return teamViewModels;
     }
 
-    public async Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync<T>(T tasksIds)
-        where T : ICollection<BaseViewModel>
+    public async Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(ICollection<int> tasksIds,
+        int? projectId = null)
     {
-        var filter = new BaseFilter(tasksIds.Select(c => c.Id).ToArray());
-        var taskViewModels = await projectTaskService.GetValuesAsync(filter: filter);
-        return taskViewModels;
-    }
+        var filter = new BaseFilter
+        {
+            Ids = tasksIds.Distinct().ToArray(),
+            Skip = 0,
+            Take = int.MaxValue,
+            WhereFilter = new WhereFilter()
+        };
 
-    public async Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(ICollection<int> tasksIds)
-    {
-        var taskViewModels = await projectTaskService.GetValuesAsync(tasksIds.Distinct().ToArray());
+        if (projectId != null)
+        {
+            filter.WhereFilter = new WhereFilter();
+            filter.WhereFilter.Init<int, ProjectTaskViewModel>((c => c.Team.Project.Id, projectId.Value));
+        }
+
+        var taskViewModels = await projectTaskService.GetValuesAsync(filter);
+        var teamViewModels =
+            await teamService.GetValuesAsync(taskViewModels.Select(c => c.Team.Id).Distinct().ToArray());
+        foreach (var taskViewModel in taskViewModels)
+            taskViewModel.Team = teamViewModels.First(c => c.Id == taskViewModel.Team.Id);
         return taskViewModels;
     }
 
@@ -104,12 +118,38 @@ public class WorkPageService(
     {
         var companyUsers =
             await companyUserService.GetValuesAsync(predicate: c => c.Company.Id, companyId);
-        var users = 
+        var users =
             await userBaseService.GetValuesAsync(companyUsers.Select(c => c.Id).ToArray());
         foreach (var companyUser in companyUsers)
             companyUser.User = users.First(c => c.Id == companyUser.Id);
 
-        
+
+        return companyUsers;
+    }
+
+    public async Task<ICollection<JobApplicationViewModel>> GetCompanyJobApplicationsAsync(int companyId)
+    {
+        var jobApplications = await jobApplicationService.GetValuesAsync(c => c.CompanyPost.Post.CompanyId, companyId);
+        var companyPosts =
+            await companyPostService.GetValuesAsync(jobApplications.Select(c => c.CompanyPost.Id).ToList());
+        var posts = await postService.GetValuesAsync(companyPosts.Select(c => c.Post.Id).ToList());
+
+        foreach (var companyPost in companyPosts)
+            companyPost.Post = posts.First(c => c.Id == companyPost.Post.Id);
+
+        foreach (var jobApplication in jobApplications)
+            jobApplication.CompanyPost = companyPosts.First(c => c.Id == jobApplication.CompanyPost.Id);
+
+        return jobApplications;
+    }
+
+    public async Task<ICollection<CompanyUserViewModel>> GetJobApplicationUsersAsync(
+        ICollection<JobApplicationViewModel> jobApplications)
+    {
+        var companyUsers = await companyUserService.GetValuesAsync(jobApplications.Select(c => c.UserId).ToList());
+        var users = await userBaseService.GetValuesAsync(companyUsers.Select(c => c.Id).ToList());
+        foreach (var companyUser in companyUsers)
+            companyUser.User = users.First(c => c.Id == companyUser.Id);
         return companyUsers;
     }
 }

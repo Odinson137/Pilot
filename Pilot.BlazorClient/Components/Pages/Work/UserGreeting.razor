@@ -54,8 +54,7 @@
 
         _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
 
-        _projects = await WorkPageService.GetProjectsAsync(_companyUser.Id);
-        Console.WriteLine("Greeting loaded");
+        _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
     }
 
     private string GetGreetingMessage()

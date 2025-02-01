@@ -25,11 +25,9 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
         int? skip = null, int? take = null) where T : IConvertible
     {
         var filter = new BaseFilter(skip, take);
-        var fieldsName = predicate.Body.ToString().Split(".").Skip(1).ToList();
-        if (value is null) throw new ArgumentNullException("Ты чёт попутал");
-
-        var names = string.Join(".", fieldsName);
-        filter.WhereFilter = new WhereFilter((names, value));
+        var whereFilter = new WhereFilter();
+        whereFilter.Init((predicate, value));
+        filter.WhereFilter = whereFilter;
 
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }
