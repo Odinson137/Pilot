@@ -63,14 +63,16 @@ else
                         <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
                             Tasks
                         </li>
-                        @* <li @onclick="() => SetActiveTab(4)" class="@GetActiveClass(4)"> *@
-                        @*     Employees *@
-                        @* </li> *@
-                        @* @if (new List<Role> { Role.Owner, Role.Director }.Contains(_user!.Role)) *@
                         <li @onclick="() => SetActiveTab(5)" class="@GetActiveClass(5)">
-                            Management
+                            Projects
                         </li>
                         <li @onclick="() => SetActiveTab(6)" class="@GetActiveClass(6)">
+                            Employees
+                        </li>
+                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">
+                            Vacancy
+                        </li>
+                        <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">
                             Applications
                         </li>
                     }
@@ -94,13 +96,16 @@ else
                         case 3:
                             <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
                             break;
-                        case 4:
-                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
                         case 5:
-                            <Management UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                         case 6:
+                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            break;
+                        case 7:
+                            <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            break;
+                        case 10:
                             <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                     }
@@ -227,7 +232,8 @@ else
     .work-main {
         flex-grow: 1;
         padding: 20px;
-        background-color: #ecf0f1;
+        border-radius: 15px;
+        background-color: #93cbd9;
         display: flex;
         flex-direction: column;
     }

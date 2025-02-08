@@ -1,0 +1,92 @@
+﻿@page "/projects-teams"
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject IWorkPageService WorkPageService
+
+<div class="container mt-5 mb-5" style="max-width: 1000px;">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">Projects and Teams</h1>
+        <p class="text-muted">Manage projects and their associated teams.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <div class="input-group">
+            <input @bind="_searchQuery" class="form-control" placeholder="Search projects or teams..."/>
+            <button class="btn btn-outline-primary" type="button">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Projects Section -->
+    <div class="mb-5">
+        <h3 class="text-success">Projects</h3>
+        @if (_projects != null && _projects.Any())
+        {
+            @foreach (var project in _projects)
+            {
+                <div class="card mb-3 border-success shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">@project.Name</h5>
+                        <p class="card-text">@project.Description</p>
+                        <p class="text-muted"><strong>Status:</strong> <span
+                                class="badge bg-info">@project.ProjectStatus</span></p>
+                        <h6>Teams:</h6>
+                        @if (project.Teams.Any())
+                        {
+                            <ul class="list-group list-group-flush">
+                                @foreach (var team in project.Teams)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><strong>@team.Name</strong> - @team.Description</span>
+                                        <div>
+                                            <button class="btn btn-outline-primary btn-sm"
+                                                    @onclick="() => EditTeam(team.Id)">Edit
+                                            </button>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No teams in this project.</p>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No projects found.</p>
+        }
+        <button class="btn btn-success" @onclick="AddProject">
+            <i class="bi bi-plus-circle"></i> Add New Project
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+    
+    private string _searchQuery = string.Empty;
+    private ICollection<ProjectViewModel>? _projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+    }
+
+    private void AddProject()
+    {
+        // Logic for adding a new project
+    }
+
+    private void EditTeam(int teamId)
+    {
+        // Logic for editing a team
+    }
+
+}

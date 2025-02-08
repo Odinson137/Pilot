@@ -61,6 +61,7 @@ services.AddScoped<IBaseModelService<UserSkillViewModel>, BaseModelService<UserS
 services.AddScoped<IBaseModelService<FileViewModel>, BaseModelService<FileDto, FileViewModel>>();
 
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
+services.AddScoped<IAiService, AiService>();
 
 builder.Services.AddScoped<IErrorBoundaryLogger, GlobalErrorHandler>();
 

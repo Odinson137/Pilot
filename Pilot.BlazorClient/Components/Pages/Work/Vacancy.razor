@@ -1,0 +1,123 @@
+﻿@using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject IWorkPageService WorkPageService
+@inject NavigationManager NavigationManager
+
+<div class="vacancies-container" style="border-radius: 15px">
+    <div class="vacancies-header">
+        <h2 style="margin-right: 10px">Company Vacancies</h2>
+        <button class="btn-add" @onclick="ShowAddForm">
+            <i class="fas fa-plus"></i> Add Vacancy
+        </button>
+    </div>
+
+    @if (_showAddForm)
+    {
+        <div class="add-vacancy-form">
+            <h3>Add New Vacancy</h3>
+            <EditForm Model="_newVacancy" OnValidSubmit="AddVacancy">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label>Title</label>
+                    <InputText @bind-Value="_newVacancy.Post.Title" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <InputTextArea @bind-Value="_newVacancy.Post.Description" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Requirements</label>
+                    <InputTextArea @bind-Value="_newVacancy.AdditionalRequirements" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label>Is Open</label>
+                    <InputCheckbox @bind-Value="_newVacancy.IsOpen" />
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Save
+                </button>
+                <button type="button" class="btn-cancel" @onclick="HideAddForm">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </EditForm>
+        </div>
+    }
+
+    <div class="vacancies-grid">
+        @if (_vacancies.Any())
+        {
+            @foreach (var vacancy in _vacancies)
+            {
+                <div class="vacancy-card">
+                    <h3>@vacancy.Post.Title</h3>
+                    <p>@vacancy.Post.Description</p>
+                    <span class="vacancy-status">Status: @(vacancy.IsOpen ? "Open" : "Closed")</span>
+                    <button class="btn-view" @onclick="() => ViewVacancy(vacancy)">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="no-vacancies">
+                <i class="fas fa-inbox"></i>
+                <p>No vacancies found</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+
+    private ICollection<CompanyPostViewModel> _vacancies = new List<CompanyPostViewModel>();
+    private CompanyPostViewModel? _newVacancy;
+    private bool _showAddForm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _newVacancy = new CompanyPostViewModel
+        {
+            Post = new PostViewModel { CompanyId = CompanyId },
+            IsOpen = true
+        };
+
+        // _vacancies = await WorkPageService.GetCompanyVacanciesAsync(CompanyId);
+    }
+
+    private void ShowAddForm()
+    {
+        _showAddForm = true;
+    }
+
+    private void HideAddForm()
+    {
+        _showAddForm = false;
+        _newVacancy = new CompanyPostViewModel
+        {
+            Post = new PostViewModel { CompanyId = CompanyId },
+            IsOpen = true
+        };
+    }
+
+    private async Task AddVacancy()
+    {
+        // await WorkPageService.AddVacancyAsync(_newVacancy);
+        // _vacancies = await WorkPageService.GetCompanyVacanciesAsync(CompanyId);
+        HideAddForm();
+    }
+
+    private void ViewVacancy(CompanyPostViewModel vacancy)
+    {
+        NavigationManager.NavigateTo($"/vacancies/{vacancy.Id}");
+    }
+}

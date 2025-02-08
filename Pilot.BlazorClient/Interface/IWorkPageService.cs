@@ -27,4 +27,6 @@ public interface IWorkPageService
     
     Task<ICollection<CompanyUserViewModel>> GetJobApplicationUsersAsync(
         ICollection<JobApplicationViewModel> jobApplications);
+
+    Task<ICollection<PostViewModel>> GetPostsAsync(int companyId);
 }

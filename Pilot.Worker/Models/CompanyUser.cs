@@ -6,10 +6,12 @@ namespace Pilot.Worker.Models;
 public class CompanyUser : BaseModel
 {
     [Required] public Company Company { get; set; } = null!;
+    
+    [Required] public int PostId { get; set; }
 
     public List<Team> Teams { get; set; } = [];
 
     public List<ProjectTask> ProjectTasks { get; set; } = [];
-    
+
     public CompanyRole? CompanyRole { get; set; }
 }

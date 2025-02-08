@@ -27,15 +27,31 @@
     [Parameter] public UserViewModel User { get; set; } = null!;
 
     // непроизводительно и плохо - факт, я знаю
-    private string SenderName => Message.UserId != (int)ChatMemberId.Reminder
-        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName
-          ?? "Unknown"
-        : $"{ChatMemberId.Reminder}";
+    private string SenderName
+    {
+        get
+        {
+            return Message.UserId switch
+            {
+                (int)ChatMemberId.Reminder => "Reminder",
+                (int)ChatMemberId.Ai => "AI Assistent",
+                _ => Users.Any() ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? "Unknown" : User.UserName ?? "Unknown"
+            };
+        }
+    }
 
-    private string SenderImage => Message.UserId != (int)ChatMemberId.Reminder
-        ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage
-          ?? "/Images/Chat/default.jpg"
-        : "/Images/Chat/reminder.png";
+    private string SenderImage
+    {
+        get
+        {
+            return Message.UserId switch
+            {
+                (int)ChatMemberId.Reminder => "/Images/Chat/reminder.png",
+                (int)ChatMemberId.Ai => "/Images/Chat/ai.png",
+                _ => Users.Any() ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage ?? "/Images/Chat/default.jpg" : User.AvatarImage ?? "/Images/Chat/default.jpg",
+            };
+        }
+    }
 
     private bool IsCurrentUser => Message.UserId == User.Id;
 

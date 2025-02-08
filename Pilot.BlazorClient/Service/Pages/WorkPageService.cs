@@ -41,6 +41,14 @@ public class WorkPageService(
     {
         var projectViewModels =
             await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
+        var teams =
+            await teamService.GetValuesAsync(projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
+        foreach (var projectViewModel in projectViewModels)
+        {
+            projectViewModel.Teams = teams.Where(c =>
+                projectViewModel.Teams.Select(x => x.Id).Contains(c.Id)).ToList();
+        }
+
         return projectViewModels;
     }
 
@@ -151,5 +159,11 @@ public class WorkPageService(
         foreach (var companyUser in companyUsers)
             companyUser.User = users.First(c => c.Id == companyUser.Id);
         return companyUsers;
+    }
+    
+    public async Task<ICollection<PostViewModel>> GetPostsAsync(int companyId)
+    {
+        var posts = await postService.GetValuesAsync(predicate: c => c.CompanyId, companyId);
+        return posts;
     }
 }

@@ -6,6 +6,8 @@
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Service
+@using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.DTO.ModelDto
 @using Pilot.Contracts.Services
 @inject IChatPageService ChatPageService
@@ -15,6 +17,7 @@
 @inject IMapper Mapper
 @inject ProtectedSessionStorage ProtectedSessionStorage;
 @inject NavigationManager NavigationManager
+@inject IAiService AiService
 
 <PageTitle>Chat Page</PageTitle>
 
@@ -28,10 +31,18 @@ else
         <!-- Left Sidebar: Chat List -->
         <div class="sidebar chat-list col-3">
             <h5 class="sidebar-title">Chats</h5>
+            <!-- AI Assistant Chat -->
+            <TitleChatComponent
+                ChatId="-2"
+                SelectedChat="@_selectedChat"
+                ChatTitle="AI Assistant"
+                OnChatClick="() => HandleAiChatClick(ClientConstants.AiId)"/>
+
             <div class="sidebar-section">
                 @foreach (var chat in _chats)
                 {
-                    <TitleChatComponent ChatId="@chat.Id" SelectedChat="@_selectedChat" ChatTitle="@chat.Title" OnChatClick="HandleTitleChatClick"/>
+                    <TitleChatComponent ChatId="@chat.Id" SelectedChat="@_selectedChat" ChatTitle="@chat.Title"
+                                        OnChatClick="HandleTitleChatClick"/>
                 }
             </div>
 
@@ -44,12 +55,16 @@ else
             <div class="chat-main col-7">
                 <!-- Center Header: Chat Title -->
                 <div class="chat-header d-flex justify-content-between align-items-center">
+                    @if (_selectedChat.Id == ClientConstants.AiId)
+                    {
+                        <img src="/Images/Chat/ai.png" width="40px"/>
+                    }
                     <h4>@(_selectedChat != null ? _selectedChat.Title : "")</h4>
                     @if (_selectedChat != null)
                     {
                         <div>
-                            <button class="btn btn-secondary" @onclick="NavigateToReminders">Reminders</button>
-                            <button class="btn btn-secondary" @onclick="ToggleInfoPanel">Chat Settings</button>
+                            <button class="btn btn-secondary" @onclick="NavigateToReminders">Напоминания</button>
+                            <button class="btn btn-secondary" @onclick="ToggleInfoPanel">Настройки</button>
                         </div>
                     }
                 </div>
@@ -59,7 +74,7 @@ else
 
                     <!-- Messages Section -->
                     <div class="message-list" @ref="_chatListRef" id="chatListRef">
-                        @foreach (var message in _messageViewModels)
+                        @foreach (var message in _messages)
                         {
                             <MessageComponent Message="@message" Users="@_users" User="@_currentUser"/>
                         }
@@ -72,32 +87,41 @@ else
             @if (!_isChatLoading)
             {
                 <!-- Right Sidebar: Chat Settings -->
-                <div class="sidebar chat-info col-3" style="display:@(_showInfoPanel && _selectedChat != null ? "block" : "none")">
+                <div class="sidebar chat-info col-3"
+                     style="display:@(_showInfoPanel && _selectedChat != null ? "block" : "none")">
                     <div class="chat-settings">
                         <h5 class="sidebar-title">Chat Info</h5>
                         <p>
                             <strong>Description:</strong> @_selectedChat!.Description
                         </p>
-                        <p>
-                            <strong>Members:</strong> @_selectedChat.ChatMembers.Count
-                        </p>
-
-                        <h6>Created by</h6>
-                        <a href="@GetUserProfileLink(_selectedChat.CreatedBy)">
-                            <span class="sender-name">@_users.First(c => c.Id == _selectedChat.CreatedBy).UserName</span>
-                        </a>
-
-                        <h6>Participants</h6>
-                        @foreach (var user in _users)
+                        @if (_selectedChat.Id != -2)
                         {
-                            <div class="participant-info">
-                                <img src="@TempFileService.GetUrl(user.AvatarImage)" alt="@user.UserName" class="participant-avatar"/>
-                                <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
-                            </div>
+                            <p>
+                                <strong>Members:</strong> @_selectedChat.ChatMembers.Count
+                            </p>
+
+                            <h6>Created by</h6>
+                            <a href="@GetUserProfileLink(_selectedChat.CreatedBy)">
+                                <span
+                                    class="sender-name">@_users.First(c => c.Id == _selectedChat.CreatedBy).UserName</span>
+                            </a>
+
+                            <h6>Participants</h6>
+                            @foreach (var user in _users)
+                            {
+                                <div class="participant-info">
+                                    <img src="@TempFileService.GetUrl(user.AvatarImage)" alt="@user.UserName"
+                                         class="participant-avatar"/>
+                                    <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
+                                </div>
+                            }
                         }
                     </div>
                     <button class="btn btn-secondary mt-3" @onclick="ToggleInfoPanel">Close</button>
-                    <button class="btn btn-secondary mt-3" @onclick="UpdateNewChat">Update</button>
+                    @if (_selectedChat.Id != -2)
+                    {
+                        <button class="btn btn-secondary mt-3" @onclick="UpdateNewChat">Update</button>
+                    }
                 </div>
             }
         }
@@ -106,8 +130,10 @@ else
             <!-- Placeholder Content When No Chat Selected -->
             <div class="placeholder-content text-center">
                 <h2 style="color: #1e3a8a;">Welcome to Our Chat Page</h2>
-                <p class="lead" style="color: #4a5568;">Here, you can communicate in real time with team members and engage in discussions.</p>
-                <p class="mt-3" style="color: #4a5568;">Select a chat from the left panel or create a new one to start chatting. Stay connected, stay productive!</p>
+                <p class="lead" style="color: #4a5568;">Here, you can communicate in real time with team members and
+                    engage in discussions.</p>
+                <p class="mt-3" style="color: #4a5568;">Select a chat from the left panel or create a new one to start
+                    chatting. Stay connected, stay productive!</p>
             </div>
         }
     </div>
@@ -115,7 +141,7 @@ else
 
 @code {
     private ICollection<ChatViewModel> _chats = [];
-    private ICollection<MessageViewModel> _messageViewModels = [];
+    private ICollection<MessageViewModel> _messages = [];
     private ChatViewModel? _selectedChat;
     private bool _showInfoPanel;
     private ICollection<UserViewModel> _users = [];
@@ -123,6 +149,7 @@ else
     private bool _isLoading = true;
     private bool _isChatLoading;
     private ElementReference _chatListRef;
+    private Action _updateMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -135,7 +162,7 @@ else
             if (_selectedChat?.Id == messageDto.Chat.Id)
             {
                 var messageViewModel = Mapper.Map<MessageViewModel>(messageDto);
-                _messageViewModels.Add(messageViewModel);
+                _messages.Add(messageViewModel);
                 await InvokeAsync(StateHasChanged);
                 // await JsRuntime.InvokeVoidAsync("scrollToBottom", _chatListRef);
             }
@@ -145,7 +172,11 @@ else
 
         var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
         if (currentChatStorageResult.Success)
+        {
             await HandleTitleChatClick(currentChatStorageResult.Value);
+            await HandleAiChatClick(currentChatStorageResult.Value);
+        }
+
 
         _isLoading = false;
     }
@@ -157,7 +188,7 @@ else
         if (_selectedChat != null)
         {
             _users = await ChatPageService.GetUsersAsync(_selectedChat.ChatMembers);
-            _messageViewModels = await ChatPageService.GetMessagesAsync(chatId, 0, 50); // потом реализовать механизм подтягивания сообщений
+            _messages = await ChatPageService.GetMessagesAsync(chatId, 0, 50); // потом реализовать механизм подтягивания сообщений
         }
 
         _isChatLoading = false;
@@ -174,7 +205,7 @@ else
     {
         NavigationManager.NavigateTo($"/update-chat/{_selectedChat!.Id}");
     }
-    
+
     private void ToggleInfoPanel()
     {
         _showInfoPanel = !_showInfoPanel;
@@ -182,10 +213,37 @@ else
 
     private async Task HandleSendMessageClick(string messageText)
     {
-        if (_selectedChat != null)
-        {
+        if (_selectedChat == null) return;
+
+        if (_selectedChat.Id != ClientConstants.AiId)
             await MessengerService.SendMessageAsync(_selectedChat.Id, messageText);
+        if (_selectedChat.Id == ClientConstants.AiId)
+        {
+            var userMessage = new MessageViewModel
+            {
+                CreateAt = DateTime.Now,
+                Text = messageText,
+                UserId = _currentUser.Id,
+                Chat = _selectedChat
+            };
+            _messages.Add(userMessage);
+            
+            var message = new MessageViewModel
+            {
+                CreateAt = DateTime.Now,
+                Text = "Думаю...",
+                UserId = (int)ChatMemberId.Ai,
+                Chat = _selectedChat
+            };
+            _messages.Add(message);
+            _updateMessage += ChangeMessage;
+            await AiService.SendMessageAsync(messageText, message, _updateMessage);
         }
+    }
+
+    public async void ChangeMessage()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";
@@ -199,6 +257,35 @@ else
     {
         NavigationManager.NavigateTo($"/reminders/{_selectedChat!.Id}");
     }
+
+    private async Task HandleAiChatClick(int chatId)
+    {
+        if (chatId != ClientConstants.AiId) return;
+        
+        _selectedChat = new ChatViewModel
+        {
+            Id = chatId,
+            Title = "AI Assistant",
+            Description = "Chat with your virtual assistant for project-related questions and information."
+        };
+
+        _messages = new List<MessageViewModel>
+        {
+            new()
+            {
+                UserId = (int)ChatMemberId.Ai,
+                Text = "Привет! Я AI ассистент по проекту Pilot. Как я могу вам помочь?",
+                CreateAt = DateTime.Now
+            }
+        };
+
+        _isChatLoading = false;
+
+        await ProtectedSessionStorage.SetAsync(ClientConstants.CurrentChat, chatId);
+    }
+
+}
+
 }
 
 <style>
@@ -276,18 +363,28 @@ else
         height: 30px;
         border-radius: 50%;
     }
-    
+
     .message-list {
         height: 90%;
         overflow-y: auto;
     }
-    
+
     .create-chat-btn {
         margin-top: 20px;
     }
 
     .reminders-btn {
         margin-top: 10px;
+    }
+
+    .chat-list .ai-assistant {
+        font-weight: bold;
+        color: #1e90ff;
+        cursor: pointer;
+    }
+
+    .chat-list .ai-assistant:hover {
+        text-decoration: underline;
     }
 
 </style>
@@ -306,11 +403,11 @@ else
 
                 if (allElementsLoaded) {
                     sidebarSection.scrollTop = sidebarSection.scrollHeight;
-                    observer.disconnect(); 
+                    observer.disconnect();
                 }
             });
 
-            observer.observe(sidebarSection, { childList: true, subtree: true });
+            observer.observe(sidebarSection, {childList: true, subtree: true});
         }
     };
 

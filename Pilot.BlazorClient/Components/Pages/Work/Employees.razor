@@ -1,147 +1,100 @@
-﻿@using Pilot.BlazorClient.Interface
+﻿@page "/employees"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject IWorkPageService WorkPageService
+@inject NavigationManager NavigationManager
 
-@if (_company != null)
-{
-    <section class="company-info">
-        <div class="company-title">
-            <img src="@_company.Logo" alt="Company Logo" class="company-logo" />
-            <h2>@_company.Title</h2>
+<div class="container mt-5 mb-5" style="max-width: 1000px;">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">Employees</h1>
+        <p class="text-muted">Manage employees within your company.</p>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+        <div class="input-group">
+            <input @bind="_searchQuery" class="form-control" placeholder="Search employees..." />
+            <button class="btn btn-outline-primary" type="button">
+                <i class="bi bi-search"></i>
+            </button>
         </div>
-        @if (!string.IsNullOrEmpty(_company.Description))
-        {
-            <p>@_company.Description</p>
-        }
-        <h4>Projects:</h4>
+    </div>
 
-        <div class="projects-container">
-            @foreach (var project in _company.Projects)
+    <!-- Employees Section -->
+    @if (_isLoading)
+    {
+        <div class="text-center">
+            <p class="text-info">Loading employee details...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else if (_employees != null && _posts != null)
+    {
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var employee in _employees.Where(e => string.IsNullOrWhiteSpace(_searchQuery) || e.User!.FullName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)))
             {
-                <div class="project">
-                    <h5>@project.Name</h5>
-                    <div class="teams-container">
-                        @foreach (var team in project.Teams)
-                        {
-                            <div class="team">
-                                <h6>@team.Name</h6>
-                                <ul class="employees-list">
-                                    @foreach (var employee in team.CompanyUsers)
-                                    {
-                                        <li class="employee-item">
-                                            <span>@employee.User!.FullName</span>
-                                            <span class="work-duration">(@GetWorkDuration(employee))</span>
-                                            <button @onclick="() => SendMessageToUser(employee.User.Id)" class="send-message-btn">Send Message</button>
-                                        </li>
-                                    }
-                                </ul>
+                <div class="col">
+                    <div class="card mb-4 border-primary shadow-sm">
+                        <div class="card-body d-flex align-items-center">
+                            <div class="avatar me-3">
+                                @if (!string.IsNullOrEmpty(employee.User!.AvatarImage))
+                                {
+                                    <img src="@TempFileService.GetUrl(employee.User.AvatarImage)" alt="@employee.User.FullName" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" />
+                                }
                             </div>
-                        }
+                            <div class="flex-grow-1">
+                                <h4 class="card-title text-primary">@employee.User?.FullName</h4>
+                                <h4 class="card-title text-primary">@(_posts.FirstOrDefault(c => c.Id == employee.PostId)?.Title)</h4>
+                                <p><strong>Teams count:</strong> @employee.Teams.Count</p>
+                            </div>
+                            <div>
+                                <button class="btn btn-outline-primary btn-sm" @onclick="() => NavigateToEmployee(employee.Id)">
+                                    <i class="bi bi-person"></i> View Profile
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
         </div>
-    </section>
-}
-else
-{
-    <p>Loading company information...</p>
-}
+    }
+    else
+    {
+        <p class="text-danger">No employees found.</p>
+    }
+</div>
 
 @code {
     [Parameter] public int UserId { get; set; }
-    
     [Parameter] public int CompanyId { get; set; }
     
-    private CompanyViewModel? _company;
+    private bool _isLoading = true;
+    private string _searchQuery = string.Empty;
+    private ICollection<CompanyUserViewModel>? _employees;
+    private ICollection<ProjectViewModel>? _projects;
+    private ICollection<PostViewModel>? _posts;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        _company = await WorkPageService.GetCompanyAsync(CompanyId);
-        await WorkPageService.FillProjectsAsync(_company.Projects);
-        await WorkPageService.FillTeamsAsync(_company.Projects);
-        await WorkPageService.FillCompanyUsersAsync(_company.Projects);
-    }
-
-    private async Task SendMessageToUser(int userId)
-    {
-        // await MessageService.OpenChatWithUserAsync(userId);
-    }
-
-    private string GetWorkDuration(CompanyUserViewModel user)
-    {
-        if (user.CreateAt.HasValue)
+        _isLoading = true;
+        try
         {
-            var duration = DateTime.Now - user.CreateAt.Value;
-            return $"{duration.Days} days";
+            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+            _posts = await WorkPageService.GetPostsAsync(CompanyId);
         }
-        return "Unknown";
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void NavigateToEmployee(int employeeId)
+    {
+        NavigationManager.NavigateTo($"/employees/{employeeId}");
     }
 }
-
-
-<style>
-    .company-info {
-        padding: 20px;
-        background-color: #f7f9fc;
-        border-radius: 8px;
-    }
-
-    .company-logo {
-        max-width: 100px;
-        border-radius: 50%;
-        margin: 10px 0;
-    }
-
-    .projects-container {
-        margin-top: 20px;
-    }
-
-    .project {
-        padding: 10px;
-        border: 1px solid #e1e4e8;
-        border-radius: 5px;
-        margin-bottom: 10px;
-    }
-
-    .teams-container {
-        margin-left: 15px;
-    }
-
-    .employee-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: 5px;
-    }
-
-    .send-message-btn {
-        padding: 5px 10px;
-        background-color: #2980b9;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .send-message-btn:hover {
-        background-color: #1a5276;
-    }
-
-    .work-duration {
-        font-style: italic;
-        color: #7f8c8d;
-    }
-
-    .company-title {
-        display: flex;
-        align-content: space-around;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .company-title img {
-        margin-right: 50px;
-    }
-    
-</style>

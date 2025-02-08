@@ -14,17 +14,17 @@ public class Seed : ISeed
 
     private readonly List<CompanyRole> _companyRoles =
     [
-        new CompanyRole
+        new()
         {
             Title = "Owner",
             IsBaseRole = true
         },
-        new CompanyRole
+        new()
         {
             Title = "Developer",
             IsBaseRole = true
         },
-        new CompanyRole
+        new()
         {
             Title = "Designer",
             IsBaseRole = true
@@ -56,7 +56,8 @@ public class Seed : ISeed
         var rand = new Random();
 
         // Генерация компаний
-        for (var i = 0; i < 5; i++)
+        var postId = 1;
+        for (var i = 0; i < 5; i++, postId++)
         {
             var company = companyFaker.Generate();
             
@@ -91,7 +92,7 @@ public class Seed : ISeed
             foreach (var user in companyUsers)
             {
                 user.Company = company;
-
+                user.PostId = rand.Next(postId, postId + 2);
                 user.CompanyRole = roles[rand.Next(0, roles.Count)];
                 
                 await _context.CompanyUsers.AddAsync(user);
