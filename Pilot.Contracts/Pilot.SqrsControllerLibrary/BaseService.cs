@@ -5,17 +5,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
 
 namespace Pilot.SqrsControllerLibrary;
 
 public static class AddBaseService
 {
-    public static void AddBaseServices<TDb, TMapper, TProgram>(this WebApplicationBuilder builder) where TDb : DbContext where TMapper : Profile
+    public static void AddBaseServices<TDb, TMapper, TProgram>(this WebApplicationBuilder builder)
+        where TDb : DbContext where TMapper : Profile
     {
         var services = builder.Services;
         var configuration = builder.Configuration;
-        
+
         var assembly = typeof(TProgram).Assembly;
         services.AddMediatR(cfg =>
         {
@@ -23,7 +27,7 @@ public static class AddBaseService
             cfg.NotificationPublisher = new TaskWhenAllPublisher();
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
-        
+
         services.AddDbContext<TDb>(option => option.UseMySql(
                 configuration["MySql:ConnectionString"],
                 new MySqlServerVersion(new Version(8, 0, 11))
@@ -32,12 +36,7 @@ public static class AddBaseService
             .EnableDetailedErrors()
         );
 
-        builder.Logging.ClearProviders();
-        builder.Logging.AddSerilog(new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File("logs/test-log.txt")
-            .WriteTo.Debug()
-            .CreateLogger());
+        builder.AddBaseLogService<TProgram>();
 
         services.AddMassTransit(x =>
         {

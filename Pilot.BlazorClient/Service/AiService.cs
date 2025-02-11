@@ -22,6 +22,7 @@ public class AiService : IAiService
         };
 
         _client = new ChatClient(Model, new ApiKeyCredential("Should be empty"), clientOptions);
+        
     }
 
     public async Task SendMessageAsync(string prompt, MessageViewModel message,

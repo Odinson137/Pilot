@@ -14,6 +14,7 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.InvalidationCacheRedisLibrary;
+using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
@@ -41,8 +42,8 @@ services.AddHttpClient(ServiceName.CapabilityServer.ToString(),
 services.AddHttpClient(ServiceName.BackgroundJobService.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("BackgroundJobServiceUrl")!); });
 
-services.AddTransient<IModelService, ModelService>();
-services.AddTransient<IBaseHttpService, BaseHttpService>();
+services.AddScoped<IModelService, ModelService>();
+services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
@@ -56,8 +57,6 @@ services.AddMediatR(cfg =>
     cfg.NotificationPublisher = new TaskWhenAllPublisher();
     cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
 });
-
-// services.AddQueryHandlers(typeof(BaseDto).Assembly);
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
@@ -107,6 +106,8 @@ services.AddTransient<IToken, TokenService>();
 
 services.AddScoped<IFileService, FileService>();
 
+builder.AddBaseLogService<Program>();
+
 var app = builder.Build();
 
 app.UseExceptionHandler(errorApp =>
@@ -129,8 +130,6 @@ app.UseExceptionHandler(errorApp =>
         }
     });
 });
-
-await app.Services.GetRequiredService<ISeed>().Seeding();
 
 app.UseSwagger();
 app.UseSwaggerUI();
