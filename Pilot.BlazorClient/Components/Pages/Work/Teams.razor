@@ -1,0 +1,231 @@
+﻿@page "/teams"
+@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@inject IWorkPageService WorkPageService
+
+<link href="../Components/Pages/Work/Teams.razor.css"/>
+
+<div class="container mt-5 mb-5" style="max-width: 1000px;">
+    <div class="text-center mb-4">
+        <h1 class="display-4 text-primary">Teams</h1>
+        <p class="text-muted">Manage your teams and their members.</p>
+    </div>
+
+    <div class="mb-4">
+        <div class="input-group">
+            <input @bind="_searchQuery" class="form-control" placeholder="Search teams..."/>
+            <button class="btn btn-outline-primary" type="button" @onclick="Search">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Teams Section -->
+    <div class="mb-5">
+        <button class="btn btn-success mb-3" @onclick="OpenCreateTeamModal">
+            <i class="bi bi-plus-circle"></i> Create New Team
+        </button>
+
+        @if (_teams != null && _teams.Any())
+        {
+            @foreach (var team in _teams)
+            {
+                <div class="card mb-3 border-primary shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@team.Name</h5>
+                        <p class="card-text">@team.Description</p>
+
+                        <h6>Members:</h6>
+                        @if (team.CompanyUsers.Any())
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @foreach (var member in team.CompanyUsers)
+                                {
+                                    <div class="position-relative">
+                                        <div class="badge bg-secondary p-2">
+                                            <div class="avatar-container">
+                                                <img src="@TempFileService.GetUrl(member.User!.AvatarImage)" alt="User image"/>
+                                            </div>
+                                            @member.User?.FullName
+                                            <span class="remove-member"
+                                                  @onclick="() => RemoveMemberFromTeam(team.Id, member.Id)">×</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No members in this team.</p>
+                        }
+
+                        <div class="mt-3">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Select a member to add
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    @foreach (var member in _availableMembers)
+                                    {
+                                        <li>
+                                            <div class="dropdown-item" @onclick="() => SelectMember(member.Id, team.Id)">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-container me-2">
+                                                        <img width="30px" height="30px" src="@TempFileService.GetUrl(member.User!.AvatarImage)" alt="User image" class="rounded-circle"/>
+                                                    </div>
+                                                    <span>@member.User?.FullName</span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-muted">No teams found.</p>
+        }
+    </div>
+</div>
+
+<!-- Modal for creating a new team -->
+<Modal @ref="_createTeamModal" Title="Create New Team">
+    <EditForm Model="_newTeam" OnValidSubmit="CreateTeam">
+        <div class="mb-3">
+            <label for="teamName" class="form-label">Team Name</label>
+            <InputText id="teamName" class="form-control" @bind-Value="_newTeam.Name"/>
+        </div>
+        <div class="mb-3">
+            <label for="teamDescription" class="form-label">Description</label>
+            <InputTextArea id="teamDescription" class="form-control" @bind-Value="_newTeam.Description"/>
+        </div>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </EditForm>
+</Modal>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+
+    private string _searchQuery = string.Empty;
+    private ICollection<TeamViewModel>? _teams;
+    private ICollection<CompanyUserViewModel>? _availableMembers;
+    private Modal _createTeamModal;
+    private TeamViewModel _newTeam = new();
+    private int _selectedMemberId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+        _availableMembers = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+        foreach (var team in _teams)
+        {
+            var ids = team.CompanyUsers.Select(c => c.Id).ToArray();
+            team.CompanyUsers = _availableMembers.Where(c => ids.Contains(c.Id)).ToList();
+        }
+    }
+
+    private void OpenCreateTeamModal()
+    {
+        _newTeam = new TeamViewModel();
+        _createTeamModal.Open();
+    }
+
+    private async Task CreateTeam()
+    {
+        // Logic to create a new team
+        _createTeamModal.Close();
+        // _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+    }
+
+    private void Search()
+    {
+        if (!string.IsNullOrEmpty(_searchQuery))
+            _teams = _teams?.Where(c => c.Name.Contains(_searchQuery)).ToList();
+    }
+
+    private async Task AddMemberToTeam(int employeeId, int teamId)
+    {
+        var team = _teams?.FirstOrDefault(c => c.Id == teamId);
+        var user = _availableMembers?.FirstOrDefault(c => c.Id == employeeId);
+        if (team == null || user == null) return;
+        var teamEmployee = new TeamEmployeeViewModel
+        {
+            CompanyUser = user,
+            Team = team
+        };
+        team.CompanyUsers.Add(user);
+        await WorkPageService.AddTeamEmployeeAsync(teamEmployee);
+    }
+
+    private async Task RemoveMemberFromTeam(int teamId, int memberId)
+    {
+        // Logic to remove a member from the team
+        // _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+    }
+
+    private async Task SelectMember(int memberId, int teamId)
+    {
+        _selectedMemberId = memberId;
+        await AddMemberToTeam(memberId, teamId);
+    }
+}
+
+<style>
+    .remove-member {
+        display: none;
+        cursor: pointer;
+        margin-left: 5px;
+        color: red;
+    }
+
+    .position-relative:hover .remove-member {
+        display: inline-block;
+    }
+
+
+    .avatar-container {
+        display: inline-block;
+        width: 40px; /* Размер контейнера */
+        height: 40px; /* Размер контейнера */
+        border-radius: 50%; /* Делаем контейнер круглым */
+        overflow: hidden; /* Обрезаем изображение, чтобы оно не выходило за границы */
+        margin-right: 10px; /* Отступ между изображением и текстом */
+        border: 2px solid #fff; /* Белая рамка вокруг изображения */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Тень для эффекта "выступания" */
+    }
+
+    .avatar-container img {
+        width: 100%; /* Заполняем контейнер */
+        height: 100%; /* Заполняем контейнер */
+        object-fit: cover; /* Обрезаем изображение, чтобы оно заполняло контейнер */
+    }
+
+    .badge {
+        display: flex;
+        align-items: center; /* Выравниваем элементы по центру */
+        padding: 8px 12px; /* Отступы внутри блока */
+        border-radius: 20px; /* Скругляем углы блока */
+        background-color: #f8f9fa; /* Цвет фона */
+        border: 1px solid #dee2e6; /* Граница блока */
+    }
+
+    .remove-member {
+        display: none;
+        cursor: pointer;
+        margin-left: 5px;
+        color: red;
+    }
+
+    .position-relative:hover .remove-member {
+        display: inline-block;
+    }
+    
+    
+</style>

@@ -14,7 +14,8 @@ public class WorkPageService(
     IBaseModelService<JobApplicationViewModel> jobApplicationService,
     IBaseModelService<CompanyPostViewModel> companyPostService,
     IBaseModelService<PostViewModel> postService,
-    IBaseModelService<ProjectViewModel> projectService
+    IBaseModelService<ProjectViewModel> projectService,
+    IBaseModelService<TeamEmployeeViewModel> teamEmployeeService
 ) : IWorkPageService
 {
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
@@ -165,5 +166,21 @@ public class WorkPageService(
     {
         var posts = await postService.GetValuesAsync(predicate: c => c.CompanyId, companyId);
         return posts;
+    }
+
+    public async Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId)
+    {
+        var teams = await teamService.GetValuesAsync(predicate: c => c.Project.Company.Id, companyId);
+        return teams;
+    }
+
+    public async Task AddTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee)
+    {
+        await teamEmployeeService.CreateValueAsync(teamEmployee);
+    }
+    
+    public async Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee)
+    {
+        await teamEmployeeService.DeleteValueAsync(teamEmployee.Id);
     }
 }

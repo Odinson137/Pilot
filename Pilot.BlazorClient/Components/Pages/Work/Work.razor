@@ -67,9 +67,12 @@ else
                             Projects
                         </li>
                         <li @onclick="() => SetActiveTab(6)" class="@GetActiveClass(6)">
-                            Employees
+                            Teams
                         </li>
                         <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">
+                            Employees
+                        </li>
+                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">
                             Vacancy
                         </li>
                         <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">
@@ -100,9 +103,12 @@ else
                             <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                         case 6:
-                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                         case 7:
+                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                            break;
+                        case 8:
                             <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                             break;
                         case 10:
@@ -233,7 +239,7 @@ else
         flex-grow: 1;
         padding: 20px;
         border-radius: 15px;
-        background-color: #93cbd9;
+        background-color: #deeaed;
         display: flex;
         flex-direction: column;
     }

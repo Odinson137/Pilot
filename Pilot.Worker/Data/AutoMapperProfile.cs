@@ -20,5 +20,6 @@ public class AutoMapperProfile : BaseMappingProfile
         Mapping<HistoryAction, HistoryActionDto>();
         Mapping<CompanyRole, CompanyRoleDto>();
         Mapping<TaskInfo, TaskInfoDto>();
+        Mapping<TeamEmployee, TeamEmployeeDto>();
     }
 }

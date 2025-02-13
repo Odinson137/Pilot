@@ -1,18 +1,19 @@
-﻿@page "/projects-teams"
+﻿@page "/projects"
+@using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @inject IWorkPageService WorkPageService
 
 <div class="container mt-5 mb-5" style="max-width: 1000px;">
     <div class="text-center mb-4">
-        <h1 class="display-4 text-primary">Projects and Teams</h1>
-        <p class="text-muted">Manage projects and their associated teams.</p>
+        <h1 class="display-4 text-primary">Projects</h1>
+        <p class="text-muted">Manage your projects and their associated teams.</p>
     </div>
 
     <!-- Search Bar -->
     <div class="mb-4">
         <div class="input-group">
-            <input @bind="_searchQuery" class="form-control" placeholder="Search projects or teams..."/>
+            <input @bind="_searchQuery" class="form-control" placeholder="Search projects..."/>
             <button class="btn btn-outline-primary" type="button">
                 <i class="bi bi-search"></i>
             </button>
@@ -21,7 +22,10 @@
 
     <!-- Projects Section -->
     <div class="mb-5">
-        <h3 class="text-success">Projects</h3>
+        <button class="btn btn-success mb-3" @onclick="OpenCreateProjectModal">
+            <i class="bi bi-plus-circle"></i> Create New Project
+        </button>
+
         @if (_projects != null && _projects.Any())
         {
             @foreach (var project in _projects)
@@ -30,8 +34,8 @@
                     <div class="card-body">
                         <h5 class="card-title text-success">@project.Name</h5>
                         <p class="card-text">@project.Description</p>
-                        <p class="text-muted"><strong>Status:</strong> <span
-                                class="badge bg-info">@project.ProjectStatus</span></p>
+                        <p class="text-muted"><strong>Status:</strong> <span class="badge bg-info">@project.ProjectStatus</span></p>
+
                         <h6>Teams:</h6>
                         @if (project.Teams.Any())
                         {
@@ -41,9 +45,7 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span><strong>@team.Name</strong> - @team.Description</span>
                                         <div>
-                                            <button class="btn btn-outline-primary btn-sm"
-                                                    @onclick="() => EditTeam(team.Id)">Edit
-                                            </button>
+                                            <button class="btn btn-outline-primary btn-sm" @onclick="() => EditTeam(team.Id)">Edit</button>
                                         </div>
                                     </li>
                                 }
@@ -61,32 +63,61 @@
         {
             <p class="text-muted">No projects found.</p>
         }
-        <button class="btn btn-success" @onclick="AddProject">
-            <i class="bi bi-plus-circle"></i> Add New Project
-        </button>
     </div>
 </div>
+
+<!-- Modal for creating a new project -->
+<Modal @ref="_createProjectModal" Title="Create New Project">
+        <EditForm Model="_newProject" OnValidSubmit="CreateProject">
+            <div class="mb-3">
+                <label for="projectName" class="form-label">Project Name</label>
+                <InputText id="projectName" class="form-control" @bind-Value="_newProject.Name" />
+            </div>
+            <div class="mb-3">
+                <label for="projectDescription" class="form-label">Description</label>
+                <InputTextArea id="projectDescription" class="form-control" @bind-Value="_newProject.Description" />
+            </div>
+            <div class="mb-3">
+                <label for="projectStatus" class="form-label">Status</label>
+                <InputSelect id="projectStatus" class="form-control" @bind-Value="_newProject.ProjectStatus">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                    <option value="Completed">Completed</option>
+                </InputSelect>
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+</Modal>
 
 @code {
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
-    
+
     private string _searchQuery = string.Empty;
     private ICollection<ProjectViewModel>? _projects;
+    private Modal _createProjectModal;
+    private ProjectViewModel _newProject = new();
 
     protected override async Task OnInitializedAsync()
     {
         _projects = await WorkPageService.GetProjectsAsync(CompanyId);
     }
 
-    private void AddProject()
+    private void OpenCreateProjectModal()
     {
-        // Logic for adding a new project
+        _newProject = new ProjectViewModel();
+        _createProjectModal.Open();
+    }
+
+    private async Task CreateProject()
+    {
+        // Logic to create a new project
+        _createProjectModal.Close();
+        _projects = await WorkPageService.GetProjectsAsync(CompanyId);
     }
 
     private void EditTeam(int teamId)
     {
         // Logic for editing a team
     }
-
 }

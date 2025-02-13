@@ -33,6 +33,7 @@ public class AutoMapperProfile : Profile
         Mapping<ChatReminderViewModel, ChatReminderDto>();
         Mapping<JobApplicationViewModel, JobApplicationDto>();
         Mapping<FileViewModel, FileDto>();
+        Mapping<TeamEmployeeViewModel, TeamEmployeeDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

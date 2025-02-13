@@ -32,7 +32,21 @@ public sealed class DataContext : DbContext
         builder.Entity<ProjectTask>()
             .HasOne(pt => pt.CreatedBy)
             .WithMany()
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<CompanyUser>()
+            .HasMany(cu => cu.Teams)
+            .WithMany(t => t.CompanyUsers)
+            .UsingEntity<TeamEmployee>(
+                j => j
+                    .HasOne(te => te.Team)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade),
+                j => j
+                    .HasOne(te => te.CompanyUser)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Cascade));
+
     }
 
     public DbSet<Project> Projects { get; set; }

@@ -1,9 +1,9 @@
-﻿using %ProjectFullName%..Interface;
-using %ProjectFullName%..Models;
+﻿using %ProjectFullName%.Interface;
+using %ProjectFullName%.Models;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.SqrsControllerLibrary.Handlers;
 
-namespace %ProjectFullName%..Handlers;
+namespace %ProjectFullName%.Handlers;
 
 public class Handler : ModelQueryHandler<%ModelName%, %ModelName%Dto>
 {

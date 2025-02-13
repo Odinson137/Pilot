@@ -26,6 +26,7 @@ services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
 services.AddScoped<ICompanyRole, CompanyRoleRepository>();
 services.AddScoped<ITaskInfo, TaskInfoRepository>();
+services.AddScoped<ITeamEmployee, TeamEmployeeRepository>();
 
 services.AddScoped<IValidatorService, ValidatorService>();
 

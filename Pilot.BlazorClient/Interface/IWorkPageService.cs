@@ -29,4 +29,10 @@ public interface IWorkPageService
         ICollection<JobApplicationViewModel> jobApplications);
 
     Task<ICollection<PostViewModel>> GetPostsAsync(int companyId);
+    
+    Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId);
+    
+    Task AddTeamEmployeeAsync(TeamEmployeeViewModel team);
+
+    Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
 }
