@@ -1,5 +1,14 @@
 # Pilot Project
 
+# Pilot: Project Management System
+
+[![.NET](https://img.shields.io/badge/.NET-5C2D91?style=flat&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![RabbitMQ](https://img.shields.io/badge/Rabbitmq-FF6600?style=flat&logo=rabbitmq&logoColor=white)](https://www.rabbitmq.com/)
+[![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?&style=flat&logo=redis&logoColor=white)](https://redis.io/)
+
+---
+
 ## Overview
 The **Pilot** project is a robust microservice-based solution for project management, aimed at organizations involved in software development, service provision, and other team-oriented activities. The platform enables efficient collaboration through features like task management, team communication, and progress tracking.
 
@@ -45,7 +54,7 @@ The Pilot project follows a **microservice architecture** and consists of the fo
 ## Technology Stack
 - **Backend**: ASP.NET Core, MediatR, SignalR, MassTransit.
 - **Frontend**: Blazor WebAssembly.
-- **Databases**: MySQL, Redis, MongoDB.
+- **Databases**: MySQL, Redis, MSSql.
 - **Queue Management**: RabbitMQ.
 - **Caching**: Redis.
 - **File Storage**: Google Cloud Storage.
@@ -54,7 +63,7 @@ The Pilot project follows a **microservice architecture** and consists of the fo
 
 ## Deployment
 ### Prerequisites
-- Docker and Docker Compose installed.
+- [Docker](https://www.docker.com/get-started) for containerization
 
 ### Steps
 1. Clone the repository:
