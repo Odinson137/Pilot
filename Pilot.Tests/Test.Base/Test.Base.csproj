@@ -41,6 +41,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\Pilot.Api\Pilot.Api.csproj"/>
+        <ProjectReference Include="..\..\Pilot.AuditHistory\Pilot.AuditHistory.csproj" />
         <ProjectReference Include="..\..\Pilot.BackgroundJob\Pilot.BackgroundJob.csproj" />
         <ProjectReference Include="..\..\Pilot.Capability\Pilot.Capability.csproj" />
         <ProjectReference Include="..\..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>

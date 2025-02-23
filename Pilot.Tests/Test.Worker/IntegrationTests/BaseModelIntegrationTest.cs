@@ -16,8 +16,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     where T : BaseModel where TDto : BaseDto
 {
     public BaseModelReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
-        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) : base(
-        workerTestWorkerFactory, identityFactory, storageFactory)
+        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory,
+        WorkerTestAuditHistoryFactory auditHistoryFactory) : base(
+        workerTestWorkerFactory, identityFactory, storageFactory, auditHistoryFactory)
     {
         AssertReceiverContext.Database.EnsureDeleted();
         AssertReceiverContext.Database.EnsureCreated();

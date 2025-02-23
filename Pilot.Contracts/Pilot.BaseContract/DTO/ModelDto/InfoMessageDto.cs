@@ -8,9 +8,17 @@ namespace Pilot.Contracts.DTO.ModelDto;
 [FromService(ServiceName.MessengerServer)]
 public class InfoMessageDto : BaseDto
 {
-    [Required] [MaxLength(100)] public string Title { get; set; } = null!;
+    public string Title => $"Успешное {Action}";
 
-    [MaxLength(500)] public string? Description { get; set; }
+    private string Action => MessagePriority switch
+    {
+        MessageInfo.Create => "создание",
+        MessageInfo.Update => "обновление",
+        MessageInfo.Default => "удаление",
+        _ => string.Empty
+    };
+
+    [MaxLength(500)] public string Description => $"Успешное {Action} сущности {EntityType}";
 
     [Required] public MessageInfo MessagePriority { get; set; }
 

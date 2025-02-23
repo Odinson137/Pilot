@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Capability.Data;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
@@ -34,6 +35,9 @@ public class CapabilityTestCapabilityFactory : WebApplicationFactory<Program>
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
             services.RemoveAll<IModelService>(); 
             services.AddScoped<IModelService, ModelServiceFaker>();
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 }

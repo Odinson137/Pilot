@@ -15,4 +15,6 @@ public enum ServiceName
     CapabilityServer = 5,
 
     BackgroundJobService = 6,
+    
+    AuditHistoryService = 7,
 }

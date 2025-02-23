@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Pilot.Storage.Data;
 using Test.Base.IntegrationBase;
@@ -35,6 +36,9 @@ public class StorageTestStorageFactory : WebApplicationFactory<Pilot.Storage.Pro
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 

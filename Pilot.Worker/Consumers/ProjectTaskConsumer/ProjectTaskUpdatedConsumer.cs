@@ -1,18 +1,13 @@
-﻿using AutoMapper;
+﻿using MediatR;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Interfaces;
 using Pilot.Worker.Consumers.Base;
-using Pilot.Worker.Interface;
 using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Consumers.ProjectTaskConsumer;
 
 public class ProjectTaskUpdatedConsumer(
     ILogger<ProjectTaskUpdatedConsumer> logger,
-    IProjectTask repository,
-    IMessageService message,
-    IValidatorService validate,
-    IMapper mapper)
-    : BaseUpdateConsumer<ProjectTask, ProjectTaskDto>(logger, repository, message, validate, mapper)
+    IMediator mediator)
+    : BaseUpdateConsumer<ProjectTask, ProjectTaskDto>(logger, mediator)
 {
 }

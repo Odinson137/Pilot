@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Pilot.Messenger.Data;
 using Test.Base.IntegrationBase;
@@ -42,6 +43,9 @@ public class MessageTestMessageFactory : WebApplicationFactory<Pilot.Messenger.P
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 

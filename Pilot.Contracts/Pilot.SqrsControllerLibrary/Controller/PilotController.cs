@@ -26,7 +26,7 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [ProducesResponseType(404)]
     public virtual async Task<IActionResult> UpdateValue(TDto valueDto, CancellationToken token)
     {
-        await Mediator.Send(new UpdateCommand<TDto>(valueDto, UserId), token);
+        await Mediator.Send(new UpdateCommand<TDto>(valueDto, UserId, Guid.NewGuid()), token);
         return Ok($"The {typeof(TDto).Name} will edit soon");
     }
 

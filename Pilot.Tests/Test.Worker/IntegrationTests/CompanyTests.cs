@@ -9,11 +9,14 @@ namespace Test.Worker.IntegrationTests;
 public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
 {
     /// <inheritdoc />
-    public CompanyTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) :
-        base(workerTestWorkerFactory, identityFactory, storageFactory)
+    public CompanyTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory,
+        WorkerTestStorageFactory storageFactory,
+        WorkerTestAuditHistoryFactory auditHistoryFactory
+        ) :
+        base(workerTestWorkerFactory, identityFactory, storageFactory, auditHistoryFactory)
     {
     }
-    
+
     [Fact]
     public override async Task GetValue_ReturnOk()
     {
@@ -41,7 +44,7 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
         Assert.NotNull(content);
         Assert.Equal(id, content.Id);
     }
-    
+
     // TODO потом просто сделать так, как я сделал в тестировании fileurl для всех моделей
     // protected override async ValueTask GetArrangeDop(ICollection<Company> values)
     // {

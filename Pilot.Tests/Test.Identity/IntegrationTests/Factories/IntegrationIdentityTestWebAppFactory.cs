@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Pilot.Identity;
 using Pilot.Identity.Data;
@@ -26,6 +27,9 @@ public class IntegrationIdentityTestWebAppFactory : WebApplicationFactory<Progra
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 }

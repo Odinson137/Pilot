@@ -5,7 +5,6 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
-using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.BackgroundJob.Consumers.ChatReminder;
@@ -23,7 +22,6 @@ public class ChatReminderCreatedConsumer(
     public virtual async Task Consume(ConsumeContext<CreateCommandMessage<ChatReminderDto>> context)
     {
         logger.LogInformation($"{nameof(ChatReminder)} create consume");
-        logger.LogClassInfo(context.Message);
 
         var reminderDto = context.Message.Value;
         
@@ -56,8 +54,6 @@ public class ChatReminderCreatedConsumer(
         
         var message = new InfoMessageDto
         {
-            Title = "Успешное создание ремайндера!",
-            Description = "Успешное создание ремайндера",
             MessagePriority = MessageInfo.Success | MessageInfo.Create,
             EntityType = PilotEnumExtensions.GetModelEnumValue<Models.ChatReminder>(),
             EntityId = reminder.Id

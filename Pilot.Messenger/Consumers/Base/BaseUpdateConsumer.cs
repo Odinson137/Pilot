@@ -47,8 +47,6 @@ public abstract class BaseUpdateConsumer<T, TDto>(
 
         var message = new InfoMessageDto
         {
-            Title = "Успешное обновление!",
-            Description = $"Успешное обновление сущности {typeof(T).Name}'",
             MessagePriority = MessageInfo.Success | MessageInfo.Update,
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
             EntityId = model.Id

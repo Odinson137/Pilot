@@ -12,5 +12,6 @@ public enum MessageInfo
     Update = 32,
     Delete = 64,
     Validate = 128,
-    Notification = 256
+    Notification = 256,
+    NotFound = 512,
 }

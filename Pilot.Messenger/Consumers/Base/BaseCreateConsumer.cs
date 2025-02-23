@@ -54,8 +54,6 @@ public abstract class BaseCreateConsumer<T, TDto> : IConsumer<CreateCommandMessa
 
         var message = new InfoMessageDto
         {
-            Title = "Успешное создание!",
-            Description = $"Успешное создание сущности '{typeof(T).Name}'",
             MessagePriority = MessageInfo.Success | MessageInfo.Create,
             EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
             EntityId = model.Id

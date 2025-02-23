@@ -3,4 +3,4 @@ using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;
 
-public record UpdateCommand<TDto>(TDto ValueDto, int UserId) : ICommand<TDto> where TDto : BaseDto;
+public record UpdateCommand<TDto>(TDto ValueDto, int UserId, Guid SagaId) : ICommand<TDto> where TDto : BaseDto;

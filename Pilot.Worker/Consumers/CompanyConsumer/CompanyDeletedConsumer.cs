@@ -1,15 +1,12 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Interfaces;
+﻿using MediatR;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Worker.Consumers.Base;
-using Pilot.Worker.Interface;
 
 namespace Pilot.Worker.Consumers.CompanyConsumer;
 
 public class CompanyDeletedConsumer(
     ILogger<CompanyDeletedConsumer> logger,
-    ICompany company,
-    IMessageService message,
-    IValidatorService validate)
-    : BaseDeleteConsumer<Models.Company, CompanyDto>(logger, company, message, validate)
+    IMediator mediator)
+    : BaseDeleteConsumer<Models.Company, CompanyDto>(logger, mediator)
 {
 }

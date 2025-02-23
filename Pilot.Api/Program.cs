@@ -5,7 +5,6 @@ using MediatR.NotificationPublishers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
-using Pilot.Api.Behaviors;
 using Pilot.Api.Data;
 using Pilot.Api.Interfaces;
 using Pilot.Api.Services;
@@ -59,8 +58,8 @@ services.AddMediatR(cfg =>
 });
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ChangeFileBehavior<,>));
+// services.AddScoped(typeof(IPipelineBehavior<,>), typeof(HasFileBehavior<,>));
+// services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ChangeFileBehavior<,>));
 
 services.AddControllers();
 

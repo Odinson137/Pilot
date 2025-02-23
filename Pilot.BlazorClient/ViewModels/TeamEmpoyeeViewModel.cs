@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Pilot.BlazorClient.ViewModels;
+﻿namespace Pilot.BlazorClient.ViewModels;
 
 public class TeamEmployeeViewModel : BaseViewModel
 {

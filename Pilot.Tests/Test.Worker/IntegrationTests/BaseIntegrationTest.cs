@@ -11,7 +11,8 @@ namespace Test.Worker.IntegrationTests;
 public class BaseReceiverIntegrationTest : 
     IClassFixture<WorkerTestWorkerFactory>,
     IClassFixture<WorkerTestIdentityFactory>, 
-    IClassFixture<WorkerTestStorageFactory>
+    IClassFixture<WorkerTestStorageFactory>,
+    IClassFixture<WorkerTestAuditHistoryFactory>
 {
     protected readonly Pilot.Identity.Data.DataContext IdentityContext;
 
@@ -25,7 +26,8 @@ public class BaseReceiverIntegrationTest :
         => WorkerService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
     
     protected BaseReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,
-        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory)
+        WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory,
+        WorkerTestAuditHistoryFactory auditHistoryFactory)
     {
         WorkerService = workerTestWorkerFactory.Services;
         var workerScope = WorkerService.CreateScope();
@@ -37,12 +39,10 @@ public class BaseReceiverIntegrationTest :
         IdentityContext = identityScopeService.ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
         var identityClient = identityFactory.CreateClient();
 
-        var storageContext = storageFactory.Services.CreateScope().ServiceProvider.GetRequiredService<Pilot.Storage.Data.DataContext>();
-        var storageClient = storageFactory.CreateClient();
-
         WorkerMapper = workerScope.ServiceProvider.GetRequiredService<IMapper>();
 
         HttpSingleTone.Init.HttpClients[ServiceName.IdentityServer.ToString()] = identityClient;
-        HttpSingleTone.Init.HttpClients[ServiceName.StorageServer.ToString()] = storageClient;
+        HttpSingleTone.Init.HttpClients[ServiceName.StorageServer.ToString()] = storageFactory.CreateClient();
+        HttpSingleTone.Init.HttpClients[ServiceName.AuditHistoryService.ToString()] = auditHistoryFactory.CreateClient();
     }
 }

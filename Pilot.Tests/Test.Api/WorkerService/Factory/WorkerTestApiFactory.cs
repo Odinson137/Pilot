@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Api;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
@@ -53,6 +54,9 @@ public class WorkerTestApiFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
             services.RemoveAll<IModelService>(); 
             services.AddScoped<IModelService, ModelServiceFaker>();
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 }

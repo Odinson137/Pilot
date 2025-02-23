@@ -59,8 +59,6 @@ public class ChatReminderUpdateConsumer(
 
         var message = new InfoMessageDto
         {
-            Title = "Успешное обновление!",
-            Description = $"Успешное обновление сущности {nameof(Models.ChatReminder)}'",
             MessagePriority = MessageInfo.Success | MessageInfo.Update,
             EntityType = PilotEnumExtensions.GetModelEnumValue<Models.ChatReminder>(),
             EntityId = model.Id

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.BackgroundJob.Data;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
@@ -48,6 +49,9 @@ public class BackgroundJobTestBackgroundJobFactory : WebApplicationFactory<Pilot
             });
 
             services.AddHangfireServer();
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 

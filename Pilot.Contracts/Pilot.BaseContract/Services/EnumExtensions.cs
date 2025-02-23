@@ -33,4 +33,9 @@ public static class PilotEnumExtensions
     {
         return GetModelEnumValue(typeof(T).Name);
     }
+    
+    public static ModelType GetModelEnumDtoValue<TDto>() where TDto : BaseDto
+    {
+        return GetModelEnumValue(typeof(TDto).Name.Replace("Dto", ""));
+    }
 }

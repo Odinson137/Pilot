@@ -32,7 +32,11 @@ public interface IWorkPageService
     
     Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId);
     
-    Task AddTeamEmployeeAsync(TeamEmployeeViewModel team);
+    Task AddTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
+    
+    Task AddTeamAsync(TeamViewModel team);
 
     Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
+    
+    Task AddProjectAsync(ProjectViewModel project);
 }

@@ -7,8 +7,10 @@ namespace Test.Worker.IntegrationTests;
 public class TeamTests : BaseModelReceiverIntegrationTest<Team, TeamDto>
 {
     /// <inheritdoc />
-    public TeamTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory, WorkerTestStorageFactory storageFactory) : base(
-        workerTestWorkerFactory, identityFactory, storageFactory)
+    public TeamTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory,
+        WorkerTestStorageFactory storageFactory,
+        WorkerTestAuditHistoryFactory auditHistoryFactory) : base(
+        workerTestWorkerFactory, identityFactory, storageFactory, auditHistoryFactory)
     {
     }
 }

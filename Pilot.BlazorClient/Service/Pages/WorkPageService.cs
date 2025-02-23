@@ -178,9 +178,19 @@ public class WorkPageService(
     {
         await teamEmployeeService.CreateValueAsync(teamEmployee);
     }
-    
+
+    public async Task AddTeamAsync(TeamViewModel team)
+    {
+        await teamService.CreateValueAsync(team);
+    }
+
     public async Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee)
     {
         await teamEmployeeService.DeleteValueAsync(teamEmployee.Id);
+    }
+
+    public async Task AddProjectAsync(ProjectViewModel project)
+    {
+        await projectService.CreateValueAsync(project);
     }
 }

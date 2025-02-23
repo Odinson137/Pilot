@@ -8,20 +8,6 @@ namespace Pilot.Contracts.Validation;
 
 public static class Validation
 {
-    // public static async Task<AttributeError> Validate<T1, T2>(this BaseReadRepository<T1> context, params T2[] models) where T1 : BaseModel where T2 : BaseDto
-    // {
-    //     foreach (var model in models)
-    //     {
-    //         var attributeError  = context.Validate(model);
-    //         if (!(await attributeError).IsSuccessfully)
-    //         {
-    //             return attributeError;
-    //         }
-    //     }
-    //
-    //     return new AttributeError();
-    // }
-
     public static ValidateError DefaultValidate<TDto>(this TDto model) where TDto : BaseDto
     {
         var validationContext = new ValidationContext(model);

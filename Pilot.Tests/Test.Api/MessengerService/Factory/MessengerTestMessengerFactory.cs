@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
@@ -39,6 +40,9 @@ public class MessengerTestMessengerFactory : WebApplicationFactory<Program>
             
             services.RemoveAll<IBaseHttpService>(); 
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 }

@@ -136,6 +136,7 @@
             }
 
             isLoading = true;
+            await InvokeAsync(StateHasChanged);
             errorMessage = string.Empty;
             await UserPageService.Registration(RegistrationUser);
             await ProtectedSessionStore.SetAsync(ClientConstants.RegistrationUser, RegistrationUser);

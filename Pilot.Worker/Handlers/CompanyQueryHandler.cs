@@ -5,9 +5,9 @@ using Pilot.Worker.Interface;
 
 namespace Pilot.Worker.Handlers;
 
-public class CompanyHandler : ModelQueryHandler<Company, CompanyDto>
+public class CompanyQueryHandler : ModelQueryHandler<Company, CompanyDto>
 {
-    public CompanyHandler(ICompany repository, ILogger<CompanyHandler> logger) : base(repository, logger)
+    public CompanyQueryHandler(ICompany repository, ILogger<CompanyQueryHandler> logger) : base(repository, logger)
     {
     }
 }

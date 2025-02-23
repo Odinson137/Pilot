@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services;
 using Pilot.Storage.Interface;

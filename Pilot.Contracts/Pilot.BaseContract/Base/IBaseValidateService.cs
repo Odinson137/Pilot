@@ -7,5 +7,7 @@ public interface IBaseValidatorService
     
     public Task FillValidateAsync<T>(T model) where T : BaseModel;
 
-    public Task<T> DeleteValidateAsync<T>(int modelId) where T : BaseModel;
+    public Task<T> DeleteValidateAsync<T>(int modelId, CancellationToken token) where T : BaseModel;
+
+    Task ChangeEntityTrackerAsync<T>(T model) where T : BaseModel;
 }

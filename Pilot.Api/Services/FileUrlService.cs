@@ -10,7 +10,6 @@ using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.Interfaces;
-using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Api.Services;
 

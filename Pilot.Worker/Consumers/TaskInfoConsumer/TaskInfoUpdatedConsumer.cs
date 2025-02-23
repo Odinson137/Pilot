@@ -1,18 +1,13 @@
-﻿using AutoMapper;
+﻿using MediatR;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Interfaces;
 using Pilot.Worker.Consumers.Base;
-using Pilot.Worker.Interface;
 using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Consumers.TaskInfoConsumer;
 
 public class TaskInfoUpdatedConsumer(
     ILogger<TaskInfoUpdatedConsumer> logger,
-    ITaskInfo repository,
-    IMessageService message,
-    IValidatorService validate,
-    IMapper mapper)
-    : BaseUpdateConsumer<TaskInfo, TaskInfoDto>(logger, repository, message, validate, mapper)
+    IMediator mediator)
+    : BaseUpdateConsumer<TaskInfo, TaskInfoDto>(logger, mediator)
 {
 }

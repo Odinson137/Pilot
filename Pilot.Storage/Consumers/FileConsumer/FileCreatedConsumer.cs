@@ -33,8 +33,6 @@ public class FileCreatedConsumer(
 
         var message = new InfoMessageDto
         {
-            Title = "Успешное создание файла!",
-            Description = $"Успешное создание сущности '{nameof(File)}'",
             MessagePriority = MessageInfo.Success | MessageInfo.Create,
             EntityType = PilotEnumExtensions.GetModelEnumValue<File>(),
             EntityId = fileId

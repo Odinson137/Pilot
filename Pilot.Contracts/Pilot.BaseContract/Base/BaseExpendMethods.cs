@@ -2,13 +2,12 @@
 
 public static class BaseExpendMethods
 {
-    public static string GetModelName<T>(this T model) where T : BaseDto
+    public static string GetModelName<T>() where T : BaseId
     {
-        return typeof(T).Name[..^3];
-    }
-
-    public static string GetModelName<T>() where T : BaseDto
-    {
-        return typeof(T).Name[..^3];
+        if (typeof(T) == typeof(BaseModel))
+            return typeof(T).Name;
+        if (typeof(T) == typeof(BaseDto))
+            return typeof(T).Name.Replace("Dto", string.Empty);
+        throw new System.Exception("Неизвестный тип");
     }
 }

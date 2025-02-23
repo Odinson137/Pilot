@@ -1,6 +1,7 @@
 ﻿@page "/User/Login"
 <PageTitle>Login</PageTitle>
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.Service
@@ -11,77 +12,95 @@
 @inject NavigationManager NavigationManager
 @inject TokenAuthenticationStateProvider AuthenticationStateProvider
 
-<div style="max-width: 400px; margin: 100px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div
+    style="max-width: 400px; margin: 100px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
     <h3 style="text-align: center; margin-bottom: 20px;">Log In to Pilot</h3>
 
-    @if (_authorizedMessageVisible)
+    @if (_loading == true)
     {
-        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #c3e6cb; background-color: #d4edda; color: #155724; border-radius: 4px;">
-            Dear @_userName, You are now authorized. Please, log in.
-        </div>
+        <Loading/>
     }
-
-    @if (!string.IsNullOrEmpty(_errorMessage))
+    else
     {
-        <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24; border-radius: 4px;">
-            @_errorMessage
-        </div>
-    }
-    
-    <p style="text-align: center;">Sign in to access your projects and teams.</p>
-
-    <EditForm Model="@AuthorizationUser" method="post" OnValidSubmit="@HandleLogin" FormName="login">
-        <div style="margin-bottom: 15px; position: relative;">
-            <label for="UserName">Username</label>
-            <div style="position: relative;">
-                <i class="fas fa-user" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
-                <InputText id="UserName"
-                           style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-                           @bind-Value="AuthorizationUser.UserName" />
+        @if (_authorizedMessageVisible)
+        {
+            <div
+                style="margin-bottom: 15px; padding: 10px; border: 1px solid #c3e6cb; background-color: #d4edda; color: #155724; border-radius: 4px;">
+                Dear @_userName, You are now authorized. Please, log in.
             </div>
-        </div>
-        <div style="margin-bottom: 15px; position: relative;">
-            <label for="Password">Password</label>
-            <div style="position: relative;">
-                <i class="fas fa-lock" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
-                <InputText id="Password"
-                           type="password"
-                           style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-                           @bind-Value="AuthorizationUser.Password" />
+        }
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div
+                style="margin-bottom: 15px; padding: 10px; border: 1px solid #f5c6cb; background-color: #f8d7da; color: #721c24; border-radius: 4px;">
+                @_errorMessage
             </div>
-        </div>
-        <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-            Log In
-        </button>
-    </EditForm>
+        }
+
+        <p style="text-align: center;">Sign in to access your projects and teams.</p>
+
+        <EditForm Model="@AuthorizationUser" method="post" OnValidSubmit="@HandleLogin" FormName="login">
+            <div style="margin-bottom: 15px; position: relative;">
+                <label for="UserName">Username</label>
+                <div style="position: relative;">
+                    <i class="fas fa-user"
+                       style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                    <InputText id="UserName"
+                               style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+                               @bind-Value="AuthorizationUser.UserName"/>
+                </div>
+            </div>
+            <div style="margin-bottom: 15px; position: relative;">
+                <label for="Password">Password</label>
+                <div style="position: relative;">
+                    <i class="fas fa-lock"
+                       style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #666;"></i>
+                    <InputText id="Password"
+                               type="password"
+                               style="width: 100%; padding: 10px 10px 10px 35px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+                               @bind-Value="AuthorizationUser.Password"/>
+                </div>
+            </div>
+            <button type="submit"
+                    style="padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                Log In
+            </button>
+        </EditForm>
 
 
-    <p style="margin-bottom: 10px; text-align: center;">Or log in using:</p>
-    <div style="display: flex; gap: 10px; justify-content: center;">
-        <button style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 4px; background-color: #db4437; color: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+        <p style="margin-bottom: 10px; text-align: center;">Or log in using:</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button
+                style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 4px; background-color: #db4437; color: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
                 onclick="alert('Google login coming soon!')">
-            <i class="fab fa-google" style="margin-right: 8px;"></i> Google
-        </button>
+                <i class="fab fa-google" style="margin-right: 8px;"></i> Google
+            </button>
 
-        <button style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 4px; background-color: #333; color: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+            <button
+                style="flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 4px; background-color: #333; color: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
                 onclick="alert('GitHub login coming soon!')">
-            <i class="fab fa-github" style="margin-right: 8px;"></i> GitHub
-        </button>
-    </div>
+                <i class="fab fa-github" style="margin-right: 8px;"></i> GitHub
+            </button>
+        </div>
 
-    <p style="margin-top: 20px; text-align: center;">
-        Don't have an account? <a href="/User/Registration" style="color: #007bff; text-decoration: none;">Register</a>
-    </p>
+        <p style="margin-top: 20px; text-align: center;">
+            Don't have an account? <a href="/User/Registration"
+                                      style="color: #007bff; text-decoration: none;">Register</a>
+        </p>
+    }
 </div>
 
 @code {
     public readonly AuthorizationUserViewModel AuthorizationUser = new();
     private bool _authorizedMessageVisible;
     private string? _userName;
+    private bool? _loading;
     private string _errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
+        _loading = true;
         var registerUser = await ProtectedSessionStore.GetAsync<RegistrationUserViewModel>(ClientConstants.RegistrationUser);
 
         if (registerUser.Success)
@@ -92,11 +111,12 @@
             _authorizedMessageVisible = true;
             await ProtectedSessionStore.DeleteAsync(ClientConstants.RegistrationUser);
         }
-        
+        _loading = false;
     }
 
     private async Task HandleLogin()
     {
+        _loading = true;
         try
         {
             var auth = await UserPageService.Authorization(AuthorizationUser);
@@ -109,5 +129,10 @@
             _errorMessage = ex.Message.Replace("\"", "");
             Logger.LogError(ex, "Error during login");
         }
+        finally
+        {
+            _loading = false;
+        }
     }
+
 }

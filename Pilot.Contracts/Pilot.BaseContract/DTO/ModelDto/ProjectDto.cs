@@ -16,7 +16,7 @@ public class ProjectDto : BaseDto
 
     public BaseDto Company { get; set; } = null!;
     
-    public BaseDto CreatedBy { get; set; } = null!;
+    public BaseDto? CreatedBy { get; set; } = null!;
 
     public ProjectStatus ProjectStatus { get; set; }
 }

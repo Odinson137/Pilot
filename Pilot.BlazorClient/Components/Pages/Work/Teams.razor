@@ -105,6 +105,10 @@
             <label for="teamDescription" class="form-label">Description</label>
             <InputTextArea id="teamDescription" class="form-control" @bind-Value="_newTeam.Description"/>
         </div>
+        <div class="mb-3">
+            <label for="teamName" class="form-label">Project</label>
+            <InputSelect id="project" class="form-control" @bind-Value="_availableMembers" DisplayName="@nameof(TeamViewModel.Name)"/>
+        </div>
         <button type="submit" class="btn btn-primary">Create</button>
     </EditForm>
 </Modal>
@@ -139,15 +143,14 @@
 
     private async Task CreateTeam()
     {
-        // Logic to create a new team
         _createTeamModal.Close();
-        // _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+        await WorkPageService.AddTeamAsync(_newTeam);
+        _teams = await WorkPageService.GetTeamsAsync(CompanyId);
     }
 
     private void Search()
     {
-        if (!string.IsNullOrEmpty(_searchQuery))
-            _teams = _teams?.Where(c => c.Name.Contains(_searchQuery)).ToList();
+        _teams = _teams?.Where(c => c.Name.Contains(_searchQuery)).ToList();
     }
 
     private async Task AddMemberToTeam(int employeeId, int teamId)

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using DataContext = Pilot.Identity.Data.DataContext;
@@ -24,6 +25,9 @@ public class BackgroundJobTestIdentityFactory : WebApplicationFactory<Pilot.Iden
             services.RemoveAll<DbContextOptions<DataContext>>();
 
             services.AddDbContext<DataContext>(options => { options.UseInMemoryDatabase("TestDatabase"); });
+            
+            services.RemoveAll<TracerProvider>();
+            services.AddSingleton(TracerProvider.Default);
         });
     }
 }

@@ -5,9 +5,9 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Handlers;
 
-public class TeamHandler : ModelQueryHandler<Team, TeamDto>
+public class TeamQueryHandler : ModelQueryHandler<Team, TeamDto>
 {
-    public TeamHandler(ITeam repository, ILogger<ModelQueryHandler<Team, TeamDto>> logger) : base(repository, logger)
+    public TeamQueryHandler(ITeam repository, ILogger<ModelQueryHandler<Team, TeamDto>> logger) : base(repository, logger)
     {
     }
 }

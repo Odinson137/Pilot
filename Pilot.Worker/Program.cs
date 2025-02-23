@@ -12,7 +12,11 @@ using Pilot.Worker.Repository;
 using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
+using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.SqrsControllerLibrary.NotificationHandlers;
+using Pilot.SqrsControllerLibrary.Notifications;
 using Pilot.SqrsControllerLibrary.Services;
+using Pilot.Worker.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -28,12 +32,13 @@ services.AddScoped<ICompanyRole, CompanyRoleRepository>();
 services.AddScoped<ITaskInfo, TaskInfoRepository>();
 services.AddScoped<ITeamEmployee, TeamEmployeeRepository>();
 
-services.AddScoped<IValidatorService, ValidatorService>();
+services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
 services.AddScoped<IModelService, ModelService>();
+services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 
@@ -48,6 +53,12 @@ services.AddControllers();
 services.AddScoped<ISeed, Seed>();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AddCompanyUserBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
+// services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
+
+services.AddScoped<INotificationHandler<MessageSentNotification>, MessageSentNotificationHandler>();
 
 await services.AddRedis(configuration);
 

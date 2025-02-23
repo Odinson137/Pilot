@@ -2,6 +2,8 @@
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Base
+@using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 
 <div class="container mt-5 mb-5" style="max-width: 1000px;">
@@ -80,9 +82,10 @@
             <div class="mb-3">
                 <label for="projectStatus" class="form-label">Status</label>
                 <InputSelect id="projectStatus" class="form-control" @bind-Value="_newProject.ProjectStatus">
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Completed">Completed</option>
+                    @foreach (var status in Enum.GetValues<ProjectStatus>())
+                    {
+                        <option value="@(status)">@status</option>
+                    }
                 </InputSelect>
             </div>
             <button type="submit" class="btn btn-primary">Create</button>
@@ -111,9 +114,11 @@
 
     private async Task CreateProject()
     {
-        // Logic to create a new project
+        _newProject.Company = new BaseDto { Id = CompanyId };
+        await WorkPageService.AddProjectAsync(_newProject);
+        _projects?.Add(_newProject);
         _createProjectModal.Close();
-        _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+        _newProject = new ProjectViewModel();
     }
 
     private void EditTeam(int teamId)

@@ -14,7 +14,7 @@ public class ProjectViewModel : BaseViewModel
 
     public BaseDto Company { get; set; } = null!;
     
-    [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
+    public CompanyUserViewModel? CreatedBy { get; set; }
     
     public ProjectStatus ProjectStatus { get; set; }
 }

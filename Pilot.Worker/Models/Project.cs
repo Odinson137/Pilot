@@ -15,10 +15,10 @@ public class Project : BaseModel, IAddCompanyUser
 
     [Required] public Company Company { get; set; } = null!;
     
-    [Required] public CompanyUser CreatedBy { get; set; } = null!;
+    public CompanyUser CreatedBy { get; set; } = null!;
     
     public ProjectStatus ProjectStatus { get; set; }
-    
+
     public void AddCompanyUser(CompanyUser companyUser)
     {
         CreatedBy = companyUser;
