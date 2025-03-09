@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Pilot.SqrsControllerLibrary.Interfaces;
+using Pilot.SqrsControllerLibrary.Repositories;
 
 namespace Pilot.SqrsControllerLibrary;
 
@@ -45,8 +47,12 @@ public static class AddBaseService
                 cfg.ConfigureEndpoints(ctx);
             });
         });
+    }
 
-        services.AddAutoMapper(typeof(TMapper));
+    public static void AddUnitOfWork<TUoW>(this WebApplicationBuilder builder)
+        where TUoW : BaseUnitOfWork
+    {
+        builder.Services.AddScoped<IUnitOfWork, TUoW>();
     }
     
     public static void AddBaseServices<TMapper, TProgram>(this WebApplicationBuilder builder)

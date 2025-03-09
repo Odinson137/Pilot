@@ -1,4 +1,3 @@
-using ClickHouse.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -17,11 +16,6 @@ public sealed class ClickHouseContext : DbContext
             if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
         }
     }
-    
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     optionsBuilder.UseClickHouse("Host=localhost;Port=9000;Database=default;User=default;Password=;");
-    // }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -12,7 +12,6 @@ using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
-using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
 using Pilot.SqrsControllerLibrary.Interfaces;
@@ -48,7 +47,7 @@ services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
 services.AddScoped<IFileService, FileService>();
 
-await services.AddRedis(configuration);
+services.AddRedis(configuration);
 
 services.AddMediatR(cfg =>
 {

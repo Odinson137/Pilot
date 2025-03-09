@@ -1,19 +1,23 @@
 ﻿using MassTransit;
 using Pilot.AuditHistory.Interface;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services;
+using Pilot.SqrsControllerLibrary.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.AuditHistory.Consumers;
 
 public class TaskUpdatedConsumer: IConsumer<UpdateCommandMessage<ProjectTaskDto>>
 {
-    private readonly IClickHouseService _clickHouseService;
+    private readonly IBaseRepository<Models.AuditHistory> _auditHistoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public TaskUpdatedConsumer(IClickHouseService clickHouseService)
+    public TaskUpdatedConsumer(IBaseRepository<Models.AuditHistory> auditHistoryRepository, IUnitOfWork unitOfWork)
     {
-        _clickHouseService = clickHouseService;
+        _auditHistoryRepository = auditHistoryRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task Consume(ConsumeContext<UpdateCommandMessage<ProjectTaskDto>> context)
@@ -26,6 +30,7 @@ public class TaskUpdatedConsumer: IConsumer<UpdateCommandMessage<ProjectTaskDto>
             NewValue = context.Message.Value.ToJson(),
             ActionState = ActionState.Update
         };
-        await _clickHouseService.InsertAuditLogAsync(audit, context.CancellationToken);
+        await _auditHistoryRepository.AddValueToContextAsync(audit, context.CancellationToken);
+        await _unitOfWork.SaveChangesAsync();
     }
 }

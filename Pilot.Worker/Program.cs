@@ -5,7 +5,6 @@ using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
-using Pilot.InvalidationCacheRedisLibrary;
 using Pilot.Worker.Data;
 using Pilot.Worker.Interface;
 using Pilot.Worker.Repository;
@@ -38,9 +37,9 @@ services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 services.AddScoped<IMessageService, MessageService>();
 
 services.AddScoped<IModelService, ModelService>();
-services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+builder.AddUnitOfWork<UnitOfWork>();
 
 services.AddHttpClient(ServiceName.IdentityServer.ToString(),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
@@ -55,12 +54,11 @@ services.AddScoped<ISeed, Seed>();
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AddCompanyUserBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
-// services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
 
 services.AddScoped<INotificationHandler<MessageSentNotification>, MessageSentNotificationHandler>();
 
-await services.AddRedis(configuration);
+services.AddRedis(configuration);
 
 var app = builder.Build();
 

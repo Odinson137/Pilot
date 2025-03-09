@@ -1,16 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Interfaces;
-using Pilot.InvalidationCacheRedisLibrary.Services;
+using Pilot.SqrsControllerLibrary.Services;
 using StackExchange.Redis;
 
-namespace Pilot.InvalidationCacheRedisLibrary;
+namespace Pilot.SqrsControllerLibrary;
 
 public static class RedisConnect
 {
     public const string Channel = "invalidation-cache";
 
-    public static async Task AddRedis(this IServiceCollection services, IConfiguration configuration)
+    public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
         var redis = configuration["RedisCache:ConnectionString"]!;
 
@@ -20,12 +20,12 @@ public static class RedisConnect
             options.InstanceName = configuration.GetSection("RedisCache").GetValue<string>("InstanceName");
         });
 
-        var connectionMultiplexer = await ConnectionMultiplexer.ConnectAsync(redis);
+        // синхронный вариант подключения
+        var connectionMultiplexer = ConnectionMultiplexer.Connect(redis);
         
         services.AddSingleton<IConnectionMultiplexer>(connectionMultiplexer);
         services.AddSingleton(connectionMultiplexer.GetSubscriber);
         services.AddSingleton(connectionMultiplexer.GetDatabase());
         services.AddSingleton<IRedisService, RedisService>();
-        // services.AddHostedService<ConsumerService>();
     }
 }

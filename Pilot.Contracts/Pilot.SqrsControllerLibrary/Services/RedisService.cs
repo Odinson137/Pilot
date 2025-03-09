@@ -3,7 +3,7 @@ using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using StackExchange.Redis;
 
-namespace Pilot.InvalidationCacheRedisLibrary.Services;
+namespace Pilot.SqrsControllerLibrary.Services;
 
 public class RedisService(IDatabase redis) : IRedisService
 {
@@ -13,9 +13,10 @@ public class RedisService(IDatabase redis) : IRedisService
         return valueJson.FromJson<T>();
     }
 
-    public Task<RedisValue> GetValueAsync(string key)
+    public async Task<string> GetValueAsync(string key)
     {
-        return redis.StringGetAsync(key);
+        var value = await redis.StringGetAsync(key);
+        return value.HasValue ? value.ToString() : string.Empty;
     }
 
     public async Task<ICollection<T>?> GetValuesAsync<T>(string key)

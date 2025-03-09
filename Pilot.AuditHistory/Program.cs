@@ -23,6 +23,7 @@ builder.Services.AddSwaggerGen();
 services.AddControllers();
 
 builder.AddBaseServices<AutoMapperProfile, Program>();
+builder.AddUnitOfWork<UnitOfWork>();
 
 builder.Services.AddEntityFrameworkClickHouse();
 builder.Services.AddDbContext<ClickHouseContext>(options =>
@@ -34,7 +35,8 @@ builder.Services.AddDbContext<ClickHouseContext>(options =>
 #region Repository realization
 
 // services.AddScoped<IAuditHistory, AuditHistoryRepository>();
-services.AddScoped<IClickHouseService, ClickHouseService>();
+// services.AddScoped<IClickHouseService, ClickHouseService>();
+services.AddScoped<IAuditHistory, AuditHistoryRepository>();
 
 #endregion
 
