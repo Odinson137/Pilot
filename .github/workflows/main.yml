@@ -205,7 +205,7 @@ jobs:
         run: dotnet test ./Pilot.Tests/Test.Base/Test.Base.csproj --configuration Release --no-build --logger:trx
           
   capability:
-    name: Storage
+    name: Capability
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -247,7 +247,29 @@ jobs:
 
       - name: Test
         run: dotnet test ./Pilot.Tests/Test.BackgroundJob/Test.BackgroundJob.csproj --configuration Release --no-build --logger:trx
-          
+      
+  audithistory:
+    name: AuditHistory
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - uses: actions/checkout@v4
+
+      - name: Restore Test.Storage project
+        run: dotnet restore ./Pilot.Tests/Test.AuditHistory/Test.AuditHistory.csproj
+
+      - name: Build Test.AuditHistory project
+        run: dotnet build ./Pilot.Tests/Test.AuditHistory/Test.AuditHistory.csproj --configuration Release
+
+      - name: Test
+        run: dotnet test ./Pilot.Tests/Test.AuditHistory/Test.AuditHistory.csproj --configuration Release --no-build --logger:trx
+  
   code_quality:
     name: Code Quality
     runs-on: ubuntu-latest
