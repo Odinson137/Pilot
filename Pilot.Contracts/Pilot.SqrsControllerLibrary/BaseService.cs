@@ -47,6 +47,8 @@ public static class AddBaseService
                 cfg.ConfigureEndpoints(ctx);
             });
         });
+        
+        services.AddAutoMapper(typeof(TMapper));
     }
 
     public static void AddUnitOfWork<TUoW>(this WebApplicationBuilder builder)
