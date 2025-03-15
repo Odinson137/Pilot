@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using MassTransit;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Pilot.Messenger.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
@@ -25,17 +28,18 @@ public abstract class BaseDeleteConsumer<T, TDto>(
     public virtual async Task Consume(ConsumeContext<DeleteCommandMessage<TDto>> context)
     {
         Logger.LogInformation($"{typeof(T).Name} delete consume");
-        //
-        // var model = await Validator.DeleteValidateAsync<T>(context.Message.Value, TODO);
-        //
-        // await Repository.FastDeleteAsync(model);
-        //
-        // var message = new InfoMessageDto
-        // {
-        //     MessagePriority = MessageInfo.Success | MessageInfo.Delete,
-        //     EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
-        // };
-        //     
-        // await NotificationService.Notify(context.Message.UserId, message);
+        
+        var model = await Validator.DeleteValidateAsync<T>(context.Message.Value, context.CancellationToken);
+        
+        Repository.FastDelete(model, context.CancellationToken);
+        await Repository.SaveAsync(context.CancellationToken);
+        
+        var message = new InfoMessageDto
+        {
+            MessagePriority = MessageInfo.Success | MessageInfo.Delete,
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>()
+        };
+            
+        await NotificationService.Notify(context.Message.UserId, message);
     }
 }

@@ -5,9 +5,5 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Handlers;
 
-public class ProjectQueryHandler : ModelQueryHandler<Project, ProjectDto>
-{
-    public ProjectQueryHandler(IProject repository, ILogger<ModelQueryHandler<Project, ProjectDto>> logger) : base(repository, logger)
-    {
-    }
-}
+public class ProjectQueryHandler(IProject repository, ILogger<ModelQueryHandler<Project, ProjectDto>> logger)
+    : ModelQueryHandler<Project, ProjectDto>(repository, logger);

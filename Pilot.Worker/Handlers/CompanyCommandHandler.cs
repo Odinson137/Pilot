@@ -7,5 +7,5 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Handlers;
 
-public class ProjectCommandHandler(IProject repository, IMapper mapper, IBaseValidatorService validateService)
-    : ModelCommandHandler<Project, ProjectDto>(repository, mapper, validateService);
+public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseValidatorService validateService)
+    : ModelCommandHandler<Company, CompanyDto>(repository, mapper, validateService);

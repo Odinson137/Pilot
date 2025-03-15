@@ -129,7 +129,6 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 1;
 
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        // await GetArrangeDop(values);
 
         await WorkerContext.AddRangeAsync(values);
         await WorkerContext.SaveChangesAsync();

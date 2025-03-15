@@ -155,7 +155,7 @@ public static class GenerateTestEntity
 
         foreach (var property in properties)
         {
-            if (property.Name.Contains("Id") || property == typeof(int) || property == typeof(int?)) continue;
+            if (property.SetMethod == null || property.Name.Contains("Id") || property == typeof(int) || property == typeof(int?)) continue;
 
             if (property.PropertyType == typeof(string))
             {
