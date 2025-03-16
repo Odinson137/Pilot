@@ -22,9 +22,19 @@ public class CacheInvalidationBehavior<TRequest, TResponse>(IRedisService redisS
                 i.IsGenericType && 
                 i.GetGenericTypeDefinition() == typeof(IEntityCommand<>)))
         {
-            await redisService.DeleteValueAsync(BaseExpendMethods.GetModelName<TResponse>() + response.IdString);
+            // пока так. Позже придумать нормальную систему ключей
+            var redisKey = BaseExpendMethods.GetModelName(response) + response.IdString;
+            try
+            {
+                await redisService.DeleteValueAsync(redisKey);
+            }
+            catch (Exception e)
+            {
+                // пока так, чтоб я просто знал, что что-то здесь не работает.
+                // Но в будущем надо сделать так, чтоб неуспешное удаление ключа из редиса не кидало ошибку
+                throw new Exception("Redis in not working");
+            }
         }
-        
 
         return response;
     }

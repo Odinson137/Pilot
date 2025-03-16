@@ -18,7 +18,7 @@ public class BaseUserServiceIntegrationTest : IClassFixture<ApiTestApiFactory>, 
     protected readonly IToken TokenService;
     protected readonly IPasswordCoder PasswordCoder;
     protected readonly HttpClient ApiClient;
-    protected Pilot.Identity.Data.DataContext AssertWorkerContext 
+    protected DataContext AssertWorkerContext 
         => _identityScopeService.CreateScope().ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
 
     private readonly Dictionary<ServiceName, DbContext> _contexts = new();

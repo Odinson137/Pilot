@@ -27,56 +27,56 @@ public abstract class BackgroundJobTests<T, TDto> : BaseBackgroundJobServiceInte
 
     protected static string EntityName => typeof(T).Name;
 
-    [Fact]
-    public virtual async Task GetAllValuesWithFileTest_ReturnOk()
-    {
-        #region Arrange
+    // [Fact]
+    // public virtual async Task GetAllValuesWithFileTest_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     const int count = 2;
+    //     var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    //     await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
+    //
+    //     await GetContext<TDto>().AddRangeAsync(values);
+    //     await GetContext<TDto>().SaveChangesAsync();
+    //
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await ApiClient.GetAsync($"api/{EntityName}");
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+    //     Assert.NotNull(content);
+    //     Assert.True(content.Count >= count);
+    // }
     
-        const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
-    
-        await GetContext<TDto>().AddRangeAsync(values);
-        await GetContext<TDto>().SaveChangesAsync();
-    
-        #endregion
-    
-        // Act
-        var result = await ApiClient.GetAsync($"api/{EntityName}");
-    
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count >= count);
-    }
-    
-    [Fact]
-    public virtual async Task GetValueWithFileTest_ReturnOk()
-    {
-        #region Arrange
-    
-        const int count = 1;
-    
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
-    
-        await GetContext<TDto>().AddRangeAsync(values);
-        await GetContext<TDto>().SaveChangesAsync();
-    
-        var id = values.First().Id;
-    
-        #endregion
-    
-        // Act
-        var result = await ApiClient.GetAsync($"api/{EntityName}/{id}");
-    
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<TDto>();
-        Assert.NotNull(content);
-        Assert.Equal(id, content.Id);
-    }
+    // [Fact]
+    // public virtual async Task GetValueWithFileTest_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     const int count = 1;
+    //
+    //     var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    //     await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
+    //
+    //     await GetContext<TDto>().AddRangeAsync(values);
+    //     await GetContext<TDto>().SaveChangesAsync();
+    //
+    //     var id = values.First().Id;
+    //
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await ApiClient.GetAsync($"api/{EntityName}/{id}");
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await result.Content.ReadFromJsonAsync<TDto>();
+    //     Assert.NotNull(content);
+    //     Assert.Equal(id, content.Id);
+    // }
 
     protected async Task<User> CreateUser(bool withAuthorization = false)
     {

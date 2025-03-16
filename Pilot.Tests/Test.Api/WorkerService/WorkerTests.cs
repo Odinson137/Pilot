@@ -32,15 +32,14 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     }
 
     private static string EntityName => typeof(T).Name;
-
+    
     [Fact]
-    public virtual async Task GetAllValuesWithFileTest_ReturnOk()
+    public virtual async Task GetAllValuesTest_ReturnOk()
     {
         #region Arrange
     
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
     
         await GetContext<CompanyDto>().AddRangeAsync(values);
         await GetContext<CompanyDto>().SaveChangesAsync();
@@ -60,14 +59,13 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     }
     
     [Fact]
-    public virtual async Task GetValueWithFileTest_ReturnOk()
+    public virtual async Task GetValueTest_ReturnOk()
     {
         #region Arrange
     
         const int count = 1;
     
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        await GenerateTestEntity.FillImage<T, TDto>(values, GetContext<FileDto>());
     
         await GetContext<CompanyDto>().AddRangeAsync(values);
         await GetContext<CompanyDto>().SaveChangesAsync();

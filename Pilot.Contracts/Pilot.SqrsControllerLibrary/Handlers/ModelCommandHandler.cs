@@ -17,7 +17,7 @@ public class ModelCommandHandler<T, TDto>(
     where T : BaseModel, new()
     where TDto : BaseDto
 {
-    public async Task<BaseModel> Handle(
+    public virtual async Task<BaseModel> Handle(
         CreateEntityCommand<TDto> request,
         CancellationToken cancellationToken)
     {
@@ -31,7 +31,7 @@ public class ModelCommandHandler<T, TDto>(
         return model;
     }
 
-    public async Task<BaseModel> Handle(
+    public virtual async Task<BaseModel> Handle(
         UpdateEntityCommand<TDto> request,
         CancellationToken cancellationToken)
     {
@@ -41,15 +41,14 @@ public class ModelCommandHandler<T, TDto>(
 
         model.ChangeAt = DateTime.Now;
 
-        // repository.GetContext.Attach(model);
         repository.GetContext.Entry(model).State = EntityState.Modified;
         return model;
     }
 
-    public async Task<BaseModel> Handle(DeleteEntityCommand<TDto> request, CancellationToken cancellationToken)
+    public virtual async Task<BaseModel> Handle(DeleteEntityCommand<TDto> request, CancellationToken cancellationToken)
     {
         var model = await validateService.DeleteValidateAsync<T>(request.Value, cancellationToken);
-        repository.FastDelete(model, cancellationToken);
+        repository.FastDelete(model);
         return new T { Id = model.Id }; // TODO КОСТЫЫЫЛЬ
     }
 }

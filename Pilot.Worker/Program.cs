@@ -11,7 +11,6 @@ using Pilot.Worker.Repository;
 using Pilot.Worker.Service;
 using Pilot.SqrsControllerLibrary;
 using Pilot.SqrsControllerLibrary.Behaviors;
-using Pilot.SqrsControllerLibrary.Interfaces;
 using Pilot.SqrsControllerLibrary.NotificationHandlers;
 using Pilot.SqrsControllerLibrary.Notifications;
 using Pilot.SqrsControllerLibrary.Services;
@@ -23,7 +22,6 @@ var configuration = builder.Configuration;
 
 services.AddScoped<ICompany, CompanyRepository>();
 services.AddScoped<ICompanyUser, CompanyUserRepository>();
-services.AddScoped<IHistoryAction, HistoryActionRepository>();
 services.AddScoped<IProject, ProjectRepository>();
 services.AddScoped<IProjectTask, ProjectTaskRepository>();
 services.AddScoped<ITeam, TeamRepository>();
@@ -53,8 +51,8 @@ services.AddScoped<ISeed, Seed>();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AddCompanyUserBehavior<,>));
-services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
 
 services.AddScoped<INotificationHandler<MessageSentNotification>, MessageSentNotificationHandler>();
 

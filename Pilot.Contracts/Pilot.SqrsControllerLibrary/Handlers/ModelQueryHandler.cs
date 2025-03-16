@@ -25,14 +25,12 @@ public abstract class ModelQueryHandler<T, TDto> :
     {
         var result = await Repository.GetByIdAsync<TDto>(request.Id, cancellationToken);
         if (result == null) throw new NotFoundException($"{typeof(TDto).Namespace} not found");
-        Logger.LogClassInfo(result);
         return result;
     }
 
     public async Task<ICollection<TDto>> Handle(GetValuesQuery<TDto> request, CancellationToken cancellationToken)
     {
-        var result = await Repository.GetValuesAsync<TDto>(request.Filter, cancellationToken);
-        Logger.LogClassInfo(result);
+        var result = await Repository.GetValuesAsync<TDto>(request.Filter ?? new BaseFilter(), cancellationToken);
         return result;
     }
 }

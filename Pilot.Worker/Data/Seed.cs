@@ -225,17 +225,6 @@ public class Seed : ISeed
         return fake;
     }
     
-    private Faker<HistoryAction> GetHistoryActionFaker()
-    {
-        var fake = new Faker<HistoryAction>()
-                .RuleFor(u => u.ActionState, (f, _) => f.PickRandom<ActionState>())
-                .RuleFor(u => u.LastValue, (f, _) => f.Lorem.Word())
-                .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
-            ;
-        
-        return fake;
-    }
-    
     private const int TaskInfoImageId = 87; // смотреть в сиде в проекте Storage. Там есит 6 фотографий
     private const int TaskInfoImageCount = 6;
 

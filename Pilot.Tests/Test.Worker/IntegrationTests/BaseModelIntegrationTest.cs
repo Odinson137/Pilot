@@ -132,6 +132,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         await WorkerContext.AddRangeAsync(values);
         await WorkerContext.SaveChangesAsync();
+        var result23 = await AssertReceiverContext.Set<T>().ToListAsync();
 
         var id = values.First().Id;
 

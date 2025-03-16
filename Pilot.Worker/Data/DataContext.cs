@@ -15,20 +15,20 @@ public sealed class DataContext : DbContext
             if (!databaseCreator.HasTables()) databaseCreator.CreateTables();
         }
     }
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
         builder.Entity<CompanyRole>()
             .HasMany(c => c.Companies)
             .WithMany(c => c.CompanyRoles);
-        
+
         builder.Entity<ProjectTask>()
             .HasOne(pt => pt.CompanyUser)
             .WithMany(cu => cu.ProjectTasks)
             .OnDelete(DeleteBehavior.Cascade);
-    
+
         builder.Entity<ProjectTask>()
             .HasOne(pt => pt.CreatedBy)
             .WithMany()
@@ -46,16 +46,13 @@ public sealed class DataContext : DbContext
                     .HasOne(te => te.CompanyUser)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade));
-
     }
 
     public DbSet<Project> Projects { get; set; }
-    public DbSet<Models.Company> Companies { get; set; }
+    public DbSet<Company> Companies { get; set; }
     public DbSet<CompanyRole> CompanyRoles { get; set; }
     public DbSet<CompanyUser> CompanyUsers { get; set; }
     public DbSet<ProjectTask> ProjectTasks { get; set; }
     public DbSet<TaskInfo> TaskInfos { get; set; }
-    
-    public DbSet<HistoryAction> HistoryActions { get; set; }
     public DbSet<Team> Teams { get; set; }
 }

@@ -31,7 +31,7 @@ public abstract class BaseDeleteConsumer<T, TDto>(
         
         var model = await Validator.DeleteValidateAsync<T>(context.Message.Value, context.CancellationToken);
         
-        Repository.FastDelete(model, context.CancellationToken);
+        Repository.FastDelete(model);
         await Repository.SaveAsync(context.CancellationToken);
         
         var message = new InfoMessageDto
