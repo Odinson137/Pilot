@@ -1,5 +1,8 @@
 ﻿using System.Net.Http.Json;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.Services;
 using Test.AuditHistory.IntegrationTests.Factories;
 using Test.Base.IntegrationBase;
 using Xunit.Abstractions;
@@ -7,37 +10,34 @@ using Xunit.Abstractions;
 namespace Test.AuditHistory.IntegrationTests;
 
 [Collection(nameof(SequentialCollectionDefinition))]
-public abstract class BaseModelIntegrationTest<T, TDto> : BaseAuditHistoryIntegrationTest
-    where T : BaseModel where TDto : BaseDto
+public class AuditHistoryIntegrationTest(
+    AuditHistoryTestAuditHistoryFactory factory,
+    ITestOutputHelper testOutputHelper)
+    : BaseAuditHistoryIntegrationTest(factory)
 {
-    protected readonly ITestOutputHelper TestOutputHelper;
+    protected readonly ITestOutputHelper TestOutputHelper = testOutputHelper;
 
-    public BaseModelIntegrationTest(AuditHistoryTestAuditHistoryFactory factory, ITestOutputHelper testOutputHelper) : base(factory)
-    {
-        TestOutputHelper = testOutputHelper;
-    }
-        
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {
         #region Arrange
 
         const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<T>(count: 2, listDepth: 0);
+        var values = GenerateTestEntity.CreateEntities<Pilot.AuditHistory.Models.AuditHistory>(count: 2, listDepth: 0);
 
         await DataContext.AddRangeAsync(values);
         await DataContext.SaveChangesAsync();
 
         #endregion
-        
+
         // Act
-        var result = await Client.GetAsync($"api/{typeof(T).Name}");
-        
+        var result = await Client.GetAsync($"api/{nameof(Pilot.AuditHistory.Models.AuditHistory)}");
+
         TestOutputHelper.WriteLine(await result.Content.ReadAsStringAsync());
-        
+
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        var content = await result.Content.ReadFromJsonAsync<ICollection<AuditHistoryDto>>();
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
     }
@@ -49,23 +49,30 @@ public abstract class BaseModelIntegrationTest<T, TDto> : BaseAuditHistoryIntegr
 
         const int count = 2;
 
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        var values =
+            GenerateTestEntity.CreateEntities<Pilot.AuditHistory.Models.AuditHistory>(count: count, listDepth: 0);
 
         await DataContext.AddRangeAsync(values);
         await DataContext.SaveChangesAsync();
 
-        var id = values.First().Id;
+        var filter = new BaseFilter
+        {
+            Skip = 0,
+            Take = 1,
+            WhereFilter = new WhereFilter((nameof(AuditHistoryDto.EntityId), values.First().EntityId),
+                (nameof(AuditHistoryDto.EntityType), ModelType.ProjectTask))
+        };
 
         #endregion
 
         // Act
-        var result = await Client.GetAsync($"api/{typeof(T).Name}/{id}");
+        var result = await Client.GetAsync($"api/{nameof(Pilot.AuditHistory.Models.AuditHistory)}?filter={filter.ToJson()}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<TDto>();
+        var content = await result.Content.ReadFromJsonAsync<ICollection<AuditHistoryDto>>();
         Assert.NotNull(content);
-        Assert.Equal(id, content.Id);
+        Assert.Single(content);
     }
 
     // [Fact]

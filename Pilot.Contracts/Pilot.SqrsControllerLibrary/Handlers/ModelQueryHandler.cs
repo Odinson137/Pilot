@@ -21,7 +21,7 @@ public abstract class ModelQueryHandler<T, TDto> :
         Logger = logger;
     }
 
-    public async Task<TDto> Handle(GetValueByIdQuery<TDto> request, CancellationToken cancellationToken)
+    public virtual async Task<TDto> Handle(GetValueByIdQuery<TDto> request, CancellationToken cancellationToken)
     {
         var result = await Repository.GetByIdAsync<TDto>(request.Id, cancellationToken);
         if (result == null) throw new NotFoundException($"{typeof(TDto).Namespace} not found");

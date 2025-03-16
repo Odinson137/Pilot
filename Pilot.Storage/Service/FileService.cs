@@ -64,7 +64,7 @@ public class FileService : IFileService
 
         var file = await _fileRepository.GetRequiredByIdAsync(id);
         await _storageService.DeleteFileAsync(file.Name);
-        _fileRepository.Delete(file);
+        _fileRepository.FastDelete(file);
         await _fileRepository.SaveAsync();
     }
 

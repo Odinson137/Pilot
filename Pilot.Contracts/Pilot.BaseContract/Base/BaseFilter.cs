@@ -42,6 +42,7 @@ public class BaseFilter(int skip, int take)
 
     public WhereFilter? WhereFilter { get; set; }
 
+    // потом убрать
     public FilterValue? JsonValue { get; set; }
 }
 

@@ -11,7 +11,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
 {
     public DbSet<T> DbSet { get; } = context.Set<T>();
 
-    public async Task<T?> GetByIdAsync(int id, CancellationToken token = default)
+    public virtual async Task<T?> GetByIdAsync(int id, CancellationToken token = default)
     {
         return await DbSet.FirstOrDefaultAsync(c => c.Id == id, token);
     }
@@ -33,7 +33,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         return await DbSet.ProjectTo<TOut>(mapper.ConfigurationProvider).FirstOrDefaultAsync(c => c.Id == id, token);
     }
 
-    public async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
+    public virtual async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
     {
         var query = DbSet
             .Skip(filter.Skip)

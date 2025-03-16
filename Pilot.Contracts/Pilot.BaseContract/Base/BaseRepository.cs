@@ -28,10 +28,5 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
         GetContext.Remove(model);
     }
     
-    public void Delete(T value)
-    {
-        GetContext.Remove(value);
-    }
-
     public DbContext GetContext { get; } = context;
 }

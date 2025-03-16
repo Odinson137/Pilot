@@ -41,8 +41,8 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
     
-        await GetContext<CompanyDto>().AddRangeAsync(values);
-        await GetContext<CompanyDto>().SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(values);
+        await GetContext<TDto>().SaveChangesAsync();
     
         #endregion
     
@@ -67,8 +67,8 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
     
-        await GetContext<CompanyDto>().AddRangeAsync(values);
-        await GetContext<CompanyDto>().SaveChangesAsync();
+        await GetContext<TDto>().AddRangeAsync(values);
+        await GetContext<TDto>().SaveChangesAsync();
     
         var id = values.First().Id;
     

@@ -17,8 +17,16 @@ public sealed class ClickHouseContext : DbContext
         }
     }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
+        var entityTypeBuilder = modelBuilder.Entity<Models.AuditHistory>();
+
+        // уникальность в ClickHouse не требуется
+        entityTypeBuilder.Ignore(e => e.Id);
+        entityTypeBuilder.HasKey(e => new { e.EntityId, e.EntityType, e.CreateAt });
+
+        entityTypeBuilder.ToTable("AuditHistory", table => table
+            .HasMergeTreeEngine()
+            .WithPrimaryKey("EntityId", "EntityType", "CreateAt"));
     }
 }

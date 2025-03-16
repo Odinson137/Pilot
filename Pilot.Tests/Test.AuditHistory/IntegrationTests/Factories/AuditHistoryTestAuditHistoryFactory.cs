@@ -40,13 +40,6 @@ public class AuditHistoryTestAuditHistoryFactory : WebApplicationFactory<Pilot.A
             services.RemoveAll<ISeed>();
             services.AddTransient<ISeed, TestSeed>();
 
-            services.RemoveAll<DbContextOptions<DataContext>>();
-
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseInMemoryDatabase("TestDatabase");
-            });
-
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
         });
