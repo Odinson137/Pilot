@@ -11,10 +11,10 @@ namespace Pilot.AuditHistory.Consumers;
 
 public class TaskUpdatedConsumer: IConsumer<UpdateCommandMessage<ProjectTaskDto>>
 {
-    private readonly IBaseRepository<Models.AuditHistory> _auditHistoryRepository;
+    private readonly IAuditHistory _auditHistoryRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public TaskUpdatedConsumer(IBaseRepository<Models.AuditHistory> auditHistoryRepository, IUnitOfWork unitOfWork)
+    public TaskUpdatedConsumer(IAuditHistory auditHistoryRepository, IUnitOfWork unitOfWork)
     {
         _auditHistoryRepository = auditHistoryRepository;
         _unitOfWork = unitOfWork;
