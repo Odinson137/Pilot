@@ -10,7 +10,7 @@ public class BaseAuditHistoryIntegrationTest : IClassFixture<AuditHistoryTestAud
     protected readonly HttpClient Client;
 
     protected readonly IServiceScope StorageScope;
-    
+
     protected BaseAuditHistoryIntegrationTest(AuditHistoryTestAuditHistoryFactory factory)
     {
         StorageScope = factory.Services.CreateScope();

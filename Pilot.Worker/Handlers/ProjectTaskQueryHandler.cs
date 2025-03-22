@@ -5,9 +5,7 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Handlers;
 
-public class ProjectTaskQueryHandler : ModelQueryHandler<ProjectTask, ProjectTaskDto>
-{
-    public ProjectTaskQueryHandler(IProjectTask repository, ILogger<ModelQueryHandler<ProjectTask, ProjectTaskDto>> logger) : base(repository, logger)
-    {
-    }
-}
+public class ProjectTaskQueryHandler(
+    IProjectTask repository,
+    ILogger<ProjectTaskQueryHandler> logger)
+    : ModelQueryHandler<ProjectTask, ProjectTaskDto>(repository, logger);

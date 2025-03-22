@@ -6,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
+using Pilot.Worker.Data;
 using Test.Base.IntegrationBase;
-using DataContext = Pilot.Identity.Data.DataContext;
 
-namespace Test.BackgroundJob.Factories;
+namespace Test.AuditHistory.IntegrationTests.Factories;
 
-public class BackgroundJobTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>
+public class AuditHistoryTestWorkerFactory : WebApplicationFactory<Pilot.Worker.Program>, IAsyncLifetime
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -19,14 +19,24 @@ public class BackgroundJobTestIdentityFactory : WebApplicationFactory<Pilot.Iden
 
         builder.ConfigureTestServices(services =>
         {
-            services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
+            services.RemoveAll<ISeed>();
             services.AddTransient<ISeed, TestSeed>();
 
             services.RemoveAll<DbContextOptions<DataContext>>();
             services.AddDbContext<DataContext>(options => { options.UseInMemoryDatabase("TestDatabase"); });
-            
+
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
         });
+    }
+
+    public Task InitializeAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public new Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 }

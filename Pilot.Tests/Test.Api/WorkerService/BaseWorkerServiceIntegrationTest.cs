@@ -22,9 +22,6 @@ public class BaseWorkerServiceIntegrationTest :
     protected readonly IServiceProvider WorkerScopeService;
     protected readonly IMapper Mapper;
     protected readonly IToken TokenService;
-    
-    // protected Pilot.Identity.Data.DataContext AssertWorkerContext 
-    //     => _identityScopeService.CreateScope().ServiceProvider.GetRequiredService<Pilot.Identity.Data.DataContext>();
 
     private readonly Dictionary<ServiceName, DbContext> _contexts = new();
 

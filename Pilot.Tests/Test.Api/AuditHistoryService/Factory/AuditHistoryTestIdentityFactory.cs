@@ -5,13 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Trace;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Identity;
+using Pilot.Identity.Data;
 using Test.Base.IntegrationBase;
-using DataContext = Pilot.Identity.Data.DataContext;
 
-namespace Test.BackgroundJob.Factories;
+namespace Test.Api.AuditHistoryService.Factory;
 
-public class BackgroundJobTestIdentityFactory : WebApplicationFactory<Pilot.Identity.Program>
+// TODO сделать потом хранилище сервисов для теста, чтоб легко добавлять новые сервисы к тестам без дублирования
+public class AuditHistoryTestIdentityFactory : WebApplicationFactory<Program>
 {
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -21,9 +24,16 @@ public class BackgroundJobTestIdentityFactory : WebApplicationFactory<Pilot.Iden
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
-
+            
             services.RemoveAll<DbContextOptions<DataContext>>();
-            services.AddDbContext<DataContext>(options => { options.UseInMemoryDatabase("TestDatabase"); });
+            
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseInMemoryDatabase("TestDatabase");
+            });
+            
+            services.RemoveAll<IBaseHttpService>(); 
+            services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
             
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
