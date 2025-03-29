@@ -6,6 +6,9 @@ namespace Pilot.SqrsControllerLibrary.Queries;
 public record GetValueByIdQuery<TDto>(int Id)
     : BaseQuery, IRequest<TDto> where TDto : BaseDto;
 
+public record GetQueryValueQuery<TDto>(BaseFilter Filter)
+    : BaseQuery, IRequest<string> where TDto : BaseDto;
+
 public record GetValuesQuery<TDto> 
     : BaseQuery, IRequest<ICollection<TDto>> where TDto : BaseDto
 {

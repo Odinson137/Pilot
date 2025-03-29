@@ -10,4 +10,7 @@ public interface IModelService
         where TDto : BaseDto;
     
     public Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter? filter, CancellationToken token = default) where TDto : BaseDto;
+
+    Task<string> GetQueryValueAsync<TDto>(BaseFilter? filter, CancellationToken token = default)
+        where TDto : BaseDto;
 }

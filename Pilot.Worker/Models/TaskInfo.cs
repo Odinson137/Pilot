@@ -14,6 +14,8 @@ public class TaskInfo : BaseModel, IAddCompanyUser
     [MaxLength(500)] public string? Description { get; set; }
 
     [Required] public CompanyUser CreatedBy { get; set; } = null!;
+
+    public TimeSpan TimeSpent { get; set; }
     
     public void AddCompanyUser(CompanyUser companyUser)
     {

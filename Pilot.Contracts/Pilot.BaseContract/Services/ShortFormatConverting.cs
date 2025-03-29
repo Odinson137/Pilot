@@ -16,11 +16,6 @@ public static class ShortFormatConverting
         return JsonConvert.DeserializeObject<T>(data.ToString()!)!;
     }
     
-    public static object FromJson(this object data, Type type)
-    {
-        return JsonConvert.DeserializeObject(data.ToString()!, type)!;
-    }
-    
     public static T FromJson<T>(this string data)
     {
         return JsonConvert.DeserializeObject<T>(data)!;

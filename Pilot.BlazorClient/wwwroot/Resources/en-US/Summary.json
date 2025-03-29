@@ -1,0 +1,16 @@
+﻿{
+  "PersonalSummaryTitle": "Personal Summary",
+  "PersonalSummaryDescription": "Overview of your tasks and contribution",
+  "TaskOverview": "Task Overview",
+  "ContributionOverview": "Contribution Overview",
+  "DailyHoursWorked": "Daily Hours Worked",
+  "TaskCategories": "Task Distribution by Categories",
+  "TaskPriorities": "Completed Tasks by Priority",
+  "TaskStatus": "Task Progress by Status",
+  "UserContributionByProjects": "Contribution by Projects",
+  "GenerateReport": "Generate Report",
+  "CompanyPerformanceTitle": "Company Performance",
+  "CompanyPerformanceDescription": "Overview of company employees' performance",
+  "CompletedTasksByEmployees": "Completed Tasks by Employees",
+  "TaskDistributionByPriority": "Task Distribution by Priority"
+}

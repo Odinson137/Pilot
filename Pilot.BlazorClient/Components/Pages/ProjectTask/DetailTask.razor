@@ -7,9 +7,10 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
-@inject IProjectTaskPageService ProjectTaskPageService;
+@inject IProjectTaskPageService ProjectTaskPageService
+@inject IJsonLocalizationService Localizer
 
-<PageTitle>Task @(_task?.Id ?? 0)</PageTitle>
+<PageTitle>@Localizer.GetString("TaskTitle", "Task") @(_task?.Id ?? 0)</PageTitle>
 
 <AuthCheck/>
 
@@ -19,183 +20,227 @@
 }
 else if (_task == null)
 {
-    <p>User not found.</p>
+    <p>@Localizer.GetString("TaskNotFound", "Task")</p>
 }
 else
 {
-    <div class="task-background" style="max-width: 800px; justify-self: center">
+    <div class="task-background">
         <div class="task-header">
-            <h2>@_task?.Id) Task Details: @_task?.Name</h2>
-
-            <!-- Переключатель редактирования -->
-            <div class="edit-toggle">
-                <input type="checkbox" id="edit-mode-toggle" @bind="@_isEditMode"/>
-                <label for="edit-mode-toggle"></label>
-            </div>
+            <h2>@_task.Id) @Localizer.GetString("TaskDetails", "Task") @_task.Name</h2>
         </div>
 
-        @if (!_isEditMode)
-        {
-            <!-- Режим просмотра задачи -->
-            <div class="task-details-window">
-                <div class="task-main-info">
-                    <!-- Название и описание задачи -->
-                    <h3>@_task!.Name</h3>
-                    <p>@_task.Description</p>
+        <div class="tabs">
+            <button class="tab-button" @onclick="() => SetTab(Tab.View)" class="@(CurrentTab == Tab.View ? "active" : "")">
+                @Localizer.GetString("ViewTab", "Task")
+            </button>
+            <button class="tab-button" @onclick="() => SetTab(Tab.Edit)" class="@(CurrentTab == Tab.Edit ? "active" : "")">
+                @Localizer.GetString("EditTab", "Task")
+            </button>
+            <button class="tab-button" @onclick="() => SetTab(Tab.History)" class="@(CurrentTab == Tab.History ? "active" : "")">
+                @Localizer.GetString("HistoryTab", "Task")
+            </button>
+        </div>
 
-                    <!-- Ответственный за задачу и создатель -->
-                    <div class="task-people">
-                        <div class="task-owner">
-                            <b>Assigned to:</b>
-                            <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
-                                <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)"
-                                     alt="avatar"/>
-                                @_userViewModel?.FullName
-                            </a>
-                        </div>
-                        <div class="task-creator">
-                            <b>Created by:</b>
-                            <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
-                                <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)"
-                                     style="max-width: 30px;max-height: 30px"
-                                     alt="avatar"/>
-                                @_createdUserViewModel?.FullName
-                            </a>
-                        </div>
-                    </div>
+        <div class="tab-content">
+            @switch (CurrentTab)
+            {
+                case Tab.View:
+                    <div class="task-details-window">
+                        <div class="task-main-info">
+                            <h3>@_task.Name</h3>
+                            <p>@_task.Description</p>
 
-                    <!-- Приоритет и статус задачи -->
-                    <div class="task-status-priority">
-                        <p style="color: @GetPriorityColor(_task.Priority)">
-                            <b>Priority:</b> @GetPriorityLabel(_task.Priority)
-                        </p>
-                        <p style="color: @GetStatusColor(_task.TaskStatus)">
-                            <b>Status:</b> @_task.TaskStatus
-                        </p>
-                        <p>
-                            <b>Created on:</b> @_task.CreateAt
-                        </p>
-                    </div>
-
-                    <!-- Добавление новой информации -->
-                    <div class="add-task-info">
-                        <h4>Add new progress update</h4>
-                        <textarea @bind="_newTaskInfoDescription" style="height: 150px"
-                                  placeholder="Enter task update"></textarea>
-                        @if (_attachedFile != null)
-                        {
-                            <div class="attached-files">
-                                <h5>Attached Files:</h5>
-                                <ul>
-                                    <li>
-                                        @_attachedFile.Value.Item1
-                                        <button class="btn btn-danger btn-sm" @onclick="RemoveAttachedFile">Remove
-                                        </button>
-                                    </li>
-                                </ul>
-                            </div>
-                        }
-                        <label class="upload-label">
-                            <InputFile OnChange="HandleFileUpload" multiple/>
-                            Upload Photo
-                        </label>
-                        <button class="btn add-info-btn" @onclick="AddNewTaskInfo">Add Update</button>
-                    </div>
-
-                    <!-- Информация о ходе выполнения задачи -->
-                    <div class="task-progress">
-                        <h4>Task Progress</h4>
-                        @if (_task?.TaskInfos is { Count: > 0 })
-                        {
-                            @foreach (var info in _task.TaskInfos)
-                            {
-                                <div class="task-info-card">
-                                    <p>@info.Description</p>
-                                    @if (info.File != null)
-                                    {
-                                        <img src="@TempFileService.GetUrl(info.File)" alt="file"
-                                             style="margin-bottom: 20px; width: 200px"/>
-                                    }
-                                    <p>
-                                        <b>Added by:</b> @_userViewModels[info.CreatedBy.Id].FullName
-                                    </p>
-                                    <p>
-                                        <b>Date:</b> @info.CreateAt
-                                    </p>
+                            <div class="task-people">
+                                <div class="task-owner">
+                                    <b>@Localizer.GetString("AssignedTo", "Task")</b>
+                                    <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
+                                        <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar"/>
+                                        @_userViewModel?.FullName
+                                    </a>
                                 </div>
-                            }
-                        }
-                        else
-                        {
-                            <p>No progress updates yet.</p>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="task-details-window" style="min-width: 500px">
-                <EditForm Model="_task">
-                    <div class="task-edit-form">
-                        <div class="form-group">
-                            <label>Task Name:</label>
-                            <input class="form-control" @bind="_task.Name" placeholder="Enter task name"/>
-                        </div>
+                                <div class="task-creator">
+                                    <b>@Localizer.GetString("CreatedBy", "Task")</b>
+                                    <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
+                                        <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)"
+                                             style="max-width: 30px; max-height: 30px" alt="avatar"/>
+                                        @_createdUserViewModel?.FullName
+                                    </a>
+                                </div>
+                            </div>
 
-                        <div class="form-group">
-                            <label>Description:</label>
-                            <textarea class="form-control" @bind="_task.Description"
-                                      placeholder="Enter task description" style="height: 200px"></textarea>
-                        </div>
+                            <div class="task-status-priority">
+                                <p style="color: @GetPriorityColor(_task.Priority)">
+                                    <b>@Localizer.GetString("Priority", "Task")</b> @GetPriorityLabel(_task.Priority)
+                                </p>
+                                <p style="color: @GetStatusColor(_task.TaskStatus)">
+                                    <b>@Localizer.GetString("Status", "Task")</b> @_task.TaskStatus
+                                </p>
+                                <p>
+                                    <b>@Localizer.GetString("CreatedOn", "Task")</b> @_task.CreateAt
+                                </p>
+                            </div>
 
-                        <div class="form-group">
-                            <label>Priority:</label>
-                            <select class="form-control" @bind="_task.Priority">
-                                @foreach (var value in Enum.GetValues(typeof(TaskPriority)))
+                            <div class="add-task-info">
+                                <h4>@Localizer.GetString("AddProgressUpdate", "Task")</h4>
+                                <div class="task-info-input-group">
+                                    <textarea @bind="_newTaskInfoDescription" style="height: 150px"
+                                              placeholder="@Localizer.GetString("EnterTaskUpdate", "Task")"></textarea>
+                                    <div class="time-select-group">
+                                        <select @bind="_newTaskInfoTimeSpentHours">
+                                            @for (int i = 0; i <= 23; i++)
+                                            {
+                                                <option value="@i">@i ч</option>
+                                            }
+                                        </select>
+                                        <select @bind="_newTaskInfoTimeSpentMinutes">
+                                            @for (int i = 0; i <= 59; i += 5)
+                                            {
+                                                <option value="@i">@i мин</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                @if (_attachedFile != null)
                                 {
-                                    <option value="@value">@value</option>
+                                    <div class="attached-files">
+                                        <h5>@Localizer.GetString("AttachedFiles", "Task")</h5>
+                                        <ul>
+                                            <li>
+                                                @_attachedFile.Value.Item1
+                                                <button class="btn btn-danger btn-sm" @onclick="RemoveAttachedFile">
+                                                    @Localizer.GetString("Remove", "Task")
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 }
-                            </select>
-                        </div>
+                                <div class="upload-and-add">
+                                    <span class="material-icons upload-icon" @onclick="TriggerFileInput">attach_file</span>
+                                    <InputFile OnChange="HandleFileUpload" style="display: none;" multiple/>
+                                    <button class="btn add-info-btn" @onclick="AddNewTaskInfo">
+                                        @Localizer.GetString("AddUpdate", "Task")
+                                    </button>
+                                </div>
+                            </div>
 
-                        <div class="form-group">
-                            <label>Status:</label>
-                            <select class="form-control" @bind="_task.TaskStatus">
-                                @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3).ToList())
+                            <div class="task-progress">
+                                <h4>@Localizer.GetString("TaskProgress", "Task")</h4>
+                                @if (_task?.TaskInfos is { Count: > 0 })
                                 {
-                                    <option value="@value">@value</option>
+                                    @foreach (var info in _task.TaskInfos)
+                                    {
+                                        <div class="task-info-card">
+                                            <p>@info.Description</p>
+                                            @if (info.File != null)
+                                            {
+                                                <img src="@TempFileService.GetUrl(info.File)" alt="file"
+                                                     style="margin-bottom: 20px; width: 200px"/>
+                                            }
+                                            <p>
+                                                <b>@Localizer.GetString("AddedBy", "Task")</b> @_userViewModels[info.CreatedBy.Id].FullName
+                                            </p>
+                                            <p>
+                                                <b>@Localizer.GetString("Date", "Task")</b> @info.CreateAt
+                                            </p>
+                                            <p>
+                                                <b>@Localizer.GetString("TimeSpent", "Task")</b> @info.TimeSpent.ToString("hh\\:mm")
+                                            </p>
+                                        </div>
+                                    }
                                 }
-                            </select>
-                        </div>
-
-                        <div class="task-edit-buttons">
-                            <button class="btn save-btn" @onclick="Save">Save</button>
-                            <button class="btn cancel-btn" @onclick="ToggleEditMode">Cancel</button>
+                                else
+                                {
+                                    <p>@Localizer.GetString("NoProgressUpdates", "Task")</p>
+                                }
+                            </div>
                         </div>
                     </div>
-                </EditForm>
-            </div>
-        }
+                    break;
+
+                case Tab.Edit:
+                    <div class="task-details-window">
+                        <EditForm Model="_task">
+                            <div class="task-edit-form">
+                                <div class="form-group">
+                                    <label>@Localizer.GetString("TaskName", "Task")</label>
+                                    <input class="form-control" @bind="_task.Name" placeholder="@Localizer.GetString("EnterTaskName", "Task")"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@Localizer.GetString("Description", "Task")</label>
+                                    <textarea class="form-control" @bind="_task.Description"
+                                              placeholder="@Localizer.GetString("EnterTaskDescription", "Task")" style="height: 200px"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@Localizer.GetString("Priority", "Task")</label>
+                                    <select class="form-control" @bind="_task.Priority">
+                                        @foreach (var value in Enum.GetValues(typeof(TaskPriority)))
+                                        {
+                                            <option value="@value">@value</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>@Localizer.GetString("Status", "Task")</label>
+                                    <select class="form-control" @bind="_task.TaskStatus">
+                                        @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3))
+                                        {
+                                            <option value="@value">@value</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="task-edit-buttons">
+                                    <button class="btn save-btn" @onclick="Save">@Localizer.GetString("Save", "Task")</button>
+                                    <button class="btn cancel-btn" @onclick="() => SetTab(Tab.View)">@Localizer.GetString("Cancel", "Task")</button>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </div>
+                    break;
+
+                case Tab.History:
+                    <div class="task-details-window">
+                        <div class="task-history">
+                            <h4>@Localizer.GetString("TaskHistory", "Task")</h4>
+                            <div class="history-list">
+                                <div class="history-item">
+                                    <p><b>@Localizer.GetString("User", "Task")</b> John Doe</p>
+                                    <p><b>@Localizer.GetString("Date", "Task")</b> 2025-03-20 14:30</p>
+                                    <p><b>@Localizer.GetString("Change", "Task")</b> Changed status to "Work"</p>
+                                </div>
+                                <div class="history-item">
+                                    <p><b>@Localizer.GetString("User", "Task")</b> Jane Smith</p>
+                                    <p><b>@Localizer.GetString("Date", "Task")</b> 2025-03-21 09:15</p>
+                                    <p><b>@Localizer.GetString("Change", "Task")</b> Updated description</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    break;
+            }
+        </div>
     </div>
 }
 
 @code {
     private bool _isLoading = true;
     private ProjectTaskViewModel? _task;
-    private TaskInfoViewModel? _taskInfo;
     private (string, byte[])? _attachedFile;
-    private string? _errorMessage;
-
     private string _newTaskInfoDescription = string.Empty;
-
+    private int _newTaskInfoTimeSpentHours = 0;
+    private int _newTaskInfoTimeSpentMinutes = 0;
     private UserViewModel? _createdUserViewModel;
     private UserViewModel? _userViewModel;
     private Dictionary<int, UserViewModel> _userViewModels = [];
 
     [Parameter] public int Id { get; set; }
 
-    private bool _isEditMode;
+    private Tab CurrentTab = Tab.View;
+
+    private enum Tab { View, Edit, History }
 
     protected override async Task OnInitializedAsync()
     {
@@ -203,7 +248,7 @@ else
         var userIds = new List<int>
         {
             _task.CreatedBy.Id,
-            _task.CompanyUser?.Id ?? throw new Exception("Что-то не так было с записью в бд, потому что при получении это значение не может быть null")
+            _task.CompanyUser?.Id ?? throw new Exception("Database inconsistency: CompanyUser cannot be null")
         };
 
         var userViewModels = await ProjectTaskPageService.GetUsersAsync(userIds);
@@ -215,7 +260,6 @@ else
         {
             _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(taskInfosIds);
             var taskInfoCreatedByIds = _task.TaskInfos.Select(c => c.CreatedBy.Id).ToList();
-
             var taskInfoCreatedBy = await ProjectTaskPageService.GetUsersAsync(taskInfoCreatedByIds);
             foreach (var createdBy in taskInfoCreatedBy)
             {
@@ -264,12 +308,10 @@ else
         var fileName = _attachedFile?.Item2 is null ? null : Guid.NewGuid().ToString();
         var taskInfo = new TaskInfoViewModel
         {
-            ProjectTask = new BaseViewModel
-            {
-                Id = _task!.Id
-            },
+            ProjectTask = new BaseViewModel { Id = _task!.Id },
             File = fileName,
-            Description = _newTaskInfoDescription
+            Description = _newTaskInfoDescription,
+            TimeSpent = TimeSpan.FromHours(_newTaskInfoTimeSpentHours) + TimeSpan.FromMinutes(_newTaskInfoTimeSpentMinutes)
         };
 
         await ProjectTaskPageService.AddTaskInfoAsync(taskInfo);
@@ -279,16 +321,20 @@ else
             var file = new FileViewModel
             {
                 Name = fileName,
-                Type = "png", // пока так
+                Type = "png",
                 Format = FileFormat.Image,
                 ByteFormFile = _attachedFile?.Item2
             };
-
             await ProjectTaskPageService.UploadFileAsync(file);
         }
 
         _newTaskInfoDescription = string.Empty;
+        _newTaskInfoTimeSpentHours = 0;
+        _newTaskInfoTimeSpentMinutes = 0;
         _attachedFile = null;
+
+        _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(_task.TaskInfos.Select(ti => ti.Id).Append(taskInfo.Id).ToList());
+        StateHasChanged();
     }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
@@ -296,24 +342,17 @@ else
         await using var stream = e.File.OpenReadStream();
         using var ms = new MemoryStream();
         await stream.CopyToAsync(ms);
-        var fileBytes = ms.ToArray();
-
-        _attachedFile = (e.File.Name, fileBytes);
+        _attachedFile = (e.File.Name, ms.ToArray());
     }
 
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";
-
-    private void ToggleEditMode()
-    {
-        _isEditMode = !_isEditMode;
-    }
 
     private async Task Save()
     {
         if (_task != null)
         {
             await ProjectTaskPageService.UpdateValueAsync(_task);
-            _isEditMode = false;
+            SetTab(Tab.View);
         }
     }
 
@@ -322,6 +361,17 @@ else
         _attachedFile = null;
     }
 
+    private async Task TriggerFileInput()
+    {
+        await JSRuntime.InvokeVoidAsync("document.querySelector('input[type=file]').click");
+    }
+
+    private void SetTab(Tab tab)
+    {
+        CurrentTab = tab;
+    }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 }
 
 <style>
@@ -330,13 +380,48 @@ else
         padding: 50px;
         border-radius: 10px;
         margin-bottom: 100px;
+        max-width: 800px;
+        justify-self: center;
+    }
+
+    .task-header {
+        margin-bottom: 20px;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .tab-button {
+        padding: 10px 20px;
+        background-color: #e0e0e0;
+        border: none;
+        border-radius: 8px 8px 0 0;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .tab-button.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .tab-button:hover:not(.active) {
+        background-color: #d0d0d0;
+    }
+
+    .tab-content {
+        background-color: white;
+        border-radius: 0 8px 8px 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .task-details-window {
         padding: 20px;
-        background-color: white;
         border-radius: 8px;
-        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     }
 
     .task-people img {
@@ -351,11 +436,6 @@ else
         border-radius: 8px;
     }
 
-    .edit-btn {
-        background-color: #007bff;
-        color: #fff;
-    }
-
     .save-btn {
         background-color: #28a745;
         color: #fff;
@@ -363,11 +443,6 @@ else
 
     .cancel-btn {
         background-color: #6c757d;
-        color: #fff;
-    }
-
-    .delete-btn {
-        background-color: #dc3545;
         color: #fff;
     }
 
@@ -383,26 +458,70 @@ else
         border-radius: 8px;
         padding: 10px;
         width: 100%;
+        resize: vertical;
     }
 
     .add-info-btn {
         background-color: #007bff;
         color: #fff;
         border-radius: 8px;
+        padding: 10px 20px;
     }
 
-    .upload-label {
-        display: inline-block;
-        padding: 10px 15px;
-        background-color: #007bff;
-        color: #fff;
+    .task-info-input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .time-select-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .time-select-group select {
+        padding: 5px;
         border-radius: 5px;
-        cursor: pointer;
-        margin-right: 10px;
+        border: 1px solid #ced4da;
+        background-color: #fff;
+        width: 100px;
     }
 
-    .upload-label input {
-        display: none;
+    .upload-and-add {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .upload-icon {
+        font-size: 24px;
+        color: #007bff;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .upload-icon:hover {
+        color: #0056b3;
+    }
+
+    .attached-files {
+        margin-top: 20px;
+    }
+
+    .attached-files ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .attached-files li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .attached-files li button {
+        margin-left: 10px;
     }
 
     .form-group {
@@ -433,7 +552,6 @@ else
         padding: 20px;
         background-color: white;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     .task-edit-buttons {
@@ -442,109 +560,20 @@ else
         gap: 10px;
     }
 
-    .save-btn {
-        background-color: #28a745;
-        color: #fff;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+    .task-history {
+        padding: 20px;
     }
 
-    .cancel-btn {
-        background-color: #6c757d;
-        color: #fff;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .save-btn:hover, .cancel-btn:hover {
-        opacity: 0.9;
-    }
-
-    .task-header {
+    .history-list {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+        flex-direction: column;
+        gap: 15px;
     }
 
-    .edit-toggle {
-        position: relative;
-        display: inline-block;
-        width: 50px;
-        height: 26px;
-    }
-
-    .edit-toggle input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .edit-toggle label {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        border-radius: 34px;
-        transition: background-color 0.4s;
-    }
-
-    .edit-toggle label:before {
-        position: absolute;
-        content: "";
-        left: 2px;
-        height: 15px;
-        width: 15px;
-        bottom: 2px;
-        background-color: white;
-        border-radius: 50%;
-        transition: transform 0.4s;
-    }
-
-    .edit-toggle input:checked + label {
-        background-color: #28a745;
-    }
-
-    .edit-toggle input:checked + label:before {
-        transform: translateX(32px);
-    }
-
-    .edit-toggle:hover:before {
-        content: "EditMode";
-        position: absolute;
-        top: -30px;
-        right: 0;
-        background-color: #000;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 12px;
-        white-space: nowrap;
-    }
-
-    .attached-files {
-        margin-top: 20px;
-    }
-
-    .attached-files ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .attached-files li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .attached-files li button {
-        margin-left: 10px;
+    .history-item {
+        background-color: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
 </style>

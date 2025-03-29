@@ -29,4 +29,12 @@ public abstract class PilotReadOnlyController<TDto>(IMediator mediator) : BaseCo
         var result = await Mediator.Send(new GetValueByIdQuery<TDto>(id), token);
         return Ok(result);
     }
+
+    [HttpPost]
+    [ProducesResponseType(200)]
+    public virtual async Task<IActionResult> GetQueryValue([FromBody] BaseFilter filter, CancellationToken token)
+    {
+        var result = await Mediator.Send(new GetQueryValueQuery<TDto>(filter), token);
+        return Ok(result);
+    }
 }

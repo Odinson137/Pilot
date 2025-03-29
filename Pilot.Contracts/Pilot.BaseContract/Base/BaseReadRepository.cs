@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Services;
+using Serialize.Linq.Serializers;
 
 namespace Pilot.Contracts.Base;
 
@@ -39,16 +41,43 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
             .Skip(filter.Skip)
             .Take(filter.Take);
 
+        query = query.OrderByDescending(c => c.Id);
+        
         if (filter.Ids != null)
             query = query.Where(c => filter.Ids.Contains(c.Id));
         
         if (filter.WhereFilter != null)
             query = GetFiltersLambda(query, filter.WhereFilter.List);
         
+        // if (filter.SelectQuery != null)
+        //     query = GetSelectLambda(query, filter.SelectQuery);
+        
         return await query
             .ProjectTo<TOut>(mapper.ConfigurationProvider)
-            .OrderByDescending(c => c.Id) // TODO потом сделать динамическую фильтрацию
             .ToListAsync(token);
+    }
+
+    public virtual async Task<string> GetQueryValuesAsync(BaseFilter filter, CancellationToken token = default)
+    {
+        var query = DbSet
+            .Skip(filter.Skip)
+            .Take(filter.Take);
+
+        query = query.OrderByDescending(c => c.Id);
+        
+        if (filter.Ids != null)
+            query = query.Where(c => filter.Ids.Contains(c.Id));
+        
+        if (filter.WhereFilter != null)
+            query = GetFiltersLambda(query, filter.WhereFilter.List);
+        
+        // пока так
+        var exp = GetSelectLambda(query, filter.SelectQuery!);
+
+        var result = await query
+            .Select(exp)
+            .ToListAsync(token);
+        return result.ToJson();
     }
 
     private static IQueryable<T> GetFiltersLambda(IQueryable<T> query, ICollection<(string, object, Type)> list)
@@ -77,4 +106,12 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         var func = Expression.Lambda<Func<T, bool>>(eq, expNameParameter);
         return func;
     }
+    
+    private static Expression<Func<T, object>> GetSelectLambda(IQueryable<T> query, string queryString)
+    {
+        var serializer = new ExpressionSerializer(new JsonSerializer());
+        var expression = serializer.DeserializeText(queryString) as Expression<Func<T, object>>;
+        return expression!;
+    }
+
 }

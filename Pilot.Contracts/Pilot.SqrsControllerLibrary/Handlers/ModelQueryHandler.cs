@@ -9,7 +9,8 @@ namespace Pilot.SqrsControllerLibrary.Handlers;
 
 public abstract class ModelQueryHandler<T, TDto> : 
     IRequestHandler<GetValuesQuery<TDto>, ICollection<TDto>>,
-    IRequestHandler<GetValueByIdQuery<TDto>, TDto>
+    IRequestHandler<GetValueByIdQuery<TDto>, TDto>,
+    IRequestHandler<GetQueryValueQuery<TDto>, string>
     where TDto : BaseDto where T : BaseModel
 {
     protected readonly IBaseReadRepository<T> Repository;
@@ -31,6 +32,12 @@ public abstract class ModelQueryHandler<T, TDto> :
     public async Task<ICollection<TDto>> Handle(GetValuesQuery<TDto> request, CancellationToken cancellationToken)
     {
         var result = await Repository.GetValuesAsync<TDto>(request.Filter ?? new BaseFilter(), cancellationToken);
+        return result;
+    }
+
+    public async Task<string> Handle(GetQueryValueQuery<TDto> request, CancellationToken cancellationToken)
+    {
+        var result = await Repository.GetQueryValuesAsync(request.Filter, cancellationToken);
         return result;
     }
 }

@@ -18,5 +18,5 @@ public class TaskInfoDto : BaseDto, IHasFile
 
     public BaseDto? CreatedBy { get; set; }
 
-    public Dictionary<string, ICollection<byte[]>>? Files { get; set; }
+    public TimeSpan TimeSpent { get; set; }
 }

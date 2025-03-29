@@ -39,4 +39,10 @@ public interface IWorkPageService
     Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
     
     Task AddProjectAsync(ProjectViewModel project);
+
+    Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId);
+
+    Task<ICollection<ProjectTaskViewModel>> FillProjectsIntoTeamsAsync(ICollection<ProjectTaskViewModel> projectTasks);
+    
+    Task<ICollection<ProjectTaskViewModel>> GetCompanyTasksAsync(int companyId);
 }

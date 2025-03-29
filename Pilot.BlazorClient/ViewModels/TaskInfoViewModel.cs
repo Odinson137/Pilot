@@ -11,4 +11,6 @@ public class TaskInfoViewModel : BaseViewModel
     [MaxLength(500)] public string? Description { get; set; }
 
     public CompanyUserViewModel? CreatedBy { get; set; }
+    
+    public TimeSpan TimeSpent { get; set; }
 }

@@ -38,7 +38,7 @@ public class BaseFilter(int skip, int take)
 
     public string? SortAscending { get; set; }
 
-    public ICollection<(string, string)> QueryParams { get; set; } = [];
+    public string? SelectQuery { get; set; }
 
     public WhereFilter? WhereFilter { get; set; }
 

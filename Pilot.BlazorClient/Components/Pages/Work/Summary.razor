@@ -1,56 +1,253 @@
-﻿@using ChartJs.Blazor.Common
-@using ChartJs.Blazor.PieChart
+﻿@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.LineChart
+@using Pilot.BlazorClient.Interface
+@inject ISummaryPageService SummaryPageService
+@inject IWorkPageService WorkPageService
+@inject IUserService UserService
+@inject IJsonLocalizationService Localizer
 @using ChartJs.Blazor.Util
+@using Pilot.Contracts.Data.Enums
+@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
 
-<h1>Итоги</h1>
-<p>На этой странице представлены различные диаграммы, показывающие статистику по задачам и вкладу пользователя в работу команды. Вы можете увидеть распределение задач, время, потраченное на выполнение задач, прогресс и другие метрики.</p>
+@if (_isLoading)
+{
+    <div>Loading...</div>
+}
+else if (_isAdmin)
+{
+    <h1>@Localizer.GetString("CompanyPerformanceTitle", "Summary")</h1>
+    <p>@Localizer.GetString("CompanyPerformanceDescription", "Summary")</p>
 
-<div class="charts-container">
-    <div class="chart-item">
-        <h4>Распределение задач по категориям</h4>
-        <Chart Config="_categoryConfig"></Chart>
+    <div class="charts-container">
+        <div class="chart-item">
+            <h4>@Localizer.GetString("CompletedTasksByEmployees", "Summary")</h4>
+            @if (_employeeTasksConfig != null)
+            {
+                <Chart Config="_employeeTasksConfig" />
+            }
+        </div>
+        <div class="chart-item">
+            <h4>@Localizer.GetString("TaskDistributionByPriority", "Summary")</h4>
+            @if (_companyPriorityConfig != null)
+            {
+                <Chart Config="_companyPriorityConfig" />
+            }
+        </div>
+    </div>
+}
+else
+{
+    <h1>@Localizer.GetString("PersonalSummaryTitle", "Summary")</h1>
+    <p>@Localizer.GetString("PersonalSummaryDescription", "Summary")</p>
+
+    <div class="daily-hours">
+        <h3>@Localizer.GetString("DailyHoursWorked", "Summary")</h3>
+        <div class="chart-item full-width">
+            @if (_dailyHoursConfig != null)
+            {
+                <Chart Config="_dailyHoursConfig" />
+            }
+        </div>
     </div>
 
-    <div class="chart-item">
-        <h4>Распределение времени, потраченного на задачи</h4>
-        <Chart Config="_timeSpentConfig"></Chart>
-    </div>
+    <div class="personal-summary">
+        <h3>@Localizer.GetString("TaskOverview", "Summary")</h3>
+        <div class="charts-container">
+            <div class="chart-item">
+                <h4>@Localizer.GetString("TaskCategories", "Summary")</h4>
+                @if (_categoryConfig != null)
+                {
+                    <Chart Config="_categoryConfig" />
+                }
+            </div>
+            <div class="chart-item">
+                <h4>@Localizer.GetString("TaskPriorities", "Summary")</h4>
+                @if (_priorityConfig != null)
+                {
+                    <Chart Config="_priorityConfig" />
+                }
+            </div>
+            <div class="chart-item">
+                <h4>@Localizer.GetString("TaskStatus", "Summary")</h4>
+                @if (_statusConfig != null)
+                {
+                    <Chart Config="_statusConfig" />
+                }
+            </div>
+        </div>
 
-    <div class="chart-item">
-        <h4>Вклад пользователя в работу команды</h4>
-        <Chart Config="_contributionConfig"></Chart>
-    </div>
+        <h3>@Localizer.GetString("ContributionOverview", "Summary")</h3>
+        <div class="charts-container">
+            @foreach (var projectConfig in _projectContributionConfigs)
+            {
+                <div class="chart-item">
+                    <h4>@projectConfig.Value.Item2</h4>
+                    <Chart Config="projectConfig.Value.Item1" />
+                </div>
+            }
+        </div>
 
-    <div class="chart-item">
-        <h4>Завершенные задачи по приоритетам</h4>
-        <Chart Config="_priorityConfig"></Chart>
+        <div class="report-section">
+            <h3>@Localizer.GetString("GenerateReport", "Summary")</h3>
+            <button class="btn btn-primary" @onclick="GenerateWordReport">Word</button>
+            <button class="btn btn-success" @onclick="GenerateExcelReport">Excel</button>
+        </div>
     </div>
+}
 
-    <div class="chart-item">
-        <h4>Прогресс задач по статусу выполнения</h4>
-        <Chart Config="_statusConfig"></Chart>
-    </div>
-</div>
+<style>
+    .daily-hours {
+        margin: 20px 0;
+    }
+
+    .personal-summary, .daily-hours, .report-section {
+        margin: 20px 0;
+    }
+
+    h3 {
+        margin: 20px 0 10px;
+        color: #2c3e50;
+        font-size: 1.5rem;
+        border-bottom: 2px solid #4a90e2;
+        padding-bottom: 5px;
+    }
+
+    .charts-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .chart-item {
+        background: #fff;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    .report-section {
+        text-align: center;
+    }
+
+    .btn {
+        margin: 0 10px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #4a90e2;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #fff;
+        border: none;
+    }
+
+    @@media (max-width: 600px) {
+        .charts-container {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
 
 @code {
     [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
 
-    private PieConfig _categoryConfig;
-    private PieConfig _timeSpentConfig;
-    private PieConfig _contributionConfig;
-    private PieConfig _priorityConfig;
-    private PieConfig _statusConfig;
+    private bool _isLoading = true;
+    private bool _isAdmin;
+    private LineConfig? _dailyHoursConfig;
+    private PieConfig? _categoryConfig;
+    private PieConfig? _priorityConfig;
+    private PieConfig? _statusConfig;
+    private Dictionary<int, (PieConfig, string)> _projectContributionConfigs = new();
+    private PieConfig? _employeeTasksConfig;
+    private PieConfig? _companyPriorityConfig;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // 1. Распределение задач по категориям
+        var currentUser = await UserService.GetCurrentUserAsync();
+        _isAdmin = currentUser.Role is Role.Owner or Role.Director;
+
+        if (_isAdmin)
+        {
+            await InitializeCompanyCharts();
+        }
+        else
+        {
+            await InitializePersonalCharts();
+        }
+        _isLoading = false;
+    }
+
+    private async Task InitializePersonalCharts()
+    {
+        await InitializeProjectContributionCharts();
+        await InitializeDailyHoursChart();
+        await InitializeCategoryChart();
+        await InitializePriorityChart();
+        await InitializeStatusChart();
+    }
+
+    private async Task InitializeCompanyCharts()
+    {
+        await InitializeEmployeeTasksChart();
+        await InitializeCompanyPriorityChart();
+    }
+
+    private async Task InitializeDailyHoursChart()
+    {
+        _dailyHoursConfig = new LineConfig
+        {
+            Options = new LineOptions
+            {
+                Responsive = true
+            }
+        };
+
+        var random = new Random();
+        var days = Enumerable.Range(1, 7).Select(i => $"День {i}").ToList();
+        var hours = Enumerable.Range(1, 7).Select(_ => random.Next(1, 10)).ToList();
+
+        foreach (var day in days)
+        {
+            _dailyHoursConfig.Data.Labels.Add(day);
+        }
+
+        _dailyHoursConfig.Data.Datasets.Add(new LineDataset<int>(hours)
+        {
+            Label = "Часы работы",
+            BorderColor = "#4a90e2",
+            BackgroundColor = "#4a90e230",
+            Fill = true
+        });
+    }
+
+    private async Task InitializeCategoryChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var inProgress = userTasks.Count(t => t.TaskStatus == TaskStatus.Work);
+        var pending = userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo);
+
         _categoryConfig = new PieConfig
         {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                Title = new OptionsTitle { Display = false, Text = "Распределение задач по категориям" }
-            }
+            Options = new PieOptions { Responsive = true }
         };
 
         foreach (var value in new[] { "Завершенные", "В процессе", "Ожидающие" })
@@ -58,75 +255,22 @@
             _categoryConfig.Data.Labels.Add(value);
         }
 
-        _categoryConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 10, 5, 3 })
+        _categoryConfig.Data.Datasets.Add(new PieDataset<int>(new[] { completed, inProgress, pending })
         {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(75, 192, 192),
-                ColorUtil.ColorHexString(255, 159, 64),
-                ColorUtil.ColorHexString(153, 102, 255)
-            }
+            BackgroundColor = new[] { "#4BC0C0", "#FF9F40", "#9966FF" }
         });
+    }
 
-        // 2. Распределение времени, потраченного на задачи
-        _timeSpentConfig = new PieConfig
-        {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                Title = new OptionsTitle { Display = false, Text = "Распределение времени, потраченного на задачи" }
-            }
-        };
+    private async Task InitializePriorityChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var high = userTasks.Count(t => t is { Priority: TaskPriority.High, TaskStatus: TaskStatus.Completed });
+        var medium = userTasks.Count(t => t is { Priority: TaskPriority.Middle, TaskStatus: TaskStatus.Completed });
+        var low = userTasks.Count(t => t is { Priority: TaskPriority.Low, TaskStatus: TaskStatus.Completed });
 
-        foreach (var value in new[] { "Документация", "Разработка", "Тестирование" })
-        {
-            _timeSpentConfig.Data.Labels.Add(value);
-        }
-
-        _timeSpentConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 25, 10 })
-        {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(255, 205, 86),
-                ColorUtil.ColorHexString(54, 162, 235),
-                ColorUtil.ColorHexString(255, 99, 132)
-            }
-        });
-
-        // 3. Вклад пользователя в работу команды
-        _contributionConfig = new PieConfig
-        {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                Title = new OptionsTitle { Display = false, Text = "Вклад пользователя в работу команды" }
-            },
-        };
-
-        foreach (var value in new[] { "Пользователь", "Член команды 1", "Член команды 2", "Член команды 3" })
-        {
-            _contributionConfig.Data.Labels.Add(value);
-        }
-
-        _contributionConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 30, 20, 25, 25 })
-        {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(75, 192, 192),
-                ColorUtil.ColorHexString(54, 162, 235),
-                ColorUtil.ColorHexString(255, 99, 132),
-                ColorUtil.ColorHexString(153, 102, 255)
-            }
-        });
-
-        // 4. Завершенные задачи по приоритетам
         _priorityConfig = new PieConfig
         {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                Title = new OptionsTitle { Display = false, Text = "Завершенные задачи по приоритетам" }
-            },
+            Options = new PieOptions { Responsive = true }
         };
 
         foreach (var value in new[] { "Высокий", "Средний", "Низкий" })
@@ -134,24 +278,22 @@
             _priorityConfig.Data.Labels.Add(value);
         }
 
-        _priorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 8, 12, 5 })
+        _priorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { high, medium, low })
         {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(255, 99, 132),
-                ColorUtil.ColorHexString(255, 205, 86),
-                ColorUtil.ColorHexString(54, 162, 235)
-            }
+            BackgroundColor = new[] { "#FF6384", "#FFCD56", "#36A2EB" }
         });
+    }
 
-        // 5. Прогресс задач по статусу выполнения
+    private async Task InitializeStatusChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var inProgress = userTasks.Count(t => t.TaskStatus == TaskStatus.Work);
+        var remaining = userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo);
+
         _statusConfig = new PieConfig
         {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                Title = new OptionsTitle { Display = false, Text = "Прогресс задач по статусу выполнения" }
-            },
+            Options = new PieOptions { Responsive = true }
         };
 
         foreach (var value in new[] { "Завершено", "В процессе", "Осталось" })
@@ -159,31 +301,123 @@
             _statusConfig.Data.Labels.Add(value);
         }
 
-        _statusConfig.Data.Datasets.Add(new PieDataset<int>(new[] { 15, 5, 10 })
+        _statusConfig.Data.Datasets.Add(new PieDataset<int>(new[] { completed, inProgress, remaining })
         {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(75, 192, 192),
-                ColorUtil.ColorHexString(255, 159, 64),
-                ColorUtil.ColorHexString(153, 102, 255)
-            }
+            BackgroundColor = new[] { "#4BC0C0", "#FF9F40", "#9966FF" }
         });
     }
+
+    private async Task InitializeProjectContributionCharts()
+    {
+        var allProjects = await WorkPageService.GetProjectsAsync(CompanyId);
+        var tasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        await WorkPageService.FillProjectsIntoTeamsAsync(tasks);
+
+        // Группируем задачи по проектам
+        var projectTasks = tasks.GroupBy(t => t.Team.Project)
+            .Select(g => new 
+            { 
+                Project = g.Key, 
+                UserCompletedTasks = g.Count(t => t.CompanyUser.Id == UserId && t.TaskStatus == TaskStatus.Completed),
+                TotalTasks = g.Count()
+            })
+            .ToList();
+
+        _projectContributionConfigs.Clear();
+        foreach (var project in allProjects)
+        {
+            var projectTask = projectTasks.FirstOrDefault(pt => pt.Project.Id == project.Id);
+            var userCompleted = projectTask?.UserCompletedTasks ?? 0;
+            var totalTasks = projectTask?.TotalTasks ?? 0;
+            var othersCompleted = totalTasks - userCompleted;
+
+            var config = new PieConfig
+            {
+                Options = new PieOptions { Responsive = true }
+            };
+            
+            foreach (var value in new[] { "Ваш вклад", "Остальные" })
+                config.Data.Labels.Add(value);
+
+            config.Data.Datasets.Add(new PieDataset<int>([userCompleted, othersCompleted])
+            {
+                BackgroundColor = new[] { "#4BC0C0", "#FF9F40" }
+            });
+
+            _projectContributionConfigs[project.Id] = (config, project.Name);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task InitializeEmployeeTasksChart()
+    {
+        var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        var employeeTasks = allTasks.GroupBy(t => t.CompanyUser.Id)
+            .Select(g => new { EmployeeId = g.Key, CompletedTasks = g.Count(t => t.TaskStatus == TaskStatus.Completed) })
+            .ToList();
+
+        _employeeTasksConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        var labels = employeeTasks.Select(e => $"Сотрудник {e.EmployeeId}").ToList();
+        var data = employeeTasks.Select(e => e.CompletedTasks).ToList();
+
+        foreach (var label in labels)
+        {
+            _employeeTasksConfig.Data.Labels.Add(label);
+        }
+
+        _employeeTasksConfig.Data.Datasets.Add(new PieDataset<int>(data)
+        {
+            BackgroundColor = data.Select((_, i) => ColorUtil.ColorHexString((byte)(80 + i * 40), 160, (byte)(220 - i * 25))).ToArray()
+        });
+    }
+
+    private async Task InitializeCompanyPriorityChart()
+    {
+        var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        var high = allTasks.Count(t => t.Priority == TaskPriority.High);
+        var medium = allTasks.Count(t => t.Priority == TaskPriority.Middle);
+        var low = allTasks.Count(t => t.Priority == TaskPriority.Low);
+
+        _companyPriorityConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        foreach (var value in new[] { "Высокий", "Средний", "Низкий" })
+        {
+            _companyPriorityConfig.Data.Labels.Add(value);
+        }
+
+        _companyPriorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { high, medium, low })
+        {
+            BackgroundColor = new[] { "#FF6384", "#FFCD56", "#36A2EB" }
+        });
+    }
+
+    private async Task GenerateWordReport()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var content = $"Personal Summary Report\n\nCompleted Tasks: {completed}\nIn Progress: {userTasks.Count(t => t.TaskStatus == TaskStatus.Work)}\nPending: {userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo)}";
+
+        var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+        await JSRuntime.InvokeVoidAsync("saveAsFile", "SummaryReport.docx", Convert.ToBase64String(bytes));
+    }
+
+    private async Task GenerateExcelReport()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var content = $"Task Status,Count\nCompleted,{completed}\nIn Progress,{userTasks.Count(t => t.TaskStatus == TaskStatus.Work)}\nPending,{userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo)}";
+
+        var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+        await JSRuntime.InvokeVoidAsync("saveAsFile", "SummaryReport.csv", Convert.ToBase64String(bytes));
+    }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 }
-
-<style>
-    .charts-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
-    .chart-item {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        text-align: center;
-    }
-
-</style>

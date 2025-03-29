@@ -1,13 +1,19 @@
-﻿using System.Net.Http.Json;
+﻿using System.Linq.Expressions;
+using System.Net.Http.Json;
+using System.Text;
+using System.Web;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Pilot.Worker.Models;
 using Pilot.Worker.Models.ModelHelpers;
+using Serialize.Linq.Serializers;
 using Test.Base.IntegrationBase;
 using Test.Worker.IntegrationTests.Factories;
+using JsonSerializer = Serialize.Linq.Serializers.JsonSerializer;
 
 namespace Test.Worker.IntegrationTests;
 
@@ -96,6 +102,36 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
         Assert.NotNull(content);
         Assert.True(content.Count == 1);
+    }
+
+    [Fact]
+    public virtual async Task GetAllValuesTest_WithSelectQuery_ReturnOk()
+    {
+        #region Arrange
+
+        const int count = 3;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+
+        await WorkerContext.AddRangeAsync(values);
+        await WorkerContext.SaveChangesAsync();
+
+        Expression<Func<T, object>> projection = c => new { c.Id, c.CreateAt };
+        var filter = new BaseFilter
+        {
+            SelectQuery = new ExpressionSerializer(new JsonSerializer()).SerializeText(projection)
+        };
+
+        #endregion
+
+        // Act
+        var content = new StringContent(filter.ToJson(), Encoding.UTF8, "application/json");
+        var result = await Client.PostAsync($"api/{EntityName}", content);
+
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var resultContent = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(resultContent);
+        Assert.True(resultContent.Count >= count);
     }
 
     [Fact]

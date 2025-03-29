@@ -94,7 +94,7 @@ else
                             <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
                             break;
                         case 2:
-                            <Summary UserId="@_user.Id"></Summary>
+                            <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"></Summary>
                             break;
                         case 3:
                             <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>

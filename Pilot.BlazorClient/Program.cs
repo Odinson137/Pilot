@@ -37,6 +37,7 @@ services.AddScoped<IChatPageService, ChatPageService>();
 services.AddScoped<IMessengerService, MessengerService>();
 services.AddScoped<IReminderPageService, ReminderPageService>();
 services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
+services.AddScoped<ISummaryPageService, SummaryPageService>();
 
 // Base model service registrations
 services.AddScoped<IBaseModelService<UserViewModel>, BaseModelService<UserDto, UserViewModel>>();

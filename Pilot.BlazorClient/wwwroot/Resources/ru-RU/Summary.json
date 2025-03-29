@@ -1,0 +1,16 @@
+﻿{
+  "PersonalSummaryTitle": "Личная сводка",
+  "PersonalSummaryDescription": "Обзор ваших задач и вклада",
+  "TaskOverview": "Обзор задач",
+  "ContributionOverview": "Обзор вклада",
+  "DailyHoursWorked": "Часы работы по дням",
+  "TaskCategories": "Распределение задач по категориям",
+  "TaskPriorities": "Завершенные задачи по приоритетам",
+  "TaskStatus": "Прогресс задач по статусу",
+  "UserContributionByProjects": "Вклад в проекты",
+  "GenerateReport": "Сгенерировать отчёт",
+  "CompanyPerformanceTitle": "Производительность компании",
+  "CompanyPerformanceDescription": "Обзор работы сотрудников компании",
+  "CompletedTasksByEmployees": "Завершённые задачи по сотрудникам",
+  "TaskDistributionByPriority": "Распределение задач по приоритетам"
+}

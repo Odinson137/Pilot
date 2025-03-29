@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net.Http.Json;
+using Microsoft.Extensions.Logging;
+using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
@@ -77,5 +79,20 @@ public class ModelService : BaseHttpService, IModelService
         where TDto : BaseDto
     {
         return GetValuesAsync<TDto>("", filter, token);
+    }
+
+    public virtual async Task<string> GetQueryValueAsync<TDto>(BaseFilter? filter, CancellationToken token = default)
+        where TDto : BaseDto
+    {
+        Logger.LogInformation($"Send message to {typeof(TDto)}");
+
+        var client = await GetClientAsync<TDto>();
+
+        var response = await client.PostAsJsonAsync(string.Empty, filter,  token);
+        if (!response.IsSuccessStatusCode)
+            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
+
+        var content = await response.Content.ReadAsStringAsync(token);
+        return content;
     }
 }
