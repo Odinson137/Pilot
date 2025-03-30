@@ -129,7 +129,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var resultContent = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        var resultContent = await result.Content.ReadFromJsonAsync<ICollection<BaseDto>>();
         Assert.NotNull(resultContent);
         Assert.True(resultContent.Count >= count);
     }

@@ -72,7 +72,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
             query = GetFiltersLambda(query, filter.WhereFilter.List);
         
         // пока так
-        var exp = GetSelectLambda(query, filter.SelectQuery!);
+        var exp = GetSelectLambda(filter.SelectQuery!);
 
         var result = await query
             .Select(exp)
@@ -107,7 +107,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         return func;
     }
     
-    private static Expression<Func<T, object>> GetSelectLambda(IQueryable<T> query, string queryString)
+    private static Expression<Func<T, object>> GetSelectLambda(string queryString)
     {
         var serializer = new ExpressionSerializer(new JsonSerializer());
         var expression = serializer.DeserializeText(queryString) as Expression<Func<T, object>>;
