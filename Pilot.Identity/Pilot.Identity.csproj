@@ -18,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Pilot.Contracts\Pilot.BaseContract\Pilot.BaseContract.csproj"/>
+        <ProjectReference Include="..\Pilot.Contracts\Pilot.SqrsControllerLibrary\Pilot.SqrsControllerLibrary.csproj" />
     </ItemGroup>
 
     <ItemGroup>

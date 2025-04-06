@@ -10,13 +10,19 @@ public class InfoMessageDto : BaseDto
 {
     public string Title => $"Успешное {Action}";
 
-    private string Action => MessagePriority switch
+    private string Action
     {
-        MessageInfo.Create => "создание",
-        MessageInfo.Update => "обновление",
-        MessageInfo.Default => "удаление",
-        _ => string.Empty
-    };
+        get
+        {
+            if ((MessagePriority & MessageInfo.Create) == MessageInfo.Create)
+                return "создание";
+            if ((MessagePriority & MessageInfo.Update) == MessageInfo.Update)
+                return "обновление";
+            if ((MessagePriority & MessageInfo.Delete) == MessageInfo.Delete)
+                return "удаление";
+            return string.Empty;
+        }
+    }
 
     [MaxLength(500)] public string Description => $"Успешное {Action} сущности {EntityType}";
 

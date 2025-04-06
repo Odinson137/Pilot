@@ -5,6 +5,7 @@ using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.AuditHistory.Models;
 
+// как будто бы BaseModel здесь не нужно, но ради единообразия я оставил
 public class AuditHistory : BaseModel, IAddUser
 {
     [Required] public int UserId { get; set; }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.Exception.ApiExceptions;
@@ -10,6 +11,7 @@ using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
 using Pilot.Identity.Repository;
 using Pilot.Identity.Services;
+using Pilot.SqrsControllerLibrary;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,25 +26,16 @@ services.AddSwaggerGen();
 services.AddTransient<IPasswordCoder, PasswordCoderService>();
 services.AddScoped<IUser, UserRepository>();
 
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .CreateLogger());
-
 services.AddScoped<ISeed, Seed>();
-
-services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddControllers();
 
-services.AddDbContext<DataContext>(option => option.UseMySql(
-        configuration["MySql:ConnectionString"],
-        new MySqlServerVersion(new Version(8, 0, 11))
-    )
-    .EnableSensitiveDataLogging()
-    .EnableDetailedErrors()
-);
+services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
+
+services.AddScoped<IBaseValidatorService, ValidatorService>();
+
+builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+builder.AddUnitOfWork<UnitOfWork>();
 
 services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 

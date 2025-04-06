@@ -1,32 +1,33 @@
 ﻿@page "/Account/{UserId:int}"
 @page "/Account"
-<PageTitle>Account</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", "Account")</PageTitle>
 @using Microsoft.AspNetCore.Components.Authorization
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IUserPageService UserPageService
+@inject IJsonLocalizationService Localizer
+@inject IJSRuntime JSRuntime
 
 <AuthCheck/>
 
-@if (!UserId.HasValue)
-{
-    <div class="header-banner">
-        <h1>User Account Information</h1>
-        <p>Manage your account details below</p>
-    </div>
-}
-else
-{
-    <div class="header-banner">
-        <h1>Your Employee Account Information</h1>
-        <p>Learn your employees profiles and send message</p>
-    </div>
-}
+<header class="header-banner" id="header-banner">
+    @if (!UserId.HasValue)
+    {
+        <h1 class="banner-title">@Localizer.GetString("OwnAccountTitle", "Account")</h1>
+        <p class="banner-subtitle">@Localizer.GetString("OwnAccountSubtitle", "Account")</p>
+    }
+    else
+    {
+        <h1 class="banner-title">@Localizer.GetString("EmployeeAccountTitle", "Account")</h1>
+        <p class="banner-subtitle">@Localizer.GetString("EmployeeAccountSubtitle", "Account")</p>
+    }
+</header>
 
 @if (_isLoading)
 {
@@ -34,75 +35,84 @@ else
 }
 else if (_user == null)
 {
-    <p>User not found.</p>
+    <p class="not-found">@Localizer.GetString("UserNotFound", "Account")</p>
 }
 else
 {
-    <div class="user-info-container">
-        <!-- Left section: photo and name -->
-        <div class="left-section">
+    <div class="user-profile-container">
+        <div class="profile-card">
+            <!-- Left Section: Avatar and Name -->
             <div class="avatar-section">
                 @if (!string.IsNullOrEmpty(_user.AvatarImage))
                 {
-                    <img src="@TempFileService.GetUrl(_user.AvatarImage)" alt="User Avatar" class="avatar-img"/>
+                    <img src="@TempFileService.GetUrl(_user.AvatarImage)" alt="User Avatar" class="avatar-img" @ref="avatarElement"/>
                 }
                 else
                 {
-                    <img src="Images/Account/default-avatar.jpg" alt="Default Avatar" class="avatar-img"/>
+                    <img src="Images/Account/default-avatar.jpg" alt="Default Avatar" class="avatar-img" @ref="avatarElement"/>
+                }
+                <h2 class="user-name">@_user.Name @_user.LastName</h2>
+            </div>
+
+            <!-- Right Section: User Details -->
+            <div class="details-section">
+                <div class="detail-item"><span class="label">@Localizer.GetString("Username", "Account"):</span> @_user.UserName</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Email", "Account"):</span> @(_user.Email ?? Localizer.GetString("NoData", "Account"))</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Role", "Account"):</span> @_user.Role</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Description", "Account"):</span> @(_user.Description ?? Localizer.GetString("NoData", "Account"))</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Location", "Account"):</span> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Gender", "Account"):</span> @_user.Gender</div>
+                <div class="detail-item"><span class="label">@Localizer.GetString("Birthday", "Account"):</span> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")</div>
+                @if (!UserId.HasValue)
+                {
+                    <button class="btn btn-edit" @onclick="EditAccount">@Localizer.GetString("EditAccount", "Account")</button>
                 }
             </div>
-            <h2>@_user.Name @_user.LastName</h2>
         </div>
 
-        <!-- Right section: user details -->
-        <div class="right-section">
-            <p><strong>Username:</strong> @_user.UserName</p>
-            <p><strong>Email:</strong> @(_user.Email ?? "No email provided")</p>
-            <p><strong>Role:</strong> @_user.Role</p>
-            <p><strong>Description:</strong> @(_user.Description ?? "No description provided")</p>
-            <p><strong>Location:</strong> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</p>
-            <p><strong>Gender:</strong> @_user.Gender</p>
-            <p><strong>Birthday:</strong> @(_user.Birthday?.ToString("MMMM dd, yyyy") ?? "Unknown")</p>
-        </div>
-    </div>
-
-    
-    <!-- Skills Section -->
-    <div class="skills-section">
-        <h3>User Skills</h3>
-        @if (_skills != null && _skills.Any())
-        {
-            <ul class="skills-list">
-                @foreach (var skill in _skills)
+        <!-- Skills Section -->
+        <div class="skills-section">
+            <div class="skills-header">
+                <h3 class="section-title">@Localizer.GetString("SkillsTitle", "Account")</h3>
+                @if (!UserId.HasValue)
                 {
-                    <li class="skill-item">
-                        <strong>@skill.Skill.Title</strong> - 
-                        <span>@(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : "No experience")</span> 
-                        (Level: @skill.SkillLevel)
-                    </li>
+                    <button class="btn btn-edit" @onclick="EditSkills">@Localizer.GetString("EditSkills", "Account")</button>
                 }
-            </ul>
-        }
-        else
-        {
-            <p>No skills available.</p>
-        }
+            </div>
+            @if (_skills != null && _skills.Any())
+            {
+                <ul class="skills-list">
+                    @foreach (var skill in _skills)
+                    {
+                        <li class="skill-card">
+                            <span class="skill-title">@skill.Skill.Title</span>
+                            <span class="skill-details">
+                                @Localizer.GetString("Experience", "Account"): @(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : Localizer.GetString("NoExperience", "Account"))
+                                (@Localizer.GetString("Level", "Account"): @skill.SkillLevel)
+                            </span>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="no-data">@Localizer.GetString("NoSkills", "Account")</p>
+            }
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section">
+            @if (UserId.HasValue)
+            {
+                <button class="btn btn-success" @onclick="SendMessage">@Localizer.GetString("SendMessage", "Account")</button>
+            }
+            else
+            {
+                <button class="btn btn-secondary" @onclick="Logout">@Localizer.GetString("Logout", "Account")</button>
+                <button class="btn btn-danger" @onclick="DeleteAccount">@Localizer.GetString("DeleteAccount", "Account")</button>
+            }
+        </div>
     </div>
-    
-    @if (UserId.HasValue)
-    {
-        <div class="actions-section">
-            <button class="btn btn-success" @onclick="SendMessage">Send Message</button>
-        </div>
-    }
-    else
-    {
-        <div class="actions-section">
-            <button class="btn btn-primary" @onclick="EditAccount">Edit Account</button>
-            <button class="btn btn-primary" @onclick="Logout">Log Out</button>
-            <button class="btn btn-danger" @onclick="DeleteAccount">Delete Account</button>
-        </div>
-    }
 }
 
 @code {
@@ -111,6 +121,7 @@ else
     private UserViewModel? _user;
     private ICollection<UserSkillViewModel>? _skills;
     private bool _isLoading = true;
+    private ElementReference avatarElement;
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,120 +153,299 @@ else
         _isLoading = false;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && _user != null)
+        {
+            string imageUrl = !string.IsNullOrEmpty(_user.AvatarImage) 
+                ? TempFileService.GetUrl(_user.AvatarImage) 
+                : "Images/Account/default-avatar.jpg";
+            await JSRuntime.InvokeVoidAsync("setGradientFromImage", imageUrl, "header-banner");
+        }
+    }
+
     private void SendMessage()
     {
         NavigationManager.NavigateTo($"/Chat/{UserId ?? _user?.Id}");
     }
 
-    private async Task Logout()
+    private void Logout()
     {
         NavigationManager.NavigateTo("/User/Logout");
     }
 
-    private async Task DeleteAccount()
+    private void DeleteAccount()
     {
+        // Логика удаления аккаунта (пока пустая)
     }
 
-    private async Task EditAccount()
+    private void EditAccount()
     {
         NavigationManager.NavigateTo("/Account/Edit");
+    }
+
+    private void EditSkills()
+    {
+        NavigationManager.NavigateTo("/Account/EditSkills"); // Предполагаемый маршрут
     }
 }
 
 <style>
-    /* Existing styles */
-
-    .skills-section {
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #f7f9fc;
-        border-radius: 8px;
+    /* Корневые переменные */
+    :root {
+        --primary: #007bff;
+        --success: #28a745;
+        --danger: #dc3545;
+        --secondary: #6c757d;
+        --light: #f8f9fa;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
     }
 
-    .skills-list {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .skill-item {
-        padding: 5px 0;
-        border-bottom: 1px solid #e1e4e8;
-    }
-
-    .skill-item:last-child {
-        border-bottom: none;
-    }
-
+    /* Header Banner */
     .header-banner {
-        background-color: gray;
+        position: relative;
         height: 200px;
-        color: white;
+        background: linear-gradient(135deg, #007bff 0%, #6c757d 100%);
+        color: #fff;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
-        margin-bottom: 20px;
+        border-radius: 0 0 20px 20px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        animation: fadeIn 0.5s ease-in-out;
     }
 
-    .user-info-container {
+    .banner-title {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .banner-subtitle {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    /* User Profile Container */
+    .user-profile-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .profile-card {
         display: flex;
-        justify-content: space-around;
-        padding: 20px;
-        gap: 20px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+        gap: 30px;
+        transition: transform 0.3s ease;
     }
 
-    .left-section {
+    .profile-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Avatar Section */
+    .avatar-section {
         display: flex;
         flex-direction: column;
         align-items: center;
-    }
-
-    .avatar-section {
         flex-shrink: 0;
     }
 
     .avatar-img {
-        width: 150px;
-        max-height: 400px;
-        border-radius: 10%;
-        margin-bottom: 10px;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
     }
 
-    .left-section h2 {
+    .user-name {
+        font-size: 1.8rem;
+        color: #333;
         margin: 0;
         text-align: center;
     }
 
-    .right-section {
+    /* Details Section */
+    .details-section {
+        flex-grow: 1;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        gap: 12px;
     }
 
-    .right-section p {
-        margin: 5px 0;
+    .detail-item {
+        font-size: 1rem;
+        color: #666;
     }
 
+    .label {
+        font-weight: 600;
+        color: #333;
+        margin-right: 5px;
+    }
+
+    /* Skills Section */
+    .skills-section {
+        margin-top: 40px;
+        padding: 30px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+    }
+
+    .skills-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        color: #333;
+        margin: 0;
+    }
+
+    .skills-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .skill-card {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .skill-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .skill-title {
+        font-weight: 600;
+        color: var(--primary);
+    }
+
+    .skill-details {
+        color: #666;
+    }
+
+    .no-data {
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Actions Section */
     .actions-section {
-        margin-top: 20px;
+        margin-top: 40px;
         text-align: center;
-        margin-bottom: 100px;
+        padding-bottom: 60px;
     }
 
-    .actions-section button {
-        margin-right: 10px;
+    .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin: 0 10px;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
     }
 
     .btn-success {
-        background-color: #28a745;
-        color: white;
+        background: var(--success);
+        color: #fff;
     }
 
-    .loading-spinner {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 200px;
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .btn-secondary {
+        background: var(--secondary);
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-edit {
+        background: #17a2b8;
+        color: #fff;
+        padding: 8px 20px;
+        font-size: 0.9rem;
+    }
+
+    .btn-edit:hover {
+        background: #138496;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .profile-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .avatar-img {
+            width: 120px;
+            height: 120px;
+        }
+
+        .skills-header {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .skill-card {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .actions-section .btn {
+            margin: 10px 0;
+            width: 100%;
+        }
     }
 </style>

@@ -28,3 +28,12 @@ h1:focus {
     border-color: #929292;
 }
 
+:root {
+    --primary: #007bff;
+    --success: #28a745;
+    --danger: #dc3545;
+    --secondary: #6c757d;
+    --light: #f8f9fa;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Валидное значение для box-shadow */
+    --transition: all 0.3s ease; /* Валидное значение для transition */
+}

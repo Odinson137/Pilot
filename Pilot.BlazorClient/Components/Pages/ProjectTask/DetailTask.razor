@@ -7,6 +7,7 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Service
 @inject IProjectTaskPageService ProjectTaskPageService
 @inject IJsonLocalizationService Localizer
 
@@ -20,23 +21,24 @@
 }
 else if (_task == null)
 {
-    <p>@Localizer.GetString("TaskNotFound", "Task")</p>
+    <p class="not-found">@Localizer.GetString("TaskNotFound", "Task")</p>
 }
 else
 {
-    <div class="task-background">
+    <div class="task-container">
         <div class="task-header">
-            <h2>@_task.Id) @Localizer.GetString("TaskDetails", "Task") @_task.Name</h2>
+            <h1 class="task-title">@_task.Name</h1>
+            <p class="task-subtitle">@_task.Description</p>
         </div>
 
         <div class="tabs">
-            <button class="tab-button" @onclick="() => SetTab(Tab.View)" class="@(CurrentTab == Tab.View ? "active" : "")">
+            <button @onclick="() => SetTab(Tab.View)" class="tab-button @(CurrentTab == Tab.View ? "active" : "")">
                 @Localizer.GetString("ViewTab", "Task")
             </button>
-            <button class="tab-button" @onclick="() => SetTab(Tab.Edit)" class="@(CurrentTab == Tab.Edit ? "active" : "")">
+            <button @onclick="() => SetTab(Tab.Edit)" class="tab-button @(CurrentTab == Tab.Edit ? "active" : "")">
                 @Localizer.GetString("EditTab", "Task")
             </button>
-            <button class="tab-button" @onclick="() => SetTab(Tab.History)" class="@(CurrentTab == Tab.History ? "active" : "")">
+            <button @onclick="() => SetTab(Tab.History)" class="tab-button @(CurrentTab == Tab.History ? "active" : "")">
                 @Localizer.GetString("HistoryTab", "Task")
             </button>
         </div>
@@ -45,177 +47,151 @@ else
             @switch (CurrentTab)
             {
                 case Tab.View:
-                    <div class="task-details-window">
-                        <div class="task-main-info">
-                            <h3>@_task.Name</h3>
-                            <p>@_task.Description</p>
-
-                            <div class="task-people">
-                                <div class="task-owner">
-                                    <b>@Localizer.GetString("AssignedTo", "Task")</b>
-                                    <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)">
-                                        <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar"/>
-                                        @_userViewModel?.FullName
-                                    </a>
-                                </div>
-                                <div class="task-creator">
-                                    <b>@Localizer.GetString("CreatedBy", "Task")</b>
-                                    <a href="@GetUserProfileLink(_task?.CreatedBy?.Id)">
-                                        <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)"
-                                             style="max-width: 30px; max-height: 30px" alt="avatar"/>
-                                        @_createdUserViewModel?.FullName
-                                    </a>
+                    <div class="task-view">
+                        <div class="task-info-grid">
+                            <div class="task-section">
+                                <h3>@Localizer.GetString("Details", "Task")</h3>
+                                <div class="task-meta">
+                                    <p><span class="label">@Localizer.GetString("Priority", "Task")</span> <span style="color: @GetPriorityColor(_task.Priority)">@GetPriorityLabel(_task.Priority)</span></p>
+                                    <p><span class="label">@Localizer.GetString("Status", "Task")</span> <span style="color: @GetStatusColor(_task.TaskStatus)">@_task.TaskStatus</span></p>
+                                    <p><span class="label">@Localizer.GetString("CreatedOn", "Task")</span> @_task.CreateAt</p>
                                 </div>
                             </div>
 
-                            <div class="task-status-priority">
-                                <p style="color: @GetPriorityColor(_task.Priority)">
-                                    <b>@Localizer.GetString("Priority", "Task")</b> @GetPriorityLabel(_task.Priority)
-                                </p>
-                                <p style="color: @GetStatusColor(_task.TaskStatus)">
-                                    <b>@Localizer.GetString("Status", "Task")</b> @_task.TaskStatus
-                                </p>
-                                <p>
-                                    <b>@Localizer.GetString("CreatedOn", "Task")</b> @_task.CreateAt
-                                </p>
+                            <div class="task-section">
+                                <h3>@Localizer.GetString("People", "Task")</h3>
+                                <div class="user-card">
+                                    <span class="label">@Localizer.GetString("AssignedTo", "Task")</span>
+                                    <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)" class="user-link">
+                                        <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar" class="avatar"/>
+                                        <span>@_userViewModel?.FullName</span>
+                                    </a>
+                                </div>
+                                <div class="user-card">
+                                    <span class="label">@Localizer.GetString("CreatedBy", "Task")</span>
+                                    <a href="@GetUserProfileLink(_task?.CreatedBy.Id)" class="user-link">
+                                        <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)" alt="avatar" class="avatar"/>
+                                        <span>@_createdUserViewModel?.FullName</span>
+                                    </a>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="add-task-info">
-                                <h4>@Localizer.GetString("AddProgressUpdate", "Task")</h4>
-                                <div class="task-info-input-group">
-                                    <textarea @bind="_newTaskInfoDescription" style="height: 150px"
-                                              placeholder="@Localizer.GetString("EnterTaskUpdate", "Task")"></textarea>
-                                    <div class="time-select-group">
-                                        <select @bind="_newTaskInfoTimeSpentHours">
-                                            @for (int i = 0; i <= 23; i++)
-                                            {
-                                                <option value="@i">@i ч</option>
-                                            }
-                                        </select>
-                                        <select @bind="_newTaskInfoTimeSpentMinutes">
-                                            @for (int i = 0; i <= 59; i += 5)
-                                            {
-                                                <option value="@i">@i мин</option>
-                                            }
-                                        </select>
-                                    </div>
+                        <div class="task-section progress-section">
+                            <h3>@Localizer.GetString("AddProgressUpdate", "Task")</h3>
+                            <div class="progress-input">
+                                <textarea @bind="_newTaskInfoDescription" placeholder="@Localizer.GetString("EnterTaskUpdate", "Task")" class="form-textarea"></textarea>
+                                <div class="time-input">
+                                    <select @bind="_newTaskInfoTimeSpentHours" class="form-select">
+                                        @for (int i = 0; i <= 23; i++)
+                                        {
+                                            <option value="@i">@i ч</option>
+                                        }
+                                    </select>
+                                    <select @bind="_newTaskInfoTimeSpentMinutes" class="form-select">
+                                        @for (int i = 0; i <= 59; i += 5)
+                                        {
+                                            <option value="@i">@i мин</option>
+                                        }
+                                    </select>
                                 </div>
                                 @if (_attachedFile != null)
                                 {
-                                    <div class="attached-files">
-                                        <h5>@Localizer.GetString("AttachedFiles", "Task")</h5>
-                                        <ul>
-                                            <li>
-                                                @_attachedFile.Value.Item1
-                                                <button class="btn btn-danger btn-sm" @onclick="RemoveAttachedFile">
-                                                    @Localizer.GetString("Remove", "Task")
-                                                </button>
-                                            </li>
-                                        </ul>
+                                    <div class="file-preview">
+                                        <span>@_attachedFile.Value.Item1</span>
+                                        <button class="btn btn-icon btn-danger" @onclick="RemoveAttachedFile">
+                                            <span class="material-icons">delete</span>
+                                        </button>
                                     </div>
                                 }
-                                <div class="upload-and-add">
-                                    <span class="material-icons upload-icon" @onclick="TriggerFileInput">attach_file</span>
-                                    <InputFile OnChange="HandleFileUpload" style="display: none;" multiple/>
-                                    <button class="btn add-info-btn" @onclick="AddNewTaskInfo">
-                                        @Localizer.GetString("AddUpdate", "Task")
-                                    </button>
+                                <div class="progress-actions">
+                                    <label class="upload-btn">
+                                        <span class="material-icons">attach_file</span>
+                                        <InputFile OnChange="HandleFileUpload" class="file-input" multiple />
+                                    </label>
+                                    <button class="btn btn-primary" @onclick="AddNewTaskInfo">@Localizer.GetString("AddUpdate", "Task")</button>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="task-progress">
-                                <h4>@Localizer.GetString("TaskProgress", "Task")</h4>
-                                @if (_task?.TaskInfos is { Count: > 0 })
+                        <div class="task-section">
+                            <h3>@Localizer.GetString("TaskProgress", "Task")</h3>
+                            @if (_task?.TaskInfos is { Count: > 0 })
+                            {
+                                @foreach (var info in _task.TaskInfos)
                                 {
-                                    @foreach (var info in _task.TaskInfos)
-                                    {
-                                        <div class="task-info-card">
-                                            <p>@info.Description</p>
-                                            @if (info.File != null)
-                                            {
-                                                <img src="@TempFileService.GetUrl(info.File)" alt="file"
-                                                     style="margin-bottom: 20px; width: 200px"/>
-                                            }
-                                            <p>
-                                                <b>@Localizer.GetString("AddedBy", "Task")</b> @_userViewModels[info.CreatedBy.Id].FullName
-                                            </p>
-                                            <p>
-                                                <b>@Localizer.GetString("Date", "Task")</b> @info.CreateAt
-                                            </p>
-                                            <p>
-                                                <b>@Localizer.GetString("TimeSpent", "Task")</b> @info.TimeSpent.ToString("hh\\:mm")
-                                            </p>
+                                    <div class="progress-card">
+                                        <p class="progress-description">@info.Description</p>
+                                        @if (info.File != null)
+                                        {
+                                            <img src="@TempFileService.GetUrl(info.File)" alt="file" class="progress-image"/>
+                                        }
+                                        <div class="progress-meta">
+                                            <p><span class="label">@Localizer.GetString("AddedBy", "Task")</span> @_userViewModels[info.CreatedBy.Id].FullName</p>
+                                            <p><span class="label">@Localizer.GetString("Date", "Task")</span> @info.CreateAt</p>
+                                            <p><span class="label">@Localizer.GetString("TimeSpent", "Task")</span> @info.TimeSpent.ToString("hh\\:mm")</p>
                                         </div>
-                                    }
+                                    </div>
                                 }
-                                else
-                                {
-                                    <p>@Localizer.GetString("NoProgressUpdates", "Task")</p>
-                                }
-                            </div>
+                            }
+                            else
+                            {
+                                <p class="no-data">@Localizer.GetString("NoProgressUpdates", "Task")</p>
+                            }
                         </div>
                     </div>
                     break;
 
                 case Tab.Edit:
-                    <div class="task-details-window">
-                        <EditForm Model="_task">
-                            <div class="task-edit-form">
-                                <div class="form-group">
-                                    <label>@Localizer.GetString("TaskName", "Task")</label>
-                                    <input class="form-control" @bind="_task.Name" placeholder="@Localizer.GetString("EnterTaskName", "Task")"/>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>@Localizer.GetString("Description", "Task")</label>
-                                    <textarea class="form-control" @bind="_task.Description"
-                                              placeholder="@Localizer.GetString("EnterTaskDescription", "Task")" style="height: 200px"></textarea>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>@Localizer.GetString("Priority", "Task")</label>
-                                    <select class="form-control" @bind="_task.Priority">
-                                        @foreach (var value in Enum.GetValues(typeof(TaskPriority)))
-                                        {
-                                            <option value="@value">@value</option>
-                                        }
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>@Localizer.GetString("Status", "Task")</label>
-                                    <select class="form-control" @bind="_task.TaskStatus">
-                                        @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3))
-                                        {
-                                            <option value="@value">@value</option>
-                                        }
-                                    </select>
-                                </div>
-
-                                <div class="task-edit-buttons">
-                                    <button class="btn save-btn" @onclick="Save">@Localizer.GetString("Save", "Task")</button>
-                                    <button class="btn cancel-btn" @onclick="() => SetTab(Tab.View)">@Localizer.GetString("Cancel", "Task")</button>
-                                </div>
+                    <div class="task-edit">
+                        <EditForm Model="_task" class="edit-form">
+                            <div class="form-group">
+                                <label>@Localizer.GetString("TaskName", "Task")</label>
+                                <input @bind="_task.Name" placeholder="@Localizer.GetString("EnterTaskName", "Task")" class="form-input"/>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("Description", "Task")</label>
+                                <textarea @bind="_task.Description" placeholder="@Localizer.GetString("EnterTaskDescription", "Task")" class="form-textarea"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("Priority", "Task")</label>
+                                <select @bind="_task.Priority" class="form-select">
+                                    @foreach (var value in Enum.GetValues(typeof(TaskPriority)))
+                                    {
+                                        <option value="@value">@value</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("Status", "Task")</label>
+                                <select @bind="_task.TaskStatus" class="form-select">
+                                    @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3))
+                                    {
+                                        <option value="@value">@value</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-success" @onclick="Save">@Localizer.GetString("Save", "Task")</button>
+                                <button type="button" class="btn btn-secondary" @onclick="() => SetTab(Tab.View)">@Localizer.GetString("Cancel", "Task")</button>
                             </div>
                         </EditForm>
                     </div>
                     break;
 
                 case Tab.History:
-                    <div class="task-details-window">
-                        <div class="task-history">
-                            <h4>@Localizer.GetString("TaskHistory", "Task")</h4>
-                            <div class="history-list">
-                                <div class="history-item">
-                                    <p><b>@Localizer.GetString("User", "Task")</b> John Doe</p>
-                                    <p><b>@Localizer.GetString("Date", "Task")</b> 2025-03-20 14:30</p>
-                                    <p><b>@Localizer.GetString("Change", "Task")</b> Changed status to "Work"</p>
-                                </div>
-                                <div class="history-item">
-                                    <p><b>@Localizer.GetString("User", "Task")</b> Jane Smith</p>
-                                    <p><b>@Localizer.GetString("Date", "Task")</b> 2025-03-21 09:15</p>
-                                    <p><b>@Localizer.GetString("Change", "Task")</b> Updated description</p>
-                                </div>
+                    <div class="task-history">
+                        <h3>@Localizer.GetString("TaskHistory", "Task")</h3>
+                        <div class="history-list">
+                            <div class="history-card">
+                                <p><span class="label">@Localizer.GetString("User", "Task")</span> John Doe</p>
+                                <p><span class="label">@Localizer.GetString("Date", "Task")</span> 2025-03-20 14:30</p>
+                                <p><span class="label">@Localizer.GetString("Change", "Task")</span> Changed status to "Work"</p>
+                            </div>
+                            <div class="history-card">
+                                <p><span class="label">@Localizer.GetString("User", "Task")</span> Jane Smith</p>
+                                <p><span class="label">@Localizer.GetString("Date", "Task")</span> 2025-03-21 09:15</p>
+                                <p><span class="label">@Localizer.GetString("Change", "Task")</span> Updated description</p>
                             </div>
                         </div>
                     </div>
@@ -230,8 +206,8 @@ else
     private ProjectTaskViewModel? _task;
     private (string, byte[])? _attachedFile;
     private string _newTaskInfoDescription = string.Empty;
-    private int _newTaskInfoTimeSpentHours = 0;
-    private int _newTaskInfoTimeSpentMinutes = 0;
+    private int _newTaskInfoTimeSpentHours ;
+    private int _newTaskInfoTimeSpentMinutes = 5; // default
     private UserViewModel? _createdUserViewModel;
     private UserViewModel? _userViewModel;
     private Dictionary<int, UserViewModel> _userViewModels = [];
@@ -330,7 +306,7 @@ else
 
         _newTaskInfoDescription = string.Empty;
         _newTaskInfoTimeSpentHours = 0;
-        _newTaskInfoTimeSpentMinutes = 0;
+        _newTaskInfoTimeSpentMinutes = 5;
         _attachedFile = null;
 
         _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(_task.TaskInfos.Select(ti => ti.Id).Append(taskInfo.Id).ToList());
@@ -374,194 +350,359 @@ else
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 }
 
+
 <style>
-    .task-background {
-        background-color: #f0f0f0;
-        padding: 50px;
-        border-radius: 10px;
-        margin-bottom: 100px;
-        max-width: 800px;
-        justify-self: center;
+    /* Общие стили */
+    :root {
+        --primary: #007bff;
+        --success: #28a745;
+        --danger: #dc3545;
+        --secondary: #6c757d;
+        --light: #f8f9fa;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .task-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.5s ease-in-out;
     }
 
     .task-header {
-        margin-bottom: 20px;
+        text-align: center;
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
     }
 
+    .task-title {
+        font-size: 2rem;
+        color: #333;
+        margin: 0;
+    }
+
+    .task-subtitle {
+        font-size: 1.1rem;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    /* Вкладки */
     .tabs {
         display: flex;
+        justify-content: center;
         gap: 10px;
-        margin-bottom: 20px;
+        padding: 10px 0;
+        background: #fff;
+        border-radius: 10px 10px 0 0;
     }
 
     .tab-button {
-        padding: 10px 20px;
-        background-color: #e0e0e0;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #555;
+        background: #e9ecef;
         border: none;
-        border-radius: 8px 8px 0 0;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: 500;
-        transition: all 0.3s;
+        transition: var(--transition);
+    }
+
+    .tab-button:hover {
+        background: #dee2e6;
     }
 
     .tab-button.active {
-        background-color: #007bff;
-        color: white;
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.3);
     }
 
-    .tab-button:hover:not(.active) {
-        background-color: #d0d0d0;
-    }
-
+    /* Контент вкладок */
     .tab-content {
-        background-color: white;
-        border-radius: 0 8px 8px 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .task-details-window {
+        background: #fff;
+        border-radius: 0 0 10px 10px;
         padding: 20px;
-        border-radius: 8px;
+        box-shadow: var(--shadow);
     }
 
-    .task-people img {
-        object-fit: cover;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-    }
-
-    .task-edit-buttons button {
-        margin-right: 10px;
-        border-radius: 8px;
-    }
-
-    .save-btn {
-        background-color: #28a745;
-        color: #fff;
-    }
-
-    .cancel-btn {
-        background-color: #6c757d;
-        color: #fff;
-    }
-
-    .task-info-card {
-        background-color: #f9f9f9;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.05);
-    }
-
-    .add-task-info textarea {
-        border-radius: 8px;
-        padding: 10px;
-        width: 100%;
-        resize: vertical;
-    }
-
-    .add-info-btn {
-        background-color: #007bff;
-        color: #fff;
-        border-radius: 8px;
-        padding: 10px 20px;
-    }
-
-    .task-info-input-group {
+    /* Вкладка просмотра */
+    .task-view {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 20px;
     }
 
-    .time-select-group {
+    .task-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .task-section {
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+    }
+
+    .task-section h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .task-meta p, .progress-meta p {
+        margin: 5px 0;
+        font-size: 1rem;
+    }
+
+    .label {
+        font-weight: 600;
+        color: #555;
+        margin-right: 5px;
+    }
+
+    .user-card {
         display: flex;
-        gap: 10px;
+        flex-direction: column;
+        margin-bottom: 10px;
     }
 
-    .time-select-group select {
-        padding: 5px;
-        border-radius: 5px;
-        border: 1px solid #ced4da;
-        background-color: #fff;
-        width: 100px;
-    }
-
-    .upload-and-add {
+    .user-link {
         display: flex;
         align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: #333;
+        transition: var(--transition);
+    }
+
+    .user-link:hover {
+        color: var(--primary);
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Прогресс */
+    .progress-section {
+        background: #f8f9fa;
+    }
+
+    .progress-input {
+        display: flex;
+        flex-direction: column;
         gap: 15px;
-        margin-top: 10px;
     }
 
-    .upload-icon {
-        font-size: 24px;
-        color: #007bff;
-        cursor: pointer;
-        transition: color 0.3s;
+    .form-textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        resize: vertical;
+        transition: var(--transition);
     }
 
-    .upload-icon:hover {
-        color: #0056b3;
+    .form-textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
     }
 
-    .attached-files {
-        margin-top: 20px;
-    }
-
-    .attached-files ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .attached-files li {
+    .time-input {
         display: flex;
-        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .form-select {
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: #fff;
+        transition: var(--transition);
+    }
+
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+
+    .file-preview {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 8px;
+    }
+
+    .progress-actions {
+        display: flex;
+        gap: 15px;
         align-items: center;
     }
 
-    .attached-files li button {
-        margin-left: 10px;
+    .upload-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+        background: #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .upload-btn:hover {
+        background: #dee2e6;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-icon {
+        padding: 5px;
+        font-size: 1rem;
+    }
+
+    .progress-card {
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        margin-bottom: 15px;
+        transition: transform 0.2s ease;
+    }
+
+    .progress-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .progress-description {
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .progress-image {
+        max-width: 200px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .no-data {
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Вкладка редактирования */
+    .task-edit {
+        padding: 20px;
+    }
+
+    .edit-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 
     .form-group {
-        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
     }
 
     .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
+        font-weight: 600;
+        color: #333;
     }
 
-    .form-control {
-        width: 100%;
-        padding: 5px;
-        border-radius: 5px;
+    .form-input {
+        padding: 10px;
         border: 1px solid #ced4da;
-        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-control:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-    }
-
-    .task-edit-form {
-        padding: 20px;
-        background-color: white;
         border-radius: 8px;
+        transition: var(--transition);
     }
 
-    .task-edit-buttons {
-        margin-top: 20px;
+    .form-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+
+    .form-actions {
         display: flex;
-        gap: 10px;
+        gap: 15px;
     }
 
-    .task-history {
-        padding: 20px;
+    .btn-success {
+        background: var(--success);
+        color: #fff;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+    }
+
+    .btn-secondary {
+        background: var(--secondary);
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    /* Вкладка истории */
+    .task-history h3 {
+        font-size: 1.5rem;
+        color: #333;
+        margin-bottom: 15px;
     }
 
     .history-list {
@@ -570,10 +711,50 @@ else
         gap: 15px;
     }
 
-    .history-item {
-        background-color: #f9f9f9;
+    .history-card {
         padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease;
+    }
+
+    .history-card:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Анимация */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Адаптивность */
+    @@media (max-width: 768px) {
+        .task-container {
+            padding: 10px;
+        }
+
+        .task-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .tabs {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tab-button {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .time-input {
+            flex-direction: column;
+        }
+
+        .form-select {
+            width: 100%;
+        }
     }
 </style>

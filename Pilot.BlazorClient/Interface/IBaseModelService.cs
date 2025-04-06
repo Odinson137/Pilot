@@ -23,5 +23,7 @@ public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
     
     Task DeleteValueAsync(int id);
 
+    Task<ICollection<TViewModel>> GetQueryValuesAsync(Expression<Func<TViewModel, object>> predicate);
+
     IGateWayApiService Client { get; }
 }

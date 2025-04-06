@@ -1,104 +1,322 @@
 ﻿@page "/"
+@using Pilot.BlazorClient.Service
 @inject IJsonLocalizationService Localizer
 
 <PageTitle>@Localizer.GetString("PageTitle", HomePageName)</PageTitle>
 
-<div class="text-center">
-    <h1>@Localizer.GetString("MainTitle", HomePageName)</h1>
-    <p>@Localizer.GetString("MainDescription", HomePageName)</p>
-    <img src="Images/Home/main_home.png" alt="Main Image" class="img-fluid mt-4"/>
-</div>
+<!-- Hero Section -->
+<header class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">@Localizer.GetString("MainTitle", HomePageName)</h1>
+        <p class="hero-subtitle">@Localizer.GetString("MainDescription", HomePageName)</p>
+        <a href="/User/Registration" class="btn btn-primary hero-btn">@Localizer.GetString("GetStarted", HomePageName)</a>
+    </div>
+    <img src="Images/Home/main_home.png" alt="Main Image" class="hero-image"/>
+</header>
 
-<section id="features" class="mt-5">
-    <h2 class="text-center text-uppercase fw-bold mb-5">@Localizer.GetString("FeaturesTitle", HomePageName)</h2>
-    <div class="row justify-content-between feature-section">
-        <div class="col-md-5 feature-block feature-left">
+<!-- Features Section -->
+<section id="features" class="features">
+    <h2 class="section-title">@Localizer.GetString("FeaturesTitle", HomePageName)</h2>
+    <div class="feature-grid">
+        <div class="feature-card feature-left">
             <div class="feature-content">
-                <h5>@Localizer.GetString("Feature1.Title", HomePageName)</h5>
+                <h3>@Localizer.GetString("Feature1.Title", HomePageName)</h3>
                 <p>@Localizer.GetString("Feature1.Description", HomePageName)</p>
             </div>
-            <img src="Images/Home/66f8705c1383b3000179ba84_sd3-turbo_result.webp" alt="Feature 1" class="img-fluid feature-img"/>
+            <img src="Images/Home/66f8705c1383b3000179ba84_sd3-turbo_result.webp" alt="Feature 1" class="feature-image"/>
         </div>
-
-        <div class="col-md-5 feature-block feature-right">
-            <img src="Images/Home/667bf17c2126de0001348083_sd3-turbo_result.webp" alt="Feature 2" class="img-fluid feature-img"/>
+        <div class="feature-card feature-right">
+            <img src="Images/Home/667bf17c2126de0001348083_sd3-turbo_result.webp" alt="Feature 2" class="feature-image"/>
             <div class="feature-content">
-                <h5>@Localizer.GetString("Feature2.Title", HomePageName)</h5>
+                <h3>@Localizer.GetString("Feature2.Title", HomePageName)</h3>
                 <p>@Localizer.GetString("Feature2.Description", HomePageName)</p>
             </div>
         </div>
-    </div>
-
-    <div class="row justify-content-center feature-section">
-        <div class="col-md-5 feature-block feature-left">
+        <div class="feature-card feature-left">
             <div class="feature-content">
-                <h5>@Localizer.GetString("Feature3.Title", HomePageName)</h5>
+                <h3>@Localizer.GetString("Feature3.Title", HomePageName)</h3>
                 <p>@Localizer.GetString("Feature3.Description", HomePageName)</p>
             </div>
-            <img src="Images/Home/You Can Now Manage Accounts on Facebook, Instagram and Facebook Messenger Via One App.jfif" alt="Feature 3" class="img-fluid feature-img"/>
+            <img src="Images/Home/You Can Now Manage Accounts on Facebook, Instagram and Facebook Messenger Via One App.jfif" alt="Feature 3" class="feature-image"/>
         </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about">
+    <h2 class="section-title">@Localizer.GetString("AboutTitle", HomePageName)</h2>
+    <div class="about-content">
+        <p>@Localizer.GetString("AboutDescription", HomePageName)</p>
+        <p>@Localizer.GetString("AboutMission", HomePageName)</p>
+        <a href="/Account" class="btn btn-secondary">@Localizer.GetString("LearnMore", HomePageName)</a>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section id="cta" class="cta">
+    <h2 class="cta-title">@Localizer.GetString("CTATitle", HomePageName)</h2>
+    <p class="cta-subtitle">@Localizer.GetString("CTADescription", HomePageName)</p>
+    <div class="cta-buttons">
+        <a href="/User/Registration" class="btn btn-primary">@Localizer.GetString("JoinNow", HomePageName)</a>
+        <a href="/Vacancy" class="btn btn-outline">@Localizer.GetString("ExploreJobs", HomePageName)</a>
     </div>
 </section>
 
 @code {
     const string HomePageName = "Home";
-    
-    protected override async Task OnInitializedAsync()
-    {
-        Localizer.GetString("Feature3.Title", HomePageName);
-    }
 }
 
 <style>
-    .text-center {
-        text-align: center;
-        padding: 50px 20px;
+    /* Корневые переменные */
+    :root {
+        --primary: #007bff;
+        --secondary: #6c757d;
+        --light: #f8f9fa;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
     }
 
-    .img-fluid {
-        max-width: 70%;
-        height: auto;
-    }
-
-    #features {
-        padding: 60px 20px;
-    }
-
-    .feature-section {
-        margin-bottom: 50px;
-    }
-
-    .feature-block {
+    /* Hero Section */
+    .hero {
         position: relative;
+        padding: 80px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+        overflow: hidden;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .hero-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .hero-btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+    }
+
+    .hero-image {
+        max-width: 80%;
+        height: auto;
+        margin-top: 40px;
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+    }
+
+    /* Features Section */
+    .features {
+        padding: 80px 20px;
+        background: #fff;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        color: #333;
+        text-align: center;
+        margin-bottom: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+
+    .feature-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        text-align: left;
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
     }
 
     .feature-left .feature-content {
         order: 1;
+        margin-right: 20px;
     }
 
-    .feature-left img {
+    .feature-left .feature-image {
         order: 2;
-        margin-left: 20px;
     }
 
     .feature-right .feature-content {
         order: 2;
+        margin-left: 20px;
     }
 
-    .feature-right img {
+    .feature-right .feature-image {
         order: 1;
-        margin-right: 20px;
     }
 
     .feature-content {
-        max-width: 45%;
+        max-width: 50%;
     }
 
-    h2 {
-        font-size: 2rem;
+    .feature-content h3 {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .feature-content p {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .feature-image {
+        max-width: 45%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* About Section */
+    .about {
+        padding: 80px 20px;
+        background: #f5f7fa;
+        text-align: center;
+    }
+
+    .about-content {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .about-content p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .btn-secondary {
+        background: var(--secondary);
+        color: #fff;
+        padding: 10px 25px;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    /* Call to Action Section */
+    .cta {
+        padding: 80px 20px;
+        background: var(--primary);
+        color: #fff;
+        text-align: center;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .cta-title {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+    }
+
+    .cta-subtitle {
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+    }
+
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-primary {
+        background: #fff;
+        color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        background: #e9ecef;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #fff;
+        color: #fff;
+    }
+
+    .btn-outline:hover {
+        background: #fff;
+        color: var(--primary);
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .hero {
+            padding: 40px 10px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+        }
+
+        .hero-image {
+            max-width: 100%;
+        }
+
+        .feature-card {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .feature-content, .feature-image {
+            max-width: 100%;
+            margin: 10px 0;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
     }
 </style>

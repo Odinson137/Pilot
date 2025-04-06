@@ -1,8 +1,8 @@
 ﻿using Pilot.Contracts.Base;
-using Pilot.Worker.Data;
-using Pilot.Worker.Interface;
+using Pilot.Identity.Data;
+using Pilot.Identity.Interfaces;
 
-namespace Pilot.Worker.Service;
+namespace Pilot.Identity.Services;
 
 public class ValidatorService(
     ILogger<ValidatorService> logger,

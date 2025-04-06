@@ -30,7 +30,7 @@ public abstract class PilotReadOnlyController<TDto>(IMediator mediator) : BaseCo
         return Ok(result);
     }
 
-    [HttpPost]
+    [HttpPost("Query")]
     [ProducesResponseType(200)]
     public virtual async Task<IActionResult> GetQueryValue([FromBody] BaseFilter filter, CancellationToken token)
     {

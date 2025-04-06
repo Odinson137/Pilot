@@ -3,6 +3,7 @@ using AutoMapper;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
+using Serialize.Linq.Serializers;
 
 namespace Pilot.BlazorClient.Service;
 
@@ -40,6 +41,26 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
     public async Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? filter)
     {
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
+    }
+    
+    public async Task<ICollection<TViewModel>> GetQueryValuesAsync(Expression<Func<TViewModel, object>> predicate)
+    {
+        var filter = new BaseFilter
+        {
+            SelectQuery = new ExpressionSerializer(new JsonSerializer()).SerializeText(predicate)
+        };
+
+        var client = await apiService.GetClientAsync<TDto>();
+        
+        var response = await client.PostAsJsonAsync("Query", filter);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
+
+        return await response.Content.ReadFromJsonAsync<ICollection<TViewModel>>() ?? [];
     }
     
     public async Task CreateValueAsync(TViewModel value)

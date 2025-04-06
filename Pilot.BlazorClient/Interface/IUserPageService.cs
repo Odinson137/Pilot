@@ -14,4 +14,6 @@ public interface IUserPageService
     public Task<UserViewModel> GetAnotherUserAsync(int userId);
     
     public Task<ICollection<UserSkillViewModel>> GetUserSkillAsync(int userId);
+
+    public Task SaveUserAsync(UserViewModel user);
 }

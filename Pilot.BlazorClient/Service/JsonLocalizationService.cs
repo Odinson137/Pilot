@@ -1,10 +1,11 @@
 ﻿using System.Text.Json;
 
+namespace Pilot.BlazorClient.Service;
+
 public interface IJsonLocalizationService
 {
     string GetString(string key, string pageName);
 
-    void ChangeCulture(string culture);
     void Toggle();
     
     string? CurrentCulture { get; }
@@ -15,7 +16,6 @@ public class JsonLocalizationService : IJsonLocalizationService
     private readonly IWebHostEnvironment _env;
     private readonly Dictionary<string, Dictionary<string, string>?> _localizationData = new();
 
-    private string _currentCulture = "en-US";
     public JsonLocalizationService(IWebHostEnvironment env)
     {
         _env = env;
@@ -23,37 +23,28 @@ public class JsonLocalizationService : IJsonLocalizationService
 
     private bool _isChange;
     
-    public void ChangeCulture(string culture)
-    {
-        _isChange = true;
-        _currentCulture = culture;
-    }
-
     public void Toggle()
     {
         _isChange = true;
-        _currentCulture = _currentCulture == "en-US" ? "ru-RU" : "en-US";
+        CurrentCulture = CurrentCulture == "en-US" ? "ru-RU" : "en-US";
     }
 
-    public string? CurrentCulture => _currentCulture;
+    public string CurrentCulture { get; private set; } = "en-US";
 
     public string GetString(string key, string pageName)
     {
-        if (!_localizationData.ContainsKey(pageName) || _isChange)
+        if (!_localizationData.ContainsKey(pageName))
+            LoadLocalizationData(pageName, CurrentCulture);
+
+        if (_isChange)
         {
             var names = _localizationData.Select(c => c.Key).ToList();
-            if (names.Count > 1)
+            
+            foreach (var name in names)
             {
-                foreach (var name in names)
-                {
-                    LoadLocalizationData(name, _currentCulture);
-                }
+                LoadLocalizationData(name, CurrentCulture);
             }
-            else
-            {
-                LoadLocalizationData(pageName, _currentCulture);
-            }
-
+            
             _isChange = false;
         }
 

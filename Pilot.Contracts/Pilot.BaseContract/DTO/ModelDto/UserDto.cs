@@ -17,7 +17,7 @@ public class UserDto : BaseDto, IHasFile
     
     [MaxLength(100)] public string? Email { get; set; }
 
-    [Required] [MaxLength(100)] public Role Role { get; init; }
+    [Required] public Role Role { get; init; }
 
     [MaxLength(1000)] public string? Description { get; set; }
     

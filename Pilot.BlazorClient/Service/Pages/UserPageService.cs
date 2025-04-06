@@ -10,7 +10,12 @@ using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
-public class UserPageService(IGateWayApiService apiService, IUserService userService, ILogger<UserPageService> logger, IMapper mapper) 
+public class UserPageService(
+    IGateWayApiService apiService, 
+    IUserService userService, 
+    IBaseModelService<UserViewModel> userModelService,
+    ILogger<UserPageService> logger, 
+    IMapper mapper) 
     : IUserPageService
 {
     public async Task Registration(RegistrationUserViewModel registrationUser)
@@ -75,5 +80,10 @@ public class UserPageService(IGateWayApiService apiService, IUserService userSer
             userSkill.Skill = skillsDto.First(c => c.Id == userSkill.Skill.Id);
         }
         return userSkillsDto;
+    }
+
+    public async Task SaveUserAsync(UserViewModel user)
+    {
+        await userModelService.UpdateValueAsync(user);
     }
 }

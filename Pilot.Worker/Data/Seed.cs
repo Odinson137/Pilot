@@ -35,17 +35,17 @@ public class Seed : ISeed
     {
         _context = context;
     }
-    
+
     public async Task Seeding()
     {
         if (_context.Companies.Any()) return;
-        
+
         var transaction = await _context.Database.BeginTransactionAsync();
-        
+
         // Добавляем базовые роли для всех компаниях
         await _context.CompanyRoles.AddRangeAsync(_companyRoles);
         await _context.SaveChangesAsync();
-        
+
         var companyFaker = GetCompanyFaker();
         var companyRoleFaker = GetCompanyRoleFaker();
         var companyUserFaker = GetCompanyUserFaker();
@@ -60,11 +60,11 @@ public class Seed : ISeed
         for (var i = 0; i < 5; i++, postId++)
         {
             var company = companyFaker.Generate();
-            
+
             // Добавляем компанию в контекст сразу
             _context.Companies.Add(company);
-            await _context.SaveChangesAsync();  // Сохраняем, чтобы сгенерировать ключ
-            
+            await _context.SaveChangesAsync(); // Сохраняем, чтобы сгенерировать ключ
+
             // Генерация ролей компании
             company.CompanyRoles = companyRoleFaker.Generate(5);
             foreach (var role in company.CompanyRoles)
@@ -72,7 +72,7 @@ public class Seed : ISeed
                 _context.CompanyRoles.Add(role);
             }
 
-            await _context.SaveChangesAsync();  // Сохраняем роли
+            await _context.SaveChangesAsync(); // Сохраняем роли
 
             var roles = await _context.CompanyRoles
                 .Where(c => c.Companies.Any(x => x.Id == company.Id) || c.IsBaseRole == true)
@@ -94,11 +94,11 @@ public class Seed : ISeed
                 user.Company = company;
                 user.PostId = rand.Next(postId, postId + 2);
                 user.CompanyRole = roles[rand.Next(0, roles.Count)];
-                
+
                 await _context.CompanyUsers.AddAsync(user);
             }
 
-            await _context.SaveChangesAsync();  // Сохраняем пользователей
+            await _context.SaveChangesAsync(); // Сохраняем пользователей
 
             // Генерация проектов
             var projects = projectFaker.Generate(rand.Next(3, 7)); // 3-7 проектов
@@ -106,21 +106,21 @@ public class Seed : ISeed
             {
                 project.Company = company;
                 project.CreatedBy = ownerCompany;
-                
+
                 _context.Projects.Add(project);
-                await _context.SaveChangesAsync();  // Сохраняем проект, чтобы сгенерировать ключ
+                await _context.SaveChangesAsync(); // Сохраняем проект, чтобы сгенерировать ключ
             }
 
             var users = await _context.CompanyUsers
                 .Where(c => c.Company.Id == company.Id)
                 .ToListAsync();
-            
+
             // Генерация команд
 
             var projectsDb = await _context.Projects
                 .Where(c => c.Company.Id == company.Id)
                 .ToListAsync();
-            
+
             var teams = teamFaker.Generate(6); // 2-5 команд
             foreach (var team in teams)
             {
@@ -134,9 +134,9 @@ public class Seed : ISeed
                         team.CompanyUsers.Add(user);
                     }
                 }
-                
+
                 _context.Teams.Add(team);
-                
+
                 // Генерация задач проекта
                 var projectTasks = projectTaskFaker.Generate(15); // 5-15 задач
                 foreach (var task in projectTasks)
@@ -146,14 +146,14 @@ public class Seed : ISeed
                     var randomCreated = users[rand.Next(0, users.Count)];
 
                     task.CompanyUser = users[randomUserIndex];
-                    
-                    task.CreatedBy = randomCreated;  // Назначаем пользователя задаче
-                    task.Team = team;  // Назначаем команду задаче
-    
+
+                    task.CreatedBy = randomCreated; // Назначаем пользователя задаче
+                    task.Team = team; // Назначаем команду задаче
+
                     _context.ProjectTasks.Add(task);
                 }
-                
-                await _context.SaveChangesAsync();  // Сохраняем команды с задачами
+
+                await _context.SaveChangesAsync(); // Сохраняем команды с задачами
             }
 
             var projectTasksDb = await _context.ProjectTasks
@@ -169,32 +169,34 @@ public class Seed : ISeed
                 {
                     taskInfo.CreatedBy = ownerCompany;
                     taskInfo.ProjectTask = projectTask;
+                    taskInfo.TimeSpent = new TimeSpan(rand.Next(1, 10), rand.Next(0, 59), rand.Next(0, 59));
                 }
 
                 await _context.AddRangeAsync(taskInfos);
             }
-            
-            await _context.SaveChangesAsync();  // Сохраняем пользователей команд
+
+            await _context.SaveChangesAsync(); // Сохраняем пользователей команд
         }
 
         await transaction.CommitAsync();
     }
 
     #region Fakeres
-    
+
     private Faker<CompanyRole> GetCompanyRoleFaker()
     {
         var fake = new Faker<CompanyRole>()
                 .RuleFor(u => u.Title, (f, _) => f.Lorem.Word())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
 
     private int _logoId = 31; // смотреть в сиде в проекте Storage. Там доступно 5 фотографий компаний
     private int _insideImagesId = 36; // смотреть в сиде в проекте Storage. Там доступно 50 фотографий компаний
     private const int InsideImagesCount = 50;
+
     private ICollection<string> FillList()
     {
         const int count = 10;
@@ -212,26 +214,26 @@ public class Seed : ISeed
                 .RuleFor(u => u.InsideImages, (f, _) => FillList())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
-    
+
     private Faker<CompanyUser> GetCompanyUserFaker()
     {
         var fake = new Faker<CompanyUser>()
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
-    
+
     private const int TaskInfoImageId = 87; // смотреть в сиде в проекте Storage. Там есит 6 фотографий
     private const int TaskInfoImageCount = 6;
 
     private string? GetRandomImageOrNull()
     {
         var random = new Random();
-    
+
         // Например, 50% вероятность возврата не null
         if (random.Next(0, 2) == 1)
         {
@@ -241,7 +243,7 @@ public class Seed : ISeed
         return null;
     }
 
-    
+
     private Faker<TaskInfo> GetTaskInfoFaker()
     {
         var fake = new Faker<TaskInfo>()
@@ -249,10 +251,10 @@ public class Seed : ISeed
                 .RuleFor(u => u.File, (_, _) => GetRandomImageOrNull())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
-    
+
     private Faker<Project> GetProjectFaker()
     {
         var fake = new Faker<Project>()
@@ -261,10 +263,10 @@ public class Seed : ISeed
                 .RuleFor(u => u.ProjectStatus, (f, _) => f.PickRandom<ProjectStatus>())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
-    
+
     private Faker<ProjectTask> GetProjectTaskFaker()
     {
         var fake = new Faker<ProjectTask>()
@@ -275,12 +277,12 @@ public class Seed : ISeed
                 .RuleFor(u => u.Priority, (f, _) => f.PickRandom<TaskPriority>())
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
                 .RuleFor(u => u.EstimatedTime, (f, _) => TimeSpan.FromHours(f.Random.Int(1, 8)))
-                .RuleFor(u => u.TimeSpent, (f, _) => TimeSpan.FromHours(f.Random.Int(0, 8))) 
+                .RuleFor(u => u.TimeSpent, (f, _) => TimeSpan.FromHours(f.Random.Int(0, 8)))
             ;
-        
+
         return fake;
     }
-    
+
     private Faker<Team> GetTeamFaker()
     {
         var fake = new Faker<Team>()
@@ -288,9 +290,9 @@ public class Seed : ISeed
                 .RuleFor(u => u.Description, (f, _) => f.Lorem.Sentences().TakeOnly(500))
                 .RuleFor(u => u.CreateAt, (f, _) => f.Date.Between(DateTime.Now.AddYears(-1), DateTime.Now))
             ;
-        
+
         return fake;
     }
-    
+
     #endregion
 }
