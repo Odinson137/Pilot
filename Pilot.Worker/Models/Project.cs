@@ -11,7 +11,7 @@ public class Project : BaseModel, IAddCompanyUser
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    public ICollection<Team> Teams { get; set; } = new List<Team>();
+    public ICollection<Team> Teams { get; set; } = [];
 
     [Required] public Company Company { get; set; } = null!;
     

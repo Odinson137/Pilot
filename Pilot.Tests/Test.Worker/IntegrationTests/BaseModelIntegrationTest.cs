@@ -36,8 +36,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
 
-        await WorkerContext.AddAsync(companyUser);
-        await WorkerContext.SaveChangesAsync();
+        var context = AssertReceiverContext;
+        await context.AddAsync(companyUser);
+        await context.SaveChangesAsync();
 
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
         user.Id = companyUser.Id;
@@ -48,6 +49,18 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         return companyUser;
     }
 
+    private static void FillUser(ICollection<T> values)
+    {
+        foreach (var value in values)
+            FillUser(value);
+    }
+
+    private static void FillUser(T value)
+    {
+        if (value is IAddCompanyUser addCompanyUser)
+            addCompanyUser.AddCompanyUser(new CompanyUser {Company = new Company {Title = Guid.NewGuid().ToString()}});
+    }
+
     [Fact]
     public virtual async Task GetAllValuesTest_FilterWithIds_ReturnOk()
     {
@@ -55,9 +68,11 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        FillUser(values);
 
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
+        var context = AssertReceiverContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
 
         var filter = new BaseFilter
         {
@@ -83,6 +98,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        FillUser(values);
 
         await WorkerContext.AddRangeAsync(values);
         await WorkerContext.SaveChangesAsync();
@@ -112,8 +128,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
 
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
+        var context = AssertReceiverContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
 
         Expression<Func<T, object>> projection = c => new { c.Id, c.CreateAt };
         var filter = new BaseFilter
@@ -142,8 +159,11 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
 
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
+        FillUser(values);
+
+        var context = AssertReceiverContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
 
         #endregion
 
@@ -165,10 +185,11 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         const int count = 1;
 
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        FillUser(values);
 
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
-        var result23 = await AssertReceiverContext.Set<T>().ToListAsync();
+        var context = AssertReceiverContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
 
         var id = values.First().Id;
 
@@ -220,8 +241,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         var companyUser = await CreateCompanyUser();
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-
-        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
+        FillUser(value);
 
         await WorkerContext.AddAsync(value);
         await WorkerContext.SaveChangesAsync();

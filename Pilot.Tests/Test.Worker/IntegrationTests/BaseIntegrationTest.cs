@@ -22,7 +22,7 @@ public class BaseReceiverIntegrationTest :
     
     protected readonly IServiceProvider WorkerService;
     protected readonly IMapper WorkerMapper;
-    protected DataContext AssertReceiverContext 
+    protected DataContext AssertReceiverContext
         => WorkerService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
     
     protected BaseReceiverIntegrationTest(WorkerTestWorkerFactory workerTestWorkerFactory,

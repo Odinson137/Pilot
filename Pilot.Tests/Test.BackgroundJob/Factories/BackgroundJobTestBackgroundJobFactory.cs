@@ -11,6 +11,7 @@ using Pilot.BackgroundJob.Data;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
 using Testcontainers.RabbitMq;
+using Testcontainers.Redis;
 
 namespace Test.BackgroundJob.Factories;
 
@@ -18,6 +19,10 @@ public class BackgroundJobTestBackgroundJobFactory : WebApplicationFactory<Pilot
 {
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3")
+        .Build();
+    
+    private readonly RedisContainer _redisContainer = new RedisBuilder()
+        .WithImage("redis:latest")
         .Build();
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -58,10 +63,12 @@ public class BackgroundJobTestBackgroundJobFactory : WebApplicationFactory<Pilot
     public async Task InitializeAsync()
     {
         await _rabbitContainer.StartAsync();
+        await _redisContainer.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
         await _rabbitContainer.StopAsync();
+        await _redisContainer.StopAsync();
     }
 }

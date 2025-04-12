@@ -12,8 +12,6 @@ public class AutoMapperProfile : BaseMappingProfile
 
         Mapping<CompanyUser, CompanyUserDto>();
 
-        Mapping<CompanyUser, UserDto>();
-
         Mapping<Project, ProjectDto>();
         Mapping<ProjectTask, ProjectTaskDto>();
         Mapping<Team, TeamDto>();
