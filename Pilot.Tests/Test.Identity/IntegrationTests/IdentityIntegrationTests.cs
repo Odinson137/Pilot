@@ -201,7 +201,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         await DataContext.AddRangeAsync(values);
         await DataContext.SaveChangesAsync();
 
-        Expression<Func<User, object>> projection = c => new { c.Id, c.CreateAt };
+        Expression<Func<User, object>> projection = c => new { c.Id };
         var filter = new BaseFilter
         {
             SelectQuery = new ExpressionSerializer(new JsonSerializer()).SerializeText(projection)
@@ -211,7 +211,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
 
         // Act
         var content = new StringContent(filter.ToJson(), Encoding.UTF8, "application/json");
-        var result = await Client.PostAsync($"api/{nameof(User)}", content);
+        var result = await Client.PostAsync($"api/{nameof(User)}/Query", content);
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
@@ -296,30 +296,30 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         Assert.NotNull(result);
         Assert.NotNull(result.ChangeAt);
     }
-
+    
     [Fact]
     public virtual async Task DeleteModelTest_ReturnOk()
     {
         #region Arrange
-
+    
         var user = await CreateUser();
-
+    
         var value = GenerateTestEntity.CreateEntities<User>(count: 1, listDepth: 0).First();
-
+    
         await DataContext.AddAsync(value);
         await DataContext.SaveChangesAsync();
-
+    
         #endregion
-
+    
         // Act
-
+    
         await PublishEndpoint.Publish(new DeleteCommandMessage<UserDto>(value.Id, user.Id));
         await Helper.Wait();
-
+    
         // Assert
-
+    
         var result = await AssertReceiverContext.Set<User>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-
+    
         Assert.Null(result);
     }
 

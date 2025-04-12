@@ -26,6 +26,7 @@ public class BaseIdentityIntegrationTest : IClassFixture<IntegrationIdentityTest
         DataContext = scopeService.ServiceProvider.GetRequiredService<DataContext>();
         Mapper = scopeService.ServiceProvider.GetRequiredService<IMapper>();
         PublishEndpoint = scopeService.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        CoderService = scopeService.ServiceProvider.GetRequiredService<IPasswordCoder>();
 
         Client = factory.CreateClient();
     }

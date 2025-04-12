@@ -30,7 +30,7 @@ public class PasswordCoderService : IPasswordCoder
     private string HashedPassword(string password, byte[] salt)
     {
         var hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password!,
+            password,
             salt,
             KeyDerivationPrf.HMACSHA256,
             100000,

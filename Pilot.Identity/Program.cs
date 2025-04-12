@@ -1,6 +1,6 @@
+using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.DTO;
@@ -12,7 +12,7 @@ using Pilot.Identity.Models;
 using Pilot.Identity.Repository;
 using Pilot.Identity.Services;
 using Pilot.SqrsControllerLibrary;
-using Serilog;
+using Pilot.SqrsControllerLibrary.Behaviors;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -36,8 +36,13 @@ services.AddScoped<IBaseValidatorService, ValidatorService>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 builder.AddUnitOfWork<UnitOfWork>();
+services.AddRedis(configuration);
 
 services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
+
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CacheInvalidationBehavior<,>));
+services.AddScoped(typeof(IPipelineBehavior<,>), typeof(UnitOfWorkBehavior<,>));
 
 var app = builder.Build();
 

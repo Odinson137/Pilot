@@ -125,7 +125,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
 
         // Act
         var content = new StringContent(filter.ToJson(), Encoding.UTF8, "application/json");
-        var result = await Client.PostAsync($"api/{EntityName}", content);
+        var result = await Client.PostAsync($"api/{EntityName}/Query", content);
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
