@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Data.Enums;
-using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus;
 
 namespace Pilot.BlazorClient.ViewModels;
 
@@ -20,7 +19,7 @@ public class ProjectTaskViewModel : BaseViewModel
 
     public int? FileId { get; set; }
     
-    public TaskStatus TaskStatus { get; set; }
+    public ProjectTaskStatus TaskStatus { get; set; }
     
     public TaskPriority Priority { get; set; }
     

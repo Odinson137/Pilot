@@ -36,4 +36,13 @@ h1:focus {
     --light: #f8f9fa;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Валидное значение для box-shadow */
     --transition: all 0.3s ease; /* Валидное значение для transition */
+    --bg-light: #f5f7fa;
+    --bg-white: #ffffff;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    --primary-color: #1e88e5;
+    --secondary-color: #64b5f6;
+    --accent-color: #ffca28;
+    --text-primary: #212121;
+    --text-secondary: #757575;
 }

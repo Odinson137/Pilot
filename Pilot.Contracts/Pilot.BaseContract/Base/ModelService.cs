@@ -88,7 +88,7 @@ public class ModelService : BaseHttpService, IModelService
 
         var client = await GetClientAsync<TDto>();
 
-        var response = await client.PostAsJsonAsync(string.Empty, filter,  token);
+        var response = await client.PostAsJsonAsync($"api/{BaseExpendMethods.GetModelName<TDto>()}/Query", filter,  token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 

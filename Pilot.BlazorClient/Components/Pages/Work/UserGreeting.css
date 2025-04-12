@@ -1,25 +1,249 @@
-﻿.user-greeting {
-    padding: 20px;
-    background-color: #f5f6f8;
-    border-radius: 10px;
-    color: #2d3e50;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
+﻿/* Variables for consistent theming */
+:root {
+    --primary-color: #1976d2;
+    --secondary-color: #64b5f6;
+    --accent-color: #ffca28;
+    --text-primary: #212121;
+    --text-secondary: #757575;
+    --bg-light: #f5f7fa;
+    --bg-white: #ffffff;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 }
 
-.user-greeting h2 {
-    margin-bottom: 10px;
-    color: #34495e;
+/* Main container */
+.greeting-container {
+    background-color: var(--bg-light);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    margin: 2rem;
 }
 
-.user-greeting ul {
-    list-style-type: none;
-    padding-left: 0;
+/* Header */
+.greeting-header {
+    background: var(--gradient);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
 }
 
-.user-greeting li {
-    margin: 5px 0;
-    padding: 10px;
-    background-color: #ecf0f1;
-    border-radius: 5px;
+.greeting-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.emoji {
+    font-size: 2rem;
+}
+
+.greeting-subtext {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.greeting-subtext strong {
+    font-weight: 600;
+}
+
+/* Content */
+.greeting-content {
+    padding: 2rem;
+}
+
+/* Info grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.info-card {
+    background-color: var(--bg-white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.info-card h3 {
+    font-size: 1.4rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.info-card p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.card-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.card-link:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Activity feed */
+.activity-card {
+    grid-column: span 1;
+}
+
+.activity-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+}
+
+.activity-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.activity-item p {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.no-activity {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* No company message */
+.no-company-message {
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.no-company-message h3 {
+    font-size: 1.8rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.no-company-message p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+/* Loading spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-spinner span {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .greeting-container {
+        margin: 1rem;
+    }
+
+    .greeting-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .greeting-subtext {
+        font-size: 1rem;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .greeting-header {
+        padding: 1.5rem;
+    }
+
+    .greeting-content {
+        padding: 1rem;
+    }
+
+    .no-company-message {
+        padding: 1.5rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.info-card, .no-company-message {
+    animation: fadeIn 0.5s ease-out;
 }

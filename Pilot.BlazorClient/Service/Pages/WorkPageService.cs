@@ -1,7 +1,11 @@
 ﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.HelperViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Contracts.FullDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
@@ -51,6 +55,28 @@ public class WorkPageService(
         }
 
         return projectViewModels;
+    }
+
+    public async Task<ICollection<ProjectViewModel>> GetProjectsWithTasksAsync(int companyId)
+    {
+        var values = await projectService.GetQueryValuesAsync<ProjectFullDto>(c => new ProjectFullDto
+        {
+            Id = c.Id,
+            CreateAt = c.CreateAt,
+            Name = c.Name,
+            Description = c.Description,
+            Teams = c.Teams.Select(x => new TeamFullDto
+            {
+                Id = x.Id,
+                CreateAt = x.CreateAt,
+                Name = x.Name,
+                Description = x.Description,
+                Project = x.Project
+            }).ToList(),
+            CreatedBy = c.CreatedBy,
+            ProjectStatus = c.ProjectStatus
+        });
+        return values;
     }
 
     public async Task FillTeamsAsync(ICollection<ProjectViewModel> projects)
@@ -161,7 +187,7 @@ public class WorkPageService(
             companyUser.User = users.First(c => c.Id == companyUser.Id);
         return companyUsers;
     }
-    
+
     public async Task<ICollection<PostViewModel>> GetPostsAsync(int companyId)
     {
         var posts = await postService.GetValuesAsync(predicate: c => c.CompanyId, companyId);
@@ -196,19 +222,20 @@ public class WorkPageService(
 
     public async Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId)
     {
-        var result = 
+        var result =
             await projectTaskService.GetValuesAsync(c => c.CompanyUser!.Id, userId);
         return result;
     }
 
     public async Task<ICollection<ProjectTaskViewModel>> GetCompanyTasksAsync(int companyId)
     {
-        var result = 
+        var result =
             await projectTaskService.GetValuesAsync(c => c.CompanyUser!.Company.Id, companyId);
         return result;
     }
 
-    public async Task<ICollection<ProjectTaskViewModel>> FillProjectsIntoTeamsAsync(ICollection<ProjectTaskViewModel> projectTasks)
+    public async Task<ICollection<ProjectTaskViewModel>> FillProjectsIntoTeamsAsync(
+        ICollection<ProjectTaskViewModel> projectTasks)
     {
         var ids = projectTasks.Select(c => c.Team.Id).ToList();
         var result = await teamService.GetValuesAsync(ids);
@@ -216,4 +243,82 @@ public class WorkPageService(
             projectTask.Team = result.First(c => c.Id == projectTask.Team.Id);
         return projectTasks;
     }
+
+    public async Task<ICollection<ProjectViewModel>> GetTaskManagementProjectsAsync(int companyId)
+    {
+        var projectViewModels = await projectService.GetValuesAsync(
+            predicate: c => c.Company.Id,
+            companyId, 0, int.MaxValue);
+        var teams = await teamService.GetValuesAsync(
+            projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
+        foreach (var projectViewModel in projectViewModels)
+        {
+            projectViewModel.Teams = teams.Where(c =>
+                projectViewModel.Teams.Select(x => x.Id).Contains(c.Id)).ToList();
+        }
+
+        return projectViewModels;
+    }
+
+public async Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTasksAsync(int companyId)
+{
+    // Получаем все задачи компании
+    var tasks = await projectTaskService.GetValuesAsync(
+        predicate: t => t.CompanyUser!.Company.Id,
+        companyId, 0, int.MaxValue);
+
+    // Получаем ID команд, пользователей и проектов
+    var teamIds = tasks.Select(t => t.Team.Id).Select(id => id).Distinct().ToList();
+    var userIds = tasks.Select(t => t.CompanyUser?.Id).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToList();
+
+    // Параллельно запрашиваем команды, пользователей и их данные
+    var teamsTask = teamIds.Any() 
+        ? teamService.GetValuesAsync(teamIds) 
+        : Task.FromResult<ICollection<TeamViewModel>>(new List<TeamViewModel>());
+    var companyUsersTask = userIds.Any() 
+        ? companyUserService.GetValuesAsync(userIds) 
+        : Task.FromResult<ICollection<CompanyUserViewModel>>(new List<CompanyUserViewModel>());
+    var usersTask = userIds.Any() 
+        ? userBaseService.GetValuesAsync(userIds) 
+        : Task.FromResult<ICollection<UserViewModel>>(new List<UserViewModel>());
+
+    await Task.WhenAll(teamsTask, companyUsersTask, usersTask);
+
+    var teams = teamsTask.Result;
+    var companyUsers = companyUsersTask.Result;
+    var users = usersTask.Result;
+
+    // Получаем проекты для команд
+    var projectIds = teams.Select(t => t.Project.Id).Select(id => id).Distinct().ToList();
+    var projects = projectIds.Any() 
+        ? await projectService.GetValuesAsync(projectIds) 
+        : new List<ProjectViewModel>();
+
+    // Заполняем данные пользователей в CompanyUser
+    foreach (var companyUser in companyUsers)
+    {
+        companyUser.User = users.FirstOrDefault(u => u.Id == companyUser.Id) ?? companyUser.User;
+    }
+
+    // Заполняем данные в задачах
+    foreach (var task in tasks)
+    {
+        if (task.Team != null && task.Team.Id != 0)
+        {
+            task.Team = teams.FirstOrDefault(t => t.Id == task.Team.Id) ?? task.Team;
+            if (task.Team.Project != null && task.Team.Project.Id != 0)
+            {
+                task.Team.Project = projects.FirstOrDefault(p => p.Id == task.Team.Project.Id) 
+                    ?? new ProjectViewModel { Name = "Unknown Project" };
+            }
+        }
+        if (task.CompanyUser != null && task.CompanyUser.Id != 0)
+        {
+            task.CompanyUser = companyUsers.FirstOrDefault(u => u.Id == task.CompanyUser.Id) ?? task.CompanyUser;
+        }
+    }
+
+    return tasks;
 }
+}
+

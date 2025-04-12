@@ -3,7 +3,7 @@
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.Contracts.Data.Enums
-@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
+@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
@@ -251,7 +251,7 @@ else
         return priority switch
         {
             TaskPriority.Low => "Low Priority",
-            TaskPriority.Middle => "Middle Priority",
+            TaskPriority.Normal => "Middle Priority",
             TaskPriority.High => "High Priority",
             _ => "Unknown Priority"
         };
@@ -262,7 +262,7 @@ else
         return priority switch
         {
             TaskPriority.Low => "#6c757d",
-            TaskPriority.Middle => "#ffc107",
+            TaskPriority.Normal => "#ffc107",
             TaskPriority.High => "#dc3545",
             _ => "#000000"
         };

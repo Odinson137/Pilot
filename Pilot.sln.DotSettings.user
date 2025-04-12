@@ -22,6 +22,7 @@
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AFaker_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F6edfbc273f1a4b46b04b576799c1dab7251e00_003Fbe_003F964547fe_003FFaker_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AFile_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fb2e2ff5e4f118b6e4ad5f910e9fde1fd6a338b5716cff790e934a2014dc8379_003FFile_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AGuard_002ENull_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003F8776ccc61a57bd1b29fd19126a117f45c6f4a35323d4d9b31ee1694ed6d6_003FGuard_002ENull_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AHttpClientJsonExtensions_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F59a7a21bd4a2408298625ad2bd6f753a20938_003Fb8_003F614984c2_003FHttpClientJsonExtensions_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AHub_00601_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003F1c43885af44c456b99abb26d0a4b7c9682928_003Fc6_003F20889c12_003FHub_00601_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AIConvertible_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2025_002E1_003Fresharper_002Dhost_003FDecompilerCache_003Fdecompiler_003Fc73b3c6c598640c592fd3c6fa226c286e90908_003F07_003F9a2fda97_003FIConvertible_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=7020124F_002D9FFC_002D4AC3_002D8F3D_002DAAB8E0240759_002Ff_003AInt32_002Ecs_002Fl_003A_002E_002E_003F_002E_002E_003FAppData_003FRoaming_003FJetBrains_003FRider2024_002E3_003Fresharper_002Dhost_003FSourcesCache_003Fa882d183338544fdbcbdfc7b6d3dcb78916630765551644a221b5be9c45a121b_003FInt32_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
@@ -67,7 +68,7 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
   &lt;Assembly Path="C:\Users\buryy\.nuget\packages\chartjs.blazor.fork\2.0.2\lib\netstandard2.1\ChartJs.Blazor.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\buryy\AppData\Local\JetBrains\Rider2024.3\resharper-host\temp\Rider\vAny\CoverageData\_Pilot.-194342128\Snapshot\snapshot.utdcvr</s:String>
+	
 	
 	
 	
@@ -75,9 +76,10 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=1DB789EA_002D452A_002D4EFD_002D9A72_002D965BE960974D/@EntryIndexedValue">60E7C4D5-0598-4E49-8C67-7F485D8CF5D1</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a60dde53_002Dee04_002D4d5c_002D9721_002Ddd5e4d617c56/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.BackgroundJob&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.BackgroundJob" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.BackgroundJob&amp;gt;" /&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
 	
 	
 	

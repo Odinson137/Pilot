@@ -43,7 +43,7 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }
     
-    public async Task<ICollection<TViewModel>> GetQueryValuesAsync(Expression<Func<TViewModel, object>> predicate)
+    public async Task<ICollection<TViewModel>> GetQueryValuesAsync<TFullDto>(Expression<Func<TFullDto, TFullDto>> predicate)
     {
         var filter = new BaseFilter
         {
@@ -52,7 +52,7 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
 
         var client = await apiService.GetClientAsync<TDto>();
         
-        var response = await client.PostAsJsonAsync("Query", filter);
+        var response = await client.PostAsJsonAsync($"api/{BaseExpendMethods.GetModelName<TDto>()}/Query", filter);
 
         if (!response.IsSuccessStatusCode)
         {

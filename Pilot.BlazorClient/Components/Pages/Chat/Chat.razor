@@ -72,7 +72,7 @@ else
                 <div class="chat-content">
 
                     <!-- Messages Section -->
-                    <div class="message-list" @ref="_chatListRef" id="chatListRef">
+                    <div class="message-list" @ref="_chatListRef" id="chatListRef" style="display: grid">
                         @foreach (var message in _messages)
                         {
                             <MessageComponent Message="@message" Users="@_users" User="@_currentUser"/>
@@ -106,17 +106,19 @@ else
                             </a>
 
                             <h6>Participants</h6>
-                            @foreach (var user in _users)
-                            {
-                                <div class="participant-info">
-                                    <img src="@TempFileService.GetUrl(user.AvatarImage)" alt="@user.UserName"
-                                         class="participant-avatar"/>
-                                    <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
-                                </div>
-                            }
+                            <div style="max-height: 200px;scroll-behavior: inherit;overflow-y: auto;">
+                                @foreach (var user in _users)
+                                {
+                                    <div class="participant-info">
+                                        <img src="@TempFileService.GetUrl(user.AvatarImage)" alt="@user.UserName"
+                                             class="participant-avatar"/>
+                                        <a href="@GetUserProfileLink(user.Id)">@user.UserName</a>
+                                    </div>
+                                }
+                            </div>
                         }
                     </div>
-                    <button class="btn btn-secondary mt-3" @onclick="ToggleInfoPanel">Close</button>
+                    <button class="btn btn-secondary mt-3" style="margin-right: 10px" @onclick="ToggleInfoPanel">Close</button>
                     @if (_selectedChat.Id != -2)
                     {
                         <button class="btn btn-secondary mt-3" @onclick="UpdateNewChat">Update</button>

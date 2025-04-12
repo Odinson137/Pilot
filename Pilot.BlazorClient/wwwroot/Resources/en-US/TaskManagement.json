@@ -1,0 +1,14 @@
+﻿{
+  "TaskManagementTitle": "Управление задачами",
+  "NoTasksFound": "Задачи не найдены",
+  "UnknownUser": "Неизвестный пользователь",
+  "AddTask": "Добавить задачу",
+  "CreatedAt": "Создано",
+  "TaskStatus_ToDo": "К выполнению",
+  "TaskStatus_Work": "В работе",
+  "TaskStatus_Completed": "Завершено",
+  "TaskStatus_Finished": "Проверено",
+  "TaskPriority_Low": "Низкий",
+  "TaskPriority_Normal": "Нормальный",
+  "TaskPriority_High": "Высокий"
+}

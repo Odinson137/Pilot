@@ -3,7 +3,8 @@
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
-@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
+@using Pilot.Contracts.Services
+@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
 @inject IWorkPageService WorkPageService;
 @inject NavigationManager NavigationManager;
 @inject ProtectedSessionStorage ProtectedSessionStorage;
@@ -20,7 +21,7 @@
                     <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
-                        <p>@task.Description</p>
+                        <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
                     </div>
                 }
             }
@@ -42,7 +43,7 @@
                     <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
-                        <p>@task.Description</p>
+                        <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
                     </div>
                 }
             }
@@ -64,7 +65,7 @@
                     <div class="task-card completed" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
-                        <p>@task.Description</p>
+                        <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
                     </div>
                 }
             }
@@ -98,7 +99,7 @@
         return priority switch
         {
             TaskPriority.Low => "Low Priority",
-            TaskPriority.Middle => "Middle Priority",
+            TaskPriority.Normal => "Middle Priority",
             TaskPriority.High => "High Priority",
             _ => "Unknown Priority"
         };

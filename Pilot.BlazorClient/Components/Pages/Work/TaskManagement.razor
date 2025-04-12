@@ -1,0 +1,474 @@
+﻿@using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Service
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@using Pilot.Contracts.Services
+@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
+@inject IWorkPageService WorkPageService
+@inject NavigationManager NavigationManager
+@inject IJsonLocalizationService Localization
+
+<div class="task-management-container">
+    <h2>@Localization.GetString("TaskManagementTitle", "TaskManagement")</h2>
+
+    <!-- Кнопки фильтрации -->
+    <div class="status-buttons">
+        @foreach (var status in Enum.GetValues<TaskStatus>())
+        {
+            var isActive = _selectedStatus == status;
+            <button class="status-btn @(isActive ? "active" : "") status-@status.ToString().ToLower()"
+                    @onclick="() => ToggleStatusFilter(status)">
+                @Localization.GetString($"TaskStatus_{status}", "TaskManagement")
+            </button>
+        }
+    </div>
+
+    <!-- Список задач -->
+    @if (!_filteredTasks.Any())
+    {
+        <p class="no-tasks">@Localization.GetString("NoTasksFound", "TaskManagement")</p>
+    }
+    else
+    {
+        @foreach (var project in Projects.OrderBy(p => p.Name))
+        {
+            var projectTasks = _filteredTasks.Where(t => t.Team?.Project?.Id == project.Id).ToList();
+            if (projectTasks.Any())
+            {
+                <div class="project-section">
+                    <div class="project-header" @onclick="() => ToggleProjectCollapse(project.Id)">
+                        <h3 class="project-title">
+                            <span class="collapse-icon">@(_collapsedProjects.Contains(project.Id) ? "▶" : "▼")</span>
+                            @project.Name
+                        </h3>
+                    </div>
+                    <div class="project-content"
+                         style="@(_collapsedProjects.Contains(project.Id) ? "max-height: 0; opacity: 0;" : "max-height: none; opacity: 1;")">
+                        @foreach (var userGroup in projectTasks.GroupBy(t => t.CompanyUser).OrderBy(g => g.Key?.User?.FullName ?? ""))
+                        {
+                            var user = userGroup.Key;
+                            var userTasks = userGroup.OrderBy(t => t.TaskStatus != TaskStatus.Completed).ThenBy(t => t.CreateAt).ToList();
+                            if (userTasks.Any())
+                            {
+                                <div class="user-section">
+                                    <div class="user-header">
+                                        <img class="user-avatar" src="@TempFileService.GetUrl(user?.User?.AvatarImage)"
+                                             alt="Avatar"/>
+                                        <h4 class="user-name">@(user?.User?.FullName ?? Localization.GetString("UnknownUser", "TaskManagement"))</h4>
+                                        <button class="add-task-btn" @onclick="() => NavigateToCreateTask(project.Id, user?.Id ?? 0)">
+                                            @Localization.GetString("AddTask", "TaskManagement")
+                                        </button>
+                                    </div>
+                                    <div class="task-list">
+                                        @foreach (var task in userTasks)
+                                        {
+                                            <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                                                <div class="task-header">
+                                                    <h5>@task.Name</h5>
+                                                    <span class="task-status @GetStatusClass(task.TaskStatus)">
+                                                        @Localization.GetString($"TaskStatus_{task.TaskStatus}", "TaskManagement")
+                                                    </span>
+                                                </div>
+                                                <p class="task-description">@(task.Description?.TakeOnly(80, "...") ?? "")</p>
+                                                <div class="task-meta">
+                                                    <span class="task-priority @GetPriorityClass(task.Priority)">
+                                                        @Localization.GetString($"TaskPriority_{task.Priority}", "TaskManagement")
+                                                    </span>
+                                                    <span class="task-created">
+                                                        @Localization.GetString("CreatedAt", "TaskManagement") @(task.CreateAt!.Value.ToString("d"))
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+
+    private IEnumerable<ProjectViewModel> Projects { get; set; } = new List<ProjectViewModel>();
+    private IEnumerable<ProjectTaskViewModel> AllTasks { get; set; } = new List<ProjectTaskViewModel>();
+    private IEnumerable<ProjectTaskViewModel> _filteredTasks { get; set; } = new List<ProjectTaskViewModel>();
+    private TaskStatus? _selectedStatus = TaskStatus.Completed;
+    private HashSet<int> _collapsedProjects = new HashSet<int>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Projects = await WorkPageService.GetTaskManagementProjectsAsync(CompanyId);
+        AllTasks = await WorkPageService.GetTaskManagementCompanyTasksAsync(CompanyId);
+        UpdateFilteredTasks();
+    }
+
+    private void ToggleStatusFilter(TaskStatus status)
+    {
+        if (_selectedStatus == status)
+        {
+            _selectedStatus = null; // Отключаем фильтр
+        }
+        else
+        {
+            _selectedStatus = status; // Устанавливаем новый фильтр
+        }
+
+        UpdateFilteredTasks();
+    }
+
+    private void UpdateFilteredTasks()
+    {
+        _filteredTasks = _selectedStatus.HasValue 
+            ? AllTasks.Where(t => t.TaskStatus == _selectedStatus.Value).ToList() 
+            : AllTasks;
+        StateHasChanged();
+    }
+
+    private void ToggleProjectCollapse(int projectId)
+    {
+        if (!_collapsedProjects.Add(projectId))
+        {
+            _collapsedProjects.Remove(projectId);
+        }
+
+        StateHasChanged();
+    }
+
+    private void NavigateToTask(int taskId)
+    {
+        NavigationManager.NavigateTo($"/task/{taskId}");
+    }
+
+    private void NavigateToCreateTask(int projectId, int userId)
+    {
+        NavigationManager.NavigateTo($"/create-task/{projectId}/{userId}");
+    }
+    
+    private string GetStatusClass(TaskStatus status) => status switch
+    {
+        TaskStatus.Completed => "completed",
+        TaskStatus.Work => "work",
+        TaskStatus.ToDo => "todo",
+        TaskStatus.Finished => "todo",
+        _ => "todo"
+    };
+
+    private string GetPriorityClass(TaskPriority priority) => priority switch
+    {
+        TaskPriority.Low => "low",
+        TaskPriority.Normal => "normal",
+        TaskPriority.High => "high",
+        _ => "normal"
+    };
+
+}
+
+<style>
+    .task-management-container {
+        padding: 2rem;
+        background: var(--bg-light);
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1030px;
+        margin: 0 auto;
+    }
+
+    h2 {
+        color: var(--text-primary);
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Кнопки фильтрации */
+    .status-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .status-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 20px;
+        border: 2px solid #d0d0d0;
+        background: #e0e0e0;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+    }
+
+    .status-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        background: #d0d0d0;
+    }
+
+    .status-btn.active {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-btn.status-todo.active {
+        background: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+    .status-btn.status-finished.active {
+        background: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+    .status-btn.status-work.active {
+        background: var(--secondary);
+        border-color: var(--secondary);
+    }
+
+    .status-btn.status-completed.active {
+        background: var(--success);
+        border-color: var(--success);
+    }
+
+    /* Секция проекта */
+    .project-section {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .project-section:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .project-header {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .project-title {
+        color: var(--primary-color);
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .collapse-icon {
+        font-size: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .project-content {
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+        overflow: hidden;
+    }
+
+    /* Секция пользователя */
+    .user-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .user-section:last-child {
+        border-bottom: none;
+    }
+
+    .user-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary-color);
+    }
+
+    .user-name {
+        color: var(--text-primary);
+        font-size: 1.4rem;
+        font-weight: 500;
+        margin: 0;
+        flex-grow: 1;
+    }
+
+    .add-task-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 16px;
+        background: #1e88e5; /* Тёмно-синий для контраста вместо --primary-color */
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .add-task-btn:hover {
+        background: #1565c0; /* Чуть темнее для hover, вместо --secondary */
+        transform: translateY(-2px);
+    }
+
+    /* Горизонтальный список задач */
+    .task-list {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary-color) #e0e0e0;
+    }
+
+    .task-list::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .task-list::-webkit-scrollbar-track {
+        background: #e0e0e0;
+        border-radius: 4px;
+    }
+
+    .task-list::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 4px;
+    }
+
+    .task-card {
+        flex: 0 0 280px;
+        background: var(--bg-white);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e0e0e0;
+        margin-top: 5px;
+    }
+
+    .task-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary-color);
+    }
+
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .task-header h5 {
+        color: var(--text-primary);
+        font-size: 1.1rem;
+        margin: 0;
+        font-weight: 500;
+        max-width: 60%;
+    }
+
+    .task-status {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+        border-radius: 12px;
+        color: white;
+        font-weight: 500;
+    }
+
+    .task-status.todo {
+        background: var(--secondary);
+    }
+
+    .task-status.work {
+        background: var(--secondary);
+    }
+
+    .task-status.finished {
+        background: var(--secondary);
+    }
+
+    .task-status.completed {
+        background: var(--success);
+    }
+
+    .task-description {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.4;
+        max-height: 3.6em;
+        text-overflow: ellipsis;
+    }
+
+    .task-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .task-priority {
+        padding: 0.2rem 0.6rem;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .task-priority.low {
+        background: #e0f7fa;
+        color: #26c6da;
+    }
+
+    .task-priority.normal {
+        background: #fff3e0;
+        color: #fb8c00;
+    }
+
+    .task-priority.high {
+        background: #ffebee;
+        color: var(--danger);
+    }
+
+    .task-created {
+        font-style: italic;
+    }
+
+    .no-tasks {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 1.3rem;
+        margin: 2rem 0;
+        font-style: italic;
+    }
+</style>

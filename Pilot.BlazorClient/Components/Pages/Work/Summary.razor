@@ -8,7 +8,7 @@
 @using ChartJs.Blazor.Util
 @using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
-@using TaskStatus = Pilot.Contracts.Data.Enums.TaskStatus
+@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
 
 @if (_isLoading)
 {
@@ -266,7 +266,7 @@ else
     {
         var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
         var high = userTasks.Count(t => t is { Priority: TaskPriority.High, TaskStatus: TaskStatus.Completed });
-        var medium = userTasks.Count(t => t is { Priority: TaskPriority.Middle, TaskStatus: TaskStatus.Completed });
+        var medium = userTasks.Count(t => t is { Priority: TaskPriority.Normal, TaskStatus: TaskStatus.Completed });
         var low = userTasks.Count(t => t is { Priority: TaskPriority.Low, TaskStatus: TaskStatus.Completed });
 
         _priorityConfig = new PieConfig
@@ -381,7 +381,7 @@ else
     {
         var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
         var high = allTasks.Count(t => t.Priority == TaskPriority.High);
-        var medium = allTasks.Count(t => t.Priority == TaskPriority.Middle);
+        var medium = allTasks.Count(t => t.Priority == TaskPriority.Normal);
         var low = allTasks.Count(t => t.Priority == TaskPriority.Low);
 
         _companyPriorityConfig = new PieConfig

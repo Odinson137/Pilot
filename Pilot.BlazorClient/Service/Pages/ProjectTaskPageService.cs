@@ -9,6 +9,7 @@ public class ProjectTaskPageService(
     IBaseModelService<UserViewModel> userService, 
     IBaseModelService<CompanyUserViewModel> companyUserService, 
     IBaseModelService<TaskInfoViewModel> taskInfoService,
+    IBaseModelService<TeamViewModel> teamService,
     IBaseModelService<FileViewModel> fileService
     ) : BasePageService<ProjectTaskViewModel>(projectTaskService), IProjectTaskPageService
 {
@@ -39,5 +40,15 @@ public class ProjectTaskPageService(
     public async Task UploadFileAsync(FileViewModel file)
     {
         await fileService.CreateValueAsync(file);
+    }
+
+    public async Task AddProjectTaskAsync(ProjectTaskViewModel task)
+    {
+        await projectTaskService.CreateValueAsync(task);
+    }
+
+    public async Task<ICollection<TeamViewModel>> GetProjectTeamsAsync(int projectId)
+    {
+        return await teamService.GetValuesAsync(c => c.Project.Id, projectId);
     }
 }

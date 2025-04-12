@@ -1,4 +1,5 @@
 ﻿using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.HelperViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
@@ -12,6 +13,8 @@ public interface IWorkPageService
 
     Task<ICollection<ProjectViewModel>> GetProjectsAsync(int companyId);
 
+    Task<ICollection<ProjectViewModel>> GetProjectsWithTasksAsync(int companyId);
+
     Task<ICollection<TeamViewModel>> GetUserTeamsAsync<T>(T userProjects) where T : ICollection<TeamViewModel>;
 
     Task FillTeamsAsync(ICollection<ProjectViewModel> projects);
@@ -24,25 +27,28 @@ public interface IWorkPageService
     Task<ICollection<CompanyUserViewModel>> GetCompanyEmployeesAsync(int companyId);
 
     Task<ICollection<JobApplicationViewModel>> GetCompanyJobApplicationsAsync(int companyId);
-    
+
     Task<ICollection<CompanyUserViewModel>> GetJobApplicationUsersAsync(
         ICollection<JobApplicationViewModel> jobApplications);
 
     Task<ICollection<PostViewModel>> GetPostsAsync(int companyId);
-    
+
     Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId);
-    
+
     Task AddTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
-    
+
     Task AddTeamAsync(TeamViewModel team);
 
     Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
-    
+
     Task AddProjectAsync(ProjectViewModel project);
 
     Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId);
 
     Task<ICollection<ProjectTaskViewModel>> FillProjectsIntoTeamsAsync(ICollection<ProjectTaskViewModel> projectTasks);
-    
+
     Task<ICollection<ProjectTaskViewModel>> GetCompanyTasksAsync(int companyId);
+
+    Task<ICollection<ProjectViewModel>> GetTaskManagementProjectsAsync(int companyId);
+    Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTasksAsync(int companyId);
 }

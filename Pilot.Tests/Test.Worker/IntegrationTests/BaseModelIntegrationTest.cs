@@ -5,6 +5,8 @@ using System.Web;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.FullDto;
 using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
@@ -132,7 +134,19 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseReceiverIn
         await context.AddRangeAsync(values);
         await context.SaveChangesAsync();
 
-        Expression<Func<T, object>> projection = c => new { c.Id, c.CreateAt };
+        Expression<Func<ProjectFullDto, ProjectFullDto>> projection = c => new ProjectFullDto
+        {
+            Id = c.Id,
+            CreateAt = c.CreateAt,
+            Name = c.Name,
+            Description = c.Description,
+            Teams = c.Teams.Select(x => new TeamFullDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Name
+            }).ToList()
+        };
         var filter = new BaseFilter
         {
             SelectQuery = new ExpressionSerializer(new JsonSerializer()).SerializeText(projection)

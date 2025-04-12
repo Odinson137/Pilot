@@ -33,10 +33,11 @@ public class BaseUserServiceIntegrationTest : IClassFixture<ApiTestApiFactory>, 
     
     protected BaseUserServiceIntegrationTest(ApiTestApiFactory apiFactory, ApiTestIdentityFactory identityFactory)
     {
+        TokenService = apiFactory.Services.GetRequiredService<IToken>();
+        
         _identityScopeService = identityFactory.Services.CreateScope().ServiceProvider;
         _contexts[ServiceName.IdentityServer] = _identityScopeService.GetRequiredService<DataContext>();
         
-        TokenService = apiFactory.Services.GetRequiredService<IToken>();
         PasswordCoder = _identityScopeService.GetRequiredService<IPasswordCoder>();
         
         var identityClient = identityFactory.CreateClient();

@@ -7,130 +7,89 @@
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
 @inject IWorkPageService WorkPageService
-@inject ProtectedSessionStorage ProtectedSessionStorage;
+@inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IUserService UserService
-@inject NavigationManager NavigationManager;
+@inject NavigationManager NavigationManager
 
 <PageTitle>Work</PageTitle>
 
-<AuthCheck/>
+<AuthCheck />
 
 @if (_isLoading)
 {
-    <Loading/>
+    <Loading />
 }
 else
 {
     <div class="work-container">
-        <aside class="work-sidebar">
-            <div class="project-menu">
-                <ul>
-                    @if (_projects is { Count: > 0 })
-                    {
-                        <h5 @onclick="ClearProject" style="cursor: pointer">Projects:</h5>
-                        @foreach (var project in _projects)
-                        {
-                            <li style="padding: 5px">
-                                <span @onclick="() => NavigateToProject(project.Id)">@project.Name</span>
-                            </li>
-                        }
-                    }
-                    else
-                    {
-                        <li>No projects</li>
-                    }
-                </ul>
-            </div>
-        </aside>
-
-        <section class="content-wrapper">
-            <nav class="nav-menu">
-                <ul>
-                    @if (_companyUser == null)
-                    {
-                        <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(1)">
-                            Main
-                        </li>
-                    }
-                    else
-                    {
-                        <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">
-                            Main
-                        </li>
-                        <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">
-                            Summary
-                        </li>
-                        <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">
-                            Tasks
-                        </li>
-                        <li @onclick="() => SetActiveTab(5)" class="@GetActiveClass(5)">
-                            Projects
-                        </li>
-                        <li @onclick="() => SetActiveTab(6)" class="@GetActiveClass(6)">
-                            Teams
-                        </li>
-                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">
-                            Employees
-                        </li>
-                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">
-                            Vacancy
-                        </li>
-                        <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">
-                            Applications
-                        </li>
-                    }
-                </ul>
-            </nav>
-
-            <main class="work-main">
-                @if (_user != null)
+        <nav class="work-nav">
+            <ul>
+                @if (_companyUser == null)
                 {
-                    @switch (_activeTab)
-                    {
-                        case 0:
-                            <NoCompany/>
-                            break;
-                        case 1:
-                            <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
-                            break;
-                        case 2:
-                            <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"></Summary>
-                            break;
-                        case 3:
-                            <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
-                            break;
-                        case 5:
-                            <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
-                        case 6:
-                            <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
-                        case 7:
-                            <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
-                        case 8:
-                            <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
-                        case 10:
-                            <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                            break;
-                    }
+                    <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">Join or Create Company</li>
                 }
-            </main>
-        </section>
+                else
+                {
+                    <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">Dashboard</li>
+                    <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">Summary</li>
+                    <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">Tasks</li>
+                    <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">Employees</li>
+                    <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">Vacancies</li>
+                    <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">Applications</li>
+                    <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
+                }
+            </ul>
+        </nav>
+
+        @if (_user != null)
+        {
+            @switch (_activeTab)
+            {
+                case 0:
+                    <NoCompany />
+                    break;
+                case 1:
+                    <UserGreeting UserName="@_user.UserName" UserId="@_user.Id" />
+                    break;
+                case 2:
+                    <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 3:
+                    <UserTask UserId="@_user.Id" ProjectId="@_projectId" />
+                    break;
+                case 5:
+                    <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 6:
+                    <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 7:
+                    <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 8:
+                    <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 10:
+                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+                case 11:
+                    <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    break;
+            }
+        }
     </div>
 }
 
 @code {
     private int _activeTab = 1;
     private bool _isLoading = true;
-
     private UserViewModel? _user;
     private CompanyUserViewModel? _companyUser;
-
     private ICollection<ProjectViewModel>? _projects;
-
     private int _projectId;
+    private int _taskCount;
+    private int _teamCount;
+    private int _vacancyCount;
 
     protected override async Task OnInitializedAsync()
     {
@@ -140,8 +99,11 @@ else
         {
             _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
             _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
+            _taskCount = (await WorkPageService.GetUserTasksAsync(new List<int>(), null)).Count;
+            _teamCount = (await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id)).Count;
+            _vacancyCount = (await WorkPageService.GetPostsAsync(_companyUser.Company.Id)).Count;
         }
-        catch (Exception ex)
+        catch
         {
             _activeTab = 0;
         }
@@ -150,6 +112,10 @@ else
         if (currentTabStorageResult.Success)
             _activeTab = currentTabStorageResult.Value;
 
+        var projectStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.SelectProject);
+        if (projectStorageResult.Success)
+            _projectId = projectStorageResult.Value;
+
         _isLoading = false;
     }
 
@@ -157,113 +123,171 @@ else
     {
         _activeTab = tabId;
         ProtectedSessionStorage.SetAsync("work:currentTab", tabId);
+        StateHasChanged();
     }
 
     private string GetActiveClass(int tabId)
     {
-        return _activeTab == tabId ? "active" : string.Empty;
+        return _activeTab == tabId ? "active" : "";
     }
 
-    private void NavigateToProject(int projectId)
+    private async Task HandleProjectChange(ChangeEventArgs e)
     {
-        _projectId = projectId;
-        ProtectedSessionStorage.SetAsync(ClientConstants.SelectProject, projectId);
+        _projectId = int.Parse(e.Value?.ToString() ?? "0");
+        if (_projectId == 0)
+            await ProtectedSessionStorage.DeleteAsync(ClientConstants.SelectProject);
+        else
+            await ProtectedSessionStorage.SetAsync(ClientConstants.SelectProject, _projectId);
 
         if (_activeTab == 3)
-        {
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
-        }
     }
-
-    private void ClearProject()
-    {
-        ProtectedSessionStorage.DeleteAsync(ClientConstants.SelectProject);
-
-        if (_activeTab == 3)
-        {
-            NavigationManager.NavigateTo(NavigationManager.Uri, true);
-        }
-    }
-
 }
 
 <style>
+    /* Main container */
     .work-container {
         display: flex;
-        height: 90vh;
-        width: 100%;
-        margin-bottom: 50px;
-    }
-
-    .content-wrapper {
-        display: flex;
         flex-direction: column;
-        flex-grow: 1;
+        min-height: 100vh;
+        background-color: var(--bg-light);
+        padding: 0;
     }
 
-    .nav-menu ul {
+    /* Header */
+    .work-header {
+        background: var(--gradient);
+        color: white;
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        z-index: 10;
+    }
+
+    .work-title {
+        color: black;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .project-selector {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 1rem;
+        background-color: rgba(255, 255, 255, 0.9);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .project-selector:focus {
+        outline: none;
+        background-color: white;
+    }
+
+    /* Navigation */
+    .work-nav {
+        background-color: var(--bg-white);
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .work-nav ul {
         list-style-type: none;
         padding: 0;
+        margin: 0;
         display: flex;
+        gap: 2rem;
     }
 
-    .nav-menu li {
-        margin-right: 20px;
-    }
-
-    .nav-menu {
+    .work-nav li {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
         cursor: pointer;
-        text-decoration: none;
-        color: #2980b9;
+        padding: 0.5rem 1rem;
+        transition: color 0.3s ease, background-color 0.3s ease;
     }
 
-    .active {
-        font-weight: bold;
-        color: #1a5276;
+    .work-nav li:hover {
+        color: var(--primary-color);
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
     }
 
-    .nav-menu a:hover {
-        text-decoration: underline;
+    .work-nav li.active {
+        color: var(--primary-color);
+        font-weight: 600;
+        border-bottom: 3px solid var(--primary-color);
     }
 
-    .work-sidebar {
-        margin: 0 10px;
-        padding: 10px;
-        border-radius: 15px;
-        width: 150px;
-        background-color: #34495e;
-        color: #fff;
-    }
-
+    /* Main content */
     .work-main {
         flex-grow: 1;
-        padding: 20px;
-        border-radius: 15px;
-        background-color: #deeaed;
-        display: flex;
-        flex-direction: column;
+        padding: 2rem;
+        background-color: var(--bg-light);
     }
 
-    .project-menu {
-        width: 250px;
-        color: #fff; /* Изменен цвет текста */
+    /* Dashboard grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
     }
 
-    .project-menu ul {
-        list-style-type: none;
-        padding-left: 0;
+    .dashboard-card {
+        background-color: var(--bg-white);
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .project-menu li {
-        padding: 5px;
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-card p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
         cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
     }
 
-    .team-item:hover {
-        color: #9acbff;
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
     }
 
-    .work-main {
-        overflow-y: auto; /* Включаем вертикальную прокрутку */
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
     }
 </style>

@@ -1,6 +1,6 @@
 ﻿namespace Pilot.Contracts.Data.Enums;
 
-public enum TaskStatus
+public enum ProjectTaskStatus
 {
     ToDo = 0,
     Work = 1,

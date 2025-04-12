@@ -38,9 +38,10 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
     public virtual async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
     {
         var query = DbSet
-            .OrderByDescending(c => c.Id)
             .Skip(filter.Skip)
             .Take(filter.Take);
+
+        query = query.OrderByDescending(c => c.Id);
 
         if (filter.Ids != null)
             query = query.Where(c => filter.Ids.Contains(c.Id));
