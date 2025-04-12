@@ -31,6 +31,8 @@ public class BackgroundJobTestBackgroundJobFactory : WebApplicationFactory<Pilot
 
         Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
             _rabbitContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+            _redisContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>
         {

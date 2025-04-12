@@ -37,14 +37,10 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
 
     public virtual async Task<ICollection<TOut>> GetValuesAsync<TOut>(BaseFilter filter, CancellationToken token = default) where TOut : BaseDto
     {
-        var data = await DbSet.ToListAsync(token);
         var query = DbSet
             .OrderByDescending(c => c.Id)
             .Skip(filter.Skip)
             .Take(filter.Take);
-        var data1 = await query.ToListAsync(token);
-
-        var data2 = await query.ToListAsync(token);
 
         if (filter.Ids != null)
             query = query.Where(c => filter.Ids.Contains(c.Id));
@@ -52,13 +48,6 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         if (filter.WhereFilter != null)
             query = GetFiltersLambda(query, filter.WhereFilter.List);
         
-        // if (filter.SelectQuery != null)
-        //     query = GetSelectLambda(query, filter.SelectQuery);
-        var data3 = await query.ToListAsync(token);
-        var data45 = data3.AsQueryable().ProjectTo<TOut>(mapper.ConfigurationProvider).ToList();
-        mapper.ConfigurationProvider.AssertConfigurationIsValid();
-        var data4 = await query.ProjectTo<TOut>(mapper.ConfigurationProvider).ToListAsync(token);
-
         return await query
             .ProjectTo<TOut>(mapper.ConfigurationProvider)
             .ToListAsync(token);
