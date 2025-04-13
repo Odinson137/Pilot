@@ -33,6 +33,18 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
     private static string EntityName => typeof(T).Name;
     
+    private static void FillUser(ICollection<T> values)
+    {
+        foreach (var value in values)
+            FillUser(value);
+    }
+
+    private static void FillUser(T value)
+    {
+        if (value is IAddCompanyUser addCompanyUser)
+            addCompanyUser.AddCompanyUser(new CompanyUser {Company = new Company {Title = Guid.NewGuid().ToString()}});
+    }
+
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {
@@ -40,9 +52,11 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-    
-        await GetContext<TDto>().AddRangeAsync(values);
-        await GetContext<TDto>().SaveChangesAsync();
+        FillUser(values);
+        
+        var context = AssertContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
     
         #endregion
     
@@ -66,9 +80,11 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         const int count = 1;
     
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-    
-        await GetContext<TDto>().AddRangeAsync(values);
-        await GetContext<TDto>().SaveChangesAsync();
+        FillUser(values);
+
+        var context = AssertContext;
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
     
         var id = values.First().Id;
     

@@ -76,6 +76,18 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=1DB789EA_002D452A_002D4EFD_002D9A72_002D965BE960974D/@EntryIndexedValue">60E7C4D5-0598-4E49-8C67-7F485D8CF5D1</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1e03885b_002Dc499_002D43b2_002Db772_002Dc5dcccc34754/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ProjectTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.ProjectTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.CompanyUserTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.TaskInfoTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.CompanyRoleTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.CompanyTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.ProjectTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.ProjectTaskTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::3FDF7F7B-66DA-452F-8404-D28BCD642E5F::net9.0::Test.Api.WorkerService.TeamTests.GetAllValuesTest_ReturnOk&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	
 	
 	
