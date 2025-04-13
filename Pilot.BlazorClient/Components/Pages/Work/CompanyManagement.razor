@@ -1,0 +1,1085 @@
+﻿@page "/company-management/{CompanyId:int}"
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@using Pilot.BlazorClient.Service
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Data
+@using Pilot.Contracts.Base
+@using Pilot.Contracts.Services
+@inject IWorkPageService WorkPageService
+@inject IJsonLocalizationService Localization
+@inject NavigationManager NavigationManager
+
+<PageTitle>@Localization.GetString("CompanyManagementTitle", "CompanyManagement")</PageTitle>
+
+<div class="company-management-container">
+    <div class="title-header">
+        <h1>@Localization.GetString("CompanyManagementTitle", "CompanyManagement")</h1>
+        <p class="subtitle">@Localization.GetString("CompanyManagementSubtitle", "CompanyManagement")</p>
+    </div>
+
+    @if (ErrorMessage != null)
+    {
+        <div class="error-message">
+            <span class="material-icons">error</span>
+            @ErrorMessage
+        </div>
+    }
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-button @(ActiveTab == Tab.Projects ? "active" : "")" @onclick="() => SetTab(Tab.Projects)">
+            <span class="material-icons">apartment</span> @Localization.GetString("Projects", "CompanyManagement")
+        </button>
+        <button class="tab-button @(ActiveTab == Tab.Teams ? "active" : "")" @onclick="() => SetTab(Tab.Teams)">
+            <span class="material-icons">group</span> @Localization.GetString("Teams", "CompanyManagement")
+        </button>
+        <button class="tab-button @(ActiveTab == Tab.Employees ? "active" : "")" @onclick="() => SetTab(Tab.Employees)">
+            <span class="material-icons">person</span> @Localization.GetString("Employees", "CompanyManagement")
+        </button>
+        <button class="tab-button @(ActiveTab == Tab.Permissions ? "active" : "")" @onclick="() => SetTab(Tab.Permissions)">
+            <span class="material-icons">lock</span> @Localization.GetString("Permissions", "CompanyManagement")
+        </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+        @switch (ActiveTab)
+        {
+            case Tab.Projects:
+                <div class="section">
+                    <div class="section-header">
+                        <h2>@Localization.GetString("Projects", "CompanyManagement")</h2>
+                        <button class="btn btn-add" @onclick="ShowAddProjectForm">
+                            <span class="material-icons">add</span> @Localization.GetString("AddProject", "CompanyManagement")
+                        </button>
+                    </div>
+                    @if (_isLoading)
+                    {
+                        <div class="loading">
+                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                        </div>
+                    }
+                    else if (_projects?.Any() != true)
+                    {
+                        <p class="no-data">@Localization.GetString("NoProjects", "CompanyManagement")</p>
+                    }
+                    else
+                    {
+                        <div class="card-grid">
+                            @foreach (var project in _projects)
+                            {
+                                <div class="card">
+                                    <h3>@project.Name</h3>
+                                    <p>@project.Description?.TakeOnly(100, "...")</p>
+                                    <p><strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @project.Teams?.Count</p>
+                                    <p><strong>@Localization.GetString("ProjectStatus", "CompanyManagement"):</strong> @Localization.GetString(project.ProjectStatus.ToString(), "CompanyManagement")</p>
+                                    <div class="card-actions">
+                                        <button class="btn btn-edit" @onclick="() => ShowEditProjectForm(project)">
+                                            <span class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
+                                        </button>
+                                        <button class="btn btn-delete" @onclick="() => DeleteProject(project.Id)">
+                                            <span class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_showAddProjectForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("AddProject", "CompanyManagement")</h3>
+                                <EditForm Model="_newProject" OnValidSubmit="SaveProject">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectName", "CompanyManagement")</label>
+                                        <InputText @bind-Value="_newProject.Name" class="form-input" placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")" />
+                                        <ValidationMessage For="@(() => _newProject.Name)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectDescription", "CompanyManagement")</label>
+                                        <InputTextArea @bind-Value="_newProject.Description" class="form-textarea" placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectStatus", "CompanyManagement")</label>
+                                        <InputSelect @bind-Value="_newProject.ProjectStatus" class="form-select">
+                                            @foreach (var status in Enum.GetValues<ProjectStatus>())
+                                            {
+                                                <option value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideAddProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+
+                    @if (_showEditProjectForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("EditProject", "CompanyManagement")</h3>
+                                <EditForm Model="_editProject" OnValidSubmit="UpdateProject">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectName", "CompanyManagement")</label>
+                                        <InputText @bind-Value="_editProject.Name" class="form-input" placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")" />
+                                        <ValidationMessage For="@(() => _editProject.Name)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectDescription", "CompanyManagement")</label>
+                                        <InputTextArea @bind-Value="_editProject.Description" class="form-textarea" placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("ProjectStatus", "CompanyManagement")</label>
+                                        <InputSelect @bind-Value="_editProject.ProjectStatus" class="form-select">
+                                            @foreach (var status in Enum.GetValues<ProjectStatus>())
+                                            {
+                                                <option value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideEditProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                </div>
+                break;
+
+            case Tab.Teams:
+                <div class="section">
+                    <div class="section-header">
+                        <h2>@Localization.GetString("Teams", "CompanyManagement")</h2>
+                        <button class="btn btn-add" @onclick="ShowAddTeamForm">
+                            <span class="material-icons">add</span> @Localization.GetString("AddTeam", "CompanyManagement")
+                        </button>
+                    </div>
+                    @if (_isLoading)
+                    {
+                        <div class="loading">
+                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                        </div>
+                    }
+                    else if (_teams?.Any() != true)
+                    {
+                        <p class="no-data">@Localization.GetString("NoTeams", "CompanyManagement")</p>
+                    }
+                    else
+                    {
+                        <div class="card-grid">
+                            @foreach (var team in _teams)
+                            {
+                                <div class="card">
+                                    <h3>@team.Name</h3>
+                                    <p><strong>@Localization.GetString("Project", "CompanyManagement"):</strong> @(_projects?.FirstOrDefault(p => p.Id == team.Project.Id)?.Name ?? "N/A")</p>
+                                    <p><strong>@Localization.GetString("MembersCount", "CompanyManagement"):</strong> @team.CompanyUsers?.Count</p>
+                                    <div class="card-actions">
+                                        <button class="btn btn-edit" @onclick="() => ShowEditTeamForm(team)">
+                                            <span class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
+                                        </button>
+                                        <button class="btn btn-delete" @onclick="() => DeleteTeam(team.Id)">
+                                            <span class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_showAddTeamForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("AddTeam", "CompanyManagement")</h3>
+                                <EditForm Model="_newTeam" OnValidSubmit="SaveTeam">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("TeamName", "CompanyManagement")</label>
+                                        <InputText @bind-Value="_newTeam.Name" class="form-input" placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")" />
+                                        <ValidationMessage For="@(() => _newTeam.Name)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Project", "CompanyManagement")</label>
+                                        <InputSelect @bind-Value="_newTeam.Project.Id" class="form-select">
+                                            <option value="0" disabled selected>@Localization.GetString("SelectProject", "CompanyManagement")</option>
+                                            @foreach (var project in _projects ?? new List<ProjectViewModel>())
+                                            {
+                                                <option value="@project.Id">@project.Name</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => _newTeam.Project!.Id)" />
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideAddTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+
+                    @if (_showEditTeamForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("EditTeam", "CompanyManagement")</h3>
+                                <EditForm Model="_editTeam" OnValidSubmit="UpdateTeam">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("TeamName", "CompanyManagement")</label>
+                                        <InputText @bind-Value="_editTeam.Name" class="form-input" placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")" />
+                                        <ValidationMessage For="@(() => _editTeam.Name)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Project", "CompanyManagement")</label>
+                                        <InputSelect @bind-Value="_editTeam.Project.Id" class="form-select">
+                                            <option value="0" disabled>@Localization.GetString("SelectProject", "CompanyManagement")</option>
+                                            @foreach (var project in _projects ?? new List<ProjectViewModel>())
+                                            {
+                                                <option value="@project.Id">@project.Name</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => _editTeam.Project!.Id)" />
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideEditTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                </div>
+                break;
+
+            case Tab.Employees:
+                <div class="section">
+                    <div class="section-header">
+                        <h2>@Localization.GetString("Employees", "CompanyManagement")</h2>
+                        <div class="search-bar">
+                            <span class="material-icons">search</span>
+                            <input @bind="_searchQuery" class="form-input" placeholder="@Localization.GetString("SearchEmployees", "CompanyManagement")" @oninput="FilterEmployees" />
+                        </div>
+                    </div>
+                    @if (_isLoading)
+                    {
+                        <div class="loading">
+                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                        </div>
+                    }
+                    else if (_filteredEmployees?.Any() != true)
+                    {
+                        <p class="no-data">@Localization.GetString("NoEmployees", "CompanyManagement")</p>
+                    }
+                    else
+                    {
+                        <div class="card-grid">
+                            @foreach (var employee in _filteredEmployees)
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)" alt="@employee.User?.FullName" class="avatar" />
+                                        <div>
+                                            <h3>@employee.User?.FullName</h3>
+                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
+                                        </div>
+                                    </div>
+                                    <p><strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @employee.Teams?.Count</p>
+                                    <div class="card-actions">
+                                        <button class="btn btn-action" @onclick="() => ShowAssignTeamForm(employee.Id)">
+                                            <span class="material-icons">group_add</span> @Localization.GetString("AssignTeam", "CompanyManagement")
+                                        </button>
+                                        <button class="btn btn-action" @onclick="() => NavigateToEmployee(employee.Id)">
+                                            <span class="material-icons">person</span> @Localization.GetString("ViewProfile", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_showAssignTeamForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("AssignTeam", "CompanyManagement")</h3>
+                                <EditForm Model="_assignTeamModel" OnValidSubmit="AssignTeam">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Employee", "CompanyManagement")</label>
+                                        <InputText value="@(_filteredEmployees?.FirstOrDefault(e => e.Id == _assignTeamModel.EmployeeId)?.User?.FullName)" class="form-input" disabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Team", "CompanyManagement")</label>
+                                        <InputSelect @bind-Value="_assignTeamModel.TeamId" class="form-select">
+                                            <option value="0" disabled selected>@Localization.GetString("SelectTeam", "CompanyManagement")</option>
+                                            @foreach (var team in _teams ?? new List<TeamViewModel>())
+                                            {
+                                                <option value="@team.Id">@team.Name</option>
+                                            }
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => _assignTeamModel.TeamId)" />
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideAssignTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                </div>
+                break;
+
+            case Tab.Permissions:
+                <div class="section">
+                    <div class="section-header">
+                        <h2>@Localization.GetString("Permissions", "CompanyManagement")</h2>
+                    </div>
+                    @if (_isLoading)
+                    {
+                        <div class="loading">
+                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                        </div>
+                    }
+                    else if (_employees?.Any() != true)
+                    {
+                        <p class="no-data">@Localization.GetString("NoEmployees", "CompanyManagement")</p>
+                    }
+                    else
+                    {
+                        <div class="card-grid">
+                            @foreach (var employee in _employees)
+                            {
+                                <div class="card">
+                                    <div class="card-header">
+                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)" alt="@employee.User?.FullName" class="avatar" />
+                                        <div>
+                                            <h3>@employee.User?.FullName</h3>
+                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
+                                        </div>
+                                    </div>
+                                    <p><strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong> @(employee.Permissions?.Any() == true ? string.Join(", ", employee.Permissions.Select(p => p.ToString())) : "None")</p>
+                                    <div class="card-actions">
+                                        <button class="btn btn-action" @onclick="() => ShowAssignPermissionsForm(employee.Id)">
+                                            <span class="material-icons">lock</span> @Localization.GetString("EditPermissions", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (_showAssignPermissionsForm)
+                    {
+                        <div class="form-overlay">
+                            <div class="form-card">
+                                <h3>@Localization.GetString("EditPermissions", "CompanyManagement")</h3>
+                                <EditForm Model="_assignPermissionsModel" OnValidSubmit="AssignPermissions">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Employee", "CompanyManagement")</label>
+                                        <InputText value="@(_employees?.FirstOrDefault(e => e.Id == _assignPermissionsModel.EmployeeId)?.User?.FullName)" class="form-input" disabled />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("Permissions", "CompanyManagement")</label>
+                                        @foreach (var permission in Enum.GetValues<Permission>())
+                                        {
+                                            bool isChecked = _assignPermissionsModel.Permissions.Contains(permission);
+                                            <div class="permission-checkbox">
+                                                <InputCheckbox @bind-Value="@isChecked" id="@($"perm-{permission}")" />
+                                                <label for="@($"perm-{permission}")">@permission</label>
+                                            </div>
+                                            @if (isChecked && !_assignPermissionsModel.Permissions.Contains(permission))
+                                            {
+                                                _assignPermissionsModel.Permissions.Add(permission);
+                                            }
+                                            else if (!isChecked && _assignPermissionsModel.Permissions.Contains(permission))
+                                            {
+                                                _assignPermissionsModel.Permissions.Remove(permission);
+                                            }
+                                        }
+                                    </div>
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel" @onclick="HideAssignPermissionsForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+                    }
+                </div>
+                break;
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyId { get; set; }
+
+    private enum Tab { Projects, Teams, Employees, Permissions }
+
+    private Tab ActiveTab = Tab.Employees;
+    private bool _isLoading = true;
+    private string? ErrorMessage;
+    private string _searchQuery = string.Empty;
+    private ICollection<ProjectViewModel>? _projects;
+    private ICollection<TeamViewModel>? _teams;
+    private ICollection<CompanyUserViewModel>? _employees;
+    private ICollection<CompanyUserViewModel>? _filteredEmployees;
+    private ICollection<PostViewModel>? _posts;
+    private ProjectViewModel _newProject = new();
+    private TeamViewModel _newTeam = new();
+    private bool _showAddProjectForm;
+    private bool _showAddTeamForm;
+    private bool _showEditProjectForm;
+    private bool _showEditTeamForm;
+    private bool _showAssignTeamForm;
+    private bool _showAssignPermissionsForm;
+    private ProjectViewModel _editProject = new();
+    private TeamViewModel _editTeam = new();
+    private AssignTeamModel _assignTeamModel = new();
+    private AssignPermissionsModel _assignPermissionsModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _posts = await WorkPageService.GetPostsAsync(CompanyId);
+            _filteredEmployees = _employees;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("LoadError", "CompanyManagement");
+            Console.WriteLine($"Load error: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void SetTab(Tab tab)
+    {
+        ActiveTab = tab;
+    }
+
+    private void ShowAddProjectForm()
+    {
+        _newProject = new ProjectViewModel
+        {
+            Company = new BaseDto { Id = CompanyId }
+        };
+        _showAddProjectForm = true;
+    }
+
+    private void HideAddProjectForm()
+    {
+        _showAddProjectForm = false;
+    }
+
+    private async Task SaveProject()
+    {
+        try
+        {
+            await WorkPageService.AddProjectAsync(_newProject);
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+            _showAddProjectForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Save project error: {ex.Message}");
+        }
+    }
+
+    private void ShowEditProjectForm(ProjectViewModel project)
+    {
+        _editProject = new ProjectViewModel
+        {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            ProjectStatus = project.ProjectStatus,
+            Company = new BaseDto { Id = CompanyId }
+        };
+        _showEditProjectForm = true;
+    }
+
+    private void HideEditProjectForm()
+    {
+        _showEditProjectForm = false;
+    }
+
+    private async Task UpdateProject()
+    {
+        try
+        {
+            // await WorkPageService.UpdateProjectAsync(_editProject);
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+            _showEditProjectForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Update project error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteProject(int projectId)
+    {
+        try
+        {
+            // await WorkPageService.DeleteProjectAsync(projectId);
+            _projects = await WorkPageService.GetProjectsAsync(CompanyId);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("DeleteError", "CompanyManagement");
+            Console.WriteLine($"Delete project error: {ex.Message}");
+        }
+    }
+
+    private void ShowAddTeamForm()
+    {
+        _newTeam = new TeamViewModel();
+        _showAddTeamForm = true;
+    }
+
+    private void HideAddTeamForm()
+    {
+        _showAddTeamForm = false;
+    }
+
+    private async Task SaveTeam()
+    {
+        try
+        {
+            await WorkPageService.AddTeamAsync(_newTeam);
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+            _showAddTeamForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Save team error: {ex.Message}");
+        }
+    }
+
+    private void ShowEditTeamForm(TeamViewModel team)
+    {
+        _editTeam = new TeamViewModel
+        {
+            Id = team.Id,
+            Name = team.Name,
+            Project = new ProjectViewModel { Id = team.Project.Id }
+        };
+        _showEditTeamForm = true;
+    }
+
+    private void HideEditTeamForm()
+    {
+        _showEditTeamForm = false;
+    }
+
+    private async Task UpdateTeam()
+    {
+        try
+        {
+            // await WorkPageService.UpdateTeamAsync(_editTeam);
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+            _showEditTeamForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Update team error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteTeam(int teamId)
+    {
+        try
+        {
+            // await WorkPageService.DeleteTeamAsync(teamId);
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("DeleteError", "CompanyManagement");
+            Console.WriteLine($"Delete team error: {ex.Message}");
+        }
+    }
+
+    private void FilterEmployees()
+    {
+        _filteredEmployees = string.IsNullOrWhiteSpace(_searchQuery)
+            ? _employees
+            : _employees?.Where(e => e.User!.FullName.Contains(_searchQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+    }
+
+    private void ShowAssignTeamForm(int employeeId)
+    {
+        _assignTeamModel = new AssignTeamModel { EmployeeId = employeeId };
+        _showAssignTeamForm = true;
+    }
+
+    private void HideAssignTeamForm()
+    {
+        _showAssignTeamForm = false;
+    }
+
+    private async Task AssignTeam()
+    {
+        try
+        {
+            // await WorkPageService.AssignEmployeeToTeamAsync(_assignTeamModel.EmployeeId, _assignTeamModel.TeamId);
+            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _filteredEmployees = _employees;
+            _showAssignTeamForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Assign team error: {ex.Message}");
+        }
+    }
+
+    private void ShowAssignPermissionsForm(int employeeId)
+    {
+        var employee = _employees?.FirstOrDefault(e => e.Id == employeeId);
+        _assignPermissionsModel = new AssignPermissionsModel
+        {
+            EmployeeId = employeeId,
+            Permissions = employee?.Permissions?.ToList() ?? new List<Permission>()
+        };
+        _showAssignPermissionsForm = true;
+    }
+
+    private void HideAssignPermissionsForm()
+    {
+        _showAssignPermissionsForm = false;
+    }
+
+    private async Task AssignPermissions()
+    {
+        try
+        {
+            // await WorkPageService.UpdateEmployeePermissionsAsync(_assignPermissionsModel.EmployeeId, _assignPermissionsModel.Permissions);
+            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _filteredEmployees = _employees;
+            _showAssignPermissionsForm = false;
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Assign permissions error: {ex.Message}");
+        }
+    }
+
+    private void NavigateToEmployee(int employeeId)
+    {
+        NavigationManager.NavigateTo($"/employees/{employeeId}");
+    }
+
+    private class AssignTeamModel
+    {
+        public int EmployeeId { get; set; }
+        public int TeamId { get; set; }
+    }
+
+    private class AssignPermissionsModel
+    {
+        public int EmployeeId { get; set; }
+        public List<Permission> Permissions { get; set; } = new();
+    }
+}
+
+<style>
+    :root {
+        --primary: #3b82f6;
+        --secondary: #6b7280;
+        --success: #10b981;
+        --danger: #ef4444;
+        --bg-light: #f3f4f6;
+        --bg-white: #ffffff;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+    }
+
+    .company-management-container {
+        width: 1000px;
+        min-width: 800px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--bg-white), #e5e7eb);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .title-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(to right, var(--primary), #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+
+    .error-message {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #fee2e2;
+        border: 1px solid var(--danger);
+        border-radius: 8px;
+        color: var(--danger);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        background: var(--bg-light);
+        padding: 0.5rem;
+        border-radius: 12px;
+    }
+
+    .tab-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: none;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .tab-button:hover {
+        background: #e5e7eb;
+    }
+
+    .tab-button.active {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .tab-content {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        width: 100%;
+        min-height: 400px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        max-width: 300px;
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+
+    .search-bar .material-icons {
+        color: var(--text-secondary);
+    }
+
+    .form-input {
+        border: none;
+        background: none;
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .form-input:focus {
+        outline: none;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+        font-size: 1.4rem;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .card p {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin: 0.5rem 0;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .btn-add {
+        background: linear-gradient(90deg, var(--primary), #60a5fa);
+        color: #fff;
+    }
+
+    .btn-add:hover {
+        background: linear-gradient(90deg, #2563eb, var(--primary));
+    }
+
+    .btn-action {
+        background: var(--bg-light);
+        color: var(--text-primary);
+    }
+
+    .btn-action:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-edit {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        color: #fff;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(90deg, #d97706, #f59e0b);
+    }
+
+    .btn-delete {
+        background: linear-gradient(90deg, var(--danger), #f87171);
+        color: #fff;
+    }
+
+    .btn-delete:hover {
+        background: linear-gradient(90deg, #dc2626, var(--danger));
+    }
+
+    .btn-save {
+        background: linear-gradient(90deg, var(--success), #34d399);
+        color: #fff;
+    }
+
+    .btn-save:hover {
+        background: linear-gradient(90deg, #059669, #10b981);
+    }
+
+    .btn-cancel {
+        background: linear-gradient(90deg, var(--secondary), #9ca3af);
+        color: #fff;
+    }
+
+    .btn-cancel:hover {
+        background: linear-gradient(90deg, #4b5563, #6b7280);
+    }
+
+    .form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .form-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: var(--shadow);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .form-card h3 {
+        font-size: 1.6rem;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        outline: none;
+    }
+
+    .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+        padding-right: 2.5rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1rem;
+    }
+
+    .permission-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .no-data {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        text-align: center;
+        font-style: italic;
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+    }
+
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+</style>

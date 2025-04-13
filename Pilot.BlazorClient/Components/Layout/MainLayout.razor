@@ -6,14 +6,13 @@
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
-
 @using Pilot.Contracts.DTO.ModelDto
 @inherits LayoutComponentBase
 @inject IJsonLocalizationService Localizer
 @inject NavigationManager NavigationManager
 @inject IMessengerService MessengerService
-@inject IUserService UserService;
-@inject ProtectedSessionStorage ProtectedSessionStorage;
+@inject IUserService UserService
+@inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IToastService ToastService
 
 <BlazoredToasts Position="ToastPosition.BottomRight"
@@ -24,7 +23,7 @@
                 MaxToastCount="3">
     <CloseButtonContent>
         <div>
-            <span class="myCloseButtonStyleClass">&times;</span>
+            <span class="myCloseButtonStyleClass">×</span>
         </div>
     </CloseButtonContent>
 </BlazoredToasts>
@@ -59,7 +58,7 @@
                     </li>
                     <li class="nav-item" style="margin-top: 5px">
                         <div class="position-relative">
-                            <button class="btn btn-light p-0 position-relative" @onclick="ToggleNotifications">
+                            <button class="btn-header btn-light p-0 position-relative" @onclick="ToggleNotifications">
                                 <img class="bi bi-bell-fill text-primary" src="Images/Chat/free-icon-bell-512234.png"
                                      width="25px" alt="bell"/>
                                 @if (_notificationCount > 0)
@@ -86,7 +85,7 @@
                                                                 <p class="mb-1 text-muted small @GetPriorityClass(notification.MessagePriority)">@notification.Description</p>
                                                                 @if (notification.EntityType == ModelType.Chat)
                                                                 {
-                                                                    <button class="btn btn-sm btn-outline-primary"
+                                                                    <button class="btn-header btn-sm btn-outline-primary"
                                                                             @onclick="() => MoveToChat(notification.EntityId!.Value)">
                                                                         Go to Chat
                                                                     </button>
@@ -121,22 +120,20 @@
             </ul>
         </div>
         <div class="ms-auto">
-            <button class="btn btn-outline-primary" @onclick='ToggleCulture'>@_toggleName</button>
+            <button class="btn-header btn-outline-primary" @onclick='ToggleCulture'>@_toggleName</button>
         </div>
     </div>
 </nav>
 
-
-<div class="container mx-auto mt-4" style="display: grid">
+<div class="main-layout-content container mx-auto mt-4">
     <CustomErrorBoundary>
         @Body
     </CustomErrorBoundary>
 </div>
 
-<footer class="bg-light text-primary mt-auto" style="background-color: #f8f9fa;">
+<footer class="main-layout-footer bg-light text-primary mt-auto">
     <div class="container p-4">
         <div class="row">
-            <!-- About the Project -->
             <div class="col-md-4 mb-4">
                 <h5 class="text-uppercase fw-bold">About the Project</h5>
                 <p>
@@ -144,15 +141,11 @@
                     track progress and achieve your goals faster.
                 </p>
             </div>
-
-            <!-- Contacts -->
             <div class="col-md-4 mb-4">
                 <h5 class="text-uppercase fw-bold">Contacts</h5>
                 <p>Email: contact@pilot.com</p>
                 <p>Phone: +123 456 789</p>
             </div>
-
-            <!-- GitHub -->
             <div class="col-md-4 mb-4">
                 <h5 class="text-uppercase fw-bold">GitHub</h5>
                 <a href="https://github.com/Odinson137/Pilot" class="text-primary" target="_blank">
@@ -161,127 +154,10 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer Bottom -->
-    <div class="text-center p-3 bg-primary text-white" style="background-color: #4B0082;">
+    <div class="text-center p-3 bg-primary text-white">
         © @(DateTime.Now.Year) Pilot - All rights reserved
     </div>
 </footer>
-
-<style>
-    /* Стиль для фиксации футера внизу страницы */
-    html, body {
-        height: 100%;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-    }
-
-    footer {
-        margin-top: auto;
-    }
-
-    /* Apply to the entire page or specific container */
-    ::-webkit-scrollbar {
-        width: 8px; /* Adjusts the width of the scrollbar */
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1; /* Track background */
-        border-radius: 10px; /* Roundness of the track */
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background-color: #2980b9; /* Blue color for the scrollbar thumb */
-        border-radius: 10px; /* Roundness of the scrollbar thumb */
-        border: 2px solid #f1f1f1; /* Adds space around the thumb */
-    }
-
-    keyframes notification-bounce {
-        0%, 100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-5px);
-        }
-    }
-
-    .notification-animate {
-        animation: notification-bounce 0.5s ease-in-out;
-    }
-
-    .notification-container {
-        position: absolute;
-        top: 40px;
-        right: -140px;
-        z-index: 1050;
-        width: 300px;
-        min-height: 100px;
-        background-color: #fff;
-        border: 1px solid #ddd;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-    }
-
-    .navbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .bg-danger {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .bg-success {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .bg-warning {
-        background-color: #ffc107;
-        color: black;
-    }
-
-    .bg-info {
-        background-color: #17a2b8;
-        color: white;
-    }
-
-    .bg-primary {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .bg-secondary {
-        background-color: #6c757d;
-        color: white;
-    }
-
-    .bg-dark {
-        background-color: #343a40;
-        color: white;
-    }
-
-    .bg-light {
-        background-color: #f8f9fa;
-        color: black;
-    }
-
-
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: var(--transition);
-    }
-</style>
 
 <div id="blazor-error-ui">
     An unhandled error has occurred.
@@ -292,7 +168,7 @@
 @code {
     private bool _isAuthenticated;
     private const string LocalizeName = "Header";
-    private string _toggleName;
+    private string _toggleName = "English";
     private int? _notificationCount;
     private bool _showNotifications;
     private List<InfoMessageViewModel> _notifications = new();
@@ -300,13 +176,11 @@
     protected override async Task OnInitializedAsync()
     {
         _isAuthenticated = await UserService.IsUserAuthorizationAsync();
-
         _toggleName = Localizer.CurrentCulture == "ru-RU" ? "Русский" : "English";
 
         if (_isAuthenticated)
         {
             var user = await UserService.GetCurrentUserAsync();
-
             _notificationCount = 0;
             await MessengerService.CreateConnectionAsync();
 
@@ -366,39 +240,20 @@
         NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
     }
 
-    private void CloseNotifications()
-    {
-        _showNotifications = false;
-    }
-
     private string GetPriorityClass(MessageInfo priority)
     {
         return priority switch
         {
-            MessageInfo.Error => "bg-danger text-white", // Красный
-            MessageInfo.Job => "bg-info text-white", // Голубой
-            MessageInfo.Invitation => "bg-primary text-white", // Синий
-            MessageInfo.Success => "bg-success text-white", // Зеленый
-            MessageInfo.Create => "bg-warning text-dark", // Желтый
-            MessageInfo.Update => "bg-secondary text-white", // Серый
-            MessageInfo.Delete => "bg-danger text-white", // Красный
-            MessageInfo.Validate => "bg-dark text-white", // Темно-серый
-            MessageInfo.Notification => "bg-light text-dark", // Светло-серый
-            _ => "bg-light text-dark" // По умолчанию
+            MessageInfo.Error => "bg-danger text-white",
+            MessageInfo.Job => "bg-info text-white",
+            MessageInfo.Invitation => "bg-primary text-white",
+            MessageInfo.Success => "bg-success text-white",
+            MessageInfo.Create => "bg-warning text-dark",
+            MessageInfo.Update => "bg-secondary text-white",
+            MessageInfo.Delete => "bg-danger text-white",
+            MessageInfo.Validate => "bg-dark text-white",
+            MessageInfo.Notification => "bg-light text-dark",
+            _ => "bg-light text-dark"
         };
     }
-
 }
-
-<script>
-    function scrollToBottom(chatListRef) {
-        if (chatListRef) {
-            chatListRef.scrollTop = chatListRef.scrollHeight;
-        }
-    }
-
-</script>
-
-<style>
-
-</style>

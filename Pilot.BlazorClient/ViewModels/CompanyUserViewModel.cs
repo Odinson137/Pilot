@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.ViewModels;
 
@@ -14,4 +15,6 @@ public class CompanyUserViewModel : BaseViewModel
     public ICollection<ProjectTaskViewModel> ProjectTasks { get; set; } = [];
     
     public UserViewModel? User { get; set; }
+    
+    public List<Permission> Permissions { get; set; } = [];
 }

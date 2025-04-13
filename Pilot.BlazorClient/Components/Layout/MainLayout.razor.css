@@ -1,3 +1,92 @@
+:root {
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --light: #f8f9fa;
+    --dark: #343a40;
+    --transition: all 0.3s ease;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-layout-content {
+    flex: 1 0 auto;
+}
+
+.main-layout-footer {
+    flex-shrink: 0;
+    background-color: var(--light);
+}
+
+.main-layout-footer .bg-primary {
+    background-color: #4B0082 !important;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+}
+
+.btn-outline-primary {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.notification-container {
+    position: absolute;
+    top: 40px;
+    right: -140px;
+    z-index: 1050;
+    width: 300px;
+    min-height: 100px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+.notification-container h6 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.notification-container .card {
+    border-radius: 4px;
+}
+
+.notification-container .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
@@ -10,25 +99,55 @@
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
 
-/* Apply to the entire page or specific container */
 ::-webkit-scrollbar {
-    width: 8px; /* Adjusts the width of the scrollbar */
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Track background */
-    border-radius: 10px; /* Roundness of the track */
+    background: #f1f1f1;
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #2980b9; /* Blue color for the scrollbar thumb */
-    border-radius: 10px; /* Roundness of the scrollbar thumb */
-    border: 2px solid #f1f1f1; /* Adds space around the thumb */
+    background-color: #2980b9;
+    border-radius: 10px;
+    border: 2px solid #f1f1f1;
+}
+
+@keyframes notification-bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.notification-animate {
+    animation: notification-bounce 0.5s ease-in-out;
+}
+
+.bg-danger { background-color: var(--danger); color: white; }
+.bg-success { background-color: var(--success); color: white; }
+.bg-warning { background-color: var(--warning); color: black; }
+.bg-info { background-color: var(--info); color: white; }
+.bg-primary { background-color: var(--primary); color: white; }
+.bg-secondary { background-color: var(--secondary); color: white; }
+.bg-dark { background-color: var(--dark); color: white; }
+.bg-light { background-color: var(--light); color: black; }
+
+.btn-header {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
 }

@@ -33,10 +33,10 @@ else
                     <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">Dashboard</li>
                     <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">Summary</li>
                     <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">Tasks</li>
-                    <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">Employees</li>
+                    <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
+                    <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">CompanyManagement</li>
                     <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">Vacancies</li>
                     <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">Applications</li>
-                    <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
                 }
             </ul>
         </nav>
@@ -64,7 +64,7 @@ else
                     <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
                     break;
                 case 7:
-                    <Employees UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <CompanyManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
                     break;
                 case 8:
                     <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />

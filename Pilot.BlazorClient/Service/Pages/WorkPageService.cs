@@ -45,7 +45,7 @@ public class WorkPageService(
     public async Task<ICollection<ProjectViewModel>> GetProjectsAsync(int companyId)
     {
         var projectViewModels =
-            await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
+            await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId, 0, int.MaxValue);
         var teams =
             await teamService.GetValuesAsync(projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
         foreach (var projectViewModel in projectViewModels)
@@ -57,6 +57,20 @@ public class WorkPageService(
         return projectViewModels;
     }
 
+    // public async Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId)
+    // {
+    //     var projectViewModels =
+    //         await teamService.GetValuesAsync(predicate: c => c.Project.Company.Id, value: companyId);
+    //     var teams =
+    //         await teamService.GetValuesAsync(projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
+    //     foreach (var projectViewModel in projectViewModels)
+    //     {
+    //         projectViewModel.Teams = teams.Where(c =>
+    //             projectViewModel.Teams.Select(x => x.Id).Contains(c.Id)).ToList();
+    //     }
+    //
+    //     return projectViewModels;
+    // }
     public async Task<ICollection<ProjectViewModel>> GetProjectsWithTasksAsync(int companyId)
     {
         var values = await projectService.GetQueryValuesAsync<ProjectFullDto>(c => new ProjectFullDto

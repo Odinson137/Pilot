@@ -16,4 +16,6 @@ public class CompanyUserDto : BaseDto
     public List<BaseDto> ProjectTasks { get; set; } = [];
     
     public BaseDto? CompanyRole { get; set; }
+
+    public List<Permission> Permissions { get; set; } = [];
 }
