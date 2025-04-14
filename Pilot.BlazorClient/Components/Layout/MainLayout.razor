@@ -186,10 +186,10 @@
 
             MessengerService.OnReceiveNotification += async message =>
             {
-                _notificationCount++;
+                // _notificationCount++;
                 var infoMessageDto = message.FromJson<InfoMessageViewModel>();
-                _notifications.Add(infoMessageDto);
-                await InvokeAsync(StateHasChanged);
+                // _notifications.Add(infoMessageDto);
+                // await InvokeAsync(StateHasChanged);
                 ToastService.ShowSuccess(infoMessageDto.Title);
             };
 

@@ -37,7 +37,8 @@
         <button class="tab-button @(ActiveTab == Tab.Employees ? "active" : "")" @onclick="() => SetTab(Tab.Employees)">
             <span class="material-icons">person</span> @Localization.GetString("Employees", "CompanyManagement")
         </button>
-        <button class="tab-button @(ActiveTab == Tab.Permissions ? "active" : "")" @onclick="() => SetTab(Tab.Permissions)">
+        <button class="tab-button @(ActiveTab == Tab.Permissions ? "active" : "")"
+                @onclick="() => SetTab(Tab.Permissions)">
             <span class="material-icons">lock</span> @Localization.GetString("Permissions", "CompanyManagement")
         </button>
     </div>
@@ -51,13 +52,15 @@
                     <div class="section-header">
                         <h2>@Localization.GetString("Projects", "CompanyManagement")</h2>
                         <button class="btn btn-add" @onclick="ShowAddProjectForm">
-                            <span class="material-icons">add</span> @Localization.GetString("AddProject", "CompanyManagement")
+                            <span
+                                class="material-icons">add</span> @Localization.GetString("AddProject", "CompanyManagement")
                         </button>
                     </div>
                     @if (_isLoading)
                     {
                         <div class="loading">
-                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                            <span
+                                class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
                         </div>
                     }
                     else if (_projects?.Any() != true)
@@ -72,14 +75,20 @@
                                 <div class="card">
                                     <h3>@project.Name</h3>
                                     <p>@project.Description?.TakeOnly(100, "...")</p>
-                                    <p><strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @project.Teams?.Count</p>
-                                    <p><strong>@Localization.GetString("ProjectStatus", "CompanyManagement"):</strong> @Localization.GetString(project.ProjectStatus.ToString(), "CompanyManagement")</p>
+                                    <p>
+                                        <strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @project.Teams?.Count
+                                    </p>
+                                    <p>
+                                        <strong>@Localization.GetString("ProjectStatus", "CompanyManagement"):</strong> @Localization.GetString(project.ProjectStatus.ToString(), "CompanyManagement")
+                                    </p>
                                     <div class="card-actions">
                                         <button class="btn btn-edit" @onclick="() => ShowEditProjectForm(project)">
-                                            <span class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
+                                            <span
+                                                class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
                                         </button>
                                         <button class="btn btn-delete" @onclick="() => DeleteProject(project.Id)">
-                                            <span class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
+                                            <span
+                                                class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -93,28 +102,33 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("AddProject", "CompanyManagement")</h3>
                                 <EditForm Model="_newProject" OnValidSubmit="SaveProject">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectName", "CompanyManagement")</label>
-                                        <InputText @bind-Value="_newProject.Name" class="form-input" placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")" />
-                                        <ValidationMessage For="@(() => _newProject.Name)" />
+                                        <InputText @bind-Value="_newProject.Name" class="form-input"
+                                                   placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _newProject.Name)"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectDescription", "CompanyManagement")</label>
-                                        <InputTextArea @bind-Value="_newProject.Description" class="form-textarea" placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")" />
+                                        <InputTextArea @bind-Value="_newProject.Description" class="form-textarea"
+                                                       placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectStatus", "CompanyManagement")</label>
                                         <InputSelect @bind-Value="_newProject.ProjectStatus" class="form-select">
                                             @foreach (var status in Enum.GetValues<ProjectStatus>())
                                             {
-                                                <option value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
+                                                <option
+                                                    value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
                                             }
                                         </InputSelect>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideAddProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideAddProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -127,28 +141,40 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("EditProject", "CompanyManagement")</h3>
                                 <EditForm Model="_editProject" OnValidSubmit="UpdateProject">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
+                                    @if (ErrorMessage != null)
+                                    {
+                                        <div class="error-message">
+                                            <span class="material-icons">error</span>
+                                            @ErrorMessage
+                                        </div>
+                                    }
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectName", "CompanyManagement")</label>
-                                        <InputText @bind-Value="_editProject.Name" class="form-input" placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")" />
-                                        <ValidationMessage For="@(() => _editProject.Name)" />
+                                        <InputText @bind-Value="_editProject.Name" class="form-input"
+                                                   placeholder="@Localization.GetString("ProjectNamePlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _editProject.Name)"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectDescription", "CompanyManagement")</label>
-                                        <InputTextArea @bind-Value="_editProject.Description" class="form-textarea" placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")" />
+                                        <InputTextArea @bind-Value="_editProject.Description" class="form-textarea"
+                                                       placeholder="@Localization.GetString("ProjectDescriptionPlaceholder", "CompanyManagement")"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("ProjectStatus", "CompanyManagement")</label>
                                         <InputSelect @bind-Value="_editProject.ProjectStatus" class="form-select">
                                             @foreach (var status in Enum.GetValues<ProjectStatus>())
                                             {
-                                                <option value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
+                                                <option
+                                                    value="@status">@Localization.GetString(status.ToString(), "CompanyManagement")</option>
                                             }
                                         </InputSelect>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideEditProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideEditProjectForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -162,13 +188,15 @@
                     <div class="section-header">
                         <h2>@Localization.GetString("Teams", "CompanyManagement")</h2>
                         <button class="btn btn-add" @onclick="ShowAddTeamForm">
-                            <span class="material-icons">add</span> @Localization.GetString("AddTeam", "CompanyManagement")
+                            <span
+                                class="material-icons">add</span> @Localization.GetString("AddTeam", "CompanyManagement")
                         </button>
                     </div>
                     @if (_isLoading)
                     {
                         <div class="loading">
-                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                            <span
+                                class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
                         </div>
                     }
                     else if (_teams?.Any() != true)
@@ -182,14 +210,21 @@
                             {
                                 <div class="card">
                                     <h3>@team.Name</h3>
-                                    <p><strong>@Localization.GetString("Project", "CompanyManagement"):</strong> @(_projects?.FirstOrDefault(p => p.Id == team.Project.Id)?.Name ?? "N/A")</p>
-                                    <p><strong>@Localization.GetString("MembersCount", "CompanyManagement"):</strong> @team.CompanyUsers?.Count</p>
+                                    <p>@team.Description.TakeOnly(100, "...")</p>
+                                    <p>
+                                        <strong>@Localization.GetString("Project", "CompanyManagement"):</strong> @(_projects?.FirstOrDefault(p => p.Id == team.Project.Id)?.Name ?? "N/A")
+                                    </p>
+                                    <p>
+                                        <strong>@Localization.GetString("MembersCount", "CompanyManagement"):</strong> @team.CompanyUsers?.Count
+                                    </p>
                                     <div class="card-actions">
                                         <button class="btn btn-edit" @onclick="() => ShowEditTeamForm(team)">
-                                            <span class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
+                                            <span
+                                                class="material-icons">edit</span> @Localization.GetString("Edit", "CompanyManagement")
                                         </button>
                                         <button class="btn btn-delete" @onclick="() => DeleteTeam(team.Id)">
-                                            <span class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
+                                            <span
+                                                class="material-icons">delete</span> @Localization.GetString("Delete", "CompanyManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -206,23 +241,32 @@
                                     <DataAnnotationsValidator />
                                     <div class="form-group">
                                         <label>@Localization.GetString("TeamName", "CompanyManagement")</label>
-                                        <InputText @bind-Value="_newTeam.Name" class="form-input" placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")" />
-                                        <ValidationMessage For="@(() => _newTeam.Name)" />
+                                        <InputText @bind-Value="_newTeam.Name" class="form-input"
+                                                   placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _newTeam.Name)"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("TeamDescription", "CompanyManagement")</label>
+                                        <InputTextArea @bind-Value="_newTeam.Description" class="form-textarea"
+                                                       placeholder="@Localization.GetString("TeamDescriptionPlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _newTeam.Description)"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Project", "CompanyManagement")</label>
-                                        <InputSelect @bind-Value="_newTeam.Project.Id" class="form-select">
-                                            <option value="0" disabled selected>@Localization.GetString("SelectProject", "CompanyManagement")</option>
+                                        <InputSelect @bind-Value="_newTeam.ProjectId" class="form-select">
+                                            <option value="0" disabled
+                                                    selected>@Localization.GetString("SelectProject", "CompanyManagement")</option>
                                             @foreach (var project in _projects ?? new List<ProjectViewModel>())
                                             {
                                                 <option value="@project.Id">@project.Name</option>
                                             }
                                         </InputSelect>
-                                        <ValidationMessage For="@(() => _newTeam.Project!.Id)" />
+                                        <ValidationMessage For="@(() => _newTeam.ProjectId)"/>
                                     </div>
                                     <div class="form-actions">
                                         <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideAddTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideAddTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -235,26 +279,36 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("EditTeam", "CompanyManagement")</h3>
                                 <EditForm Model="_editTeam" OnValidSubmit="UpdateTeam">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="form-group">
                                         <label>@Localization.GetString("TeamName", "CompanyManagement")</label>
-                                        <InputText @bind-Value="_editTeam.Name" class="form-input" placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")" />
-                                        <ValidationMessage For="@(() => _editTeam.Name)" />
+                                        <InputText @bind-Value="_editTeam.Name" class="form-input"
+                                                   placeholder="@Localization.GetString("TeamNamePlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _editTeam.Name)"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>@Localization.GetString("TeamDescription", "CompanyManagement")</label>
+                                        <InputTextArea @bind-Value="_editTeam.Description" class="form-textarea"
+                                                       placeholder="@Localization.GetString("TeamDescriptionPlaceholder", "CompanyManagement")"/>
+                                        <ValidationMessage For="@(() => _editTeam.Description)"/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Project", "CompanyManagement")</label>
-                                        <InputSelect @bind-Value="_editTeam.Project.Id" class="form-select">
-                                            <option value="0" disabled>@Localization.GetString("SelectProject", "CompanyManagement")</option>
+                                        <InputSelect @bind-Value="_editTeam.ProjectId" class="form-select">
+                                            <option value="0"
+                                                    disabled>@Localization.GetString("SelectProject", "CompanyManagement")</option>
                                             @foreach (var project in _projects ?? new List<ProjectViewModel>())
                                             {
                                                 <option value="@project.Id">@project.Name</option>
                                             }
                                         </InputSelect>
-                                        <ValidationMessage For="@(() => _editTeam.Project!.Id)" />
+                                        <ValidationMessage For="@(() => _editTeam.ProjectId)"/>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideEditTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideEditTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -269,13 +323,16 @@
                         <h2>@Localization.GetString("Employees", "CompanyManagement")</h2>
                         <div class="search-bar">
                             <span class="material-icons">search</span>
-                            <input @bind="_searchQuery" class="form-input" placeholder="@Localization.GetString("SearchEmployees", "CompanyManagement")" @oninput="FilterEmployees" />
+                            <input @bind="_searchQuery" class="form-input"
+                                   placeholder="@Localization.GetString("SearchEmployees", "CompanyManagement")"
+                                   @oninput="FilterEmployees"/>
                         </div>
                     </div>
                     @if (_isLoading)
                     {
                         <div class="loading">
-                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                            <span
+                                class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
                         </div>
                     }
                     else if (_filteredEmployees?.Any() != true)
@@ -289,19 +346,24 @@
                             {
                                 <div class="card">
                                     <div class="card-header">
-                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)" alt="@employee.User?.FullName" class="avatar" />
+                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)"
+                                             alt="@employee.User?.FullName" class="avatar"/>
                                         <div>
                                             <h3>@employee.User?.FullName</h3>
                                             <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
                                         </div>
                                     </div>
-                                    <p><strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @employee.Teams?.Count</p>
+                                    <p>
+                                        <strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @employee.Teams?.Count
+                                    </p>
                                     <div class="card-actions">
                                         <button class="btn btn-action" @onclick="() => ShowAssignTeamForm(employee.Id)">
-                                            <span class="material-icons">group_add</span> @Localization.GetString("AssignTeam", "CompanyManagement")
+                                            <span
+                                                class="material-icons">group_add</span> @Localization.GetString("AssignTeam", "CompanyManagement")
                                         </button>
                                         <button class="btn btn-action" @onclick="() => NavigateToEmployee(employee.Id)">
-                                            <span class="material-icons">person</span> @Localization.GetString("ViewProfile", "CompanyManagement")
+                                            <span
+                                                class="material-icons">person</span> @Localization.GetString("ViewProfile", "CompanyManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -315,25 +377,30 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("AssignTeam", "CompanyManagement")</h3>
                                 <EditForm Model="_assignTeamModel" OnValidSubmit="AssignTeam">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Employee", "CompanyManagement")</label>
-                                        <InputText value="@(_filteredEmployees?.FirstOrDefault(e => e.Id == _assignTeamModel.EmployeeId)?.User?.FullName)" class="form-input" disabled />
+                                        <InputText
+                                            value="@(_filteredEmployees?.FirstOrDefault(e => e.Id == _assignTeamModel.EmployeeId)?.User?.FullName)"
+                                            class="form-input" disabled/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Team", "CompanyManagement")</label>
                                         <InputSelect @bind-Value="_assignTeamModel.TeamId" class="form-select">
-                                            <option value="0" disabled selected>@Localization.GetString("SelectTeam", "CompanyManagement")</option>
+                                            <option value="0" disabled
+                                                    selected>@Localization.GetString("SelectTeam", "CompanyManagement")</option>
                                             @foreach (var team in _teams ?? new List<TeamViewModel>())
                                             {
                                                 <option value="@team.Id">@team.Name</option>
                                             }
                                         </InputSelect>
-                                        <ValidationMessage For="@(() => _assignTeamModel.TeamId)" />
+                                        <ValidationMessage For="@(() => _assignTeamModel.TeamId)"/>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideAssignTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideAssignTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -350,7 +417,8 @@
                     @if (_isLoading)
                     {
                         <div class="loading">
-                            <span class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                            <span
+                                class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
                         </div>
                     }
                     else if (_employees?.Any() != true)
@@ -364,16 +432,21 @@
                             {
                                 <div class="card">
                                     <div class="card-header">
-                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)" alt="@employee.User?.FullName" class="avatar" />
+                                        <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)"
+                                             alt="@employee.User?.FullName" class="avatar"/>
                                         <div>
                                             <h3>@employee.User?.FullName</h3>
                                             <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
                                         </div>
                                     </div>
-                                    <p><strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong> @(employee.Permissions?.Any() == true ? string.Join(", ", employee.Permissions.Select(p => p.ToString())) : "None")</p>
+                                    <p>
+                                        <strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong> @(employee.Permissions?.Any() == true ? string.Join(", ", employee.Permissions.Select(p => p.ToString())) : "None")
+                                    </p>
                                     <div class="card-actions">
-                                        <button class="btn btn-action" @onclick="() => ShowAssignPermissionsForm(employee.Id)">
-                                            <span class="material-icons">lock</span> @Localization.GetString("EditPermissions", "CompanyManagement")
+                                        <button class="btn btn-action"
+                                                @onclick="() => ShowAssignPermissionsForm(employee.Id)">
+                                            <span
+                                                class="material-icons">lock</span> @Localization.GetString("EditPermissions", "CompanyManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -387,10 +460,12 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("EditPermissions", "CompanyManagement")</h3>
                                 <EditForm Model="_assignPermissionsModel" OnValidSubmit="AssignPermissions">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Employee", "CompanyManagement")</label>
-                                        <InputText value="@(_employees?.FirstOrDefault(e => e.Id == _assignPermissionsModel.EmployeeId)?.User?.FullName)" class="form-input" disabled />
+                                        <InputText
+                                            value="@(_employees?.FirstOrDefault(e => e.Id == _assignPermissionsModel.EmployeeId)?.User?.FullName)"
+                                            class="form-input" disabled/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Permissions", "CompanyManagement")</label>
@@ -398,7 +473,7 @@
                                         {
                                             bool isChecked = _assignPermissionsModel.Permissions.Contains(permission);
                                             <div class="permission-checkbox">
-                                                <InputCheckbox @bind-Value="@isChecked" id="@($"perm-{permission}")" />
+                                                <InputCheckbox @bind-Value="@isChecked" id="@($"perm-{permission}")"/>
                                                 <label for="@($"perm-{permission}")">@permission</label>
                                             </div>
                                             @if (isChecked && !_assignPermissionsModel.Permissions.Contains(permission))
@@ -412,8 +487,10 @@
                                         }
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
-                                        <button type="button" class="btn btn-cancel" @onclick="HideAssignPermissionsForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="button" class="btn btn-cancel"
+                                                @onclick="HideAssignPermissionsForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
                                 </EditForm>
                             </div>
@@ -429,7 +506,13 @@
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
 
-    private enum Tab { Projects, Teams, Employees, Permissions }
+    private enum Tab
+    {
+        Projects,
+        Teams,
+        Employees,
+        Permissions
+    }
 
     private Tab ActiveTab = Tab.Employees;
     private bool _isLoading = true;
@@ -504,6 +587,7 @@
         try
         {
             await WorkPageService.AddProjectAsync(_newProject);
+            await Task.Delay(100);
             _projects = await WorkPageService.GetProjectsAsync(CompanyId);
             _showAddProjectForm = false;
         }
@@ -536,7 +620,8 @@
     {
         try
         {
-            // await WorkPageService.UpdateProjectAsync(_editProject);
+            await WorkPageService.UpdateProjectAsync(_editProject);
+            await Task.Delay(100); // пока так, потом сделать ожидание прихода события
             _projects = await WorkPageService.GetProjectsAsync(CompanyId);
             _showEditProjectForm = false;
         }
@@ -551,7 +636,8 @@
     {
         try
         {
-            // await WorkPageService.DeleteProjectAsync(projectId);
+            await WorkPageService.DeleteProjectAsync(projectId);
+            await Task.Delay(100);
             _projects = await WorkPageService.GetProjectsAsync(CompanyId);
         }
         catch (Exception ex)
@@ -572,18 +658,24 @@
         _showAddTeamForm = false;
     }
 
-    private async Task SaveTeam()
+    public async Task SaveTeam()
     {
+        if (_newTeam.ProjectId == 0)
+            return;
+
         try
         {
             await WorkPageService.AddTeamAsync(_newTeam);
             _teams = await WorkPageService.GetTeamsAsync(CompanyId);
-            _showAddTeamForm = false;
         }
         catch (Exception ex)
         {
             ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
             Console.WriteLine($"Save team error: {ex.Message}");
+        }
+        finally
+        {
+            _showAddTeamForm = false;
         }
     }
 
@@ -593,7 +685,8 @@
         {
             Id = team.Id,
             Name = team.Name,
-            Project = new ProjectViewModel { Id = team.Project.Id }
+            Description = team.Description,
+            ProjectId = team.ProjectId
         };
         _showEditTeamForm = true;
     }
@@ -607,7 +700,7 @@
     {
         try
         {
-            // await WorkPageService.UpdateTeamAsync(_editTeam);
+            await WorkPageService.UpdateTeamAsync(_editTeam);
             _teams = await WorkPageService.GetTeamsAsync(CompanyId);
             _showEditTeamForm = false;
         }
@@ -622,7 +715,7 @@
     {
         try
         {
-            // await WorkPageService.DeleteTeamAsync(teamId);
+            await WorkPageService.DeleteTeamAsync(teamId);
             _teams = await WorkPageService.GetTeamsAsync(CompanyId);
         }
         catch (Exception ex)
@@ -714,6 +807,7 @@
         public int EmployeeId { get; set; }
         public List<Permission> Permissions { get; set; } = new();
     }
+
 }
 
 <style>

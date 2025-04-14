@@ -16,7 +16,7 @@ else if (ErrorContent is not null)
     {
         Logger.LogError(ex.Message);
         ToastService.ShowError(ex.Message);
-        // throw ex;
+        throw ex;
         return Task.CompletedTask;
     }
 }

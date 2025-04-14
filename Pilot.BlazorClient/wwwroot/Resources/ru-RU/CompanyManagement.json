@@ -14,6 +14,7 @@
   "ProjectNamePlaceholder": "Введите название проекта",
   "ProjectDescription": "Описание проекта",
   "ProjectDescriptionPlaceholder": "Опишите проект",
+  "TeamDescriptionPlaceholder": "Опишите команду",
   "TeamName": "Название команды",
   "TeamNamePlaceholder": "Введите название команды",
   "Project": "Проект",
@@ -34,5 +35,6 @@
   "SaveError": "Ошибка сохранения. Проверьте данные и попробуйте снова.",
   "DeleteError": "Ошибка удаления. Попробуйте снова.",
   "Loading": "Загрузка...",
+  "TeamDescription": "Описание команды",
   "AnimationError": "Ошибка применения анимаций. Проверьте CSS-стили."
 }

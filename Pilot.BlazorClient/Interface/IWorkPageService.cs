@@ -13,10 +13,6 @@ public interface IWorkPageService
 
     Task<ICollection<ProjectViewModel>> GetProjectsAsync(int companyId);
 
-    Task<ICollection<ProjectViewModel>> GetProjectsWithTasksAsync(int companyId);
-
-    Task<ICollection<TeamViewModel>> GetUserTeamsAsync<T>(T userProjects) where T : ICollection<TeamViewModel>;
-
     Task FillTeamsAsync(ICollection<ProjectViewModel> projects);
 
     Task FillCompanyUsersAsync(ICollection<ProjectViewModel> projects);
@@ -35,11 +31,7 @@ public interface IWorkPageService
 
     Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId);
 
-    Task AddTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
-
     Task AddTeamAsync(TeamViewModel team);
-
-    Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee);
 
     Task AddProjectAsync(ProjectViewModel project);
 
@@ -51,4 +43,12 @@ public interface IWorkPageService
 
     Task<ICollection<ProjectViewModel>> GetTaskManagementProjectsAsync(int companyId);
     Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTasksAsync(int companyId);
+
+    Task UpdateProjectAsync(ProjectViewModel project);
+
+    Task UpdateTeamAsync(TeamViewModel team);
+
+    Task DeleteProjectAsync(int projectId);
+
+    Task DeleteTeamAsync(int teamId);
 }

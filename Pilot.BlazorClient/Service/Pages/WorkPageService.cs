@@ -45,7 +45,7 @@ public class WorkPageService(
     public async Task<ICollection<ProjectViewModel>> GetProjectsAsync(int companyId)
     {
         var projectViewModels =
-            await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId, 0, int.MaxValue);
+            await projectService.GetValuesAsync(predicate: c => c.Company.Id, value: companyId);
         var teams =
             await teamService.GetValuesAsync(projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
         foreach (var projectViewModel in projectViewModels)
@@ -57,20 +57,6 @@ public class WorkPageService(
         return projectViewModels;
     }
 
-    // public async Task<ICollection<TeamViewModel>> GetTeamsAsync(int companyId)
-    // {
-    //     var projectViewModels =
-    //         await teamService.GetValuesAsync(predicate: c => c.Project.Company.Id, value: companyId);
-    //     var teams =
-    //         await teamService.GetValuesAsync(projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
-    //     foreach (var projectViewModel in projectViewModels)
-    //     {
-    //         projectViewModel.Teams = teams.Where(c =>
-    //             projectViewModel.Teams.Select(x => x.Id).Contains(c.Id)).ToList();
-    //     }
-    //
-    //     return projectViewModels;
-    // }
     public async Task<ICollection<ProjectViewModel>> GetProjectsWithTasksAsync(int companyId)
     {
         var values = await projectService.GetQueryValuesAsync<ProjectFullDto>(c => new ProjectFullDto
@@ -224,6 +210,21 @@ public class WorkPageService(
         await teamService.CreateValueAsync(team);
     }
 
+    public async Task UpdateTeamAsync(TeamViewModel team)
+    {
+        await teamService.UpdateValueAsync(team);
+    }
+
+    public async Task DeleteProjectAsync(int projectId)
+    {
+        await projectService.DeleteValueAsync(projectId);
+    }
+
+    public async Task DeleteTeamAsync(int teamId)
+    {
+        await teamService.DeleteValueAsync(teamId);
+    }
+    
     public async Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee)
     {
         await teamEmployeeService.DeleteValueAsync(teamEmployee.Id);
@@ -232,6 +233,11 @@ public class WorkPageService(
     public async Task AddProjectAsync(ProjectViewModel project)
     {
         await projectService.CreateValueAsync(project);
+    }
+
+    public async Task UpdateProjectAsync(ProjectViewModel project)
+    {
+        await projectService.UpdateValueAsync(project);
     }
 
     public async Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId)
@@ -262,7 +268,7 @@ public class WorkPageService(
     {
         var projectViewModels = await projectService.GetValuesAsync(
             predicate: c => c.Company.Id,
-            companyId, 0, int.MaxValue);
+            companyId);
         var teams = await teamService.GetValuesAsync(
             projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
         foreach (var projectViewModel in projectViewModels)
@@ -279,7 +285,7 @@ public async Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTas
     // Получаем все задачи компании
     var tasks = await projectTaskService.GetValuesAsync(
         predicate: t => t.CompanyUser!.Company.Id,
-        companyId, 0, int.MaxValue);
+        companyId);
 
     // Получаем ID команд, пользователей и проектов
     var teamIds = tasks.Select(t => t.Team.Id).Select(id => id).Distinct().ToList();

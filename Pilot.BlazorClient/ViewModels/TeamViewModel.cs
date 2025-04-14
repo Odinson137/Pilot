@@ -10,5 +10,12 @@ public class TeamViewModel : BaseViewModel
 
     public List<CompanyUserViewModel> CompanyUsers { get; set; } = [];
 
-    [Required] public ProjectViewModel Project { get; set; } = null!;
+    public ProjectViewModel? Project { get; set; }
+
+    [Required]
+    public int? ProjectId
+    {
+        get => Project?.Id;
+        set => Project = new ProjectViewModel { Id = value!.Value };
+    }
 }

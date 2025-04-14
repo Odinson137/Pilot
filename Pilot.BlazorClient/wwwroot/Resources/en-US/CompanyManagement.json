@@ -14,6 +14,7 @@
   "ProjectNamePlaceholder": "Enter project name",
   "ProjectDescription": "Project Description",
   "ProjectDescriptionPlaceholder": "Describe the project",
+  "TeamDescriptionPlaceholder": "Describe the team",
   "TeamName": "Team Name",
   "TeamNamePlaceholder": "Enter team name",
   "Project": "Project",
@@ -34,5 +35,6 @@
   "SaveError": "Error saving data. Check the data and try again.",
   "DeleteError": "Error deleting. Please try again.",
   "Loading": "Loading...",
+  "TeamDescription": "Team Description",
   "AnimationError": "Error applying animations. Check CSS styles."
 }

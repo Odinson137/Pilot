@@ -9,7 +9,7 @@ public class BaseFilter(int skip, int take)
     {
     }
 
-    public BaseFilter(int? skip = null, int? take = null) : this(skip ?? 0, take ?? 10)
+    public BaseFilter(int? skip = null, int? take = null) : this(skip ?? 0, take ?? int.MaxValue) // потом поменять на дефолтное 5
     {
     }
 
