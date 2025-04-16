@@ -51,4 +51,8 @@ public interface IWorkPageService
     Task DeleteProjectAsync(int projectId);
 
     Task DeleteTeamAsync(int teamId);
+
+    Task AssignEmployeeToTeamAsync(int teamId, int employeeId);
+
+    Task RemoveTeamEmployeeAsync(int teamEmployeeId);
 }

@@ -238,7 +238,7 @@
                             <div class="form-card">
                                 <h3>@Localization.GetString("AddTeam", "CompanyManagement")</h3>
                                 <EditForm Model="_newTeam" OnValidSubmit="SaveTeam">
-                                    <DataAnnotationsValidator />
+                                    <DataAnnotationsValidator/>
                                     <div class="form-group">
                                         <label>@Localization.GetString("TeamName", "CompanyManagement")</label>
                                         <InputText @bind-Value="_newTeam.Name" class="form-input"
@@ -264,7 +264,8 @@
                                         <ValidationMessage For="@(() => _newTeam.ProjectId)"/>
                                     </div>
                                     <div class="form-actions">
-                                        <button type="submit" class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                        <button type="submit"
+                                                class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
                                         <button type="button" class="btn btn-cancel"
                                                 @onclick="HideAddTeamForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
                                     </div>
@@ -345,7 +346,7 @@
                             @foreach (var employee in _filteredEmployees)
                             {
                                 <div class="card">
-                                    <div class="card-header">
+                                    <div class="card-header" @onclick="() => NavigateToEmployee(employee.Id)">
                                         <img src="@TempFileService.GetUrl(employee.User?.AvatarImage)"
                                              alt="@employee.User?.FullName" class="avatar"/>
                                         <div>
@@ -357,18 +358,68 @@
                                         <strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @employee.Teams?.Count
                                     </p>
                                     <div class="card-actions">
-                                        <button class="btn btn-action" @onclick="() => ShowAssignTeamForm(employee.Id)">
-                                            <span
-                                                class="material-icons">group_add</span> @Localization.GetString("AssignTeam", "CompanyManagement")
+                                        <button class="btn btn-action" 
+                                                title="@Localization.GetString("AssignTeam", "CompanyManagement")"
+                                                @onclick="() => ShowAssignTeamForm(employee.Id)">
+                                            <span class="material-icons">group_add</span>
+                                            @Localization.GetString("AssignTeam", "CompanyManagement")
                                         </button>
-                                        <button class="btn btn-action" @onclick="() => NavigateToEmployee(employee.Id)">
-                                            <span
-                                                class="material-icons">person</span> @Localization.GetString("ViewProfile", "CompanyManagement")
+                                        <button class="btn btn-action btn-danger"
+                                                title="@Localization.GetString("RemoveFromTeam", "CompanyManagement")"
+                                                disabled="@(employee.Teams == null || !employee.Teams.Any())"
+                                                @onclick="() => ShowTeamSelectionDialog(employee)">
+                                            <span class="material-icons">delete</span>
+                                            @Localization.GetString("RemoveFromTeam", "CompanyManagement")
                                         </button>
                                     </div>
                                 </div>
                             }
                         </div>
+
+                        @if (_showTeamSelectionDialog)
+                        {
+                            <div class="modal">
+                                <div class="modal-content">
+                                    <h3>@Localization.GetString("SelectTeamToRemove", "CompanyManagement")</h3>
+                                    <p>@Localization.GetString("SelectTeamMessage", "CompanyManagement")</p>
+                                    <div class="form-group">
+                                        <InputSelect @bind-Value="_selectedTeamId" class="form-select">
+                                            <option value="0" disabled
+                                                    selected>@Localization.GetString("SelectTeam", "CompanyManagement")</option>
+                                            @foreach (var team in _teams!.Where(c => c.CompanyUsers.Select(x => x.Id).Contains(_selectedEmployee!.Id)).ToList())
+                                            {
+                                                <option value="@team.Id">@team.Name</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                    <div class="modal-actions">
+                                        <button class="btn btn-danger" disabled="@(_selectedTeamId == 0)"
+                                                @onclick="ConfirmRemoveEmployee">
+                                            @Localization.GetString("Proceed", "CompanyManagement")
+                                        </button>
+                                        <button class="btn btn-cancel" @onclick="CancelTeamSelection">
+                                            @Localization.GetString("Cancel", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (_showConfirmDialog)
+                        {
+                            <div class="modal">
+                                <div class="modal-content">
+                                    <h3>@Localization.GetString("ConfirmRemove", "CompanyManagement")</h3>
+                                    <p>@Localization.GetString("ConfirmRemoveEmployeeMessage", "CompanyManagement")</p>
+                                    <div class="modal-actions">
+                                        <button class="btn btn-danger"
+                                                @onclick="RemoveTeamEmployee">@Localization.GetString("Remove", "CompanyManagement")</button>
+                                        <button class="btn btn-cancel"
+                                                @onclick="CancelRemove">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     }
 
                     @if (_showAssignTeamForm)
@@ -381,7 +432,7 @@
                                     <div class="form-group">
                                         <label>@Localization.GetString("Employee", "CompanyManagement")</label>
                                         <InputText
-                                            value="@(_filteredEmployees?.FirstOrDefault(e => e.Id == _assignTeamModel.EmployeeId)?.User?.FullName)"
+                                            @bind-Value="_assignTeamModel.EmployeeFullName"
                                             class="form-input" disabled/>
                                     </div>
                                     <div class="form-group">
@@ -535,6 +586,10 @@
     private TeamViewModel _editTeam = new();
     private AssignTeamModel _assignTeamModel = new();
     private AssignPermissionsModel _assignPermissionsModel = new();
+    private bool _showTeamSelectionDialog = false;
+    private bool _showConfirmDialog = false;
+    private CompanyUserViewModel? _selectedEmployee;
+    private int _selectedTeamId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -734,7 +789,7 @@
 
     private void ShowAssignTeamForm(int employeeId)
     {
-        _assignTeamModel = new AssignTeamModel { EmployeeId = employeeId };
+        _assignTeamModel = new AssignTeamModel { EmployeeFullName = _employees?.FirstOrDefault(c => c.Id == employeeId)?.User?.FullName };
         _showAssignTeamForm = true;
     }
 
@@ -747,7 +802,8 @@
     {
         try
         {
-            // await WorkPageService.AssignEmployeeToTeamAsync(_assignTeamModel.EmployeeId, _assignTeamModel.TeamId);
+            await WorkPageService.AssignEmployeeToTeamAsync(_assignTeamModel.TeamId, _assignTeamModel.EmployeeId);
+            await Task.Delay(100);
             _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
             _filteredEmployees = _employees;
             _showAssignTeamForm = false;
@@ -757,6 +813,63 @@
             ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
             Console.WriteLine($"Assign team error: {ex.Message}");
         }
+    }
+
+    private void ShowTeamSelectionDialog(CompanyUserViewModel employee)
+    {
+        _selectedEmployee = employee;
+        _selectedTeamId = 0; // Сбрасываем выбор команды
+        _showTeamSelectionDialog = true;
+    }
+
+    private void CancelTeamSelection()
+    {
+        _showTeamSelectionDialog = false;
+        _selectedEmployee = null;
+        _selectedTeamId = 0;
+    }
+
+    private void ConfirmRemoveEmployee()
+    {
+        if (_selectedTeamId > 0)
+        {
+            _showTeamSelectionDialog = false;
+            _showConfirmDialog = true;
+        }
+    }
+
+    private async Task RemoveTeamEmployee()
+    {
+        try
+        {
+            await WorkPageService.RemoveTeamEmployeeAsync(_selectedTeamId);
+
+            await Task.Delay(100);
+            var employee = _filteredEmployees?.FirstOrDefault(e => e.Id == _selectedEmployee!.Id);
+            if (employee != null)
+            {
+                employee.Teams = employee.Teams.Where(t => t.Id != _selectedTeamId).ToList();
+            }
+
+            _showConfirmDialog = false;
+            _selectedEmployee = null;
+            _selectedTeamId = 0;
+
+            // Принудительно обновляем UI
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибки (например, показать уведомление)
+            Console.WriteLine($"Error removing employee: {ex.Message}");
+        }
+    }
+
+    private void CancelRemove()
+    {
+        _showConfirmDialog = false;
+        _selectedEmployee = null;
+        _selectedTeamId = 0;
     }
 
     private void ShowAssignPermissionsForm(int employeeId)
@@ -793,12 +906,13 @@
 
     private void NavigateToEmployee(int employeeId)
     {
-        NavigationManager.NavigateTo($"/employees/{employeeId}");
+        NavigationManager.NavigateTo($"/account/{employeeId}");
     }
 
     private class AssignTeamModel
     {
         public int EmployeeId { get; set; }
+        public string? EmployeeFullName { get; set; }
         public int TeamId { get; set; }
     }
 
@@ -1175,5 +1289,104 @@
 
     .spin {
         animation: spin 1s linear infinite;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        background: white;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer; /* Указывает, что элемент кликабелен */
+        padding: 8px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+    }
+
+    .card-header:hover {
+        background-color: #f0f0f0; /* Эффект наведения */
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+    }
+
+    .btn-action {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .btn-action:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-danger {
+        background-color: #e74c3c;
+    }
+
+    .btn-danger:hover {
+        background-color: #c0392b;
+    }
+
+    .btn-danger:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
     }
 </style>

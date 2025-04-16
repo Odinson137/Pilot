@@ -19,6 +19,7 @@ public class WorkPageService(
     IBaseModelService<CompanyPostViewModel> companyPostService,
     IBaseModelService<PostViewModel> postService,
     IBaseModelService<ProjectViewModel> projectService,
+    IBaseModelService<TeamEmployeeViewModel> teamEmployeeViewModel,
     IBaseModelService<TeamEmployeeViewModel> teamEmployeeService
 ) : IWorkPageService
 {
@@ -225,9 +226,9 @@ public class WorkPageService(
         await teamService.DeleteValueAsync(teamId);
     }
     
-    public async Task RemoveTeamEmployeeAsync(TeamEmployeeViewModel teamEmployee)
+    public async Task RemoveTeamEmployeeAsync(int teamEmployeeId)
     {
-        await teamEmployeeService.DeleteValueAsync(teamEmployee.Id);
+        await teamEmployeeService.DeleteValueAsync(teamEmployeeId);
     }
 
     public async Task AddProjectAsync(ProjectViewModel project)
@@ -240,6 +241,15 @@ public class WorkPageService(
         await projectService.UpdateValueAsync(project);
     }
 
+    public async Task AssignEmployeeToTeamAsync(int teamId, int employeeId)
+    {
+        await teamEmployeeViewModel.CreateValueAsync(new TeamEmployeeViewModel
+        {
+            Team = new BaseViewModel {Id = teamId},
+            CompanyUser = new BaseViewModel {Id = employeeId}
+        });
+    }
+    
     public async Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId)
     {
         var result =

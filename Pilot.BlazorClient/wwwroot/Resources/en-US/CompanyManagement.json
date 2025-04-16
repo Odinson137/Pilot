@@ -23,6 +23,7 @@
   "Employee": "Employee",
   "Team": "Team",
   "SelectTeam": "Select a team",
+  "Remove": "Delete",
   "TeamsCount": "Teams Count",
   "MembersCount": "Members Count",
   "NoProjects": "No projects found.",
@@ -36,5 +37,6 @@
   "DeleteError": "Error deleting. Please try again.",
   "Loading": "Loading...",
   "TeamDescription": "Team Description",
+  "RemoveFromTeam": "Delete From Team",
   "AnimationError": "Error applying animations. Check CSS styles."
 }
