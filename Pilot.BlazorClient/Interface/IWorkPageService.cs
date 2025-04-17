@@ -54,5 +54,7 @@ public interface IWorkPageService
 
     Task AssignEmployeeToTeamAsync(int teamId, int employeeId);
 
-    Task RemoveTeamEmployeeAsync(int teamEmployeeId);
+    Task RemoveTeamEmployeeAsync(int teamEmployeeId, int employeeId);
+
+    Task UpdateEmployeeAsync(CompanyUserViewModel companyUser);
 }

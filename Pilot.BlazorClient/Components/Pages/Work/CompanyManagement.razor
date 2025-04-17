@@ -440,7 +440,7 @@
                                         <InputSelect @bind-Value="_assignTeamModel.TeamId" class="form-select">
                                             <option value="0" disabled
                                                     selected>@Localization.GetString("SelectTeam", "CompanyManagement")</option>
-                                            @foreach (var team in _teams ?? new List<TeamViewModel>())
+                                            @foreach (var team in _teams!.Where(c => !c.CompanyUsers.Select(x => x.Id).Contains(_assignTeamModel.EmployeeId)).ToList())
                                             {
                                                 <option value="@team.Id">@team.Name</option>
                                             }
@@ -491,7 +491,10 @@
                                         </div>
                                     </div>
                                     <p>
-                                        <strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong> @(employee.Permissions?.Any() == true ? string.Join(", ", employee.Permissions.Select(p => p.ToString())) : "None")
+                                        <strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong>
+                                        @(string.Join(", ", Enum.GetValues<Permission>()
+                                                .Where(p => employee.Permissions.HasFlag(p))
+                                                .Select(p => p.ToString())))
                                     </p>
                                     <div class="card-actions">
                                         <button class="btn btn-action"
@@ -515,26 +518,17 @@
                                     <div class="form-group">
                                         <label>@Localization.GetString("Employee", "CompanyManagement")</label>
                                         <InputText
-                                            value="@(_employees?.FirstOrDefault(e => e.Id == _assignPermissionsModel.EmployeeId)?.User?.FullName)"
+                                            @bind-Value="_assignPermissionsModel.EmployeeFullName"
                                             class="form-input" disabled/>
                                     </div>
                                     <div class="form-group">
                                         <label>@Localization.GetString("Permissions", "CompanyManagement")</label>
-                                        @foreach (var permission in Enum.GetValues<Permission>())
+                                        @foreach (var permissionTuple in _permissionTuples)
                                         {
-                                            bool isChecked = _assignPermissionsModel.Permissions.Contains(permission);
                                             <div class="permission-checkbox">
-                                                <InputCheckbox @bind-Value="@isChecked" id="@($"perm-{permission}")"/>
-                                                <label for="@($"perm-{permission}")">@permission</label>
+                                                <InputCheckbox @bind-Value="@permissionTuple.IsChecked" id="@($"perm-{permissionTuple.Permission}")"/>
+                                                <label for="@($"perm-{permissionTuple.Permission}")">@Localization.GetString(permissionTuple.Permission.ToString(), "CompanyManagement")</label>
                                             </div>
-                                            @if (isChecked && !_assignPermissionsModel.Permissions.Contains(permission))
-                                            {
-                                                _assignPermissionsModel.Permissions.Add(permission);
-                                            }
-                                            else if (!isChecked && _assignPermissionsModel.Permissions.Contains(permission))
-                                            {
-                                                _assignPermissionsModel.Permissions.Remove(permission);
-                                            }
                                         }
                                     </div>
                                     <div class="form-actions">
@@ -586,6 +580,7 @@
     private TeamViewModel _editTeam = new();
     private AssignTeamModel _assignTeamModel = new();
     private AssignPermissionsModel _assignPermissionsModel = new();
+    private List<PermissionItem> _permissionTuples = [];
     private bool _showTeamSelectionDialog = false;
     private bool _showConfirmDialog = false;
     private CompanyUserViewModel? _selectedEmployee;
@@ -721,6 +716,7 @@
         try
         {
             await WorkPageService.AddTeamAsync(_newTeam);
+            await Task.Delay(100);
             _teams = await WorkPageService.GetTeamsAsync(CompanyId);
         }
         catch (Exception ex)
@@ -789,7 +785,8 @@
 
     private void ShowAssignTeamForm(int employeeId)
     {
-        _assignTeamModel = new AssignTeamModel { EmployeeFullName = _employees?.FirstOrDefault(c => c.Id == employeeId)?.User?.FullName };
+        var employee = _employees?.FirstOrDefault(c => c.Id == employeeId)?.User;
+        _assignTeamModel = new AssignTeamModel { EmployeeFullName = employee?.FullName, EmployeeId = employee?.Id ?? 0};
         _showAssignTeamForm = true;
     }
 
@@ -805,6 +802,7 @@
             await WorkPageService.AssignEmployeeToTeamAsync(_assignTeamModel.TeamId, _assignTeamModel.EmployeeId);
             await Task.Delay(100);
             _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
             _filteredEmployees = _employees;
             _showAssignTeamForm = false;
         }
@@ -842,7 +840,7 @@
     {
         try
         {
-            await WorkPageService.RemoveTeamEmployeeAsync(_selectedTeamId);
+            await WorkPageService.RemoveTeamEmployeeAsync(_selectedTeamId, _selectedEmployee!.Id);
 
             await Task.Delay(100);
             var employee = _filteredEmployees?.FirstOrDefault(e => e.Id == _selectedEmployee!.Id);
@@ -850,6 +848,8 @@
             {
                 employee.Teams = employee.Teams.Where(t => t.Id != _selectedTeamId).ToList();
             }
+
+            _teams = await WorkPageService.GetTeamsAsync(CompanyId);
 
             _showConfirmDialog = false;
             _selectedEmployee = null;
@@ -874,11 +874,15 @@
 
     private void ShowAssignPermissionsForm(int employeeId)
     {
-        var employee = _employees?.FirstOrDefault(e => e.Id == employeeId);
+        _selectedEmployee = _employees?.FirstOrDefault(e => e.Id == employeeId);
+        foreach (var permission in Enum.GetValues<Permission>())
+            _permissionTuples.Add(new PermissionItem {Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasFlag(permission)});
+
         _assignPermissionsModel = new AssignPermissionsModel
         {
             EmployeeId = employeeId,
-            Permissions = employee?.Permissions?.ToList() ?? new List<Permission>()
+            EmployeeFullName = _selectedEmployee!.User?.FullName ?? string.Empty,
+            Permissions = _selectedEmployee.Permissions
         };
         _showAssignPermissionsForm = true;
     }
@@ -892,7 +896,16 @@
     {
         try
         {
-            // await WorkPageService.UpdateEmployeePermissionsAsync(_assignPermissionsModel.EmployeeId, _assignPermissionsModel.Permissions);
+            var startSum = (int)_assignPermissionsModel.Permissions;
+            var endSum = _permissionTuples.Where(c => c.IsChecked).Select(c => (int)c.Permission).Sum();
+            if (startSum == endSum)
+                return;
+
+            _selectedEmployee!.Permissions = (Permission)endSum;
+            
+            await WorkPageService.UpdateEmployeeAsync(_selectedEmployee);
+            await Task.Delay(100);
+            
             _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
             _filteredEmployees = _employees;
             _showAssignPermissionsForm = false;
@@ -919,9 +932,16 @@
     private class AssignPermissionsModel
     {
         public int EmployeeId { get; set; }
-        public List<Permission> Permissions { get; set; } = new();
+        public string EmployeeFullName { get; set; } = null!;
+        public Permission Permissions { get; set; }
     }
 
+    
+    private class PermissionItem
+    {
+        public Permission Permission { get; set; }
+        public bool IsChecked { get; set; }
+    }
 }
 
 <style>

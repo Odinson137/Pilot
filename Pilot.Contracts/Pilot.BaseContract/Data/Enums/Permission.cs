@@ -1,8 +1,11 @@
-﻿namespace Pilot.Contracts.Data.Enums;
+﻿using System.ComponentModel;
 
+namespace Pilot.Contracts.Data.Enums;
+
+[Flags]
 public enum Permission
 {
-    CreateTask = 0,
-    ViewTaskTable = 1,
-    TaskClosing = 2,
+    CreateTask = 1,
+    ViewTaskTable = 2,
+    TaskClosing = 4,
 }

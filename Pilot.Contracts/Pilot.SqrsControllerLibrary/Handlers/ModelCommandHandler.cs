@@ -9,8 +9,7 @@ namespace Pilot.SqrsControllerLibrary.Handlers;
 public class ModelCommandHandler<T, TDto>(
     IBaseRepository<T> repository,
     IMapper mapper,
-    IBaseValidatorService validateService)
-    :
+    IBaseValidatorService validateService) :
         IRequestHandler<CreateEntityCommand<TDto>, BaseModel>,
         IRequestHandler<UpdateEntityCommand<TDto>, BaseModel>,
         IRequestHandler<DeleteEntityCommand<TDto>, BaseModel>

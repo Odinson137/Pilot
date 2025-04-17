@@ -225,10 +225,17 @@ public class WorkPageService(
     {
         await teamService.DeleteValueAsync(teamId);
     }
-    
-    public async Task RemoveTeamEmployeeAsync(int teamEmployeeId)
+
+    public async Task RemoveTeamEmployeeAsync(int teamEmployeeId, int employeeId)
     {
-        await teamEmployeeService.DeleteValueAsync(teamEmployeeId);
+        var filter = new BaseFilter
+        {
+            WhereFilter = new WhereFilter()
+        };
+        filter.WhereFilter.Init<int, TeamEmployeeViewModel>((c => c.Team.Id, teamEmployeeId));
+        filter.WhereFilter.Init<int, TeamEmployeeViewModel>((c => c.CompanyUser.Id, employeeId));
+        var teamEmployee = (await teamEmployeeService.GetValuesAsync(filter)).First();
+        await teamEmployeeService.DeleteValueAsync(teamEmployee.Id);
     }
 
     public async Task AddProjectAsync(ProjectViewModel project)
@@ -241,15 +248,21 @@ public class WorkPageService(
         await projectService.UpdateValueAsync(project);
     }
 
+    public async Task UpdateEmployeeAsync(CompanyUserViewModel companyUser)
+    {
+        await companyUserService.UpdateValueAsync(companyUser);
+    }
+
+    
     public async Task AssignEmployeeToTeamAsync(int teamId, int employeeId)
     {
         await teamEmployeeViewModel.CreateValueAsync(new TeamEmployeeViewModel
         {
-            Team = new BaseViewModel {Id = teamId},
-            CompanyUser = new BaseViewModel {Id = employeeId}
+            Team = new BaseViewModel { Id = teamId },
+            CompanyUser = new BaseViewModel { Id = employeeId }
         });
     }
-    
+
     public async Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId)
     {
         var result =
@@ -290,65 +303,66 @@ public class WorkPageService(
         return projectViewModels;
     }
 
-public async Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTasksAsync(int companyId)
-{
-    // Получаем все задачи компании
-    var tasks = await projectTaskService.GetValuesAsync(
-        predicate: t => t.CompanyUser!.Company.Id,
-        companyId);
-
-    // Получаем ID команд, пользователей и проектов
-    var teamIds = tasks.Select(t => t.Team.Id).Select(id => id).Distinct().ToList();
-    var userIds = tasks.Select(t => t.CompanyUser?.Id).Where(id => id.HasValue).Select(id => id!.Value).Distinct().ToList();
-
-    // Параллельно запрашиваем команды, пользователей и их данные
-    var teamsTask = teamIds.Any() 
-        ? teamService.GetValuesAsync(teamIds) 
-        : Task.FromResult<ICollection<TeamViewModel>>(new List<TeamViewModel>());
-    var companyUsersTask = userIds.Any() 
-        ? companyUserService.GetValuesAsync(userIds) 
-        : Task.FromResult<ICollection<CompanyUserViewModel>>(new List<CompanyUserViewModel>());
-    var usersTask = userIds.Any() 
-        ? userBaseService.GetValuesAsync(userIds) 
-        : Task.FromResult<ICollection<UserViewModel>>(new List<UserViewModel>());
-
-    await Task.WhenAll(teamsTask, companyUsersTask, usersTask);
-
-    var teams = teamsTask.Result;
-    var companyUsers = companyUsersTask.Result;
-    var users = usersTask.Result;
-
-    // Получаем проекты для команд
-    var projectIds = teams.Select(t => t.Project.Id).Select(id => id).Distinct().ToList();
-    var projects = projectIds.Any() 
-        ? await projectService.GetValuesAsync(projectIds) 
-        : new List<ProjectViewModel>();
-
-    // Заполняем данные пользователей в CompanyUser
-    foreach (var companyUser in companyUsers)
+    public async Task<ICollection<ProjectTaskViewModel>> GetTaskManagementCompanyTasksAsync(int companyId)
     {
-        companyUser.User = users.FirstOrDefault(u => u.Id == companyUser.Id) ?? companyUser.User;
-    }
+        // Получаем все задачи компании
+        var tasks = await projectTaskService.GetValuesAsync(
+            predicate: t => t.CompanyUser!.Company.Id,
+            companyId);
 
-    // Заполняем данные в задачах
-    foreach (var task in tasks)
-    {
-        if (task.Team != null && task.Team.Id != 0)
+        // Получаем ID команд, пользователей и проектов
+        var teamIds = tasks.Select(t => t.Team.Id).Select(id => id).Distinct().ToList();
+        var userIds = tasks.Select(t => t.CompanyUser?.Id).Where(id => id.HasValue).Select(id => id!.Value).Distinct()
+            .ToList();
+
+        // Параллельно запрашиваем команды, пользователей и их данные
+        var teamsTask = teamIds.Any()
+            ? teamService.GetValuesAsync(teamIds)
+            : Task.FromResult<ICollection<TeamViewModel>>(new List<TeamViewModel>());
+        var companyUsersTask = userIds.Any()
+            ? companyUserService.GetValuesAsync(userIds)
+            : Task.FromResult<ICollection<CompanyUserViewModel>>(new List<CompanyUserViewModel>());
+        var usersTask = userIds.Any()
+            ? userBaseService.GetValuesAsync(userIds)
+            : Task.FromResult<ICollection<UserViewModel>>(new List<UserViewModel>());
+
+        await Task.WhenAll(teamsTask, companyUsersTask, usersTask);
+
+        var teams = teamsTask.Result;
+        var companyUsers = companyUsersTask.Result;
+        var users = usersTask.Result;
+
+        // Получаем проекты для команд
+        var projectIds = teams.Select(t => t.Project.Id).Select(id => id).Distinct().ToList();
+        var projects = projectIds.Any()
+            ? await projectService.GetValuesAsync(projectIds)
+            : new List<ProjectViewModel>();
+
+        // Заполняем данные пользователей в CompanyUser
+        foreach (var companyUser in companyUsers)
         {
-            task.Team = teams.FirstOrDefault(t => t.Id == task.Team.Id) ?? task.Team;
-            if (task.Team.Project != null && task.Team.Project.Id != 0)
+            companyUser.User = users.FirstOrDefault(u => u.Id == companyUser.Id) ?? companyUser.User;
+        }
+
+        // Заполняем данные в задачах
+        foreach (var task in tasks)
+        {
+            if (task.Team != null && task.Team.Id != 0)
             {
-                task.Team.Project = projects.FirstOrDefault(p => p.Id == task.Team.Project.Id) 
-                    ?? new ProjectViewModel { Name = "Unknown Project" };
+                task.Team = teams.FirstOrDefault(t => t.Id == task.Team.Id) ?? task.Team;
+                if (task.Team.Project != null && task.Team.Project.Id != 0)
+                {
+                    task.Team.Project = projects.FirstOrDefault(p => p.Id == task.Team.Project.Id)
+                                        ?? new ProjectViewModel { Name = "Unknown Project" };
+                }
+            }
+
+            if (task.CompanyUser != null && task.CompanyUser.Id != 0)
+            {
+                task.CompanyUser = companyUsers.FirstOrDefault(u => u.Id == task.CompanyUser.Id) ?? task.CompanyUser;
             }
         }
-        if (task.CompanyUser != null && task.CompanyUser.Id != 0)
-        {
-            task.CompanyUser = companyUsers.FirstOrDefault(u => u.Id == task.CompanyUser.Id) ?? task.CompanyUser;
-        }
+
+        return tasks;
     }
-
-    return tasks;
 }
-}
-

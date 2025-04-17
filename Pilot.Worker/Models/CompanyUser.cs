@@ -16,5 +16,5 @@ public class CompanyUser : BaseModel
 
     public CompanyRole? CompanyRole { get; set; }
 
-    public List<Permission> Permissions { get; set; } = [];
+    public Permission Permissions { get; set; }
 }

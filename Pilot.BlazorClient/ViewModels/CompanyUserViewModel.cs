@@ -16,5 +16,5 @@ public class CompanyUserViewModel : BaseViewModel
     
     public UserViewModel? User { get; set; }
     
-    public List<Permission> Permissions { get; set; } = [];
+    public Permission Permissions { get; set; }
 }
