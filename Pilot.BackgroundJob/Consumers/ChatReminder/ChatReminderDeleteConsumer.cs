@@ -24,7 +24,7 @@ public class ChatReminderDeleteConsumer(
         var id = context.Message.Value;
         var model = await validate.DeleteValidateAsync<Models.ChatReminder>(id, context.CancellationToken);
         
-        repository.FastDelete(model);
+        repository.Delete(model);
         await repository.SaveAsync();
         
         foreach (var dayOfWeek in model.DayOfWeeks)

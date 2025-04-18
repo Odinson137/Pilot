@@ -52,7 +52,7 @@ public class ModelCommandHandler<T, TDto>(
     public virtual async Task<BaseModel> Handle(DeleteEntityCommand<TDto> request, CancellationToken cancellationToken)
     {
         var model = await validateService.DeleteValidateAsync<T>(request.Value, cancellationToken);
-        repository.FastDelete(model);
-        return new T { Id = model.Id }; // TODO КОСТЫЫЫЛЬ
+        repository.Delete(model);
+        return model;
     }
 }
