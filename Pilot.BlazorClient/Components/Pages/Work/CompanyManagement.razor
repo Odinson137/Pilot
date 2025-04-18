@@ -581,8 +581,8 @@
     private AssignTeamModel _assignTeamModel = new();
     private AssignPermissionsModel _assignPermissionsModel = new();
     private List<PermissionItem> _permissionTuples = [];
-    private bool _showTeamSelectionDialog = false;
-    private bool _showConfirmDialog = false;
+    private bool _showTeamSelectionDialog;
+    private bool _showConfirmDialog;
     private CompanyUserViewModel? _selectedEmployee;
     private int _selectedTeamId;
 
@@ -874,6 +874,7 @@
 
     private void ShowAssignPermissionsForm(int employeeId)
     {
+        _permissionTuples.Clear();
         _selectedEmployee = _employees?.FirstOrDefault(e => e.Id == employeeId);
         foreach (var permission in Enum.GetValues<Permission>())
             _permissionTuples.Add(new PermissionItem {Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasFlag(permission)});

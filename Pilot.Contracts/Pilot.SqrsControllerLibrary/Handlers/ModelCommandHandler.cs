@@ -36,11 +36,16 @@ public class ModelCommandHandler<T, TDto>(
     {
         var model = mapper.Map<T>(request.Value);
 
-        await validateService.ChangeEntityTrackerAsync(model);
+        var existingModel = await repository.GetByIdAsync(request.Value.Id, cancellationToken);
+        if (existingModel == null)
+            throw new Exception("Entity not found");
 
-        model.ChangeAt = DateTime.Now;
+        var entityEntry = repository.GetContext.Entry(existingModel);
+        entityEntry.CurrentValues.SetValues(model);
 
-        repository.GetContext.Entry(model).State = EntityState.Modified;
+        existingModel.ChangeAt = DateTime.Now;
+
+        entityEntry.State = EntityState.Modified;
         return model;
     }
 
