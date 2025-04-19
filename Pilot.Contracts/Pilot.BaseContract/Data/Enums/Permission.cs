@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Pilot.Contracts.Data.Enums;
+﻿namespace Pilot.Contracts.Data.Enums;
 
 [Flags]
 public enum Permission

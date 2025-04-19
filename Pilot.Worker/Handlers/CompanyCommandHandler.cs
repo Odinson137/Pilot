@@ -11,15 +11,18 @@ namespace Pilot.Worker.Handlers;
 public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseValidatorService validateService)
     : ModelCommandHandler<Company, CompanyDto>(repository, mapper, validateService)
 {
+    private readonly IMapper _mapper = mapper;
+    private readonly IBaseValidatorService _validateService = validateService;
+
     public override async Task<BaseModel> Handle(
         CreateEntityCommand<CompanyDto> request,
         CancellationToken cancellationToken)
     {
-        await validateService.ValidateAsync<Company, CompanyDto>(request.Value);
+        await _validateService.ValidateAsync<Company, CompanyDto>(request.Value);
 
-        var model = mapper.Map<Company>(request.Value);
+        var model = _mapper.Map<Company>(request.Value);
 
-        await validateService.ChangeEntityTrackerAsync(model);
+        await _validateService.ChangeEntityTrackerAsync(model);
         var firstEmployee = new CompanyUser
         {
             Id = request.UserId,

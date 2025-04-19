@@ -137,21 +137,18 @@ public abstract class BaseValidateService : IBaseValidatorService
         _logger.LogClassInfo(modelId);
 
         var model = await _context.Set<T>().FirstOrDefaultAsync(c => c.Id == modelId, cancellationToken: token);
-        if (model == null)
+        if (model != null) return model;
+        
+        _logger.LogError($"Value '{typeof(T).Name}' with Id = {modelId} is not exist");
+
+        var message = new InfoMessageDto
         {
-            _logger.LogError($"Value '{typeof(T).Name}' with Id = {modelId} is not exist");
+            MessagePriority = MessageInfo.Error | MessageInfo.Delete | MessageInfo.Validate | MessageInfo.NotFound,
+            EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
+            EntityId = modelId
+        };
 
-            var message = new InfoMessageDto
-            {
-                MessagePriority = MessageInfo.Error | MessageInfo.Delete | MessageInfo.Validate | MessageInfo.NotFound,
-                EntityType = PilotEnumExtensions.GetModelEnumValue<T>(),
-                EntityId = modelId
-            };
-
-            throw new MessageException(message);
-        }
-
-        return model;
+        throw new MessageException(message);
     }
 
     protected async Task DefaultValidateAsync<T, TDto>(TDto model) where T : BaseModel where TDto : BaseDto

@@ -27,8 +27,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         : base(apiFactory, identityFactory, workerFactory, storageFactory)
     {
         _testOutputHelper = testOutputHelper;
-        AssertContext.Database.EnsureDeleted();
-        AssertContext.Database.EnsureCreated();
+        var assertContext = GetContext<TDto>();
+        assertContext.Database.EnsureDeleted();
+        assertContext.Database.EnsureCreated();
     }
 
     private static string EntityName => typeof(T).Name;
@@ -54,7 +55,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
         FillUser(values);
         
-        var context = AssertContext;
+        var context = GetContext<TDto>();
         await context.AddRangeAsync(values);
         await context.SaveChangesAsync();
     
@@ -82,7 +83,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
         FillUser(values);
 
-        var context = AssertContext;
+        var context = GetContext<TDto>();
         await context.AddRangeAsync(values);
         await context.SaveChangesAsync();
     
@@ -105,15 +106,17 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     protected async Task<CompanyUser> CreateCompanyUser(bool withAuthorization = false)
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
-    
-        await GetContext<TDto>().AddAsync(companyUser);
-        await GetContext<TDto>().SaveChangesAsync();
+
+        var dbContext = GetContext<TDto>();
+        await dbContext.AddAsync(companyUser);
+        await dbContext.SaveChangesAsync();
     
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
         user.Id = companyUser.Id;
-    
-        await GetContext<UserDto>().AddRangeAsync(user);
-        await GetContext<UserDto>().SaveChangesAsync();
+
+        var identityContext = GetContext<UserDto>();
+        await identityContext.AddRangeAsync(user);
+        await identityContext.SaveChangesAsync();
     
         if (withAuthorization)
         {
@@ -150,41 +153,10 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var content = await AssertContext.Set<T>().Where(c => c.CreateAt == value.CreateAt)
+        var content = await GetContext<TDto>().Set<T>().Where(c => c.CreateAt == value.CreateAt)
             .FirstOrDefaultAsync();
         Assert.NotNull(content);
     }
-    //
-    // [Fact]
-    // public async Task CreateValue_AddWithFile_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var companyUser = await CreateCompanyUser(true);
-    //
-    //     var type = typeof(T);
-    //
-    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //     await GenerateTestEntity.FillChildren(value, GetContext<TDto>());
-    //     await GenerateTestEntity.FillImage<T, TDto>(value, GetContext<FileDto>());
-    //
-    //     var valueDto = Mapper.Map<TDto>(value);
-    //
-    //     var token = TokenService.GenerateToken(companyUser.Id, Role.User);
-    //     ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-    //     
-    //     #endregion
-    //
-    //     // Act
-    //     var result = await ApiClient.PostAsJsonAsync($"api/{type.Name}", valueDto);
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //     Assert.True(result.IsSuccessStatusCode);
-    //     var content = await AssertContext.Set<T>().Where(c => c.CreateAt == value.CreateAt)
-    //         .FirstOrDefaultAsync();
-    //     Assert.NotNull(content);
-    // }
 
     [Fact]
     public async Task UpdateValue_ReturnOk()
@@ -199,8 +171,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
 
-        await GetContext<TDto>().AddRangeAsync(value);
-        await GetContext<TDto>().SaveChangesAsync();
+        var dbContext = GetContext<TDto>();
+        await dbContext.AddRangeAsync(value);
+        await dbContext.SaveChangesAsync();
 
         var valueDto = Mapper.Map<TDto>(value);
 
@@ -212,7 +185,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);
-        var content = await AssertContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+        var content = await GetContext<TDto>().Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
         Assert.NotNull(content);
         Assert.NotNull(content.ChangeAt);
     }
@@ -228,8 +201,9 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GetContext<TDto>().AddRangeAsync(value);
-        await GetContext<TDto>().SaveChangesAsync();
+        var dbContext = GetContext<TDto>();
+        await dbContext.AddRangeAsync(value);
+        await dbContext.SaveChangesAsync();
 
         #endregion
 
@@ -240,7 +214,7 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         // Assert
 
         Assert.True(result.IsSuccessStatusCode);
-        var content = await AssertContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+        var content = await GetContext<TDto>().Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
         Assert.Null(content);
     }
 }
