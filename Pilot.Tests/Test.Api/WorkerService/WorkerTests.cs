@@ -103,13 +103,12 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
         Assert.Equal(id, content.Id);
     }
 
-    protected async Task<CompanyUser> CreateCompanyUser(bool withAuthorization = false)
+    protected async Task<CompanyUser> CreateCompanyUser(DbContext context, bool withAuthorization = false)
     {
         var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
 
-        var dbContext = GetContext<TDto>();
-        await dbContext.AddAsync(companyUser);
-        await dbContext.SaveChangesAsync();
+        await context.AddAsync(companyUser);
+        await context.SaveChangesAsync();
     
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
         user.Id = companyUser.Id;
@@ -132,13 +131,14 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     {
         #region Arrange
 
-        var companyUser = await CreateCompanyUser(true);
+        var dbContext = GetContext<TDto>();
+        var companyUser = await CreateCompanyUser(dbContext, true);
 
         var type = typeof(T);
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GenerateTestEntity.FillChildren(value, GetContext<TDto>());
+        await GenerateTestEntity.FillChildren(value, dbContext);
 
         var valueDto = Mapper.Map<TDto>(value);
 
@@ -163,7 +163,8 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     {
         #region Arrange
 
-        var companyUser = await CreateCompanyUser(true);
+        var dbContext = GetContext<TDto>();
+        var companyUser = await CreateCompanyUser(dbContext, true);
 
         var type = typeof(T);
 
@@ -171,7 +172,6 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
 
         if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
 
-        var dbContext = GetContext<TDto>();
         await dbContext.AddRangeAsync(value);
         await dbContext.SaveChangesAsync();
 
@@ -195,13 +195,13 @@ public abstract class WorkerTests<T, TDto> : BaseWorkerServiceIntegrationTest
     {
         #region Arrange
 
-        await CreateCompanyUser(true);
+        var dbContext = GetContext<TDto>();
+        await CreateCompanyUser(dbContext, true);
 
         var type = typeof(T);
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        var dbContext = GetContext<TDto>();
         await dbContext.AddRangeAsync(value);
         await dbContext.SaveChangesAsync();
 
