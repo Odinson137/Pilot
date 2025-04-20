@@ -41,6 +41,9 @@
                 @onclick="() => SetTab(Tab.Permissions)">
             <span class="material-icons">lock</span> @Localization.GetString("Permissions", "CompanyManagement")
         </button>
+        <button class="tab-button @(ActiveTab == Tab.Company ? "active" : "")" @onclick="() => SetTab(Tab.Company)">
+            <span class="material-icons">business</span> @Localization.GetString("Company", "CompanyManagement")
+        </button>
     </div>
 
     <!-- Tab Content -->
@@ -351,14 +354,14 @@
                                              alt="@employee.User?.FullName" class="avatar"/>
                                         <div>
                                             <h3>@employee.User?.FullName</h3>
-                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
+                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? Localization.GetString("Owner", "CompanyManagement"))</p>
                                         </div>
                                     </div>
                                     <p>
                                         <strong>@Localization.GetString("TeamsCount", "CompanyManagement"):</strong> @employee.Teams?.Count
                                     </p>
                                     <div class="card-actions">
-                                        <button class="btn btn-action" 
+                                        <button class="btn btn-action"
                                                 title="@Localization.GetString("AssignTeam", "CompanyManagement")"
                                                 @onclick="() => ShowAssignTeamForm(employee.Id)">
                                             <span class="material-icons">group_add</span>
@@ -487,22 +490,32 @@
                                              alt="@employee.User?.FullName" class="avatar"/>
                                         <div>
                                             <h3>@employee.User?.FullName</h3>
-                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? "N/A")</p>
+                                            <p>@(_posts?.FirstOrDefault(p => p.Id == employee.PostId)?.Title ?? Localization.GetString("Owner", "CompanyManagement"))</p>
                                         </div>
                                     </div>
                                     <p>
                                         <strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong>
-                                        @(string.Join(", ", Enum.GetValues<Permission>()
+                                        @if (employee.Id == employee.Company.CreatedBy?.Id)
+                                        {
+                                            @(" " + Localization.GetString("All", "CompanyManagement"))
+                                        }
+                                        else
+                                        {
+                                            @(" " + string.Join(", ", Enum.GetValues<Permission>()
                                                 .Where(p => employee.Permissions.HasFlag(p))
-                                                .Select(p => p.ToString())))
+                                                .Select(p => Localization.GetString(p.ToString(), "CompanyManagement"))))
+                                        }
                                     </p>
-                                    <div class="card-actions">
-                                        <button class="btn btn-action"
-                                                @onclick="() => ShowAssignPermissionsForm(employee.Id)">
-                                            <span
-                                                class="material-icons">lock</span> @Localization.GetString("EditPermissions", "CompanyManagement")
-                                        </button>
-                                    </div>
+                                    @if (employee.Id != employee.Company.CreatedBy?.Id)
+                                    {
+                                        <div class="card-actions">
+                                            <button class="btn btn-action"
+                                                    @onclick="() => ShowAssignPermissionsForm(employee.Id)">
+                                                <span
+                                                    class="material-icons">lock</span> @Localization.GetString("EditPermissions", "CompanyManagement")
+                                            </button>
+                                        </div>
+                                    }
                                 </div>
                             }
                         </div>
@@ -526,8 +539,10 @@
                                         @foreach (var permissionTuple in _permissionTuples)
                                         {
                                             <div class="permission-checkbox">
-                                                <InputCheckbox @bind-Value="@permissionTuple.IsChecked" id="@($"perm-{permissionTuple.Permission}")"/>
-                                                <label for="@($"perm-{permissionTuple.Permission}")">@Localization.GetString(permissionTuple.Permission.ToString(), "CompanyManagement")</label>
+                                                <InputCheckbox @bind-Value="@permissionTuple.IsChecked"
+                                                               id="@($"perm-{permissionTuple.Permission}")"/>
+                                                <label
+                                                    for="@($"perm-{permissionTuple.Permission}")">@Localization.GetString(permissionTuple.Permission.ToString(), "CompanyManagement")</label>
                                             </div>
                                         }
                                     </div>
@@ -543,6 +558,129 @@
                     }
                 </div>
                 break;
+
+            case Tab.Company:
+                <div class="section">
+                    <div class="section-header">
+                        <h2><a href="/Company/@_company!.Id">@Localization.GetString("Company", "CompanyManagement")</a>
+                        </h2>
+                    </div>
+                    @if (_isLoading)
+                    {
+                        <div class="loading">
+                            <span
+                                class="material-icons spin">refresh</span> @Localization.GetString("Loading", "CompanyManagement")
+                        </div>
+                    }
+                    else if (_company == null)
+                    {
+                        <p class="no-data">@Localization.GetString("NoCompanyData", "CompanyManagement")</p>
+                    }
+                    else
+                    {
+                        <div class="company-edit">
+                            <EditForm Model="_company" OnValidSubmit="SaveCompany">
+                                <DataAnnotationsValidator/>
+                                <div class="form-group">
+                                    <label>@Localization.GetString("CompanyName", "CompanyManagement")</label>
+                                    <InputText @bind-Value="_company.Title" class="form-input"
+                                               placeholder="@Localization.GetString("CompanyNamePlaceholder", "CompanyManagement")"/>
+                                    <ValidationMessage For="@(() => _company.Title)"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localization.GetString("CompanyDescription", "CompanyManagement")</label>
+                                    <InputTextArea @bind-Value="_company.Description" class="form-textarea"
+                                                   placeholder="@Localization.GetString("CompanyDescriptionPlaceholder", "CompanyManagement")"/>
+                                    <ValidationMessage For="@(() => _company.Description)"/>
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localization.GetString("CompanyLogo", "CompanyManagement")</label>
+                                    <div class="logo-container">
+                                        @if (_company.Logo != null || _newLogo != null)
+                                        {
+                                            <img
+                                                src="@(_newLogo != null ? $"data:image/png;base64,{Convert.ToBase64String(_newLogo.Value.Item2)}" : TempFileService.GetUrl(_company.Logo))"
+                                                alt="Company Logo" class="logo-preview"/>
+                                        }
+                                        else
+                                        {
+                                            <div class="logo-placeholder">
+                                                <span class="material-icons">business</span>
+                                                <p>@Localization.GetString("NoLogo", "CompanyManagement")</p>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="logo-actions">
+                                        <label class="btn btn-action">
+                                            <span class="material-icons">upload</span>
+                                            @Localization.GetString("ReplaceLogo", "CompanyManagement")
+                                            <InputFile OnChange="HandleLogoUpload" class="file-input"/>
+                                        </label>
+                                        <button class="btn btn-action btn-danger" style="height: 53px"
+                                                disabled="@(_company.Logo == null && _newLogo == null)"
+                                                @onclick="RemoveLogo">
+                                            <span class="material-icons">delete</span>
+                                            @Localization.GetString("DeleteLogo", "CompanyManagement")
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>@Localization.GetString("InsideImages", "CompanyManagement")</label>
+                                    @if (_company.InsideImages?.Any() == true || _newInsideImages.Any())
+                                    {
+                                        <div class="image-grid">
+                                            @foreach (var image in _company.InsideImages ?? new List<string>())
+                                            {
+                                                <div class="image-container">
+                                                    <img src="@TempFileService.GetUrl(image)" alt="Inside Image"
+                                                         class="inside-image"/>
+                                                    <button class="btn btn-icon btn-danger remove-image"
+                                                            @onclick="() => RemoveInsideImage(image)">
+                                                        <span class="material-icons">delete</span>
+                                                    </button>
+                                                </div>
+                                            }
+                                            @foreach (var image in _newInsideImages)
+                                            {
+                                                <div class="image-container">
+                                                    <img
+                                                        src="@($"data:image/png;base64,{Convert.ToBase64String(image.Item2)}")"
+                                                        alt="New Inside Image" class="inside-image"/>
+                                                    <button class="btn btn-icon btn-danger remove-image"
+                                                            @onclick="() => _newInsideImages.Remove(image)">
+                                                        <span class="material-icons">delete</span>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="images-placeholder">
+                                            <span class="material-icons">image</span>
+                                            <p>@Localization.GetString("NoImages", "CompanyManagement")</p>
+                                        </div>
+                                    }
+                                    <div class="images-actions">
+                                        <label class="btn btn-action">
+                                            <span class="material-icons">upload</span>
+                                            @Localization.GetString("UploadImages", "CompanyManagement")
+                                            <InputFile OnChange="HandleInsideImagesUpload" class="file-input" multiple/>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit"
+                                            class="btn btn-save">@Localization.GetString("Save", "CompanyManagement")</button>
+                                    <button type="button" class="btn btn-cancel"
+                                            @onclick="ResetCompanyForm">@Localization.GetString("Cancel", "CompanyManagement")</button>
+                                </div>
+                            </EditForm>
+                        </div>
+                    }
+                </div>
+
+                break;
         }
     </div>
 </div>
@@ -556,7 +694,8 @@
         Projects,
         Teams,
         Employees,
-        Permissions
+        Permissions,
+        Company
     }
 
     private Tab ActiveTab = Tab.Employees;
@@ -585,6 +724,9 @@
     private bool _showConfirmDialog;
     private CompanyUserViewModel? _selectedEmployee;
     private int _selectedTeamId;
+    private CompanyViewModel? _company;
+    private (string, byte[])? _newLogo;
+    private List<(string, byte[])> _newInsideImages = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -596,6 +738,7 @@
         _isLoading = true;
         try
         {
+            _company = await WorkPageService.GetCompanyAsync(CompanyId);
             _projects = await WorkPageService.GetProjectsAsync(CompanyId);
             _teams = await WorkPageService.GetTeamsAsync(CompanyId);
             _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
@@ -786,7 +929,7 @@
     private void ShowAssignTeamForm(int employeeId)
     {
         var employee = _employees?.FirstOrDefault(c => c.Id == employeeId)?.User;
-        _assignTeamModel = new AssignTeamModel { EmployeeFullName = employee?.FullName, EmployeeId = employee?.Id ?? 0};
+        _assignTeamModel = new AssignTeamModel { EmployeeFullName = employee?.FullName, EmployeeId = employee?.Id ?? 0 };
         _showAssignTeamForm = true;
     }
 
@@ -877,7 +1020,7 @@
         _permissionTuples.Clear();
         _selectedEmployee = _employees?.FirstOrDefault(e => e.Id == employeeId);
         foreach (var permission in Enum.GetValues<Permission>())
-            _permissionTuples.Add(new PermissionItem {Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasFlag(permission)});
+            _permissionTuples.Add(new PermissionItem { Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasFlag(permission) });
 
         _assignPermissionsModel = new AssignPermissionsModel
         {
@@ -903,12 +1046,10 @@
                 return;
 
             _selectedEmployee!.Permissions = (Permission)endSum;
-            
+
             await WorkPageService.UpdateEmployeeAsync(_selectedEmployee);
             await Task.Delay(100);
-            
-            _employees = await WorkPageService.GetCompanyEmployeesAsync(CompanyId);
-            _filteredEmployees = _employees;
+
             _showAssignPermissionsForm = false;
         }
         catch (Exception ex)
@@ -937,12 +1078,116 @@
         public Permission Permissions { get; set; }
     }
 
-    
+
     private class PermissionItem
     {
         public Permission Permission { get; set; }
         public bool IsChecked { get; set; }
     }
+
+    private async Task HandleLogoUpload(InputFileChangeEventArgs e)
+    {
+        if (e.FileCount > 0)
+        {
+            var file = e.File;
+            await using var stream = file.OpenReadStream();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            _newLogo = (file.Name, ms.ToArray());
+        }
+    }
+
+    private async Task HandleInsideImagesUpload(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            await using var stream = file.OpenReadStream();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            _newInsideImages.Add((file.Name, ms.ToArray()));
+        }
+    }
+
+    private bool _isFinalSave = true;
+
+    private async Task RemoveLogo()
+    {
+        _isFinalSave = false;
+        _company!.Logo = null;
+        _newLogo = null;
+        StateHasChanged();
+        await Task.Delay(500);
+        _isFinalSave = true;
+    }
+
+    private async Task RemoveInsideImage(string imageId)
+    {
+        _isFinalSave = false;
+        _company!.InsideImages.Remove(imageId);
+        await Task.Delay(500);
+        _isFinalSave = true;
+    }
+
+    private async Task SaveCompany()
+    {
+        if (!_isFinalSave) return;
+        try
+        {
+            // Update Logo
+            if (_newLogo != null)
+            {
+                var fileName = Guid.NewGuid().ToString();
+                var file = new FileViewModel
+                {
+                    Name = fileName,
+                    Type = "png",
+                    Format = FileFormat.Image,
+                    ByteFormFile = _newLogo!.Value.Item2
+                };
+                await WorkPageService.UploadFileAsync(file);
+                _company!.Logo = fileName;
+            }
+
+            // Update InsideImages
+            if (_newInsideImages.Any())
+            {
+                foreach (var image in _newInsideImages)
+                {
+                    var fileName = Guid.NewGuid().ToString();
+                    var file = new FileViewModel
+                    {
+                        Name = fileName,
+                        Type = "png",
+                        Format = FileFormat.Image,
+                        ByteFormFile = image.Item2
+                    };
+                    await WorkPageService.UploadFileAsync(file);
+                    _company!.InsideImages.Add(fileName);
+                }
+            }
+
+            // Save company changes
+            await WorkPageService.UpdateCompanyAsync(_company!);
+            _newLogo = null;
+            _newInsideImages.Clear();
+            _company = await WorkPageService.GetCompanyAsync(CompanyId);
+            await Task.Delay(500);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = Localization.GetString("SaveError", "CompanyManagement");
+            Console.WriteLine($"Save company error: {ex.Message}");
+        }
+    }
+
+    private void ResetCompanyForm()
+    {
+        _newLogo = null;
+        _newInsideImages.Clear();
+        StateHasChanged();
+    }
+
 }
 
 <style>
@@ -1265,7 +1510,7 @@
     }
 
     .form-textarea {
-        min-height: 100px;
+        min-height: 200px;
         resize: vertical;
     }
 
@@ -1409,5 +1654,198 @@
         padding: 8px;
         border-radius: 4px;
         border: 1px solid #ccc;
+    }
+
+    .company-edit {
+        padding: 20px;
+    }
+
+    .file-preview {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        background: #e9ecef;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .upload-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+        background: #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 10px;
+    }
+
+    .upload-btn:hover {
+        background: #dee2e6;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+
+    .btn-icon {
+        padding: 5px;
+        min-width: unset;
+    }
+
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 1rem 0;
+        min-height: 120px;
+    }
+
+    .logo-preview {
+        max-width: 150px;
+        max-height: 150px;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        background: #e9ecef;
+        padding: 1rem;
+        border-radius: 8px;
+        width: 150px;
+        text-align: center;
+    }
+
+    .logo-placeholder .material-icons {
+        font-size: 2rem;
+    }
+
+    .logo-placeholder p {
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .logo-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .btn-action {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.95rem;
+        background: var(--bg-light);
+        color: var(--text-primary);
+    }
+
+    .btn-action:hover {
+        background: #e5e7eb;
+    }
+
+    .btn-action.btn-danger {
+        background: linear-gradient(90deg, var(--danger), #f87171);
+        color: #fff;
+    }
+
+    .btn-action.btn-danger:hover {
+        background: linear-gradient(90deg, #dc2626, var(--danger));
+    }
+
+    .btn-action.btn-danger:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    .file-input {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+
+    .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+        justify-content: center;
+        margin: 1rem 0;
+    }
+
+    .image-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+    }
+
+    .inside-image {
+        max-width: 100%;
+        max-height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .remove-image {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        padding: 4px;
+        background: var(--danger);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .remove-image .material-icons {
+        font-size: 16px;
+    }
+
+    .images-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        background: #e9ecef;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin: 1rem auto;
+        width: 200px;
+        text-align: center;
+    }
+
+    .images-placeholder .material-icons {
+        font-size: 2.5rem;
+    }
+
+    .images-placeholder p {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .images-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1rem;
     }
 </style>

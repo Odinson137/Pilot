@@ -29,6 +29,8 @@ public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseVal
             Company = model
         };
         model.CompanyUsers.Add(firstEmployee);
+        model.CreatedBy = firstEmployee;
+
         await repository.AddValueToContextAsync(model, cancellationToken);
         return model;
     }

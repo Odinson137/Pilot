@@ -20,6 +20,7 @@ public class WorkPageService(
     IBaseModelService<PostViewModel> postService,
     IBaseModelService<ProjectViewModel> projectService,
     IBaseModelService<TeamEmployeeViewModel> teamEmployeeViewModel,
+    IBaseModelService<FileViewModel> fileService,
     IBaseModelService<TeamEmployeeViewModel> teamEmployeeService
 ) : IWorkPageService
 {
@@ -156,9 +157,13 @@ public class WorkPageService(
             await companyUserService.GetValuesAsync(predicate: c => c.Company.Id, companyId);
         var users =
             await userBaseService.GetValuesAsync(companyUsers.Select(c => c.Id).ToArray());
-        foreach (var companyUser in companyUsers)
-            companyUser.User = users.First(c => c.Id == companyUser.Id);
+        var company = await companyService.GetValueAsync(companyId);
 
+        foreach (var companyUser in companyUsers)
+        {
+            companyUser.User = users.First(c => c.Id == companyUser.Id);
+            companyUser.Company = company;
+        }
 
         return companyUsers;
     }
@@ -214,6 +219,11 @@ public class WorkPageService(
     public async Task UpdateTeamAsync(TeamViewModel team)
     {
         await teamService.UpdateValueAsync(team);
+    }
+
+    public async Task UpdateCompanyAsync(CompanyViewModel company)
+    {
+        await companyService.UpdateValueAsync(company);
     }
 
     public async Task DeleteProjectAsync(int projectId)
@@ -364,5 +374,10 @@ public class WorkPageService(
         }
 
         return tasks;
+    }
+
+    public async Task UploadFileAsync(FileViewModel file)
+    {
+        await fileService.CreateValueAsync(file);
     }
 }

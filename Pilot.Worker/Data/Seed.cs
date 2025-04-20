@@ -29,10 +29,6 @@ public class Seed : ISeed
 
         var transaction = await _context.Database.BeginTransactionAsync();
 
-        // Добавляем базовые роли
-        await _context.CompanyRoles.AddRangeAsync(_companyRoles);
-        await _context.SaveChangesAsync();
-
         var companyFaker = GetCompanyFaker();
         var companyRoleFaker = GetCompanyRoleFaker();
         var companyUserFaker = GetCompanyUserFaker();
@@ -55,28 +51,18 @@ public class Seed : ISeed
         for (var i = 0; i < 5; i++, postId++, companyIndex++)
         {
             var company = companyFaker.Generate();
-            _context.Companies.Add(company);
-            await _context.SaveChangesAsync();
+            await _context.Companies.AddAsync(company);
+            await _context.SaveChangesAsync(); // Save Company first
 
-            // Генерация 5 ролей компании
-            company.CompanyRoles = companyRoleFaker.Generate(5);
-            foreach (var role in company.CompanyRoles)
-            {
-                _context.CompanyRoles.Add(role);
-            }
-            await _context.SaveChangesAsync();
-
-            var roles = await _context.CompanyRoles
-                .Where(c => c.Companies.Any(x => x.Id == company.Id) || c.IsBaseRole)
-                .ToListAsync();
-
-            // Главный человек (Owner)
             var ownerCompany = new CompanyUser
             {
-                Company = company,
-                CompanyRole = roles.First(c => c.Title == "Owner")
+                Company = company, // Link to the saved Company
             };
             await _context.CompanyUsers.AddAsync(ownerCompany);
+            await _context.SaveChangesAsync(); // Save CompanyUser
+
+            company.CreatedBy = ownerCompany; // Now set the CreatedBy relationship
+            await _context.SaveChangesAsync(); // Save the updated Company
 
             // Генерация 5 пользователей
             var companyUsers = companyUserFaker.Generate(5);
@@ -85,7 +71,7 @@ public class Seed : ISeed
                 var user = companyUsers[j];
                 user.Company = company;
                 user.PostId = postId + (j % 2); // Детерминированное значение
-                user.CompanyRole = roles[roleIndex % roles.Count];
+                // user.CompanyRole = roles[roleIndex % roles.Count];
                 roleIndex++;
                 await _context.CompanyUsers.AddAsync(user);
             }

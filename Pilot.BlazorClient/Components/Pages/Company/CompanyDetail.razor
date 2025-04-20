@@ -9,7 +9,7 @@
     <!-- Top section with brief description and photo -->
     @if (_isLoadingCompany)
     {
-        <div class="text-center">
+        <div class="text-center" style="height: 100vh">
             <p class="text-info">Loading company information...</p>
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
@@ -59,7 +59,7 @@
                         @foreach (var image in _company.InsideImages.Skip(4)) 
                         {
                             <a href="@image" target="_blank">
-                                <img src="@image" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
+                                <img src="@TempFileService.GetUrl(image)" class="inside-image mb-3" style="max-width: 400px; height: auto;" alt="Company Inside" />
                             </a>
                         }
                     </div>

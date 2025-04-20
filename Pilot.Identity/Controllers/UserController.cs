@@ -4,6 +4,6 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Identity.Controllers;
 
-public class UserController(IMediator mediator) : PilotReadOnlyController<UserDto>(mediator)
+public class UserController(IMediator mediator) : PilotController<UserDto>(mediator)
 {
 }

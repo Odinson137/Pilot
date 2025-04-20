@@ -10,7 +10,7 @@ using Pilot.SqrsControllerLibrary.Controller;
 
 namespace Pilot.Api.Controller;
 
-public class UserController : PilotReadOnlyController<UserDto>
+public class UserController : PilotController<UserDto>
 {
     private readonly IMediator _mediator;
 

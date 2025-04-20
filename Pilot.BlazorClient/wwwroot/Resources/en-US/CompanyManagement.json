@@ -53,5 +53,21 @@
   "CreateTask": "Create Task",
   "ViewTaskTable": "View Task Table",
   "TaskClosing": "Task Closing",
-  "AnimationError": "Error applying animations. Check CSS styles."
+  "All": "All",
+  "Owner": "Owner",
+  "AnimationError": "Error applying animations. Check CSS styles.",
+  "Company": "Company",
+  "CompanyName": "Company Name",
+  "CompanyNamePlaceholder": "Enter company name",
+  "CompanyDescription": "Description",
+  "CompanyDescriptionPlaceholder": "Enter company description",
+  "CompanyLogo": "Logo",
+  "InsideImages": "Inside Images",
+  "UploadLogo": "Upload Logo",
+  "UploadImages": "Upload Images",
+  "UploadInsideImages": "Upload Inside Images",
+  "NoCompanyData": "No company data available",
+  "NoLogo": "No logo uploaded",
+  "ReplaceLogo": "Replace Logo",
+  "DeleteLogo": "Delete Logo"
 }

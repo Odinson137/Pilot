@@ -48,6 +48,8 @@ public interface IWorkPageService
 
     Task UpdateTeamAsync(TeamViewModel team);
 
+    Task UpdateCompanyAsync(CompanyViewModel company);
+
     Task DeleteProjectAsync(int projectId);
 
     Task DeleteTeamAsync(int teamId);
@@ -57,4 +59,6 @@ public interface IWorkPageService
     Task RemoveTeamEmployeeAsync(int teamEmployeeId, int employeeId);
 
     Task UpdateEmployeeAsync(CompanyUserViewModel companyUser);
+
+    Task UploadFileAsync(FileViewModel file);
 }

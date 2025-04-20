@@ -14,6 +14,8 @@ public class Company : BaseModel
     public ICollection<CompanyRole> CompanyRoles { get; set; } = [];
     
     public ICollection<CompanyUser> CompanyUsers { get; set; } = [];
+
+    public CompanyUser? CreatedBy { get; set; }
     
     public string? Logo { get; set; }
 

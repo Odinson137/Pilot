@@ -1,12 +1,18 @@
 ﻿@page "/Account/Edit"
 <PageTitle>@Localizer.GetString("PageTitle", "EditAccount")</PageTitle>
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.Service
+@using Pilot.BlazorClient.Service.Pages
+@using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.Contracts.Data.Enums
 @inject IUserPageService UserPageService
 @inject NavigationManager NavigationManager
 @inject IJsonLocalizationService Localizer
+@inject IProjectTaskPageService ProjectTaskPageService
+@inject ProtectedSessionStorage ProtectedSessionStorage
 
 <!-- Header Section -->
 <header class="header-banner">
@@ -85,7 +91,7 @@
                     }
                 </div>
                 <InputFile id="file-upload" OnChange="HandleFileSelected" class="file-input" accept="image/*"/>
-                <label for="file-upload" class="btn btn-upload">@Localizer.GetString("UploadPhoto", "EditAccount")</label>
+                <label for="file-upload" class="btn btn-upload" style="color: black;">@Localizer.GetString("UploadPhoto", "EditAccount")</label>
                 @if (_fileError != null)
                 {
                     <p class="file-error">@_fileError</p>
@@ -127,6 +133,8 @@
     private async Task HandleValidSubmit()
     {
         await UserPageService.SaveUserAsync(_user!);
+        await ProtectedSessionStorage.DeleteAsync(ClientConstants.User);
+        await Task.Delay(100);
         NavigationManager.NavigateTo("/Account");
     }
 
@@ -137,30 +145,28 @@
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        var file = e.File;
-        if (file != null)
+        try
         {
-            try
-            {
-                if (file.Size > 5 * 1024 * 1024)
-                {
-                    _fileError = Localizer.GetString("FileTooLarge", "EditAccount");
-                    return;
-                }
+            await using var stream = e.File.OpenReadStream();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
 
-                using var stream = file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024);
-                using var memoryStream = new MemoryStream();
-                await stream.CopyToAsync(memoryStream);
-                var fileBytes = memoryStream.ToArray();
-
-                // Раскомментируйте, когда реализуете UploadAvatarAsync
-                // _user!.AvatarImage = await UserPageService.UploadAvatarAsync(fileBytes, file.Name);
-                _fileError = null;
-            }
-            catch (Exception ex)
+            var file = new FileViewModel
             {
-                _fileError = $"{Localizer.GetString("FileUploadError", "EditAccount")}: {ex.Message}";
-            }
+                Name = Guid.NewGuid().ToString(),
+                Type = "png",
+                Format = FileFormat.Image,
+                ByteFormFile = ms.ToArray()
+            };
+            await ProjectTaskPageService.UploadFileAsync(file);
+
+            _user!.AvatarImage = file.Name;
+            _fileError = null;
+            await HandleValidSubmit();
+        }
+        catch (Exception ex)
+        {
+            _fileError = $"{Localizer.GetString("FileUploadError", "EditAccount")}: {ex.Message}";
         }
     }
 }
@@ -302,7 +308,6 @@
     }
 
     .form-control:focus {
-        border-color: var(--accent);
         box-shadow: 0 0 8px rgba(255, 111, 97, 0.3);
         outline: none;
     }

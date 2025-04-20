@@ -53,5 +53,21 @@
   "CreateTask": "Создание задачи",
   "ViewTaskTable": "Просмотр таблицы задач",
   "TaskClosing": "Закрытие задачи",
-  "AnimationError": "Ошибка применения анимаций. Проверьте CSS-стили."
+  "All": "Все",
+  "Owner": "Владелец",
+  "AnimationError": "Ошибка применения анимаций. Проверьте CSS-стили.",
+  "Company": "Компания",
+  "CompanyName": "Название компании",
+  "CompanyNamePlaceholder": "Введите название компании",
+  "CompanyDescription": "Описание",
+  "CompanyDescriptionPlaceholder": "Введите описание компании",
+  "CompanyLogo": "Логотип",
+  "InsideImages": "Внутренние изображения",
+  "UploadLogo": "Загрузить логотип",
+  "UploadInsideImages": "Загрузить внутренние изображения",
+  "NoCompanyData": "Данные компании отсутствуют",
+  "NoLogo": "Логотип не загружен",
+  "ReplaceLogo": "Заменить логотип",
+  "UploadImages": "Загрузить изображения",
+  "DeleteLogo": "Удалить логотип"
 }

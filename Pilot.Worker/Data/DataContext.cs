@@ -46,6 +46,10 @@ public sealed class DataContext : DbContext
                     .HasOne(te => te.CompanyUser)
                     .WithMany()
                     .OnDelete(DeleteBehavior.Cascade));
+
+        builder.Entity<CompanyUser>()
+            .HasOne(u => u.Company)
+            .WithMany(c => c.CompanyUsers);
     }
 
     public DbSet<Project> Projects { get; set; }

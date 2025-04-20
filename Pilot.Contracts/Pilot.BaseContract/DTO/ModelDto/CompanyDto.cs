@@ -22,7 +22,9 @@ public class CompanyDto : BaseDto, IHasFile
     public ICollection<BaseDto> CompanyRoles { get; set; } = [];
     
     public ICollection<BaseDto> CompanyUsers { get; set; } = [];
-    
+
+    public BaseDto? CreatedBy { get; set; }
+
     [File]
     public string? Logo { get; set; }
 
