@@ -53,6 +53,8 @@
   "CreateTask": "Create Task",
   "ViewTaskTable": "View Task Table",
   "TaskClosing": "Task Closing",
+  "ViewCompanyManagement": "View Company Work Table",
+  "ViewHrTable": "View HR Table",
   "All": "All",
   "Owner": "Owner",
   "AnimationError": "Error applying animations. Check CSS styles.",

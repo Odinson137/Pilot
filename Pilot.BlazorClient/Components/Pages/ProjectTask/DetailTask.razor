@@ -10,6 +10,7 @@
 @using Pilot.BlazorClient.Service
 @inject IProjectTaskPageService ProjectTaskPageService
 @inject IJsonLocalizationService Localizer
+@inject IUserService UserService
 
 <PageTitle>@Localizer.GetString("TaskTitle", "Task") @(_task?.Id ?? 0)</PageTitle>
 
@@ -165,7 +166,7 @@ else
                             <div class="form-group">
                                 <label>@Localizer.GetString("Status", "Task")</label>
                                 <select @bind="_task.TaskStatus" class="form-select">
-                                    @foreach (var value in Enum.GetValues<TaskStatus>().Take(_task.CreatedBy.Id == _userViewModel.Id ? 4 : 3))
+                                    @foreach (var value in Enum.GetValues<TaskStatus>().Take(_companyUserViewModel!.Permissions.HasFlag(Permission.TaskClosing) ? 4 : 3))
                                     {
                                         <option value="@value">@value</option>
                                     }
@@ -210,6 +211,7 @@ else
     private int _newTaskInfoTimeSpentMinutes = 5; // default
     private UserViewModel? _createdUserViewModel;
     private UserViewModel? _userViewModel;
+    private CompanyUserViewModel? _companyUserViewModel;
     private Dictionary<int, UserViewModel> _userViewModels = [];
 
     [Parameter] public int Id { get; set; }
@@ -220,6 +222,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var user = await UserService.GetCurrentUserAsync();
+        _companyUserViewModel = await ProjectTaskPageService.GetCompanyUserAsync(user.Id);
+        
         _task = await ProjectTaskPageService.GetValueAsync(Id);
         var userIds = new List<int>
         {

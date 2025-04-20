@@ -7,6 +7,8 @@ public interface IProjectTaskPageService : IBasePageService<ProjectTaskViewModel
 {
     Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId);
     
+    Task<CompanyUserViewModel> GetCompanyUserAsync(int userId);
+    
     Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids);
 
     Task<ICollection<TaskInfoViewModel>> GetTaskInfoAsync(ICollection<int> ids);

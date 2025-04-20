@@ -20,6 +20,11 @@ public class ProjectTaskPageService(
         return companyUserViewModel;
     }
 
+    public Task<CompanyUserViewModel> GetCompanyUserAsync(int userId)
+    {
+        return companyUserService.GetValueAsync(userId);
+    }
+
     public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids)
     {
         var userViewModels = await userService.GetValuesAsync(ids);

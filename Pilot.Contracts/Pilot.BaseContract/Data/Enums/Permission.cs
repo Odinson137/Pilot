@@ -6,4 +6,6 @@ public enum Permission
     CreateTask = 1,
     ViewTaskTable = 2,
     TaskClosing = 4,
+    ViewCompanyManagement = 8,
+    ViewHrTable = 16,
 }

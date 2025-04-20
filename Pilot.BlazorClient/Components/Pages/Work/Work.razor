@@ -6,6 +6,7 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IUserService UserService
@@ -13,11 +14,11 @@
 
 <PageTitle>Work</PageTitle>
 
-<AuthCheck />
+<AuthCheck/>
 
 @if (_isLoading)
 {
-    <Loading />
+    <Loading/>
 }
 else
 {
@@ -33,10 +34,21 @@ else
                     <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">Dashboard</li>
                     <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">Summary</li>
                     <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">Tasks</li>
-                    <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
-                    <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">CompanyManagement</li>
-                    <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">Vacancies</li>
-                    <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">Applications</li>
+                    @if (_companyUser.Permissions.HasFlag(Permission.ViewTaskTable))
+                    {
+                        <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
+                    }
+
+                    @if (_companyUser.Permissions.HasFlag(Permission.ViewCompanyManagement))
+                    {
+                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">CompanyManagement</li>
+                    }
+
+                    @if (_companyUser.Permissions.HasFlag(Permission.ViewHrTable))
+                    {
+                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">Vacancies</li>
+                        <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">Applications</li>
+                    }
                 }
             </ul>
         </nav>
@@ -46,34 +58,34 @@ else
             @switch (_activeTab)
             {
                 case 0:
-                    <NoCompany />
+                    <NoCompany/>
                     break;
                 case 1:
-                    <UserGreeting UserName="@_user.UserName" UserId="@_user.Id" />
+                    <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
                     break;
                 case 2:
-                    <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 3:
-                    <UserTask UserId="@_user.Id" ProjectId="@_projectId" />
+                    <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
                     break;
                 case 5:
-                    <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 6:
-                    <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 7:
-                    <CompanyManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <CompanyManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 8:
-                    <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 10:
-                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 11:
-                    <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id" />
+                    <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
             }
         }
@@ -142,6 +154,7 @@ else
         if (_activeTab == 3)
             NavigationManager.NavigateTo(NavigationManager.Uri, true);
     }
+
 }
 
 <style>

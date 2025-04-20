@@ -56,6 +56,7 @@ public class Seed : ISeed
 
             var ownerCompany = new CompanyUser
             {
+                Permissions = (Permission)Enum.GetValues<Permission>().Sum(c => (int)c),
                 Company = company, // Link to the saved Company
             };
             await _context.CompanyUsers.AddAsync(ownerCompany);
