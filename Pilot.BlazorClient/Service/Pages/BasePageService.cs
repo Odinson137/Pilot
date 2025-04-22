@@ -11,7 +11,7 @@ public abstract class BasePageService<TViewModel>(IBaseModelService<TViewModel> 
         return baseModelService.GetValueAsync(valueId);
     }
 
-    public Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? baseFilter = null)
+    public Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter baseFilter = null)
     {
         return baseModelService.GetValuesAsync(baseFilter);
     }

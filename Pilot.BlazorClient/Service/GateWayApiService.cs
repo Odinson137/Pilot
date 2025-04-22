@@ -19,7 +19,7 @@ public class GateWayApiService(
     
     public async Task<ICollection<TViewModel>> SendGetMessages<TOut, TViewModel>(
         string? url = null,
-        BaseFilter? filter = null,
+        BaseFilter filter = null!,
         CancellationToken token = default)
         where TOut : BaseDto where TViewModel : BaseViewModel
     {

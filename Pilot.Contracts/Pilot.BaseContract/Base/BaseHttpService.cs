@@ -22,7 +22,7 @@ public class BaseHttpService(
         return GetFullUrl<TDto>(url, null);
     }
 
-    protected static string GetFullUrl<TDto>(string? url, BaseFilter? filter) where TDto : BaseDto
+    protected static string GetFullUrl<TDto>(string? url, BaseFilter filter) where TDto : BaseDto
     {
         var stringBuilder = new StringBuilder($"api/{BaseExpendMethods.GetModelName<TDto>()}");
 
@@ -34,7 +34,7 @@ public class BaseHttpService(
         return stringBuilder.ToString();
     }
 
-    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, BaseFilter? filter = null,
+    public async Task<ICollection<TOut>> SendGetMessages<TOut>(string? url = null, BaseFilter filter = null,
         CancellationToken token = default) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message to {typeof(TOut)}");

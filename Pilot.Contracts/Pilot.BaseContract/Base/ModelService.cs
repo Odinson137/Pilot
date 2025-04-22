@@ -51,31 +51,32 @@ public class ModelService : BaseHttpService, IModelService
         return GetValueByIdAsync<TDto>($"{valueId}", token);
     }
 
-    public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(string url, BaseFilter? filter,
+    public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(string url, BaseFilter filter,
         CancellationToken token = default) where TDto : BaseDto
     {
         _logger.LogInformation("Getting values list");
         _logger.LogClassInfo(filter);
 
-        // var cacheValue = await _redis.GetValuesAsync<TDto>(filter.Key);
-        //
-        // ICollection<TDto> valueDto;
-        // if (cacheValue == null)
-        // {
-        _logger.LogInformation("Get values from db");
-        var valueDto = await SendGetMessages<TDto>(url, filter, token);
-        // }
-        // else
-        // {
-        //     _logger.LogInformation("Get values from cache");
-        //     valueDto = cacheValue.FromJson<List<TDto>>();
-        // }
+        var cacheValue = await _redis.GetValuesAsync<TDto>(filter.Key);
+
+        ICollection<TDto> valueDto;
+        if (cacheValue == null)
+        {
+            _logger.LogInformation("Get values from db");
+            valueDto = await SendGetMessages<TDto>(url, filter, token);
+            await _redis.SetValuesAsync(filter.Key, valueDto);
+        }
+        else
+        {
+            _logger.LogInformation("Get values from cache");
+            valueDto = cacheValue.FromJson<List<TDto>>();
+        }
 
         _logger.LogClassInfo(valueDto);
         return valueDto;
     }
 
-    public virtual Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter? filter, CancellationToken token = default)
+    public virtual Task<ICollection<TDto>> GetValuesAsync<TDto>(BaseFilter filter, CancellationToken token = default)
         where TDto : BaseDto
     {
         return GetValuesAsync<TDto>("", filter, token);
@@ -88,7 +89,8 @@ public class ModelService : BaseHttpService, IModelService
 
         var client = await GetClientAsync<TDto>();
 
-        var response = await client.PostAsJsonAsync($"api/{BaseExpendMethods.GetModelName<TDto>()}/Query", filter,  token);
+        var response =
+            await client.PostAsJsonAsync($"api/{BaseExpendMethods.GetModelName<TDto>()}/Query", filter, token);
         if (!response.IsSuccessStatusCode)
             throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
 

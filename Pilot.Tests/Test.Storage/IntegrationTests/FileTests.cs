@@ -15,36 +15,6 @@ public class FileTests(StorageTestStorageFactory factory, ITestOutputHelper test
     : BaseModelIntegrationTest<File, FileDto>(factory, testOutputHelper)
 {
     [Fact]
-    public virtual async Task GetFileUrlsTest_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<File>(count: 2, listDepth: 0);
-
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
-
-        var value = values.Select(c => c.Name).ToList().ToJson();
-        var filter = new BaseFilter(value, FilterValueType.GetFileValue);
-        
-        #endregion
-        
-        // Act
-        var result = await Client.GetAsync($"api/{nameof(File)}/{Urls.FileUrl}?filter={filter.ToJson()}");
-        
-        TestOutputHelper.WriteLine(await result.Content.ReadAsStringAsync());
-        
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<FileDto>>();
-        Assert.NotNull(content);
-        foreach (var fileDto in content)
-            Assert.NotNull(fileDto.Url);
-        Assert.True(content.Count >= count);
-    }
-
-    [Fact]
     public virtual async Task GetFileUrlTest_ReturnOk()
     {
         #region Arrange

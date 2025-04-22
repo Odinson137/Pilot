@@ -38,7 +38,7 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: new BaseFilter(ids));
     }
 
-    public async Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? filter)
+    public async Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter filter)
     {
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }

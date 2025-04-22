@@ -73,22 +73,22 @@ public class FileService : IFileService
         if (!fileUrlsSet.Any()) return;
 
         _logger.LogInformation("Exist some files");
-        var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToJson(), FilterValueType.GetFileValue);
-
-        var files = await _modelService.GetValuesAsync<FileDto>(Urls.FileUrl, filter);
-        foreach (var file in files)
-        {
-            var (property, currentValue) = fileUrlsSet[file.Name];
-            var value = property.GetValue(currentValue);
-
-            if (value is IEnumerable && property.PropertyType != typeof(string))
-            {
-                var list = (List<string>)property.GetValue(currentValue)!;
-                list.Add(file.Url!);
-            }
-            else
-                property.SetValue(currentValue, file.Url);
-        }
+        // var filter = new BaseFilter(fileUrlsSet.Select(c => c.Key).ToJson(), FilterValueType.GetFileValue);
+        //
+        // var files = await _modelService.GetValuesAsync<FileDto>(Urls.FileUrl, filter);
+        // foreach (var file in files)
+        // {
+        //     var (property, currentValue) = fileUrlsSet[file.Name];
+        //     var value = property.GetValue(currentValue);
+        //
+        //     if (value is IEnumerable && property.PropertyType != typeof(string))
+        //     {
+        //         var list = (List<string>)property.GetValue(currentValue)!;
+        //         list.Add(file.Url!);
+        //     }
+        //     else
+        //         property.SetValue(currentValue, file.Url);
+        // }
     }
 
     // эта реализация работает только если TResponse это не коллекция, в ином случае в системе пока и быть не может

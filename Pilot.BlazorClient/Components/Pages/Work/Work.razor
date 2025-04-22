@@ -6,13 +6,15 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IUserService UserService
 @inject NavigationManager NavigationManager
+@inject IJsonLocalizationService Localizer
 
-<PageTitle>Work</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", "Work")</PageTitle>
 
 <AuthCheck/>
 
@@ -27,27 +29,24 @@ else
             <ul>
                 @if (_companyUser == null)
                 {
-                    <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">Join or Create Company</li>
+                    <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">@Localizer.GetString("JoinOrCreateCompany", "Work")</li>
                 }
                 else
                 {
-                    <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">Dashboard</li>
-                    <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">Summary</li>
-                    <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">Tasks</li>
+                    <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">@Localizer.GetString("Dashboard", "Work")</li>
+                    <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li>
+                    <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">@Localizer.GetString("Tasks", "Work")</li>
                     @if (_companyUser.Permissions.HasFlag(Permission.ViewTaskTable))
                     {
-                        <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">TaskManagement</li>
+                        <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">@Localizer.GetString("TaskManagement", "Work")</li>
                     }
-
                     @if (_companyUser.Permissions.HasFlag(Permission.ViewCompanyManagement))
                     {
-                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">CompanyManagement</li>
+                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">@Localizer.GetString("CompanyManagement", "Work")</li>
                     }
-
                     @if (_companyUser.Permissions.HasFlag(Permission.ViewHrTable))
                     {
-                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">Vacancies</li>
-                        <li @onclick="() => SetActiveTab(10)" class="@GetActiveClass(10)">Applications</li>
+                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">@Localizer.GetString("HRManagement", "Work")</li>
                     }
                 }
             </ul>
@@ -69,20 +68,11 @@ else
                 case 3:
                     <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
                     break;
-                case 5:
-                    <Projects UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                    break;
-                case 6:
-                    <Teams UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                    break;
                 case 7:
                     <CompanyManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 8:
-                    <Vacancy UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
-                    break;
-                case 10:
-                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <HRManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 11:
                     <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
@@ -142,22 +132,21 @@ else
     {
         return _activeTab == tabId ? "active" : "";
     }
-
-    private async Task HandleProjectChange(ChangeEventArgs e)
-    {
-        _projectId = int.Parse(e.Value?.ToString() ?? "0");
-        if (_projectId == 0)
-            await ProtectedSessionStorage.DeleteAsync(ClientConstants.SelectProject);
-        else
-            await ProtectedSessionStorage.SetAsync(ClientConstants.SelectProject, _projectId);
-
-        if (_activeTab == 3)
-            NavigationManager.NavigateTo(NavigationManager.Uri, true);
-    }
-
 }
 
 <style>
+    /* Переменные стилей */
+    :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+        --text-primary: #333;
+        --text-secondary: #666;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --gradient: linear-gradient(135deg, #007bff, #6c757d);
+    }
+
     /* Main container */
     .work-container {
         display: flex;
@@ -165,48 +154,6 @@ else
         min-height: 100vh;
         background-color: var(--bg-light);
         padding: 0;
-    }
-
-    /* Header */
-    .work-header {
-        background: var(--gradient);
-        color: white;
-        padding: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: var(--card-shadow);
-        position: relative;
-        z-index: 10;
-    }
-
-    .work-title {
-        color: black;
-        font-size: 2rem;
-        font-weight: 700;
-        margin: 0;
-    }
-
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .project-selector {
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        border: none;
-        font-size: 1rem;
-        background-color: rgba(255, 255, 255, 0.9);
-        color: var(--text-primary);
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .project-selector:focus {
-        outline: none;
-        background-color: white;
     }
 
     /* Navigation */
@@ -221,6 +168,7 @@ else
         margin: 0;
         display: flex;
         gap: 2rem;
+        padding: 1rem 2rem;
     }
 
     .work-nav li {

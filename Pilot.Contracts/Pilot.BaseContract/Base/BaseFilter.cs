@@ -13,11 +13,6 @@ public class BaseFilter(int skip, int take)
     {
     }
 
-    public BaseFilter(string jsonValue, FilterValueType filterValueType) : this(0, int.MaxValue)
-    {
-        JsonValue = new FilterValue(jsonValue, filterValueType);
-    }
-
     public BaseFilter(params int[] ids) : this(0, int.MaxValue)
     {
         Ids = ids;
@@ -42,8 +37,14 @@ public class BaseFilter(int skip, int take)
 
     public WhereFilter? WhereFilter { get; set; }
 
-    // потом убрать
-    public FilterValue? JsonValue { get; set; }
+    public string Key
+    {
+        get
+        {
+            var ids = Ids?.Distinct().ToList() ?? [];
+            return $"{Skip}:{Take}:{string.Join('*', ids)}:{WhereFilter?.Key}:";
+        }
+    }
 }
 
 public class WhereFilter
@@ -80,4 +81,12 @@ public class WhereFilter
     }
 
     public ICollection<(string, object, Type)> List { get; } = [];
+    
+    public string Key
+    {
+        get
+        {
+            return string.Join("*", List.Select(x => $"{x.Item1}|{x.Item2}"));
+        }
+    }
 }

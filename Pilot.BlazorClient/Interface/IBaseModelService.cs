@@ -15,7 +15,7 @@ public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
 
     Task<ICollection<TViewModel>> GetValuesAsync(ICollection<int> ids);
 
-    Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? filter);
+    Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter filter);
     
     Task CreateValueAsync(TViewModel value);
     

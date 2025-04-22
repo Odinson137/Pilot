@@ -12,12 +12,12 @@ public record GetQueryValueQuery<TDto>(BaseFilter Filter)
 public record GetValuesQuery<TDto> 
     : BaseQuery, IRequest<ICollection<TDto>> where TDto : BaseDto
 {
-    public GetValuesQuery(BaseFilter? filter)
+    public GetValuesQuery(BaseFilter filter)
     {
         Filter = filter;
     }
 
-    public GetValuesQuery(BaseFilter? filter, string url)
+    public GetValuesQuery(BaseFilter filter, string url)
     {
         Filter = filter;
         Url = url;
@@ -25,5 +25,5 @@ public record GetValuesQuery<TDto>
     
     public string? Url { get; set; }
     
-    public BaseFilter? Filter { get; set; }
+    public BaseFilter Filter { get; set; }
 }

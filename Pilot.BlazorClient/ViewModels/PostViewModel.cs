@@ -10,7 +10,7 @@ public class PostViewModel : BaseViewModel
 
     [Required] [Range(1, int.MaxValue)] public int CompanyId { get; set; }
 
-    public ICollection<BaseViewModel> Skills { get; set; } = [];
+    public ICollection<SkillViewModel> Skills { get; set; } = [];
 
-    public ICollection<BaseViewModel> CompanyPosts { get; set; } = [];
+    public ICollection<CompanyPostViewModel> CompanyPosts { get; set; } = [];
 }
