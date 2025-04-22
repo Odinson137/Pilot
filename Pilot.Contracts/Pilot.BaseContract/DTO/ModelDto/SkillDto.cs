@@ -9,4 +9,6 @@ namespace Pilot.Contracts.DTO.ModelDto;
 public class SkillDto : BaseDto
 {
     [Required] [MaxLength(100)] public string Title { get; set; } = null!;
+    
+    public ICollection<BaseDto> Posts { get; set; } = [];
 }

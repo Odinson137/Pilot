@@ -38,6 +38,7 @@ services.AddScoped<IMessengerService, MessengerService>();
 services.AddScoped<IReminderPageService, ReminderPageService>();
 services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
 services.AddScoped<ISummaryPageService, SummaryPageService>();
+services.AddScoped<ISkillPageService, SkillPageService>();
 
 // Base model service registrations
 services.AddScoped<IBaseModelService<UserViewModel>, BaseModelService<UserDto, UserViewModel>>();

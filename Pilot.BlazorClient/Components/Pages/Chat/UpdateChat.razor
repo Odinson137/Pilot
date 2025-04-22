@@ -9,49 +9,52 @@
 
 <PageTitle>Update New Chat</PageTitle>
 
-<div class="chat">
-    <h3>Update New Chat</h3>
+<div style="display: grid">
+    <div class="chat">
+        <h3>Update New Chat</h3>
 
-    <EditForm Model="_chat" OnValidSubmit="HandleSubmit">
+        <EditForm Model="_chat" OnValidSubmit="HandleSubmit">
 
-        <div class="form-group">
-            <label for="Title">Title</label>
-            <InputText id="Title" @bind-Value="_chat.Title" class="form-control"/>
-        </div>
+            <div class="form-group">
+                <label for="Title">Title</label>
+                <InputText id="Title" @bind-Value="_chat.Title" class="form-control"/>
+            </div>
 
-        <div class="form-group">
-            <label for="Description">Description</label>
-            <InputTextArea id="Description" @bind-Value="_chat.Description" class="form-control"/>
-        </div>
+            <div class="form-group">
+                <label for="Description">Description</label>
+                <InputTextArea id="Description" @bind-Value="_chat.Description" class="form-control"/>
+            </div>
 
-        <div class="employee-list">
-            @foreach (var user in _multySelect)
-            {
-                <div class="employee-item">
-                    @if (user.Value.Id == _chat.CreatedBy)
-                    {
-                        <input type="checkbox" class="employee-checkbox" checked disabled/>
-                    }
-                    else
-                    {
-                        <input type="checkbox" @bind="@(user.IsSelected)" class="employee-checkbox"/>
-                    }
-                    <img src="@TempFileService.GetUrl(user.Value.AvatarImage)" alt="User Avatar" class="avatar"/>
-                    <div class="employee-info">
-                        <div class="employee-name">@user.Value.FullName</div>
-                        <div class="employee-username">@user.Value.UserName</div>
+            <div class="employee-list">
+                @foreach (var user in _multySelect)
+                {
+                    <div class="employee-item">
+                        @if (user.Value.Id == _chat.CreatedBy)
+                        {
+                            <input type="checkbox" class="employee-checkbox" checked disabled/>
+                        }
+                        else
+                        {
+                            <input type="checkbox" @bind="@(user.IsSelected)" class="employee-checkbox"/>
+                        }
+                        <img src="@TempFileService.GetUrl(user.Value.AvatarImage)" alt="User Avatar" class="avatar"/>
+                        <div class="employee-info">
+                            <div class="employee-name">@user.Value.FullName</div>
+                            <div class="employee-username">@user.Value.UserName</div>
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
 
-        <div class="buttons">
-            <button type="submit" class="btn btn-primary">Update Chat</button>
-            <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
-        </div>
-    </EditForm>
+            <div class="buttons">
+                <button type="submit" class="btn btn-primary">Update Chat</button>
+                <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+            </div>
+        </EditForm>
 
+    </div>
 </div>
+
 
 @code {
     [Parameter] public int Id { get; set; }

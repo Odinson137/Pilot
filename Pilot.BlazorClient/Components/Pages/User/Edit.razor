@@ -162,6 +162,7 @@
 
             _user!.AvatarImage = file.Name;
             _fileError = null;
+            await Task.Delay(500);
             await HandleValidSubmit();
         }
         catch (Exception ex)

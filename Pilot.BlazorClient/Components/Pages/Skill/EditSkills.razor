@@ -1,0 +1,573 @@
+﻿@page "/Account/EditSkills"
+<PageTitle>@Localizer.GetString("PageTitle", "EditSkills")</PageTitle>
+@using Microsoft.AspNetCore.Components.Authorization
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.ViewModels.UserViewModels
+@using Pilot.BlazorClient.Service
+@using Pilot.BlazorClient.Components.Pages.User
+@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.Contracts.Data.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ISkillPageService SkillPageService
+@inject IJsonLocalizationService Localizer
+
+<AuthCheck/>
+
+<header class="header-banner">
+    <h1 class="banner-title">@Localizer.GetString("EditSkillsTitle", "EditSkills")</h1>
+    <p class="banner-subtitle">@Localizer.GetString("EditSkillsSubtitle", "EditSkills")</p>
+</header>
+
+@if (_isLoading)
+{
+    <Loading></Loading>
+}
+else if (_user == null)
+{
+    <p class="not-found">@Localizer.GetString("UserNotFound", "EditSkills")</p>
+}
+else
+{
+    <div class="skills-editor-container">
+        @if (_errorMessage != null)
+        {
+            <div class="error-message">
+                <span class="material-icons">error</span>
+                @_errorMessage
+            </div>
+        }
+
+        <div class="skills-header">
+            <button class="btn btn-back" @onclick="GoBack">
+                <span class="material-icons">arrow_back</span> @Localizer.GetString("Back", "EditSkills")
+            </button>
+            <h2>@Localizer.GetString("SkillsTitle", "EditSkills")</h2>
+            <button class="btn btn-add" @onclick="ShowAddSkillForm">
+                <span class="material-icons">add</span> @Localizer.GetString("AddSkill", "EditSkills")
+            </button>
+        </div>
+
+        @if (_userSkills?.Any() != true)
+        {
+            <p class="no-data">@Localizer.GetString("NoSkills", "EditSkills")</p>
+        }
+        else
+        {
+            <div class="skills-grid">
+                @foreach (var skill in _userSkills)
+                {
+                    <div class="skill-card">
+                        <div class="skill-info">
+                            <h3>@skill.Skill!.Title</h3>
+                            <p>@Localizer.GetString("Experience", "EditSkills"): @(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : Localizer.GetString("NoExperience", "EditSkills"))</p>
+                            <p>@Localizer.GetString("Level", "EditSkills"): @Localizer.GetString(@skill.SkillLevel.ToString(), "EditSkills")</p>
+                        </div>
+                        <div class="skill-actions">
+                            <button class="btn btn-icon btn-edit" @onclick="() => ShowEditSkillForm(skill)">
+                                <span class="material-icons">edit</span>
+                            </button>
+                            <button class="btn btn-icon btn-danger" @onclick="() => DeleteSkill(skill.Id)">
+                                <span class="material-icons">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_showAddSkillForm || _showEditSkillForm)
+        {
+            <div class="modal-overlay">
+                <div class="modal-card">
+                    <h3>@(_showAddSkillForm ? Localizer.GetString("AddSkill", "EditSkills") : Localizer.GetString("EditSkill", "EditSkills"))</h3>
+                    <EditForm Model="_skillModel" OnValidSubmit="SaveSkill">
+                        <DataAnnotationsValidator/>
+                        <div class="form-group">
+                            <label>@Localizer.GetString("Skill", "EditSkills")</label>
+                            <InputSelect @bind-Value="_skillModel.SkillId" class="form-select" disabled="@_showEditSkillForm">
+                                <option value="0" disabled selected>@Localizer.GetString("SelectSkill", "EditSkills")</option>
+                                @foreach (var skill in _availableSkills ?? new List<SkillViewModel>())
+                                {
+                                    <option value="@skill.Id">@skill.Title</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => _skillModel.SkillId)"/>
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer.GetString("ExperienceYears", "EditSkills")</label>
+                            <InputNumber @bind-Value="_skillModel.ExperienceYears" class="form-input" min="0" max="50"/>
+                            <ValidationMessage For="@(() => _skillModel.ExperienceYears)"/>
+                        </div>
+                        <div class="form-group">
+                            <label>@Localizer.GetString("SkillLevel", "EditSkills")</label>
+                            <InputSelect @bind-Value="_skillModel.SkillLevel" class="form-select">
+                                @foreach (var skillLevel in Enum.GetValues<SkillLevel>())
+                                {
+                                    <option value="@skillLevel">@Localizer.GetString(skillLevel.ToString(), "EditSkills")</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="@(() => _skillModel.SkillLevel)"/>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "EditSkills")</button>
+                            <button type="button" class="btn btn-cancel" @onclick="HideSkillForm">@Localizer.GetString("Cancel", "EditSkills")</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private UserViewModel? _user;
+    private ICollection<UserSkillViewModel>? _userSkills;
+    private ICollection<SkillViewModel>? _availableSkills;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private bool _showAddSkillForm;
+    private bool _showEditSkillForm;
+    private UserSkillViewModel _skillModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        try
+        {
+            _user = await SkillPageService.GetUserAsync();
+            if (_user == null)
+            {
+                _errorMessage = Localizer.GetString("UserNotFound", "EditSkills");
+                return;
+            }
+
+            await LoadSkills();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("LoadError", "EditSkills");
+            Console.WriteLine($"Load error: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task LoadSkills()
+    {
+        _userSkills = await SkillPageService.GetAllUserSkillAsync(_user!.Id);
+        var needSkills = await SkillPageService.GetAllSkillAsync();
+        _availableSkills = needSkills.Where(c => !_userSkills.Select(x => x.Skill!.Id).Contains(c.Id)).ToList();
+    }
+
+    private void ShowAddSkillForm()
+    {
+        _skillModel = new UserSkillViewModel();
+        _showAddSkillForm = true;
+    }
+
+    private void ShowEditSkillForm(UserSkillViewModel skill)
+    {
+        var values = _availableSkills!.ToList();
+        values.Insert(0, skill.Skill!);
+        _availableSkills = values;
+        _skillModel = new UserSkillViewModel
+        {
+            Id = skill.Id,
+            Skill = skill.Skill,
+            ExperienceYears = skill.ExperienceYears,
+            SkillLevel = skill.SkillLevel
+        };
+        _showEditSkillForm = true;
+    }
+
+    private void HideSkillForm()
+    {
+        _showAddSkillForm = false;
+        if (_showEditSkillForm)
+            _availableSkills = _availableSkills!.Skip(1).ToList();
+
+        _showEditSkillForm = false;
+        _skillModel = new UserSkillViewModel();
+    }
+
+    private async Task SaveSkill()
+    {
+        try
+        {
+            _skillModel.UserId = _user!.Id;
+            if (_showAddSkillForm)
+            {
+                await SkillPageService.AddUserSkillAsync(_skillModel);
+            }
+            else
+            {
+                await SkillPageService.UpdateUserSkillAsync(_skillModel);
+                _availableSkills = _availableSkills!.Skip(1).ToList();
+            }
+
+            await Task.Delay(500);
+            await LoadSkills();
+            HideSkillForm();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("SaveError", "EditSkills");
+            Console.WriteLine($"Save skill error: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteSkill(int skillId)
+    {
+        try
+        {
+            await SkillPageService.DeleteUserSkillAsync(skillId);
+            await Task.Delay(500);
+            await LoadSkills();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("DeleteError", "EditSkills");
+            Console.WriteLine($"Delete skill error: {ex.Message}");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/Account");
+    }
+}
+
+<style>
+    :root {
+        --primary: #007bff;
+        --success: #28a745;
+        --danger: #dc3545;
+        --secondary: #6c757d;
+        --light: #f8f9fa;
+        --bg-white: #ffffff;
+        --text-primary: #333;
+        --text-secondary: #666;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+    }
+
+    .header-banner {
+        position: relative;
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary), #6c757d);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 0 0 20px 20px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .banner-title {
+        font-size: 2.5rem;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .banner-subtitle {
+        font-size: 1.2rem;
+        margin-top: 10px;
+    }
+
+    .skills-editor-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        background: var(--bg-white);
+        border-radius: 15px;
+        box-shadow: var(--shadow);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .error-message {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #fee2e2;
+        border: 1px solid var(--danger);
+        border-radius: 8px;
+        color: var(--danger);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .skills-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .skills-header h2 {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .skill-card {
+        background: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .skill-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .skill-info h3 {
+        font-size: 1.4rem;
+        color: var(--primary);
+        margin: 0 0 10px;
+    }
+
+    .skill-info p {
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        margin: 5px 0;
+    }
+
+    .skill-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-back {
+        background: linear-gradient(90deg, var(--secondary), #9ca3af);
+        color: #fff;
+    }
+
+    .btn-back:hover {
+        background: linear-gradient(90deg, #5a6268, var(--secondary));
+    }
+
+    .btn-add {
+        background: linear-gradient(90deg, var(--primary), #60a5fa);
+        color: #fff;
+    }
+
+    .btn-add:hover {
+        background: linear-gradient(90deg, #0056b3, var(--primary));
+    }
+
+    .btn-icon {
+        padding: 6px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-edit {
+        background: linear-gradient(90deg, #17a2b8, #2bc4de);
+        color: #fff;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(90deg, #138496, #17a2b8);
+    }
+
+    .btn-danger {
+        background: linear-gradient(90deg, var(--danger), #f87171);
+        color: #fff;
+    }
+
+    .btn-danger:hover {
+        background: linear-gradient(90deg, #c82333, var(--danger));
+    }
+
+    .btn-save {
+        background: linear-gradient(90deg, var(--success), #34d399);
+        color: #fff;
+    }
+
+    .btn-save:hover {
+        background: linear-gradient(90deg, #059669, var(--success));
+    }
+
+    .btn-cancel {
+        background: linear-gradient(90deg, var(--secondary), #9ca3af);
+        color: #fff;
+    }
+
+    .btn-cancel:hover {
+        background: linear-gradient(90deg, #5a6268, var(--secondary));
+    }
+
+    .no-data {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        text-align: center;
+        font-style: italic;
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin: 40px 0;
+    }
+
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: var(--shadow);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .modal-card h3 {
+        font-size: 1.6rem;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+        padding-right: 2.5rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .skills-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .modal-card {
+            width: 95%;
+        }
+
+        .skills-header {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>

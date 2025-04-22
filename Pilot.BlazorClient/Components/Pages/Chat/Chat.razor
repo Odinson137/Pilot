@@ -58,7 +58,7 @@ else
                     {
                         <img src="/Images/Chat/ai.png" width="40px"/>
                     }
-                    <h4>@(_selectedChat != null ? _selectedChat.Title : "")</h4>
+                    <h4 style="max-width: 60%;">@(_selectedChat != null ? _selectedChat.Title : "")</h4>
                     @if (_selectedChat != null)
                     {
                         <div>
@@ -290,8 +290,7 @@ else
 <style>
     .chat-page {
         display: flex;
-        height: 85vh;
-        margin-bottom: 5vh;
+        margin-bottom: 15vh;
         font-family: Arial, sans-serif;
     }
 
@@ -314,7 +313,7 @@ else
     .chat-content {
         flex-grow: 1;
         padding: 1rem;
-        height: 80vh;
+        height: 75vh;
     }
 
     .placeholder-content {

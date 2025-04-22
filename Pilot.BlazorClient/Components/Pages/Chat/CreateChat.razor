@@ -6,28 +6,31 @@
 
 <PageTitle>Create New Chat</PageTitle>
 
-<div class="chat">
-    <h3>Create New Chat</h3>
+<div style="display: grid">
+    <div class="chat">
+        <h3>Create New Chat</h3>
 
-    <EditForm Model="_newChat" OnValidSubmit="HandleSubmit">
+        <EditForm Model="_newChat" OnValidSubmit="HandleSubmit">
 
-        <div class="form-group">
-            <label for="Title">Title</label>
-            <InputText id="Title" @bind-Value="_newChat.Title" class="form-control"/>
-        </div>
+            <div class="form-group">
+                <label for="Title">Title</label>
+                <InputText id="Title" @bind-Value="_newChat.Title" class="form-control"/>
+            </div>
 
-        <div class="form-group">
-            <label for="Description">Description</label>
-            <InputTextArea id="Description" @bind-Value="_newChat.Description" class="form-control"/>
-        </div>
+            <div class="form-group">
+                <label for="Description">Description</label>
+                <InputTextArea id="Description" @bind-Value="_newChat.Description" class="form-control"/>
+            </div>
 
-        <div class="buttons">
-            <button type="submit" class="btn btn-primary">Create Chat</button>
-            <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
-        </div>
-    </EditForm>
+            <div class="buttons">
+                <button type="submit" class="btn btn-primary">Create Chat</button>
+                <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+            </div>
+        </EditForm>
 
+    </div>
 </div>
+
 
 @code {
     private ChatViewModel _newChat = new();
@@ -56,11 +59,11 @@
         justify-self: center;
         margin-bottom: 100px;
     }
-    
+
     .buttons {
-        margin-top: 20px;    
+        margin-top: 20px;
     }
-    
+
     .employee-list {
         max-height: 430px; /* Adjust height as needed */
         overflow-y: auto;
@@ -110,5 +113,5 @@
     #Description {
         min-height: 110px;
     }
-    
+
 </style>
