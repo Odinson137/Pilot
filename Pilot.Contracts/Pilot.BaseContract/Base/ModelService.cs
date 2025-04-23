@@ -57,14 +57,14 @@ public class ModelService : BaseHttpService, IModelService
         _logger.LogInformation("Getting values list");
         _logger.LogClassInfo(filter);
 
-        var cacheValue = await _redis.GetValuesAsync<TDto>(filter.Key);
+        var cacheValue = await _redis.GetValuesAsync<TDto>(filter.GetKey<TDto>());
 
         ICollection<TDto> valueDto;
         if (cacheValue == null)
         {
             _logger.LogInformation("Get values from db");
             valueDto = await SendGetMessages<TDto>(url, filter, token);
-            await _redis.SetValuesAsync(filter.Key, valueDto);
+            await _redis.SetValuesAsync(filter.GetKey<TDto>(), valueDto);
         }
         else
         {

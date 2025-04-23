@@ -1,78 +1,75 @@
-﻿@using Pilot.BlazorClient.Data
+﻿@page "/Work/HRManagement"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
-@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
-@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.Contracts.Services
 @inject IHrManagementPageService HrManagementPageService
 @inject IJsonLocalizationService Localizer
 @inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStorage
 
 <div class="hr-management-container">
-    <div class="hr-header">
-        <button class="btn btn-back" @onclick="GoBack">
-            <span class="material-icons">arrow_back</span> @Localizer.GetString("Back", "HRManagement")
-        </button>
-        <h2>@Localizer.GetString("HRManagementTitle", "HRManagement")</h2>
-        <div class="hr-tabs">
-            <button class="tab-button @(_activeSubTab == SubTab.Positions ? "active" : "")" @onclick="() => SetSubTab(SubTab.Positions)">
-                @Localizer.GetString("Positions", "HRManagement")
-            </button>
-            <button class="tab-button @(_activeSubTab == SubTab.Vacancies ? "active" : "")" @onclick="() => SetSubTab(SubTab.Vacancies)">
-                @Localizer.GetString("Vacancies", "HRManagement")
-            </button>
-            <button class="tab-button @(_activeSubTab == SubTab.Applications ? "active" : "")" @onclick="() => SetSubTab(SubTab.Applications)">
-                @Localizer.GetString("Applications", "HRManagement")
-            </button>
-        </div>
+    <div class="title-header">
+        <h1>@Localizer.GetString("PageTitle", "HrManagement")</h1>
+        <p class="subtitle">@Localizer.GetString("Subtitle", "HrManagement")</p>
     </div>
+
+    @if (_errorMessage != null)
+    {
+        <div class="error-message">
+            <span class="material-icons">error</span>
+            @_errorMessage
+        </div>
+    }
+
+    <nav class="hr-nav">
+        <button class="tab-button @(_activeTab == 0 ? "active" : "")" @onclick="() => SetActiveTab(0)">
+            <span class="material-icons">work</span> @Localizer.GetString("Positions", "HrManagement")
+        </button>
+        <button class="tab-button @(_activeTab == 1 ? "active" : "")" @onclick="() => SetActiveTab(1)">
+            <span class="material-icons">assignment</span> @Localizer.GetString("Vacancies", "HrManagement")
+        </button>
+        <button class="tab-button @(_activeTab == 2 ? "active" : "")" @onclick="() => SetActiveTab(2)">
+            <span class="material-icons">people</span> @Localizer.GetString("Applications", "HrManagement")
+        </button>
+    </nav>
 
     @if (_isLoading)
     {
-        <Loading/>
+        <div class="loading">
+            <span class="material-icons spin">refresh</span> @Localizer.GetString("Loading", "HrManagement")
+        </div>
     }
     else
     {
-        @switch (_activeSubTab)
-        {
-            case SubTab.Positions:
-                <div class="positions-section">
+        <div class="tab-content">
+            @switch (_activeTab)
+            {
+                case 0:
                     <div class="section-header">
-                        <h3>@Localizer.GetString("PositionsTitle", "HRManagement")</h3>
-                        <button class="btn btn-add" @onclick="ShowAddPositionForm">
-                            <span class="material-icons">add</span> @Localizer.GetString("AddPosition", "HRManagement")
+                        <h2>@Localizer.GetString("ManagePositions", "HrManagement")</h2>
+                        <button class="btn btn-add" @onclick="ShowCreatePostModal">
+                            <span class="material-icons">add</span> @Localizer.GetString("CreatePosition", "HrManagement")
                         </button>
                     </div>
-                    @if (_positions.Any())
+                    @if (_posts.Any())
                     {
-                        <div class="positions-grid">
-                            @foreach (var position in _positions)
+                        <div class="card-grid">
+                            @foreach (var post in _posts)
                             {
-                                <div class="position-card">
-                                    <h3>@position.Title</h3>
-                                    <p>@(position.Description?.Length > 100 ? position.Description[..100] + "..." : position.Description)</p>
-                                    <div class="skills">
-                                        @if (position.Skills.Any())
-                                        {
-                                            foreach (var skill in position.Skills)
-                                            {
-                                                <span class="skill-tag">@skill.Title</span>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <span class="no-skills">@Localizer.GetString("NoSkills", "HRManagement")</span>
-                                        }
-                                    </div>
-                                    <div class="actions">
-                                        <button class="btn btn-view" @onclick="() => ViewPosition(position)">
-                                            <span class="material-icons">visibility</span> @Localizer.GetString("View", "HRManagement")
+                                <div class="card">
+                                    <h3>@post.Title</h3>
+                                    <p>@(post.Description?.TakeOnly(100, "...") ?? Localizer.GetString("NoDescription", "HrManagement"))</p>
+                                    <p><strong>@Localizer.GetString("Skills", "HrManagement"):</strong> @(string.Join(", ", post.Skills.Select(s => s.Title)))</p>
+                                    <div class="card-actions">
+                                        <button class="btn btn-edit" @onclick="() => ShowEditPostModal(post)">
+                                            <span class="material-icons">edit</span> @Localizer.GetString("Edit", "HrManagement")
                                         </button>
-                                        <button class="btn btn-edit" @onclick="() => ShowEditPositionForm(position)">
-                                            <span class="material-icons">edit</span> @Localizer.GetString("Edit", "HRManagement")
-                                        </button>
-                                        <button class="btn btn-danger" @onclick="() => DeletePosition(position.Id)">
-                                            <span class="material-icons">delete</span> @Localizer.GetString("Delete", "HRManagement")
+                                        <button class="btn btn-delete" @onclick="() => DeletePost(post.Id)">
+                                            <span class="material-icons">delete</span> @Localizer.GetString("Delete", "HrManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -81,41 +78,36 @@
                     }
                     else
                     {
-                        <div class="no-positions">
+                        <div class="no-data">
                             <span class="material-icons">work_off</span>
-                            <p>@Localizer.GetString("NoPositions", "HRManagement")</p>
+                            <p>@Localizer.GetString("NoPositions", "HrManagement")</p>
                         </div>
                     }
-                </div>
-                break;
-            case SubTab.Vacancies:
-                <div class="vacancies-section">
+                    break;
+                case 1:
                     <div class="section-header">
-                        <h3>@Localizer.GetString("VacanciesTitle", "HRManagement")</h3>
-                        <button class="btn btn-add" @onclick="ShowAddVacancyForm">
-                            <span class="material-icons">add</span> @Localizer.GetString("AddVacancy", "HRManagement")
+                        <h2>@Localizer.GetString("ManageVacancies", "HrManagement")</h2>
+                        <button class="btn btn-add" @onclick="ShowCreateVacancyModal">
+                            <span class="material-icons">add</span> @Localizer.GetString("CreateVacancy", "HrManagement")
                         </button>
                     </div>
                     @if (_vacancies.Any())
                     {
-                        <div class="vacancies-grid">
+                        <div class="card-grid">
                             @foreach (var vacancy in _vacancies)
                             {
-                                <div class="vacancy-card">
+                                <div class="card">
                                     <h3>@vacancy.Post.Title</h3>
-                                    <p>@(vacancy.Post.Description?.Length > 100 ? vacancy.Post.Description[..100] + "..." : vacancy.Post.Description)</p>
-                                    <span class="vacancy-status @(vacancy.IsOpen ? "open" : "closed")">
-                                        @Localizer.GetString(vacancy.IsOpen ? "Open" : "Closed", "HRManagement")
-                                    </span>
-                                    <div class="actions">
-                                        <button class="btn btn-view" @onclick="() => ViewVacancy(vacancy)">
-                                            <span class="material-icons">visibility</span> @Localizer.GetString("View", "HRManagement")
+                                    <p>@(vacancy.AdditionalRequirements?.TakeOnly(100, "...") ?? Localizer.GetString("NoRequirements", "HrManagement"))</p>
+                                    <div class="vacancy-status @(vacancy.IsOpen ? "open" : "closed")">
+                                        @(vacancy.IsOpen ? Localizer.GetString("Open", "HrManagement") : Localizer.GetString("Closed", "HrManagement"))
+                                    </div>
+                                    <div class="card-actions">
+                                        <button class="btn btn-edit" @onclick="() => ShowEditVacancyModal(vacancy)">
+                                            <span class="material-icons">edit</span> @Localizer.GetString("Edit", "HrManagement")
                                         </button>
-                                        <button class="btn btn-edit" @onclick="() => ShowEditVacancyForm(vacancy)">
-                                            <span class="material-icons">edit</span> @Localizer.GetString("Edit", "HRManagement")
-                                        </button>
-                                        <button class="btn btn-danger" @onclick="() => DeleteVacancy(vacancy.Id)">
-                                            <span class="material-icons">delete</span> @Localizer.GetString("Delete", "HRManagement")
+                                        <button class="btn btn-delete" @onclick="() => DeleteVacancy(vacancy.Id)">
+                                            <span class="material-icons">delete</span> @Localizer.GetString("Delete", "HrManagement")
                                         </button>
                                     </div>
                                 </div>
@@ -124,229 +116,200 @@
                     }
                     else
                     {
-                        <div class="no-vacancies">
-                            <span class="material-icons">work_off</span>
-                            <p>@Localizer.GetString("NoVacancies", "HRManagement")</p>
+                        <div class="no-data">
+                            <span class="material-icons">assignment_late</span>
+                            <p>@Localizer.GetString("NoVacancies", "HrManagement")</p>
                         </div>
                     }
-                </div>
-                break;
-            case SubTab.Applications:
-                <div class="applications-section">
+                    break;
+                case 2:
                     <div class="section-header">
-                        <h3>@Localizer.GetString("ApplicationsTitle", "HRManagement")</h3>
+                        <h2>@Localizer.GetString("ManageApplications", "HrManagement")</h2>
                         <div class="filters">
                             <div class="search-box">
-                                <input type="text" placeholder="@Localizer.GetString("SearchApplications", "HRManagement")" @bind="_searchTerm" @bind:event="oninput"/>
+                                <input type="text" placeholder="@Localizer.GetString("SearchApplications", "HrManagement")" @bind-value="_searchTerm" @bind-value:event="oninput" @bind-value:after="FilterApplications"/>
                                 <span class="material-icons">search</span>
                             </div>
-                            <select @bind="_statusFilter">
-                                <option value="">@Localizer.GetString("AllStatuses", "HRManagement")</option>
-                                @foreach (var status in Enum.GetValues<ApplicationStatus>())
+                            <select @bind="_statusFilter" @bind:after="FilterApplications">
+                                <option value="">@Localizer.GetString("AllStatuses", "HrManagement")</option>
+                                @foreach (var status in Enum.GetValues(typeof(ApplicationStatus)))
                                 {
-                                    <option value="@status">@Localizer.GetString(status.ToString(), "HRManagement")</option>
+                                    <option value="@status">@Localizer.GetString(status.ToString(), "HrManagement")</option>
                                 }
                             </select>
                         </div>
                     </div>
-                    <div class="applications-grid">
-                        @if (_filteredApplications.Any())
-                        {
+                    @if (_filteredApplications.Any())
+                    {
+                        <div class="card-grid">
                             @foreach (var application in _filteredApplications)
                             {
                                 <div class="application-card">
                                     <div class="applicant-info">
                                         <div class="avatar">
-                                            @if (application.User != null && !string.IsNullOrEmpty(application.User.AvatarImage))
+                                            @if (application.User?.AvatarImage != null)
                                             {
-                                                <img src="@TempFileService.GetUrl(application.User.AvatarImage)" alt="@application.User.Name"/>
+                                                <img src="@TempFileService.GetUrl(application.User.AvatarImage)" alt="@application.User.UserName"/>
                                             }
                                             else
                                             {
-                                                <img src="Images/Account/default-avatar.jpg" alt="Default Avatar"/>
+                                                <span class="material-icons">person</span>
                                             }
                                         </div>
                                         <div class="details">
-                                            <h3>@(application.User?.Name ?? "Unknown")</h3>
+                                            <h3>@application.User?.UserName</h3>
                                             <p>@application.CompanyPost.Post.Title</p>
-                                            <span class="application-date">@Localizer.GetString("Applied", "HRManagement"): @application.CreateAt!.Value.ToShortDateString()</span>
+                                            <span class="application-date">@Localizer.GetString("Applied", "HrManagement"): @application.CreateAt?.ToShortDateString()</span>
                                         </div>
                                     </div>
                                     <div class="application-status @application.Status.ToString().ToLower()">
-                                        @Localizer.GetString(application.Status.ToString(), "HRManagement")
+                                        @Localizer.GetString(application.Status.ToString(), "HrManagement")
                                     </div>
-                                    <div class="actions">
-                                        <button class="btn btn-view" @onclick="() => ViewApplication(application)">
-                                            <span class="material-icons">visibility</span> @Localizer.GetString("View", "HRManagement")
+                                    <div class="card-actions">
+                                        <button class="btn btn-view" @onclick="() => ViewCandidate(application.User?.Id ?? 0)">
+                                            <span class="material-icons">visibility</span> @Localizer.GetString("View", "HrManagement")
                                         </button>
-                                        <button class="btn btn-status" @onclick="() => ShowUpdateStatusForm(application)">
-                                            <span class="material-icons">edit</span> @Localizer.GetString("UpdateStatus", "HRManagement")
+                                        <button class="btn btn-status" @onclick="() => ShowUpdateStatusModal(application)">
+                                            <span class="material-icons">edit</span> @Localizer.GetString("UpdateStatus", "HrManagement")
                                         </button>
                                     </div>
                                 </div>
                             }
-                        }
-                        else
-                        {
-                            <div class="no-applications">
-                                <span class="material-icons">inbox</span>
-                                <p>@Localizer.GetString("NoApplications", "HRManagement")</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-                break;
-        }
-    }
-
-    @if (_showAddPositionForm || _showEditPositionForm)
-    {
-        <div class="modal-overlay">
-            <div class="modal-card">
-                <h3>@(_showAddPositionForm ? Localizer.GetString("AddPosition", "HRManagement") : Localizer.GetString("EditPosition", "HRManagement"))</h3>
-                <EditForm Model="_positionModel" OnValidSubmit="SavePosition">
-                    <DataAnnotationsValidator/>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("Title", "HRManagement")</label>
-                        <InputText @bind-Value="_positionModel.Title" class="form-input"/>
-                        <ValidationMessage For="@(() => _positionModel.Title)"/>
-                    </div>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("Description", "HRManagement")</label>
-                        <InputTextArea @bind-Value="_positionModel.Description" class="form-textarea"/>
-                        <ValidationMessage For="@(() => _positionModel.Description)"/>
-                    </div>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("Skills", "HRManagement")</label>
-                        <InputSelectMultiple @bind-Value="_selectedSkillIds" class="form-select">
-                            @foreach (var skill in _availableSkills)
-                            {
-                                <option value="@skill.Id">@skill.Title</option>
-                            }
-                        </InputSelectMultiple>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HRManagement")</button>
-                        <button type="button" class="btn btn-cancel" @onclick="HidePositionForm">@Localizer.GetString("Cancel", "HRManagement")</button>
-                    </div>
-                </EditForm>
-            </div>
-        </div>
-    }
-
-    @if (_showAddVacancyForm || _showEditVacancyForm)
-    {
-        <div class="modal-overlay">
-            <div class="modal-card">
-                <h3>@(_showAddVacancyForm ? Localizer.GetString("AddVacancy", "HRManagement") : Localizer.GetString("EditVacancy", "HRManagement"))</h3>
-                <EditForm Model="_vacancyModel" OnValidSubmit="SaveVacancy">
-                    <DataAnnotationsValidator/>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("Position", "HRManagement")</label>
-                        <InputSelect @bind-Value="_vacancyModel.PostId" class="form-select">
-                            <option value="0" disabled selected>@Localizer.GetString("SelectPosition", "HRManagement")</option>
-                            @foreach (var position in _positions)
-                            {
-                                <option value="@position.Id">@position.Title</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => _vacancyModel.PostId)"/>
-                    </div>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("AdditionalRequirements", "HRManagement")</label>
-                        <InputTextArea @bind-Value="_vacancyModel.AdditionalRequirements" class="form-textarea"/>
-                        <ValidationMessage For="@(() => _vacancyModel.AdditionalRequirements)"/>
-                    </div>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("IsOpen", "HRManagement")</label>
-                        <InputCheckbox @bind-Value="_vacancyModel.IsOpen" class="form-checkbox"/>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HRManagement")</button>
-                        <button type="button" class="btn btn-cancel" @onclick="HideVacancyForm">@Localizer.GetString("Cancel", "HRManagement")</button>
-                    </div>
-                </EditForm>
-            </div>
-        </div>
-    }
-
-    @if (_showUpdateStatusForm)
-    {
-        <div class="modal-overlay">
-            <div class="modal-card">
-                <h3>@Localizer.GetString("UpdateStatus", "HRManagement")</h3>
-                <EditForm Model="_applicationModel" OnValidSubmit="UpdateApplicationStatus">
-                    <DataAnnotationsValidator/>
-                    <div class="form-group">
-                        <label>@Localizer.GetString("Status", "HRManagement")</label>
-                        <InputSelect @bind-Value="_applicationModel.Status" class="form-select">
-                            @foreach (var status in Enum.GetValues<ApplicationStatus>())
-                            {
-                                <option value="@status">@Localizer.GetString(status.ToString(), "HRManagement")</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => _applicationModel.Status)"/>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HRManagement")</button>
-                        <button type="button" class="btn btn-cancel" @onclick="HideUpdateStatusForm">@Localizer.GetString("Cancel", "HRManagement")</button>
-                    </div>
-                </EditForm>
-            </div>
-        </div>
-    }
-
-    @if (_showViewApplication)
-    {
-        <div class="modal-overlay">
-            <div class="modal-card">
-                <h3>@Localizer.GetString("ApplicationDetails", "HRManagement")</h3>
-                <div class="application-details">
-                    <p><strong>@Localizer.GetString("Applicant", "HRManagement"):</strong> @(_viewApplication.User?.Name ?? "Unknown")</p>
-                    <p><strong>@Localizer.GetString("Vacancy", "HRManagement"):</strong> @_viewApplication.CompanyPost.Post.Title</p>
-                    <p><strong>@Localizer.GetString("Status", "HRManagement"):</strong> @Localizer.GetString(_viewApplication.Status.ToString(), "HRManagement")</p>
-                    <p><strong>@Localizer.GetString("Applied", "HRManagement"):</strong> @_viewApplication.CreateAt!.Value.ToShortDateString()</p>
-                    <p><strong>@Localizer.GetString("Message", "HRManagement"):</strong> @(_viewApplication.Message ?? Localizer.GetString("NoMessage", "HRManagement"))</p>
-                    @if (!string.IsNullOrEmpty(_viewApplication.ResumeFileId))
-                    {
-                        <p>
-                            <strong>@Localizer.GetString("Resume", "HRManagement"):</strong>
-                            <a href="@TempFileService.GetUrl(_viewApplication.ResumeFileId)" target="_blank">@Localizer.GetString("DownloadResume", "HRManagement")</a>
-                        </p>
+                        </div>
                     }
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-cancel" @onclick="HideViewApplication">@Localizer.GetString("Close", "HRManagement")</button>
-                </div>
+                    else
+                    {
+                        <div class="no-data">
+                            <span class="material-icons">inbox</span>
+                            <p>@Localizer.GetString("NoApplications", "HrManagement")</p>
+                        </div>
+                    }
+                    break;
+            }
+        </div>
+    }
+
+    <!-- Modal for Creating/Editing Post -->
+    @if (_showPostModal)
+    {
+        <div class="form-overlay">
+            <div class="form-card">
+                <h3>@(_editingPost == null ? Localizer.GetString("CreatePosition", "HrManagement") : Localizer.GetString("EditPosition", "HrManagement"))</h3>
+                <EditForm Model="_newPost" OnValidSubmit="SavePost">
+                    <DataAnnotationsValidator/>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Title", "HrManagement")</label>
+                        <InputText @bind-Value="_newPost.Title" class="form-input" placeholder="@Localizer.GetString("TitlePlaceholder", "HrManagement")"/>
+                        <ValidationMessage For="@(() => _newPost.Title)"/>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Description", "HrManagement")</label>
+                        <InputTextArea @bind-Value="_newPost.Description" class="form-textarea" placeholder="@Localizer.GetString("DescriptionPlaceholder", "HrManagement")"/>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Skills", "HrManagement")</label>
+                        <div class="skill-selector">
+                            <InputSelect @bind-Value="_selectedSkill" class="form-select">
+                                <option value="0">@Localizer.GetString("SelectSkill", "HrManagement")</option>
+                                @foreach (var skill in _skills)
+                                {
+                                    <option value="@skill.Id">@skill.Title</option>
+                                }
+                            </InputSelect>
+                            <button type="button" class="btn btn-action" style="width: 200px" @onclick="AddSkillToPost" disabled="@(_selectedSkill == 0)">
+                                <span class="material-icons">add</span> @Localizer.GetString("AddSkill", "HrManagement")
+                            </button>
+                        </div>
+                        <div class="selected-skills">
+                            @foreach (var skill in _newPost.Skills)
+                            {
+                                <span class="skill-tag">
+                                    @skill.Title
+                                    <button type="button" class="remove-skill" @onclick="() => RemoveSkillFromPost(skill)">
+                                        <span class="material-icons">close</span>
+                                    </button>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HrManagement")</button>
+                        <button type="button" class="btn btn-cancel" @onclick="ClosePostModal">@Localizer.GetString("Cancel", "HrManagement")</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     }
 
-    @if (_showViewPosition)
+    <!-- Modal for Creating/Editing Vacancy -->
+    @if (_showVacancyModal)
     {
-        <div class="modal-overlay">
-            <div class="modal-card">
-                <h3>@Localizer.GetString("PositionDetails", "HRManagement")</h3>
-                <div class="position-details">
-                    <p><strong>@Localizer.GetString("Title", "HRManagement"):</strong> @_viewPosition.Title</p>
-                    <p><strong>@Localizer.GetString("Description", "HRManagement"):</strong> @(_viewPosition.Description ?? Localizer.GetString("NoDescription", "HRManagement"))</p>
-                    <p><strong>@Localizer.GetString("Skills", "HRManagement"):</strong>
-                        @if (_viewPosition.Skills.Any())
-                        {
-                            foreach (var skill in _viewPosition.Skills)
+        <div class="form-overlay">
+            <div class="form-card">
+                <h3>@(_editingVacancy == null ? Localizer.GetString("CreateVacancy", "HrManagement") : Localizer.GetString("EditVacancy", "HrManagement"))</h3>
+                <EditForm Model="_newVacancy" OnValidSubmit="SaveVacancy">
+                    <DataAnnotationsValidator/>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Position", "HrManagement")</label>
+                        <InputSelect @bind-Value="_newVacancy.PostId" class="form-select">
+                            <option value="0">@Localizer.GetString("SelectPosition", "HrManagement")</option>
+                            @foreach (var post in _posts)
                             {
-                                <span class="skill-tag">@skill.Title</span>
+                                <option value="@post.Id">@post.Title</option>
                             }
-                        }
-                        else
-                        {
-                            @Localizer.GetString("NoSkills", "HRManagement")
-                        }
-                    </p>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-cancel" @onclick="HideViewPosition">@Localizer.GetString("Close", "HRManagement")</button>
-                </div>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => _newVacancy.PostId)"/>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Status", "HrManagement")</label>
+                        <div class="form-check">
+                            <InputCheckbox @bind-Value="_newVacancy.IsOpen" class="form-checkbox"/>
+                            <label>@Localizer.GetString("IsOpen", "HrManagement")</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("AdditionalRequirements", "HrManagement")</label>
+                        <InputTextArea @bind-Value="_newVacancy.AdditionalRequirements" class="form-textarea" placeholder="@Localizer.GetString("RequirementsPlaceholder", "HrManagement")"/>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HrManagement")</button>
+                        <button type="button" class="btn btn-cancel" @onclick="CloseVacancyModal">@Localizer.GetString("Cancel", "HrManagement")</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+
+    <!-- Modal for Updating Application Status -->
+    @if (_showStatusModal)
+    {
+        <div class="form-overlay">
+            <div class="form-card">
+                <h3>@Localizer.GetString("UpdateApplicationStatus", "HrManagement")</h3>
+                <EditForm Model="_selectedApplication" OnValidSubmit="UpdateApplicationStatus">
+                    <DataAnnotationsValidator/>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Applicant", "HrManagement")</label>
+                        <InputText @bind-Value="_selectedApplication!.User!.UserName" class="form-input" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Position", "HrManagement")</label>
+                        <InputText @bind-Value="_selectedApplication!.CompanyPost.Post.Title" class="form-input" disabled/>
+                    </div>
+                    <div class="form-group">
+                        <label>@Localizer.GetString("Status", "HrManagement")</label>
+                        <InputSelect @bind-Value="_selectedApplication!.Status" class="form-select">
+                            @foreach (var status in Enum.GetValues(typeof(ApplicationStatus)))
+                            {
+                                <option value="@status">@Localizer.GetString(status.ToString(), "HrManagement")</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "HrManagement")</button>
+                        <button type="button" class="btn btn-cancel" @onclick="CloseStatusModal">@Localizer.GetString("Cancel", "HrManagement")</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     }
@@ -356,176 +319,203 @@
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
 
-    private enum SubTab { Positions, Vacancies, Applications }
-    private SubTab _activeSubTab = SubTab.Positions;
+    private int _activeTab;
     private bool _isLoading = true;
-    private ICollection<PostViewModel> _positions = [];
-    private ICollection<CompanyPostViewModel> _vacancies = [];
-    private ICollection<JobApplicationViewModel> _applications = [];
-    private ICollection<JobApplicationViewModel> _filteredApplications = [];
-    private ICollection<SkillViewModel> _availableSkills = [];
-    private bool _showAddPositionForm;
-    private bool _showEditPositionForm;
-    private bool _showAddVacancyForm;
-    private bool _showEditVacancyForm;
-    private bool _showUpdateStatusForm;
-    private bool _showViewApplication;
-    private bool _showViewPosition;
-    private PostViewModel _positionModel = new();
-    private CompanyPostViewModel _vacancyModel = new();
-    private JobApplicationViewModel _applicationModel = new();
-    private JobApplicationViewModel _viewApplication = new();
-    private PostViewModel _viewPosition = new();
-    private ICollection<int> _selectedSkillIds = [];
+    private bool _showPostModal;
+    private bool _showVacancyModal;
+    private bool _showStatusModal;
+    private string? _errorMessage;
     private string _searchTerm = "";
-    private ApplicationStatus? _statusFilter;
+    private ApplicationStatus? _statusFilter = ApplicationStatus.Pending; // Default to Pending
+    private PostViewModel _newPost = new();
+    private CompanyPostViewModel _newVacancy = new();
+    private JobApplicationViewModel? _selectedApplication;
+    private PostViewModel? _editingPost;
+    private CompanyPostViewModel? _editingVacancy;
+    private List<PostViewModel> _posts = [];
+    private List<CompanyPostViewModel> _vacancies = [];
+    private List<JobApplicationViewModel> _applications = [];
+    private List<JobApplicationViewModel> _filteredApplications = [];
+    private List<SkillViewModel> _skills = [];
+    private int _selectedSkill;
 
     protected override async Task OnInitializedAsync()
     {
-        _isLoading = true;
+        await LoadData();
+        await FilterApplications(); // Apply default filter
+        _isLoading = false;
+    }
+
+    private async Task LoadData()
+    {
         try
         {
-            _positions = await HrManagementPageService.GetPositionsAsync(CompanyId);
-            _vacancies = await HrManagementPageService.GetPostsAsync(CompanyId);
-            _applications = await HrManagementPageService.GetCompanyJobApplicationsAsync(CompanyId);
-            _availableSkills = await HrManagementPageService.GetAvailableSkillsAsync();
-            UpdateFilteredApplications();
+            _posts = (await HrManagementPageService.GetPositionsAsync(CompanyId)).ToList();
+            _vacancies = (await HrManagementPageService.GetPostsAsync(CompanyId)).ToList();
+            _applications = (await HrManagementPageService.GetCompanyJobApplicationsAsync(CompanyId)).ToList();
+            _skills = (await HrManagementPageService.GetAvailableSkillsAsync()).ToList();
+            _filteredApplications = _applications;
         }
         catch (Exception ex)
         {
+            _errorMessage = Localizer.GetString("LoadError", "HrManagement");
             Console.WriteLine($"Load error: {ex.Message}");
         }
-        finally
+    }
+
+    private void SetActiveTab(int tabId)
+    {
+        _activeTab = tabId;
+        ProtectedSessionStorage.SetAsync("hr:currentTab", tabId);
+        StateHasChanged();
+    }
+
+    private async Task FilterApplications()
+    {
+        _filteredApplications = _applications;
+        if (!string.IsNullOrWhiteSpace(_searchTerm))
         {
-            _isLoading = false;
+            _filteredApplications = _filteredApplications
+                .Where(a => a.User?.UserName.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) == true)
+                .ToList();
         }
-    }
-
-    private void SetSubTab(SubTab tab)
-    {
-        _activeSubTab = tab;
-        _searchTerm = "";
-        _statusFilter = null;
-        UpdateFilteredApplications();
-    }
-
-    private void ShowAddPositionForm()
-    {
-        _positionModel = new PostViewModel { CompanyId = CompanyId };
-        _selectedSkillIds = [];
-        _showAddPositionForm = true;
-    }
-
-    private void ShowEditPositionForm(PostViewModel position)
-    {
-        _positionModel = new PostViewModel
+        if (_statusFilter.HasValue)
         {
-            Id = position.Id,
-            Title = position.Title,
-            Description = position.Description,
-            CompanyId = position.CompanyId
-        };
-        _selectedSkillIds = position.Skills.Select(s => s.Id).ToList();
-        _showEditPositionForm = true;
+            _filteredApplications = _filteredApplications
+                .Where(a => a.Status == _statusFilter.Value)
+                .ToList();
+        }
+        await Task.CompletedTask; // Ensure async compatibility
+        StateHasChanged();
     }
 
-    private void HidePositionForm()
+    // Post CRUD Operations
+    private void ShowCreatePostModal()
     {
-        _showAddPositionForm = false;
-        _showEditPositionForm = false;
-        _positionModel = new();
-        _selectedSkillIds = [];
+        _newPost = new PostViewModel { CompanyId = CompanyId, Skills = [] };
+        _editingPost = null;
+        _selectedSkill = 0;
+        _showPostModal = true;
     }
 
-    private async Task SavePosition()
+    private void ShowEditPostModal(PostViewModel post)
+    {
+        _newPost = new PostViewModel
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Description = post.Description,
+            CompanyId = post.CompanyId,
+            Skills = post.Skills.ToList()
+        };
+        _editingPost = post;
+        _selectedSkill = 0;
+        _showPostModal = true;
+    }
+
+    private async Task SavePost()
     {
         try
         {
-            _positionModel.Skills = _availableSkills.Where(s => _selectedSkillIds.Contains(s.Id)).ToList();
-            if (_showAddPositionForm)
+            if (_editingPost == null)
             {
-                await HrManagementPageService.AddPositionAsync(_positionModel);
+                await HrManagementPageService.AddPositionAsync(_newPost);
             }
             else
             {
-                await HrManagementPageService.UpdatePositionAsync(_positionModel);
+                await HrManagementPageService.UpdatePositionAsync(_newPost);
             }
-            _positions = await HrManagementPageService.GetPositionsAsync(CompanyId);
-            HidePositionForm();
+
+            await Task.Delay(500);
+            await LoadData();
+            ClosePostModal();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Save position error: {ex.Message}");
+            _errorMessage = Localizer.GetString("SaveError", "HrManagement");
+            Console.WriteLine($"Save post error: {ex.Message}");
         }
     }
 
-    private async Task DeletePosition(int positionId)
+    private async Task DeletePost(int postId)
     {
         try
         {
-            await HrManagementPageService.DeletePositionAsync(positionId);
-            _positions = await HrManagementPageService.GetPositionsAsync(CompanyId);
+            await HrManagementPageService.DeletePostAsync(postId);
+            await LoadData();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Delete position error: {ex.Message}");
+            _errorMessage = Localizer.GetString("DeleteError", "HrManagement");
+            Console.WriteLine($"Delete post error: {ex.Message}");
         }
     }
 
-    private void ViewPosition(PostViewModel position)
+    private void AddSkillToPost()
     {
-        _viewPosition = position;
-        _showViewPosition = true;
+        var skill = _skills.FirstOrDefault(s => s.Id == _selectedSkill);
+        if (skill != null && _newPost.Skills.All(s => s.Id != skill.Id))
+        {
+            _newPost.Skills.Add(skill);
+            _selectedSkill = 0;
+            StateHasChanged();
+        }
     }
 
-    private void HideViewPosition()
+    private void RemoveSkillFromPost(SkillViewModel skill)
     {
-        _showViewPosition = false;
-        _viewPosition = new();
+        _newPost.Skills.Remove(skill);
+        StateHasChanged();
     }
 
-    private void ShowAddVacancyForm()
+    private void ClosePostModal()
     {
-        _vacancyModel = new CompanyPostViewModel { Post = new PostViewModel { CompanyId = CompanyId }, IsOpen = true };
-        _showAddVacancyForm = true;
+        _showPostModal = false;
+        _newPost = new();
+        _editingPost = null;
+        _selectedSkill = 0;
     }
 
-    private void ShowEditVacancyForm(CompanyPostViewModel vacancy)
+    // Vacancy CRUD Operations
+    private void ShowCreateVacancyModal()
     {
-        _vacancyModel = new CompanyPostViewModel
+        _newVacancy = new CompanyPostViewModel { Post = new PostViewModel(), IsOpen = true };
+        _editingVacancy = null;
+        _showVacancyModal = true;
+    }
+
+    private void ShowEditVacancyModal(CompanyPostViewModel vacancy)
+    {
+        _newVacancy = new CompanyPostViewModel
         {
             Id = vacancy.Id,
-            PostId = vacancy.Post.Id,
+            PostId = vacancy.PostId,
+            Post = vacancy.Post,
             IsOpen = vacancy.IsOpen,
             AdditionalRequirements = vacancy.AdditionalRequirements
         };
-        _showEditVacancyForm = true;
-    }
-
-    private void HideVacancyForm()
-    {
-        _showAddVacancyForm = false;
-        _showEditVacancyForm = false;
-        _vacancyModel = new();
+        _editingVacancy = vacancy;
+        _showVacancyModal = true;
     }
 
     private async Task SaveVacancy()
     {
         try
         {
-            if (_showAddVacancyForm)
+            if (_editingVacancy == null)
             {
-                await HrManagementPageService.AddPostAsync(_vacancyModel);
+                await HrManagementPageService.AddPostAsync(_newVacancy);
             }
             else
             {
-                await HrManagementPageService.UpdatePostAsync(_vacancyModel);
+                await HrManagementPageService.UpdatePostAsync(_newVacancy);
             }
-            _vacancies = await HrManagementPageService.GetPostsAsync(CompanyId);
-            HideVacancyForm();
+            await LoadData();
+            CloseVacancyModal();
         }
         catch (Exception ex)
         {
+            _errorMessage = Localizer.GetString("SaveError", "HrManagement");
             Console.WriteLine($"Save vacancy error: {ex.Message}");
         }
     }
@@ -534,279 +524,374 @@
     {
         try
         {
-            await HrManagementPageService.DeletePostAsync(vacancyId);
-            _vacancies = await HrManagementPageService.GetPostsAsync(CompanyId);
+            await HrManagementPageService.DeletePositionAsync(vacancyId);
+            await LoadData();
         }
         catch (Exception ex)
         {
+            _errorMessage = Localizer.GetString("DeleteError", "HrManagement");
             Console.WriteLine($"Delete vacancy error: {ex.Message}");
         }
     }
 
-    private void ViewVacancy(CompanyPostViewModel vacancy)
+    private void CloseVacancyModal()
     {
-        // Можно добавить модальное окно для просмотра деталей вакансии
+        _showVacancyModal = false;
+        _newVacancy = new();
+        _editingVacancy = null;
     }
 
-    private void ShowUpdateStatusForm(JobApplicationViewModel application)
+    // Application Operations
+    private void ViewCandidate(int userId)
     {
-        _applicationModel = new JobApplicationViewModel
+        if (userId > 0)
+        {
+            NavigationManager.NavigateTo($"/account/{userId}");
+        }
+    }
+
+    private void ShowUpdateStatusModal(JobApplicationViewModel application)
+    {
+        _selectedApplication = new JobApplicationViewModel
         {
             Id = application.Id,
+            User = application.User,
+            CompanyPost = application.CompanyPost,
             Status = application.Status
         };
-        _showUpdateStatusForm = true;
-    }
-
-    private void HideUpdateStatusForm()
-    {
-        _showUpdateStatusForm = false;
-        _applicationModel = new();
+        _showStatusModal = true;
     }
 
     private async Task UpdateApplicationStatus()
     {
         try
         {
-            await HrManagementPageService.UpdateApplicationStatusAsync(_applicationModel);
-            _applications = await HrManagementPageService.GetCompanyJobApplicationsAsync(CompanyId);
-            UpdateFilteredApplications();
-            HideUpdateStatusForm();
+            if (_selectedApplication != null)
+            {
+                await HrManagementPageService.UpdateApplicationStatusAsync(_selectedApplication);
+                await LoadData();
+                await FilterApplications();
+                CloseStatusModal();
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Update status error: {ex.Message}");
+            _errorMessage = Localizer.GetString("SaveError", "HrManagement");
+            Console.WriteLine($"Update application status error: {ex.Message}");
         }
     }
 
-    private void ViewApplication(JobApplicationViewModel application)
+    private void CloseStatusModal()
     {
-        _viewApplication = application;
-        _showViewApplication = true;
-    }
-
-    private void HideViewApplication()
-    {
-        _showViewApplication = false;
-        _viewApplication = new();
-    }
-
-    private void UpdateFilteredApplications()
-    {
-        _filteredApplications = _applications.Where(a =>
-            (string.IsNullOrEmpty(_searchTerm) ||
-             a.User?.Name.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) == true ||
-             a.CompanyPost.Post.Title.Contains(_searchTerm, StringComparison.OrdinalIgnoreCase) == true) &&
-            (!_statusFilter.HasValue || a.Status == _statusFilter.Value)
-        ).ToList();
-    }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo("/Work");
+        _showStatusModal = false;
+        _selectedApplication = null;
     }
 }
 
 <style>
     :root {
-        --primary: #007bff;
-        --success: #28a745;
-        --danger: #dc3545;
-        --secondary: #6c757d;
-        --light: #f8f9fa;
+        --primary: #3b82f6;
+        --secondary: #6b7280;
+        --success: #10b981;
+        --danger: #ef4444;
+        --bg-light: #f3f4f6;
         --bg-white: #ffffff;
-        --text-primary: #333;
-        --text-secondary: #666;
-        --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
         --transition: all 0.3s ease;
     }
 
     .hr-management-container {
-        max-width: 1200px;
-        margin: 40px auto;
-        padding: 20px;
-        background: var(--bg-white);
-        border-radius: 15px;
+        width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, var(--bg-white), #e5e7eb);
+        border-radius: 16px;
         box-shadow: var(--shadow);
         animation: fadeIn 0.5s ease-out;
     }
 
-    .hr-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
+    .title-header {
+        text-align: center;
+        margin-bottom: 2rem;
     }
 
-    .hr-tabs {
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(to right, var(--primary), #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin: 0;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+    }
+
+    .error-message {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        background: #fee2e2;
+        border: 1px solid var(--danger);
+        border-radius: 8px;
+        color: var(--danger);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hr-nav {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 2rem;
+        background: var(--bg-light);
+        padding: 0.5rem;
+        border-radius: 12px;
     }
 
     .tab-button {
-        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        background: none;
         border: none;
         border-radius: 8px;
-        background: var(--light);
-        color: var(--text-primary);
-        font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
     }
 
     .tab-button:hover {
-        background: var(--primary);
-        color: #fff;
+        background: #e5e7eb;
     }
 
     .tab-button.active {
         background: var(--primary);
         color: #fff;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .tab-content {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+        width: 100%;
+        min-height: 400px;
     }
 
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
     }
 
-    .section-header h3 {
-        font-size: 1.6rem;
+    .section-header h2 {
+        font-size: 1.8rem;
         color: var(--text-primary);
+        margin: 0;
     }
 
-    .positions-grid, .vacancies-grid, .applications-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
+    .filters {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
     }
 
-    .position-card, .vacancy-card, .application-card {
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--bg-light);
+        border-radius: 8px;
+        padding: 0.5rem;
+    }
+
+    .search-box input {
+        border: none;
+        background: none;
+        font-size: 1rem;
+        padding: 0.5rem;
+        width: 200px;
+    }
+
+    .search-box input:focus {
+        outline: none;
+    }
+
+    .search-box .material-icons {
+        color: var(--text-secondary);
+        right: 0.5rem;
+    }
+
+    select {
+        padding: 0.5rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
         background: var(--bg-white);
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
         transition: var(--transition);
     }
 
-    .position-card:hover, .vacancy-card:hover, .application-card:hover {
+    .card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     }
 
-    .position-card h3, .vacancy-card h3, .application-card h3 {
+    .card h3 {
         font-size: 1.4rem;
-        color: var(--primary);
-        margin: 0 0 10px;
+        color: var(--text-primary);
+        margin: 0 0 0.5rem;
     }
 
-    .position-card p, .vacancy-card p, .application-card p {
+    .card p {
         font-size: 0.95rem;
         color: var(--text-secondary);
-        margin: 5px 0;
-    }
-
-    .skills {
-        margin: 10px 0;
-    }
-
-    .skill-tag {
-        display: inline-block;
-        padding: 5px 10px;
-        margin: 5px;
-        background: #e9ecef;
-        border-radius: 12px;
-        font-size: 0.9rem;
-        color: var(--text-primary);
-    }
-
-    .no-skills {
-        font-style: italic;
-        color: var(--text-secondary);
+        margin: 0.5rem 0;
     }
 
     .vacancy-status {
-        display: inline-block;
-        padding: 5px 10px;
+        padding: 0.5rem 1rem;
         border-radius: 12px;
         font-size: 0.9rem;
-        font-weight: 600;
+        text-align: center;
+        width: fit-content;
     }
 
     .vacancy-status.open {
-        background: #d4edda;
-        color: #155724;
+        background: #d1fae5;
+        color: #059669;
     }
 
     .vacancy-status.closed {
-        background: #f8d7da;
-        color: #721c24;
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .application-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .application-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
     }
 
     .applicant-info {
         display: flex;
-        gap: 15px;
         align-items: center;
+        gap: 1rem;
     }
 
-    .avatar img {
+    .avatar {
         width: 50px;
         height: 50px;
         border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-light);
+        overflow: hidden;
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
     }
 
+    .avatar .material-icons {
+        font-size: 2rem;
+        color: var(--text-secondary);
+    }
+
+    .details h3 {
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .details p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0.2rem 0;
+    }
+
+    .application-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
     .application-status {
-        padding: 5px 10px;
+        padding: 0.5rem 1rem;
         border-radius: 12px;
         font-size: 0.9rem;
-        font-weight: 600;
         text-align: center;
+        width: fit-content;
     }
 
     .application-status.pending {
-        background: #fff3cd;
-        color: #856404;
+        background: #fef3c7;
+        color: #d97706;
     }
 
-    .application-status.accepted {
-        background: #d4edda;
-        color: #155724;
+    .application-status.approved {
+        background: #d1fae5;
+        color: #059669;
     }
 
     .application-status.rejected {
-        background: #f8d7da;
-        color: #721c24;
+        background: #fee2e2;
+        color: #dc2626;
     }
 
-    .actions {
+    .card-actions {
         display: flex;
-        gap: 10px;
+        gap: 0.5rem;
         justify-content: flex-end;
-        margin-top: 10px;
     }
 
     .btn {
-        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
         border: none;
         border-radius: 8px;
+        font-size: 0.95rem;
         font-weight: 600;
         cursor: pointer;
         transition: var(--transition);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .btn-back {
-        background: linear-gradient(90deg, var(--secondary), #9ca3af);
-        color: #fff;
-    }
-
-    .btn-back:hover {
-        background: linear-gradient(90deg, #5a6268, var(--secondary));
     }
 
     .btn-add {
@@ -815,34 +900,43 @@
     }
 
     .btn-add:hover {
-        background: linear-gradient(90deg, #0056b3, var(--primary));
+        background: linear-gradient(90deg, #2563eb, var(--primary));
     }
 
     .btn-view {
-        background: linear-gradient(90deg, #17a2b8, #2bc4de);
-        color: #fff;
+        background: var(--bg-light);
+        color: var(--text-primary);
     }
 
     .btn-view:hover {
-        background: linear-gradient(90deg, #138496, #17a2b8);
+        background: #e5e7eb;
     }
 
-    .btn-edit, .btn-status {
-        background: linear-gradient(90deg, #17a2b8, #2bc4de);
+    .btn-status {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
         color: #fff;
     }
 
-    .btn-edit:hover, .btn-status:hover {
-        background: linear-gradient(90deg, #138496, #17a2b8);
+    .btn-status:hover {
+        background: linear-gradient(90deg, #d97706, #f59e0b);
     }
 
-    .btn-danger {
+    .btn-edit {
+        background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        color: #fff;
+    }
+
+    .btn-edit:hover {
+        background: linear-gradient(90deg, #d97706, #f59e0b);
+    }
+
+    .btn-delete {
         background: linear-gradient(90deg, var(--danger), #f87171);
         color: #fff;
     }
 
-    .btn-danger:hover {
-        background: linear-gradient(90deg, #c82333, var(--danger));
+    .btn-delete:hover {
+        background: linear-gradient(90deg, #dc2626, var(--danger));
     }
 
     .btn-save {
@@ -851,7 +945,7 @@
     }
 
     .btn-save:hover {
-        background: linear-gradient(90deg, #059669, var(--success));
+        background: linear-gradient(90deg, #059669, #10b981);
     }
 
     .btn-cancel {
@@ -860,67 +954,47 @@
     }
 
     .btn-cancel:hover {
-        background: linear-gradient(90deg, #5a6268, var(--secondary));
+        background: linear-gradient(90deg, #4b5563, #6b7280);
     }
 
-    .filters {
+    .btn-action {
+        background: var(--bg-light);
+        color: var(--text-primary);
+    }
+
+    .btn-action:hover {
+        background: #e5e7eb;
+    }
+
+    .no-data {
         display: flex;
-        gap: 10px;
+        flex-direction: column;
         align-items: center;
-    }
-
-    .search-box {
-        position: relative;
-    }
-
-    .search-box input {
-        padding: 10px 40px 10px 15px;
-        border: 2px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 1rem;
-        width: 200px;
-    }
-
-    .search-box input:focus {
-        border-color: var(--primary);
-        outline: none;
-    }
-
-    .search-box .material-icons {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
+        gap: 0.5rem;
         color: var(--text-secondary);
-    }
-
-    select {
-        padding: 10px;
-        border: 2px solid #d1d5db;
-        border-radius: 8px;
-        font-size: 1rem;
-        background: #fff;
-        cursor: pointer;
-    }
-
-    select:focus {
-        border-color: var(--primary);
-        outline: none;
-    }
-
-    .no-positions, .no-vacancies, .no-applications {
         text-align: center;
-        padding: 40px;
+        padding: 2rem;
+    }
+
+    .no-data .material-icons {
+        font-size: 3rem;
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+        font-size: 1.1rem;
         color: var(--text-secondary);
-        font-size: 1.2rem;
+        padding: 2rem;
     }
 
-    .no-positions .material-icons, .no-vacancies .material-icons, .no-applications .material-icons {
-        font-size: 2rem;
-        margin-bottom: 10px;
+    .spin {
+        animation: spin 1s linear infinite;
     }
 
-    .modal-overlay {
+    .form-overlay {
         position: fixed;
         top: 0;
         left: 0;
@@ -933,24 +1007,24 @@
         z-index: 1000;
     }
 
-    .modal-card {
+    .form-card {
         background: var(--bg-white);
         border-radius: 12px;
-        padding: 20px;
-        max-width: 600px;
-        width: 90%;
+        padding: 2rem;
+        max-width: 500px;
+        width: 100%;
         box-shadow: var(--shadow);
         animation: slideIn 0.3s ease-out;
     }
 
-    .modal-card h3 {
+    .form-card h3 {
         font-size: 1.6rem;
         color: var(--text-primary);
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 1.5rem;
     }
 
     .form-group label {
@@ -958,83 +1032,109 @@
         font-weight: 600;
         color: var(--text-primary);
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 0.5rem;
     }
 
-    .form-input, .form-textarea, .form-select {
+    .form-input,
+    .form-textarea,
+    .form-select {
         width: 100%;
-        padding: 10px;
+        padding: 0.75rem;
         border: 2px solid #d1d5db;
         border-radius: 8px;
         font-size: 1rem;
         transition: var(--transition);
     }
 
-    .form-textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-input:focus, .form-textarea:focus, .form-select:focus {
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
         border-color: var(--primary);
-        box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         outline: none;
     }
 
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2rem;
+        padding-right: 2.5rem;
+    }
+
     .form-checkbox {
-        margin-top: 10px;
+        margin-right: 0.5rem;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .skill-selector {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .selected-skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .skill-tag {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-light);
+        padding: 0.3rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+    }
+
+    .remove-skill {
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .remove-skill .material-icons {
+        font-size: 1rem;
     }
 
     .form-actions {
         display: flex;
-        gap: 10px;
+        gap: 1rem;
         justify-content: flex-end;
-        margin-top: 20px;
-    }
-
-    .application-details p, .position-details p {
-        margin: 10px 0;
-        font-size: 1rem;
-        color: var(--text-primary);
-    }
-
-    .application-details strong, .position-details strong {
-        font-weight: 600;
-        margin-right: 5px;
+        margin-top: 1rem;
     }
 
     @@keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     @@keyframes slideIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
-    @@media (max-width: 768px) {
-        .positions-grid, .vacancies-grid, .applications-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .hr-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .hr-tabs {
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        .filters {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .search-box input {
-            width: 100%;
-        }
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
 </style>

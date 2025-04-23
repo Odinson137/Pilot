@@ -37,7 +37,7 @@ public class RedisService(IDatabase redis) : IRedisService
     
     public async Task SetValueAsync<T>(string key, T value) where T : BaseDto
     {
-        await redis.StringSetAsync(key, value.ToJson(), flags: CommandFlags.FireAndForget);
+        await redis.StringSetAsync(key, value.ToJson(), TimeSpan.FromMinutes(5), flags: CommandFlags.FireAndForget);
     }
     
     public async Task SetValuesAsync<T>(string key, ICollection<T> values) where T : BaseDto
@@ -69,6 +69,15 @@ public class RedisService(IDatabase redis) : IRedisService
         
         await redis.KeyDeleteAsync(redisValues, flags: CommandFlags.FireAndForget);
     }
+    
+    // public async Task DeleteValuesAsync(string )
+    // {
+    //     var members = await redis.SetMembersAsync(type);
+    //
+    //     var redisValues = members.Select(c => new RedisKey(c)).ToArray();
+    //     
+    //     await redis.KeyDeleteAsync(redisValues, flags: CommandFlags.FireAndForget);
+    // }
     
     public async Task AddQueueValueAsync<T>(string key, T value) where T : BaseDto
     {

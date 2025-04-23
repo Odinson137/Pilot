@@ -21,6 +21,7 @@
       <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.0" />
       <PackageReference Include="Localization.AspNetCore.TagHelpers" Version="0.6.0" />
       <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.0" />
+      <PackageReference Include="MudBlazor" Version="8.5.1" />
       <PackageReference Include="OpenAI" Version="2.1.0" />
       <PackageReference Include="Syncfusion.Blazor.Data" Version="28.1.35" />
       <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="28.1.35" />

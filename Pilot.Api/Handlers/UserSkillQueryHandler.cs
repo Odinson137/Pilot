@@ -13,7 +13,7 @@ public class UserSkillQueryHandler(IModelService modelService) : ModelQueryHandl
 
     public async Task<ICollection<UserSkillDto>> Handle(GetUserSkillsQuery request, CancellationToken cancellationToken)
     {
-        var userDto = await _modelService1.GetValuesAsync<UserSkillDto>($"{Urls.UserSkills}/{request.UserId}", null, cancellationToken);
+        var userDto = await _modelService1.GetValuesAsync<UserSkillDto>($"{Urls.UserSkills}/{request.UserId}", new BaseFilter(), cancellationToken);
         return userDto;
     }
 }

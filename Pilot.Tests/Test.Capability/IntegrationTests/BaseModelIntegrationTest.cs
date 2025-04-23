@@ -1,5 +1,9 @@
 ﻿using System.Net.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
+using Pilot.Identity.Models;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
+using Pilot.Worker.Models;
 using Test.Base.IntegrationBase;
 using Test.Capability.Factories;
 
@@ -14,7 +18,24 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
         AssertContext.Database.EnsureDeleted();
         AssertContext.Database.EnsureCreated();
     }
-        
+
+    protected async Task<CompanyUser> CreateCompanyUser()
+    {
+        var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
+
+        var context = AssertReceiverContext;
+        await context.AddAsync(companyUser);
+        await context.SaveChangesAsync();
+
+        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
+        user.Id = companyUser.Id;
+
+        await IdentityContext.AddRangeAsync(user);
+        await IdentityContext.SaveChangesAsync();
+
+        return companyUser;
+    }
+
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {
@@ -27,7 +48,7 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
         await DataContext.SaveChangesAsync();
 
         #endregion
-        
+
         // Act
         var result = await CapabilityClient.GetAsync($"api/{typeof(T).Name}");
 
@@ -64,84 +85,82 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
         Assert.Equal(id, content.Id);
     }
 
-    // [Fact]
-    // public virtual async void CreateModel_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     await GenerateTestEntity.FillChildren(valueModel, DataContext);
-    //
-    //     var value = ReceiverMapper.Map<TDto>(valueModel);
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new CreateCommandMessage<TDto>(value, companyUser.Id));
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //
-    //     var result = await ReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt).FirstOrDefaultAsync();
-    //
-    //     Assert.NotNull(result);
-    // }
-    //
-    // [Fact]
-    // public virtual async void UpdateModelTest_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var companyUser = await CreateCompanyUser();
-    //
-    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(companyUser);
-    //
-    //     await ReceiverContext.AddAsync(value);
-    //     await ReceiverContext.SaveChangesAsync();
-    //
-    //     var valueDto = ReceiverMapper.Map<TDto>(value);
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new UpdateCommandMessage<TDto>(valueDto, companyUser.Id));
-    //     await Helper.Wait();
-    //
-    //     // Assert
-    //
-    //     var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-    //
-    //     Assert.NotNull(result);
-    // }
-    //
-    // [Fact]
-    // public virtual async void DeleteModelTest_ReturnOk()
-    // {
-    //     #region Arrange
-    //
-    //     var companyUser = await CreateCompanyUser();
-    //
-    //     var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-    //
-    //     await ReceiverContext.AddAsync(value);
-    //     await ReceiverContext.SaveChangesAsync();
-    //
-    //     #endregion
-    //
-    //     // Act
-    //
-    //     await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, companyUser.Id));
-    //     await Helper.Wait();
-    //     
-    //     // Assert
-    //     
-    //     var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-    //
-    //     Assert.Null(result);
-    // }
+    [Fact]
+    public virtual async Task CreateModel_ReturnOk()
+    {
+        #region Arrange
+
+        var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        await GenerateTestEntity.FillChildren(valueModel, AssertReceiverContext);
+
+        var value = ReceiverMapper.Map<TDto>(valueModel);
+
+        #endregion
+
+        // Act
+
+        await PublishEndpoint.Publish(new CreateCommandMessage<TDto>(value, 1));
+        await Helper.Wait();
+
+        // Assert
+
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.CreateAt == value.CreateAt)
+            .FirstOrDefaultAsync();
+
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public virtual async Task UpdateModelTest_ReturnOk()
+    {
+        #region Arrange
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        var workerContext = AssertReceiverContext;
+        await workerContext.AddAsync(value);
+        await workerContext.SaveChangesAsync();
+
+        var valueDto = ReceiverMapper.Map<TDto>(value);
+
+        #endregion
+
+        // Act
+
+        await PublishEndpoint.Publish(new UpdateCommandMessage<TDto>(valueDto, 1));
+        await Helper.Wait();
+
+        // Assert
+
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.ChangeAt);
+    }
+
+    [Fact]
+    public virtual async Task DeleteModelTest_ReturnOk()
+    {
+        #region Arrange
+
+        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
+
+        var workerContext = AssertReceiverContext;
+        await workerContext.AddAsync(value);
+        await workerContext.SaveChangesAsync();
+
+        #endregion
+
+        // Act
+
+        await PublishEndpoint.Publish(new DeleteCommandMessage<TDto>(value.Id, 1));
+        await Helper.Wait();
+
+        // Assert
+
+        var result = await AssertReceiverContext.Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.Null(result);
+    }
 }

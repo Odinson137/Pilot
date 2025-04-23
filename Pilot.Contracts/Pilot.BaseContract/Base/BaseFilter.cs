@@ -9,7 +9,8 @@ public class BaseFilter(int skip, int take)
     {
     }
 
-    public BaseFilter(int? skip = null, int? take = null) : this(skip ?? 0, take ?? int.MaxValue) // потом поменять на дефолтное 5
+    public BaseFilter(int? skip = null, int? take = null) :
+        this(skip ?? 0, take ?? int.MaxValue) // потом поменять на дефолтное 5
     {
     }
 
@@ -37,13 +38,10 @@ public class BaseFilter(int skip, int take)
 
     public WhereFilter? WhereFilter { get; set; }
 
-    public string Key
+    public string GetKey<TDto>()
     {
-        get
-        {
-            var ids = Ids?.Distinct().ToList() ?? [];
-            return $"{Skip}:{Take}:{string.Join('*', ids)}:{WhereFilter?.Key}:";
-        }
+        var ids = Ids?.Distinct().ToList() ?? [];
+        return $"{typeof(TDto).Name}-{Skip}:{Take}:{string.Join('*', ids)}:{WhereFilter?.Key}:";
     }
 }
 
@@ -81,12 +79,9 @@ public class WhereFilter
     }
 
     public ICollection<(string, object, Type)> List { get; } = [];
-    
+
     public string Key
     {
-        get
-        {
-            return string.Join("*", List.Select(x => $"{x.Item1}|{x.Item2}"));
-        }
+        get { return string.Join("*", List.Select(x => $"{x.Item1}|{x.Item2}")); }
     }
 }

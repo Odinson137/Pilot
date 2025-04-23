@@ -13,7 +13,7 @@ public class MessageHandler(IModelService modelService) : ModelQueryHandler<Mess
 
     public async Task<ICollection<MessageDto>> Handle(GetChatMessagesQuery request, CancellationToken cancellationToken)
     {
-        var values = await _modelService1.GetValuesAsync<MessageDto>($"{Urls.ChatMessages}/{request.ChatId}", null, cancellationToken);
+        var values = await _modelService1.GetValuesAsync<MessageDto>($"{Urls.ChatMessages}/{request.ChatId}", new BaseFilter(), cancellationToken);
         return values;
     }
 }

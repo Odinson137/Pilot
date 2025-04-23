@@ -10,38 +10,38 @@ using Pilot.Contracts.FullDto;
 namespace Pilot.BlazorClient.Service.Pages;
 
 public class HrManagementPageService(
-    IBaseModelService<CompanyUserViewModel> companyUserService,
-    IBaseModelService<CompanyViewModel> companyService,
-    IBaseModelService<ProjectTaskViewModel> projectTaskService,
     IBaseModelService<UserViewModel> userBaseService,
-    IBaseModelService<TeamViewModel> teamService,
     IBaseModelService<JobApplicationViewModel> jobApplicationService,
     IBaseModelService<CompanyPostViewModel> companyPostService,
     IBaseModelService<PostViewModel> postService,
-    IBaseModelService<ProjectViewModel> projectService,
-    IBaseModelService<TeamEmployeeViewModel> teamEmployeeViewModel,
-    IBaseModelService<FileViewModel> fileService,
-    IBaseModelService<TeamEmployeeViewModel> teamEmployeeService
+    IBaseModelService<SkillViewModel> skillService
 ) : IHrManagementPageService
 {
-    public Task<List<PostViewModel>> GetPositionsAsync(int companyId)
+    public async Task<ICollection<PostViewModel>> GetPositionsAsync(int companyId)
     {
-        throw new NotImplementedException();
+        var positions = await postService.GetValuesAsync(c => c.CompanyId, companyId);
+        var skills = await skillService.GetValuesAsync(positions.SelectMany(c => c.Skills).Select(x => x.Id).ToList());
+        foreach (var postViewModel in positions)
+        {
+            postViewModel.Skills = skills.Where(c => postViewModel.Skills.Select(x => x.Id).Contains(c.Id)).ToList();
+        }
+        return positions;
     }
 
-    public Task AddPositionAsync(PostViewModel position)
+    public async Task AddPositionAsync(PostViewModel position)
     {
-        throw new NotImplementedException();
+        await postService.CreateValueAsync(position);
     }
 
-    public Task UpdatePositionAsync(PostViewModel position)
+    public async Task UpdatePositionAsync(PostViewModel position)
     {
-        throw new NotImplementedException();
+        await postService.UpdateValueAsync(position);
+
     }
 
-    public Task DeletePositionAsync(int positionId)
+    public async Task DeletePositionAsync(int positionId)
     {
-        throw new NotImplementedException();
+        await companyPostService.DeleteValueAsync(positionId);
     }
 
     public async Task<ICollection<CompanyPostViewModel>> GetPostsAsync(int companyId)
@@ -53,19 +53,20 @@ public class HrManagementPageService(
         return companyPosts;
     }
 
-    public Task AddPostAsync(CompanyPostViewModel post)
+    public async Task AddPostAsync(CompanyPostViewModel post)
     {
-        throw new NotImplementedException();
+        await companyPostService.CreateValueAsync(post);
     }
 
-    public Task UpdatePostAsync(CompanyPostViewModel post)
+    public async Task UpdatePostAsync(CompanyPostViewModel post)
     {
-        throw new NotImplementedException();
+        await companyPostService.UpdateValueAsync(post);
+
     }
 
-    public Task DeletePostAsync(int postId)
+    public async Task DeletePostAsync(int postId)
     {
-        throw new NotImplementedException();
+        await postService.DeleteValueAsync(postId);
     }
 
     public async Task<ICollection<JobApplicationViewModel>> GetCompanyJobApplicationsAsync(int companyId)
@@ -83,33 +84,13 @@ public class HrManagementPageService(
         return jobApplications;
     }
 
-    public Task UpdateApplicationStatusAsync(JobApplicationViewModel application)
+    public async Task UpdateApplicationStatusAsync(JobApplicationViewModel application)
     {
-        throw new NotImplementedException();
+        await jobApplicationService.UpdateValueAsync(application);
     }
 
-    public Task<List<SkillViewModel>> GetAvailableSkillsAsync()
+    public async Task<ICollection<SkillViewModel>> GetAvailableSkillsAsync()
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<ProjectViewModel>> GetProjectsAsync(int companyId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<CompanyUserViewModel> GetUserCompanyAsync(int userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<CompanyUserViewModel>> GetCompanyEmployeesAsync(int companyId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<ProjectTaskViewModel>> GetUserTasksAsync(List<int> projectIds, int? userId)
-    {
-        throw new NotImplementedException();
+        return await skillService.GetValuesAsync();
     }
 }

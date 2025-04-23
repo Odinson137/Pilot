@@ -34,7 +34,7 @@ else
                 else
                 {
                     <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">@Localizer.GetString("Dashboard", "Work")</li>
-                    <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li>
+                    @* <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li> *@
                     <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">@Localizer.GetString("Tasks", "Work")</li>
                     @if (_companyUser.Permissions.HasFlag(Permission.ViewTaskTable))
                     {
@@ -76,6 +76,9 @@ else
                     break;
                 case 11:
                     <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    break;
+                case 20:
+                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
             }
         }

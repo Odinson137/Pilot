@@ -32,19 +32,23 @@ public abstract class BaseUpdateConsumer<T, TDto>(
 
         var dtoModel = context.Message.Value;
 
-        await Validator.ValidateAsync<T, TDto>(dtoModel);
+        // await Validator.ValidateAsync<T, TDto>(dtoModel);
 
         var model = Mapper.Map<T>(dtoModel);
 
-        await Validator.FillValidateAsync(model);
+        var existingModel = await repository.GetByIdAsync(model.Id, context.CancellationToken);
+        if (existingModel == null)
+            throw new Exception("Entity not found");
+
+        var entityEntry = repository.GetContext.Entry(existingModel);
+        entityEntry.CurrentValues.SetValues(model);
         
         model.ChangeAt = DateTime.Now;
 
-        Repository.GetContext.Attach(model);
-        Repository.GetContext.Entry(model).State = EntityState.Modified;
-
         await Repository.SaveAsync();
 
+        entityEntry.State = EntityState.Modified;
+        
         var message = new InfoMessageDto
         {
             MessagePriority = MessageInfo.Success | MessageInfo.Update,

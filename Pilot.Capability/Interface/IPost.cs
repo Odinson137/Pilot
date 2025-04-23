@@ -5,4 +5,5 @@ namespace Pilot.Capability.Interface;
 
 public interface IPost : IBaseRepository<Post>
 {
+    public Task<Post> GetPostIncludeSkillsAsync(int skillId, CancellationToken token);
 }

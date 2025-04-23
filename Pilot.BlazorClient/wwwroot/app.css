@@ -45,4 +45,14 @@ h1:focus {
     --accent-color: #ffca28;
     --text-primary: #212121;
     --text-secondary: #757575;
+    --warning: #ffc107;
+    --info: #17a2b8;
+    --dark: #343a40;
+    --bg: #ffffff;
+    --text: #212529;
+    --text-muted: #6c757d;
+    --border: #dee2e6;
+    --border-radius: 10px;
+    --card-bg: #ffffff;
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }

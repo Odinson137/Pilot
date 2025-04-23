@@ -20,7 +20,7 @@ var services = builder.Services;
 var configuration = builder.Configuration;
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 services.AddHttpClient(ServiceName.ApiServer.ToString(),
@@ -67,7 +67,7 @@ services.AddScoped<IBaseModelService<TeamEmployeeViewModel>, BaseModelService<Te
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 services.AddScoped<IAiService, AiService>();
 
-builder.Services.AddScoped<IErrorBoundaryLogger, GlobalErrorHandler>();
+services.AddScoped<IErrorBoundaryLogger, GlobalErrorHandler>();
 
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(new LoggerConfiguration()
@@ -93,12 +93,12 @@ services.AddScoped<TokenAuthenticationStateProvider>();
 services.AddBlazoredModal();
 services.AddSyncfusionBlazor();
 
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-builder.Services.AddMvc()
+services.AddLocalization(options => options.ResourcesPath = "Resources");
+services.AddMvc()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
     .AddDataAnnotationsLocalization();
 
-builder.Services.AddBlazoredToast();
+services.AddBlazoredToast();
 
 var app = builder.Build();
 

@@ -5,4 +5,5 @@ namespace Pilot.Capability.Interface;
 
 public interface ISkill : IBaseRepository<Skill>
 {
+    public Task<ICollection<Skill>> GetSkillsAsync(params int[] ids);
 }
