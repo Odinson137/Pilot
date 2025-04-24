@@ -8,7 +8,6 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.Contracts.Data.Enums
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject ISkillPageService SkillPageService
 @inject IJsonLocalizationService Localizer
@@ -30,94 +29,102 @@ else if (_user == null)
 }
 else
 {
-    <div class="skills-editor-container">
-        @if (_errorMessage != null)
-        {
-            <div class="error-message">
-                <span class="material-icons">error</span>
-                @_errorMessage
-            </div>
-        }
-
-        <div class="skills-header">
-            <button class="btn btn-back" @onclick="GoBack">
-                <span class="material-icons">arrow_back</span> @Localizer.GetString("Back", "EditSkills")
-            </button>
-            <h2>@Localizer.GetString("SkillsTitle", "EditSkills")</h2>
-            <button class="btn btn-add" @onclick="ShowAddSkillForm">
-                <span class="material-icons">add</span> @Localizer.GetString("AddSkill", "EditSkills")
-            </button>
-        </div>
-
-        @if (_userSkills?.Any() != true)
-        {
-            <p class="no-data">@Localizer.GetString("NoSkills", "EditSkills")</p>
-        }
-        else
-        {
-            <div class="skills-grid">
-                @foreach (var skill in _userSkills)
-                {
-                    <div class="skill-card">
-                        <div class="skill-info">
-                            <h3>@skill.Skill!.Title</h3>
-                            <p>@Localizer.GetString("Experience", "EditSkills"): @(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : Localizer.GetString("NoExperience", "EditSkills"))</p>
-                            <p>@Localizer.GetString("Level", "EditSkills"): @Localizer.GetString(@skill.SkillLevel.ToString(), "EditSkills")</p>
-                        </div>
-                        <div class="skill-actions">
-                            <button class="btn btn-icon btn-edit" @onclick="() => ShowEditSkillForm(skill)">
-                                <span class="material-icons">edit</span>
-                            </button>
-                            <button class="btn btn-icon btn-danger" @onclick="() => DeleteSkill(skill.Id)">
-                                <span class="material-icons">delete</span>
-                            </button>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
-
-        @if (_showAddSkillForm || _showEditSkillForm)
-        {
-            <div class="modal-overlay">
-                <div class="modal-card">
-                    <h3>@(_showAddSkillForm ? Localizer.GetString("AddSkill", "EditSkills") : Localizer.GetString("EditSkill", "EditSkills"))</h3>
-                    <EditForm Model="_skillModel" OnValidSubmit="SaveSkill">
-                        <DataAnnotationsValidator/>
-                        <div class="form-group">
-                            <label>@Localizer.GetString("Skill", "EditSkills")</label>
-                            <InputSelect @bind-Value="_skillModel.SkillId" class="form-select" disabled="@_showEditSkillForm">
-                                <option value="0" disabled selected>@Localizer.GetString("SelectSkill", "EditSkills")</option>
-                                @foreach (var skill in _availableSkills ?? new List<SkillViewModel>())
-                                {
-                                    <option value="@skill.Id">@skill.Title</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => _skillModel.SkillId)"/>
-                        </div>
-                        <div class="form-group">
-                            <label>@Localizer.GetString("ExperienceYears", "EditSkills")</label>
-                            <InputNumber @bind-Value="_skillModel.ExperienceYears" class="form-input" min="0" max="50"/>
-                            <ValidationMessage For="@(() => _skillModel.ExperienceYears)"/>
-                        </div>
-                        <div class="form-group">
-                            <label>@Localizer.GetString("SkillLevel", "EditSkills")</label>
-                            <InputSelect @bind-Value="_skillModel.SkillLevel" class="form-select">
-                                @foreach (var skillLevel in Enum.GetValues<SkillLevel>())
-                                {
-                                    <option value="@skillLevel">@Localizer.GetString(skillLevel.ToString(), "EditSkills")</option>
-                                }
-                            </InputSelect>
-                            <ValidationMessage For="@(() => _skillModel.SkillLevel)"/>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-save">@Localizer.GetString("Save", "EditSkills")</button>
-                            <button type="button" class="btn btn-cancel" @onclick="HideSkillForm">@Localizer.GetString("Cancel", "EditSkills")</button>
-                        </div>
-                    </EditForm>
+    <div style="min-height: 600px">
+        <div class="skills-editor-container">
+            @if (_errorMessage != null)
+            {
+                <div class="error-message">
+                    <span class="material-icons">error</span>
+                    @_errorMessage
                 </div>
+            }
+
+            <div class="skills-header">
+                <button class="btn btn-back" @onclick="GoBack">
+                    <span class="material-icons">arrow_back</span> @Localizer.GetString("Back", "EditSkills")
+                </button>
+                <h2>@Localizer.GetString("SkillsTitle", "EditSkills")</h2>
+                <button class="btn btn-add" @onclick="ShowAddSkillForm">
+                    <span class="material-icons">add</span> @Localizer.GetString("AddSkill", "EditSkills")
+                </button>
             </div>
-        }
+
+            @if (_userSkills?.Any() != true)
+            {
+                <p class="no-data">@Localizer.GetString("NoSkills", "EditSkills")</p>
+            }
+            else
+            {
+                <div class="skills-grid">
+                    @foreach (var skill in _userSkills)
+                    {
+                        <div class="skill-card">
+                            <div class="skill-info">
+                                <h3>@skill.Skill!.Title</h3>
+                                <p>@Localizer.GetString("Experience", "EditSkills"): @(skill.ExperienceYears.HasValue ? $"{skill.ExperienceYears.Value} years" : Localizer.GetString("NoExperience", "EditSkills"))</p>
+                                <p>@Localizer.GetString("Level", "EditSkills"): @Localizer.GetString(@skill.SkillLevel.ToString(), "EditSkills")</p>
+                            </div>
+                            <div class="skill-actions">
+                                <button class="btn btn-icon btn-edit" @onclick="() => ShowEditSkillForm(skill)">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="btn btn-icon btn-danger" @onclick="() => DeleteSkill(skill.Id)">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (_showAddSkillForm || _showEditSkillForm)
+            {
+                <div class="modal-overlay">
+                    <div class="modal-card">
+                        <h3>@(_showAddSkillForm ? Localizer.GetString("AddSkill", "EditSkills") : Localizer.GetString("EditSkill", "EditSkills"))</h3>
+                        <EditForm Model="_skillModel" OnValidSubmit="SaveSkill">
+                            <DataAnnotationsValidator/>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("Skill", "EditSkills")</label>
+                                <InputSelect @bind-Value="_skillModel.SkillId" class="form-select"
+                                             disabled="@_showEditSkillForm">
+                                    <option value="0" disabled
+                                            selected>@Localizer.GetString("SelectSkill", "EditSkills")</option>
+                                    @foreach (var skill in _availableSkills ?? new List<SkillViewModel>())
+                                    {
+                                        <option value="@skill.Id">@skill.Title</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => _skillModel.SkillId)"/>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("ExperienceYears", "EditSkills")</label>
+                                <InputNumber @bind-Value="_skillModel.ExperienceYears" class="form-input" min="0"
+                                             max="50"/>
+                                <ValidationMessage For="@(() => _skillModel.ExperienceYears)"/>
+                            </div>
+                            <div class="form-group">
+                                <label>@Localizer.GetString("SkillLevel", "EditSkills")</label>
+                                <InputSelect @bind-Value="_skillModel.SkillLevel" class="form-select">
+                                    @foreach (var skillLevel in Enum.GetValues<SkillLevel>())
+                                    {
+                                        <option
+                                            value="@skillLevel">@Localizer.GetString(skillLevel.ToString(), "EditSkills")</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => _skillModel.SkillLevel)"/>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit"
+                                        class="btn btn-save">@Localizer.GetString("Save", "EditSkills")</button>
+                                <button type="button" class="btn btn-cancel"
+                                        @onclick="HideSkillForm">@Localizer.GetString("Cancel", "EditSkills")</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 }
 

@@ -125,7 +125,7 @@
     </div>
 </nav>
 
-<div class="main-layout-content container mx-auto mt-4">
+<div class="main-layout-content container mx-auto mt-4" style="min-height: 70vh">
     <CustomErrorBoundary>
         <MudLayout>
             @Body
@@ -198,11 +198,11 @@
             MessengerService.OnMessageReceived += async (message) =>
             {
                 var messageDto = message.FromJson<MessageDto>();
-                _notificationCount++;
                 if (user.Id == messageDto.UserId)
                     ToastService.ShowSuccess("Сообщение успешно доставлено");
                 else
                 {
+                    _notificationCount++;
                     var newInfoMessage = new InfoMessageViewModel
                     {
                         CreateAt = messageDto.CreateAt,

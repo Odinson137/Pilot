@@ -25,5 +25,18 @@
   "Tip1Title": "Be Unique",
   "Tip1Text": "Add something personal to your description — it’ll help you stand out among other users.",
   "Tip2Title": "Pick a Vibrant Photo",
-  "Tip2Text": "A great photo is the first thing your colleagues will notice. Choose one that reflects your style!"
+  "Tip2Text": "A great photo is the first thing your colleagues will notice. Choose one that reflects your style!",
+  "Birthday": "Date of Birth",
+  "Gender": "Gender",
+  "SelectGender": "Select Gender",
+  "Male": "Male",
+  "Female": "Female",
+  "Other": "Other",
+  "CareerInfoTitle": "Career Preferences",
+  "CareerInfoDesc": "Share your professional aspirations.",
+  "DreamPost": "Desired Position",
+  "LocationTitle": "Location",
+  "LocationDesc": "Choose your place on the world map with a little adventure!",
+  "Country": "Country",
+  "City": "City"
 }

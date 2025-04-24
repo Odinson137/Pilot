@@ -25,6 +25,8 @@ public class UserDto : BaseDto, IHasFile
     
     [MaxLength(100)] public string? City { get; set; }
     
+    [MaxLength(200)] public string? DreamPost { get; set; }
+
     [File]
     [MaxLength(100)] public string? AvatarImage { get; set; }
     

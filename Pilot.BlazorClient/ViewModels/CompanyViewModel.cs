@@ -14,7 +14,7 @@ public class CompanyViewModel : BaseViewModel
     
     public ICollection<CompanyUserViewModel> CompanyUsers { get; set; } = [];
 
-    public BaseViewModel? CreatedBy { get; set; }
+    public CompanyUserViewModel? CreatedBy { get; set; }
 
     public string? Logo { get; set; }
 

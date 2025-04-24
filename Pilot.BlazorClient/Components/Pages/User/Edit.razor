@@ -8,6 +8,7 @@
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.Contracts.Data.Enums
+@using Pilot.BlazorClient.Components.Helpers
 @inject IUserPageService UserPageService
 @inject NavigationManager NavigationManager
 @inject IJsonLocalizationService Localizer
@@ -25,10 +26,7 @@
 <div class="edit-container">
     @if (_user == null)
     {
-        <div class="loading-section">
-            <span class="loading-spinner"></span>
-            <p>@Localizer.GetString("Loading", "EditAccount")</p>
-        </div>
+        <Loading></Loading>
     }
     else
     {
@@ -66,6 +64,44 @@
                     <label for="email">@Localizer.GetString("Email", "EditAccount")</label>
                     <InputText id="email" @bind-Value="_user.Email" class="form-control"/>
                 </div>
+
+                <div class="form-group">
+                    <label for="birthday">@Localizer.GetString("Birthday", "EditAccount")</label>
+                    <InputDate id="birthday" @bind-Value="_user.Birthday" class="form-control"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="gender">@Localizer.GetString("Gender", "EditAccount")</label>
+                    <InputSelect id="gender" @bind-Value="_user.Gender" class="form-control">
+                        <option disabled="disabled" value="">@Localizer.GetString("SelectGender", "EditAccount")</option>
+                        @foreach (var gender in Enum.GetValues<Gender>())
+                        {
+                            <option value="@gender">@Localizer.GetString(gender.ToString(), "EditAccount")</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">@Localizer.GetString("CareerInfoTitle", "EditAccount")</h3>
+                <p class="form-section-desc">@Localizer.GetString("CareerInfoDesc", "EditAccount")</p>
+                <div class="form-group">
+                    <label for="dreamPost">@Localizer.GetString("DreamPost", "EditAccount")</label>
+                    <InputText id="dreamPost" @bind-Value="_user.DreamPost" class="form-control"/>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3 class="form-section-title">@Localizer.GetString("LocationTitle", "EditAccount")</h3>
+                <p class="form-section-desc">@Localizer.GetString("LocationDesc", "EditAccount")</p>
+                <div class="form-group location-group">
+                    <label for="country">@Localizer.GetString("Country", "EditAccount")</label>
+                    <InputText id="country" @bind-Value="_user.Country" class="form-control location-input"/>
+                </div>
+                <div class="form-group location-group">
+                    <label for="city">@Localizer.GetString("City", "EditAccount")</label>
+                    <InputText id="city" @bind-Value="_user.City" class="form-control location-input"/>
+                </div>
             </div>
 
             <div class="form-section">
@@ -77,25 +113,36 @@
                 </div>
             </div>
 
-            <div class="form-section avatar-section">
-                <h3 class="form-section-title">@Localizer.GetString("AvatarTitle", "EditAccount")</h3>
-                <p class="form-section-desc">@Localizer.GetString("AvatarDesc", "EditAccount")</p>
-                <div class="avatar-preview">
-                    @if (!string.IsNullOrEmpty(_user.AvatarImage))
+            <div class="form-section avatar-section card mb-4 border-primary shadow-sm">
+                <div class="card-body">
+                    <h3 class="form-section-title">@Localizer.GetString("AvatarTitle", "EditAccount")</h3>
+                    <p class="form-section-desc">@Localizer.GetString("AvatarDesc", "EditAccount")</p>
+                    <div class="avatar-preview">
+                        @if (_newAvatar != null)
+                        {
+                            <img src="@($"data:image/png;base64,{Convert.ToBase64String(_newAvatar.Value.Item2)}")" alt="New Avatar" class="avatar-img"/>
+                        }
+                        else if (!string.IsNullOrEmpty(_user.AvatarImage))
+                        {
+                            <img src="@TempFileService.GetUrl(_user.AvatarImage)" alt="Current Avatar" class="avatar-img"/>
+                        }
+                        else
+                        {
+                            <div class="avatar-placeholder">
+                                <span class="material-icons">person</span>
+                                <p>@Localizer.GetString("NoAvatar", "EditAccount")</p>
+                            </div>
+                        }
+                    </div>
+                    <InputFile id="file-upload" OnChange="HandleFileSelected" class="file-input" accept="image/*"/>
+                    <label for="file-upload" class="btn btn-outline-primary btn-sm">
+                        <span class="material-icons">upload</span> @Localizer.GetString("UploadPhoto", "EditAccount")
+                    </label>
+                    @if (_fileError != null)
                     {
-                        <img src="@TempFileService.GetUrl(_user.AvatarImage)" alt="Current Avatar" class="avatar-img"/>
-                    }
-                    else
-                    {
-                        <img src="Images/Account/default-avatar.jpg" alt="Default Avatar" class="avatar-img"/>
+                        <p class="file-error">@_fileError</p>
                     }
                 </div>
-                <InputFile id="file-upload" OnChange="HandleFileSelected" class="file-input" accept="image/*"/>
-                <label for="file-upload" class="btn btn-upload" style="color: black;">@Localizer.GetString("UploadPhoto", "EditAccount")</label>
-                @if (_fileError != null)
-                {
-                    <p class="file-error">@_fileError</p>
-                }
             </div>
 
             <div class="form-actions">
@@ -124,6 +171,7 @@
 @code {
     private UserViewModel? _user;
     private string? _fileError;
+    private (string, byte[])? _newAvatar;
 
     protected override async Task OnInitializedAsync()
     {
@@ -132,14 +180,38 @@
 
     private async Task HandleValidSubmit()
     {
-        await UserPageService.SaveUserAsync(_user!);
-        await ProtectedSessionStorage.DeleteAsync(ClientConstants.User);
-        await Task.Delay(100);
-        NavigationManager.NavigateTo("/Account");
+        try
+        {
+            // Upload and save avatar if a new one was selected
+            if (_newAvatar != null)
+            {
+                var fileViewModel = new FileViewModel
+                {
+                    Name = Guid.NewGuid().ToString(),
+                    Type = "image/png",
+                    Format = FileFormat.Image,
+                    ByteFormFile = _newAvatar!.Value.Item2
+                };
+                await ProjectTaskPageService.UploadFileAsync(fileViewModel);
+                _user!.AvatarImage = fileViewModel.Name;
+                _newAvatar = null;
+            }
+
+            // Save user changes
+            await UserPageService.SaveUserAsync(_user!);
+            await ProtectedSessionStorage.DeleteAsync(ClientConstants.User);
+            await Task.Delay(500);
+            NavigationManager.NavigateTo("/Account");
+        }
+        catch (Exception ex)
+        {
+            _fileError = $"{Localizer.GetString("FileUploadError", "EditAccount")}: {ex.Message}";
+        }
     }
 
     private void CancelEdit()
     {
+        _newAvatar = null;
         NavigationManager.NavigateTo("/Account");
     }
 
@@ -147,23 +219,17 @@
     {
         try
         {
-            await using var stream = e.File.OpenReadStream();
-            using var ms = new MemoryStream();
-            await stream.CopyToAsync(ms);
-
-            var file = new FileViewModel
+            var file = e.File;
+            if (file != null)
             {
-                Name = Guid.NewGuid().ToString(),
-                Type = "png",
-                Format = FileFormat.Image,
-                ByteFormFile = ms.ToArray()
-            };
-            await ProjectTaskPageService.UploadFileAsync(file);
+                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
 
-            _user!.AvatarImage = file.Name;
-            _fileError = null;
-            await Task.Delay(500);
-            await HandleValidSubmit();
+                _newAvatar = (file.Name, ms.ToArray());
+                _fileError = null;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
@@ -173,7 +239,6 @@
 }
 
 <style>
-    /* Корневые переменные */
     :root {
         --primary: #007bff;
         --success: #28a745;
@@ -185,7 +250,6 @@
         --transition: all 0.3s ease;
     }
 
-    /* Header Banner */
     .header-banner {
         position: relative;
         height: 220px;
@@ -225,14 +289,12 @@
         opacity: 0.9;
     }
 
-    /* Edit Container */
     .edit-container {
         max-width: 900px;
         margin: 50px auto;
         padding: 0 20px;
     }
 
-    /* Intro Section */
     .intro-section {
         background: #fff;
         border-radius: 15px;
@@ -255,17 +317,12 @@
         line-height: 1.6;
     }
 
-    /* Edit Form */
     .edit-form {
         background: #fff;
         border-radius: 15px;
         padding: 40px;
         box-shadow: var(--shadow);
         transition: transform 0.3s ease;
-    }
-
-    .edit-form:hover {
-        transform: translateY(-10px);
     }
 
     .form-section {
@@ -287,6 +344,7 @@
 
     .form-group {
         margin-bottom: 25px;
+        position: relative;
     }
 
     .form-group label {
@@ -299,7 +357,6 @@
 
     .form-control {
         width: 100%;
-        padding: 14px;
         border: 2px solid #e0e0e0;
         border-radius: 10px;
         font-size: 1rem;
@@ -318,7 +375,15 @@
         resize: vertical;
     }
 
-    /* Avatar Section */
+    .location-group {
+        position: relative;
+        transition: transform 0.3s ease;
+    }
+
+    .location-input:focus {
+        box-shadow: 0 0 8px rgba(255, 111, 97, 0.3);
+    }
+
     .avatar-section {
         text-align: center;
         padding: 20px;
@@ -339,22 +404,46 @@
         border: 3px solid #fff;
     }
 
+    .avatar-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #e0e0e0;
+        margin: 0 auto;
+    }
+
+    .avatar-placeholder .material-icons {
+        font-size: 48px;
+        color: #666;
+    }
+
+    .avatar-placeholder p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 5px 0 0;
+    }
+
     .file-input {
         display: none;
     }
 
-    .btn-upload {
-        display: inline-block;
-        padding: 12px 30px;
-        color: #fff;
+    .btn-outline-primary {
+        padding: 10px 20px;
+        border: 2px solid var(--primary);
+        color: var(--primary);
         border-radius: 10px;
         cursor: pointer;
         font-weight: 600;
         transition: var(--transition);
     }
 
-    .btn-upload:hover {
-        background: #e65b50;
+    .btn-outline-primary:hover {
+        background: var(--primary);
+        color: #fff;
         transform: scale(1.05);
     }
 
@@ -364,7 +453,6 @@
         margin-top: 15px;
     }
 
-    /* Validation Summary */
     .validation-summary {
         color: #dc3545;
         font-size: 1rem;
@@ -374,7 +462,6 @@
         border-radius: 10px;
     }
 
-    /* Loading Section */
     .loading-section {
         text-align: center;
         padding: 40px;
@@ -399,7 +486,6 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Form Actions */
     .form-actions {
         display: flex;
         justify-content: center;
@@ -438,7 +524,6 @@
         transform: scale(1.05);
     }
 
-    /* Tips Section */
     .tips-section {
         margin-top: 50px;
         padding: 40px;
@@ -478,13 +563,11 @@
         line-height: 1.6;
     }
 
-    /* Animations */
     @@keyframes fadeIn {
         from { opacity: 0; transform: translateY(30px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive Design */
     @@media (max-width: 768px) {
         .header-banner {
             height: 180px;

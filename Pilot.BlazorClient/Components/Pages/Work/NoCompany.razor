@@ -48,6 +48,7 @@
             };
 
             await CompanyPageService.CreateValueAsync(company);
+            await Task.Delay(500);
             NavigationManager.NavigateTo("/work");
         }
     }

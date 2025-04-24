@@ -1,5 +1,6 @@
 ﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.HelperViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
@@ -47,13 +48,33 @@ public class ChatPageService(
         return userViewModels;
     }
 
-    public async Task<ICollection<UserViewModel>> GetAllEmployeesAsync()
+    // пусть юзеры из вне не имеют возможности добавлять какого-то в чат, в юзеры в компании могу
+    public async Task<ICollection<MultySelectViewModel<UserViewModel>>> GetAllEmployeesAsync(ChatViewModel chat)
     {
         var user = await userService.GetCurrentUserAsync();
-        var companyUser = await companyUserService.Client.SendGetMessage<CompanyUserDto, CompanyUserViewModel>(user.Id);
-        var company = await companyService.Client.SendGetMessage<CompanyDto, CompanyViewModel>(companyUser.Company.Id);
-        var users = 
-            await userBaseService.GetValuesAsync(company.CompanyUsers.Select(c => c.Id).ToArray());
-        return users;
+        var chatMember = await chatMemberService.GetValuesAsync(chat.ChatMembers.Select(c => c.Id).ToList());
+        var memberIds = chatMember.Select(c => c.UserId).ToList();
+        
+        var companyUserHas = await companyUserService.GetValuesAsync(c => c.Id, user.Id);
+        if (companyUserHas.Count > 0)
+        {
+            var company = await companyService.GetValueAsync(companyUserHas.First().Company.Id);
+            var companyUsers = 
+                await userBaseService.GetValuesAsync(company.CompanyUsers.Select(c => c.Id).ToArray());
+            
+            var multySelectCompanyUsers = MultySelectViewModel<UserViewModel>.GetList(companyUsers);
+            foreach (var select in multySelectCompanyUsers)
+            {
+                if (memberIds.Contains(select.Value.Id))
+                {
+                    select.IsSelected = true;
+                }
+            }
+            return multySelectCompanyUsers;
+        }
+
+        var users = await userBaseService.GetValuesAsync(memberIds);
+        var multySelect = MultySelectViewModel<UserViewModel>.GetList(users);
+        return multySelect;
     }
 }

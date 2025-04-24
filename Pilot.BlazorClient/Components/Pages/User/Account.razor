@@ -58,7 +58,6 @@ else
             <div class="details-section">
                 <div class="detail-item"><span class="label">@Localizer.GetString("Username", "Account"):</span> @_user.UserName</div>
                 <div class="detail-item"><span class="label">@Localizer.GetString("Email", "Account"):</span> @(_user.Email ?? Localizer.GetString("NoData", "Account"))</div>
-                <div class="detail-item"><span class="label">@Localizer.GetString("Role", "Account"):</span> @_user.Role</div>
                 <div class="detail-item"><span class="label">@Localizer.GetString("Description", "Account"):</span> @(_user.Description ?? Localizer.GetString("NoData", "Account"))</div>
                 <div class="detail-item"><span class="label">@Localizer.GetString("Location", "Account"):</span> @(_user.Country ?? "Unknown"), @(_user.City ?? "Unknown")</div>
                 <div class="detail-item"><span class="label">@Localizer.GetString("Gender", "Account"):</span> @_user.Gender</div>

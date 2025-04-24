@@ -22,7 +22,7 @@ public class BaseHttpService(
         return GetFullUrl<TDto>(url, null);
     }
 
-    protected static string GetFullUrl<TDto>(string? url, BaseFilter filter) where TDto : BaseDto
+    protected static string GetFullUrl<TDto>(string? url, BaseFilter? filter) where TDto : BaseDto
     {
         var stringBuilder = new StringBuilder($"api/{BaseExpendMethods.GetModelName<TDto>()}");
 

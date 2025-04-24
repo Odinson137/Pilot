@@ -67,16 +67,7 @@
     protected override async Task OnInitializedAsync()
     {
         _chat = await ChatPageService.GetValueAsync(Id);
-        var employees = await ChatPageService.GetAllEmployeesAsync();
-        _multySelect = MultySelectViewModel<UserViewModel>.GetList(employees);
-        var chatIds = _chat.ChatMembers.Select(c => c.Id).ToList();
-        foreach (var select in _multySelect)
-        {
-            if (chatIds.Contains(select.Value.Id))
-            {
-                select.IsSelected = true;
-            }
-        }
+        _multySelect = await ChatPageService.GetAllEmployeesAsync(_chat);
     }
 
     private async Task HandleSubmit()

@@ -1,4 +1,5 @@
 ﻿using Pilot.BlazorClient.ViewModels;
+using Pilot.BlazorClient.ViewModels.HelperViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 
 namespace Pilot.BlazorClient.Interface;
@@ -13,5 +14,5 @@ public interface IChatPageService : IBasePageService<ChatViewModel>
     
     Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<ChatMemberViewModel> chatMemberViewModels);
     
-    Task<ICollection<UserViewModel>> GetAllEmployeesAsync();
+    Task<ICollection<MultySelectViewModel<UserViewModel>>> GetAllEmployeesAsync(ChatViewModel chat);
 }

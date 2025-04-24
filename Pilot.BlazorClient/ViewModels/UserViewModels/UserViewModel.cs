@@ -18,6 +18,8 @@ public class UserViewModel : BaseViewModel
 
     [MaxLength(1000)] public string? Description { get; set; }
     
+    [MaxLength(200)] public string? DreamPost { get; set; }
+    
     [MaxLength(100)] public string? Country { get; set; }
     
     [MaxLength(100)] public string? City { get; set; }
@@ -25,7 +27,7 @@ public class UserViewModel : BaseViewModel
     [File]
     [MaxLength(100)] public string? AvatarImage { get; set; }
     
-    public Gender Gender { get; set; }
+    public Gender? Gender { get; set; }
     
     public DateTime? Birthday { get; set; }
 

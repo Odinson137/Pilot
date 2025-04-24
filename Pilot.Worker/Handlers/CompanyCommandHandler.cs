@@ -25,8 +25,7 @@ public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseVal
         await _validateService.ChangeEntityTrackerAsync(model);
         var firstEmployee = new CompanyUser
         {
-            Id = request.UserId,
-            Company = model
+            Id = request.UserId
         };
         model.CompanyUsers.Add(firstEmployee);
         model.CreatedBy = firstEmployee;
