@@ -10,26 +10,22 @@ public class BaseCapabilityIntegrationTest : IClassFixture<CapabilityTestCapabil
 {
     protected readonly IPublishEndpoint PublishEndpoint;
 
-    protected readonly IServiceProvider CapabilityService;
+    private readonly IServiceProvider _capabilityService;
     protected readonly HttpClient CapabilityClient;
 
-    protected readonly IServiceScope CapabilityScope;
-    protected DataContext AssertContext 
-        => CapabilityScope.ServiceProvider.GetRequiredService<DataContext>();
-    
-    protected IMapper ReceiverMapper;
+    protected readonly IMapper ReceiverMapper;
     
     protected DataContext AssertReceiverContext
-        => CapabilityService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
+        => _capabilityService.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
     
     protected BaseCapabilityIntegrationTest(CapabilityTestCapabilityFactory factory)
     {
-        CapabilityService = factory.Services;
-        CapabilityScope = CapabilityService.CreateScope();
-        PublishEndpoint = CapabilityScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+        _capabilityService = factory.Services;
+        var capabilityScope = _capabilityService.CreateScope();
+        PublishEndpoint = capabilityScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
 
         CapabilityClient = factory.CreateClient();
 
-        ReceiverMapper = CapabilityScope.ServiceProvider.GetRequiredService<IMapper>();
+        ReceiverMapper = capabilityScope.ServiceProvider.GetRequiredService<IMapper>();
     }
 }

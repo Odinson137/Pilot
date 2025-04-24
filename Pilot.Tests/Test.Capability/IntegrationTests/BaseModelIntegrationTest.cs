@@ -15,8 +15,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
 {
     public BaseModelReceiverIntegrationTest(CapabilityTestCapabilityFactory factory) : base(factory)
     {
-        AssertContext.Database.EnsureDeleted();
-        AssertContext.Database.EnsureCreated();
+        var assertContextDatabase = AssertReceiverContext.Database;
+        assertContextDatabase.EnsureDeleted();
+        assertContextDatabase.EnsureCreated();
     }
 
     [Fact]
