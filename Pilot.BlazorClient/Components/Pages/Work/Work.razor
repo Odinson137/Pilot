@@ -29,24 +29,32 @@ else
             <ul>
                 @if (_companyUser == null)
                 {
-                    <li @onclick="() => SetActiveTab(0)" class="@GetActiveClass(0)">@Localizer.GetString("JoinOrCreateCompany", "Work")</li>
+                    <li @onclick="() => SetActiveTab(0)"
+                        class="@GetActiveClass(0)">@Localizer.GetString("JoinOrCreateCompany", "Work")</li>
                 }
                 else
                 {
-                    <li @onclick="() => SetActiveTab(1)" class="@GetActiveClass(1)">@Localizer.GetString("Dashboard", "Work")</li>
+                    <li @onclick="() => SetActiveTab(1)"
+                        class="@GetActiveClass(1)">@Localizer.GetString("Dashboard", "Work")</li>
                     @* <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li> *@
-                    <li @onclick="() => SetActiveTab(3)" class="@GetActiveClass(3)">@Localizer.GetString("Tasks", "Work")</li>
-                    @if (_companyUser.Permissions.HasFlag(Permission.ViewTaskTable))
+                    <li @onclick="() => SetActiveTab(3)"
+                        class="@GetActiveClass(3)">@Localizer.GetString("Tasks", "Work")</li>
+                    @if (_companyUser.Permissions.HasPermission(Permission.ViewTaskTable))
                     {
-                        <li @onclick="() => SetActiveTab(11)" class="@GetActiveClass(11)">@Localizer.GetString("TaskManagement", "Work")</li>
+                        <li @onclick="() => SetActiveTab(11)"
+                            class="@GetActiveClass(11)">@Localizer.GetString("TaskManagement", "Work")</li>
                     }
-                    @if (_companyUser.Permissions.HasFlag(Permission.ViewCompanyManagement))
+
+                    @if (_companyUser.Permissions.HasPermission(Permission.ViewCompanyManagement))
                     {
-                        <li @onclick="() => SetActiveTab(7)" class="@GetActiveClass(7)">@Localizer.GetString("CompanyManagement", "Work")</li>
+                        <li @onclick="() => SetActiveTab(7)"
+                            class="@GetActiveClass(7)">@Localizer.GetString("CompanyManagement", "Work")</li>
                     }
-                    @if (_companyUser.Permissions.HasFlag(Permission.ViewHrTable))
+
+                    @if (_companyUser.Permissions.HasPermission(Permission.ViewHrTable))
                     {
-                        <li @onclick="() => SetActiveTab(8)" class="@GetActiveClass(8)">@Localizer.GetString("HRManagement", "Work")</li>
+                        <li @onclick="() => SetActiveTab(8)"
+                            class="@GetActiveClass(8)">@Localizer.GetString("HRManagement", "Work")</li>
                     }
                 }
             </ul>
@@ -100,26 +108,24 @@ else
     {
         _user = await UserService.GetCurrentUserAsync();
 
-        try
+        _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
+        if (_companyUser != null)
         {
-            _companyUser = await WorkPageService.GetUserCompanyAsync(_user.Id);
             _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
             _taskCount = (await WorkPageService.GetUserTasksAsync(new List<int>(), null)).Count;
             _teamCount = (await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id)).Count;
             _vacancyCount = (await WorkPageService.GetPostsAsync(_companyUser.Company.Id)).Count;
+            
+            var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
+            if (currentTabStorageResult.Success)
+                _activeTab = currentTabStorageResult.Value;
+
+            var projectStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.SelectProject);
+            if (projectStorageResult.Success)
+                _projectId = projectStorageResult.Value;
         }
-        catch
-        {
+        else
             _activeTab = 0;
-        }
-
-        var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
-        if (currentTabStorageResult.Success)
-            _activeTab = currentTabStorageResult.Value;
-
-        var projectStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.SelectProject);
-        if (projectStorageResult.Success)
-            _projectId = projectStorageResult.Value;
 
         _isLoading = false;
     }
@@ -135,6 +141,7 @@ else
     {
         return _activeTab == tabId ? "active" : "";
     }
+
 }
 
 <style>

@@ -9,7 +9,8 @@ namespace Pilot.BlazorClient.Service.Pages;
 public class CompanyPageService(
     IBaseModelService<ProjectViewModel> projectService,
     IBaseModelService<CompanyViewModel> companyService,
-    IBaseModelService<PostViewModel> postService) : BasePageService<CompanyViewModel>(companyService), ICompanyPageService
+    IMessengerService messengerService,
+    IBaseModelService<PostViewModel> postService) : BasePageService<CompanyViewModel>(companyService, messengerService), ICompanyPageService
 {
     private readonly IBaseModelService<CompanyViewModel> _companyService = companyService;
 

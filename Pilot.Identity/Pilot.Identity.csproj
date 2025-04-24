@@ -32,4 +32,12 @@
       <_ContentIncludedByDefault Remove="Data\Downloads\pilot-433511-82bf33c3cee3.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="logs\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="logs\test-log.txt" />
+    </ItemGroup>
+
 </Project>

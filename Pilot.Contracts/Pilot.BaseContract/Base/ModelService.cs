@@ -22,14 +22,14 @@ public class ModelService : BaseHttpService, IModelService
         _redis = redis;
     }
 
-    public virtual async Task<TDto> GetValueByIdAsync<TDto>(string url, CancellationToken token = default)
+    public virtual async Task<TDto?> GetValueByIdAsync<TDto>(string url, CancellationToken token = default)
         where TDto : BaseDto
     {
         _logger.LogInformation($"Getting value by url - {url}");
 
         var cacheValue = await _redis.GetValueAsync($"{BaseExpendMethods.GetModelName<TDto>()}-{url}");
 
-        TDto valueDto;
+        TDto? valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
             _logger.LogInformation("Get value from db");
@@ -45,7 +45,7 @@ public class ModelService : BaseHttpService, IModelService
         return valueDto;
     }
 
-    public virtual Task<TDto> GetValueByIdAsync<TDto>(int valueId, CancellationToken token = default)
+    public virtual Task<TDto?> GetValueByIdAsync<TDto>(int valueId, CancellationToken token = default)
         where TDto : BaseDto
     {
         return GetValueByIdAsync<TDto>($"{valueId}", token);

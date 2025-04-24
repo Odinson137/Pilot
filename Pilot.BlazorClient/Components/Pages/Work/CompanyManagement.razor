@@ -495,7 +495,7 @@
                                     </div>
                                     <p>
                                         <strong>@Localization.GetString("Permissions", "CompanyManagement"):</strong>
-                                        @if (employee.Id == employee.Company.CreatedBy?.Id)
+                                        @if (employee.Id == employee.Company.CreatedBy?.Id || employee.Permissions.HasFlag(Permission.All))
                                         {
                                             @(" " + Localization.GetString("All", "CompanyManagement"))
                                         }
@@ -538,12 +538,18 @@
                                         <label>@Localization.GetString("Permissions", "CompanyManagement")</label>
                                         @foreach (var permissionTuple in _permissionTuples)
                                         {
-                                            <div class="permission-checkbox">
-                                                <InputCheckbox @bind-Value="@permissionTuple.IsChecked"
-                                                               id="@($"perm-{permissionTuple.Permission}")"/>
-                                                <label
-                                                    for="@($"perm-{permissionTuple.Permission}")">@Localization.GetString(permissionTuple.Permission.ToString(), "CompanyManagement")</label>
-                                            </div>
+                                            // Показываем разрешение, только если это All или если All не выбрано
+                                            if (permissionTuple.Permission == Permission.All || !_permissionTuples.Any(c => c.IsChecked && c.Permission == Permission.All))
+                                            {
+                                                <div class="permission-checkbox">
+                                                    <InputCheckbox @bind-Value="permissionTuple.IsChecked"
+                                                                   id="@($"perm-{permissionTuple.Permission}")"
+                                                                   @onchange="args => OnPermissionChanged(permissionTuple, args)" />
+                                                    <label for="@($"perm-{permissionTuple.Permission}")">
+                                                        @Localization.GetString(permissionTuple.Permission.ToString(), "CompanyManagement")
+                                                    </label>
+                                                </div>
+                                            }
                                         }
                                     </div>
                                     <div class="form-actions">
@@ -1020,7 +1026,7 @@
         _permissionTuples.Clear();
         _selectedEmployee = _employees?.FirstOrDefault(e => e.Id == employeeId);
         foreach (var permission in Enum.GetValues<Permission>())
-            _permissionTuples.Add(new PermissionItem { Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasFlag(permission) });
+            _permissionTuples.Add(new PermissionItem { Permission = permission, IsChecked = _selectedEmployee!.Permissions.HasPermission(permission) });
 
         _assignPermissionsModel = new AssignPermissionsModel
         {
@@ -1041,7 +1047,7 @@
         try
         {
             var startSum = (int)_assignPermissionsModel.Permissions;
-            var endSum = _permissionTuples.Where(c => c.IsChecked).Select(c => (int)c.Permission).Sum();
+            var endSum = _permissionTuples.Any(c => c.IsChecked && c.Permission.HasFlag(Permission.All)) ? 1 : _permissionTuples.Where(c => c.IsChecked).Select(c => (int)c.Permission).Sum();
             if (startSum == endSum)
                 return;
 
@@ -1188,6 +1194,33 @@
         StateHasChanged();
     }
 
+    
+    private void OnPermissionChanged(PermissionItem permissionTuple, ChangeEventArgs args)
+    {
+        // Обновляем состояние чекбокса
+        permissionTuple.IsChecked = (bool)args.Value;
+
+        // Если выбрано Permission.All, сбрасываем остальные
+        if (permissionTuple.Permission == Permission.All && permissionTuple.IsChecked)
+        {
+            foreach (var tuple in _permissionTuples.Where(t => t.Permission != Permission.All))
+            {
+                tuple.IsChecked = false;
+            }
+        }
+        // Если выбрано другое разрешение, сбрасываем Permission.All
+        else if (permissionTuple.Permission != Permission.All && permissionTuple.IsChecked)
+        {
+            var allTuple = _permissionTuples.FirstOrDefault(t => t.Permission == Permission.All);
+            if (allTuple != default)
+            {
+                allTuple.IsChecked = false;
+            }
+        }
+
+        // Вызываем StateHasChanged, чтобы обновить UI
+        StateHasChanged();
+    }
 }
 
 <style>

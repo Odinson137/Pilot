@@ -296,16 +296,15 @@
     [Parameter] public int UserId { get; set; }
 
     private ProjectTaskViewModel Task { get; set; } = new();
-    private List<TeamViewModel> Teams { get; set; } = new();
+    private ICollection<TeamViewModel> Teams { get; set; } = [];
     private int SelectedTeamId { get; set; }
     private string? ErrorMessage { get; set; }
     private bool FormSubmitted { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Teams = (await ProjectTaskPageService.GetProjectTeamsAsync(ProjectId)).ToList();
-
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        Teams = await ProjectTaskPageService.GetProjectTeamsAsync(ProjectId);
+        if (Teams.Count == 1) SelectedTeamId = Teams.First().Id;
 
         Task = new ProjectTaskViewModel
         {

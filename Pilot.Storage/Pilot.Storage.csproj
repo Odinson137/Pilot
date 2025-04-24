@@ -24,4 +24,12 @@
       <Content Remove="pilot.Credential.GoogleStorage.json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="logs\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="logs\test-log.txt" />
+    </ItemGroup>
+
 </Project>

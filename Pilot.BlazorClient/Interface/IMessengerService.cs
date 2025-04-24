@@ -8,4 +8,5 @@ public interface IMessengerService
     
     event Action<string>? OnMessageReceived;
     event Action<string>? OnReceiveNotification;
+    event Action<string>? OnActionNotification;
 }

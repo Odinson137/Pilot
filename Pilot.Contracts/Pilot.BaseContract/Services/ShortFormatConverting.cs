@@ -30,7 +30,7 @@ public static class ShortFormatConverting
         return "?" + string.Join("&", properties.ToArray());
     }
 
-    public static TOut Map<TOut>(this object model, IMapper mapper)
+    public static TOut Map<TOut>(this object? model, IMapper mapper)
     {
         return mapper.Map<TOut>(model);
     }

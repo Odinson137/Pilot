@@ -8,8 +8,9 @@ public class CompanyPostPageService(
     IBaseModelService<CompanyViewModel> companyService,
     IBaseModelService<SkillViewModel> skillService,
     IBaseModelService<JobApplicationViewModel> jobApplicationViewModelService,
+    IMessengerService messengerService,
     IBaseModelService<PostViewModel> postService
-) : BasePageService<CompanyPostViewModel>(companyPostService), ICompanyPostPageService
+) : BasePageService<CompanyPostViewModel>(companyPostService, messengerService), ICompanyPostPageService
 {
     private readonly IBaseModelService<CompanyPostViewModel> _companyPostService = companyPostService;
 

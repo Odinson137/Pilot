@@ -5,7 +5,7 @@ using Pilot.SqrsControllerLibrary.Queries;
 namespace Pilot.Api.Handlers.BaseHandlers;
 
 public class ModelQueryHandler<TDto> : 
-    IRequestHandler<GetValueByIdQuery<TDto>, TDto>,
+    IRequestHandler<GetValueByIdQuery<TDto>, TDto?>,
     IRequestHandler<GetValuesQuery<TDto>, ICollection<TDto>>,
     IRequestHandler<GetQueryValueQuery<TDto>, string>
     where TDto : BaseDto
@@ -17,7 +17,7 @@ public class ModelQueryHandler<TDto> :
         _modelService = modelService;
     }
     
-    public async Task<TDto> Handle(GetValueByIdQuery<TDto> request, CancellationToken cancellationToken)
+    public async Task<TDto?> Handle(GetValueByIdQuery<TDto> request, CancellationToken cancellationToken)
     {
         return await _modelService.GetValueByIdAsync<TDto>(request.Id, cancellationToken);
     }

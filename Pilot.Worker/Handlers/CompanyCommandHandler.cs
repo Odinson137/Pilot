@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.Handlers;
@@ -8,7 +9,11 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Handlers;
 
-public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseValidatorService validateService)
+public class CompanyCommandHandler(
+    ICompany repository,
+    ICompanyUser companyUserRepository,
+    IMapper mapper,
+    IBaseValidatorService validateService)
     : ModelCommandHandler<Company, CompanyDto>(repository, mapper, validateService)
 {
     private readonly IMapper _mapper = mapper;
@@ -22,15 +27,20 @@ public class CompanyCommandHandler(ICompany repository, IMapper mapper, IBaseVal
 
         var model = _mapper.Map<Company>(request.Value);
 
-        await _validateService.ChangeEntityTrackerAsync(model);
+        await repository.AddValueToContextAsync(model, cancellationToken);
+        
         var firstEmployee = new CompanyUser
         {
-            Id = request.UserId
+            Id = request.UserId,
+            Company = model,
+            Permissions = Permission.All
         };
-        model.CompanyUsers.Add(firstEmployee);
+        await companyUserRepository.AddValueToContextAsync(firstEmployee, cancellationToken);
+        
+        await repository.SaveAsync(cancellationToken);
+
         model.CreatedBy = firstEmployee;
 
-        await repository.AddValueToContextAsync(model, cancellationToken);
         return model;
     }
 }

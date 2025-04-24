@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Exception.ApiExceptions;
@@ -51,16 +52,18 @@ public class BaseHttpService(
         return content ?? [];
     }
 
-    public async Task<TOut> SendGetMessage<TOut>(string url, CancellationToken token = default) where TOut : BaseDto
+    public async Task<TOut?> SendGetMessage<TOut>(string url, CancellationToken token = default) where TOut : BaseDto
     {
         Logger.LogInformation($"Send message by id = {url}");
         var client = await GetClientAsync<TOut>();
         var response = await client.GetAsync(GetFullUrl<TOut>(url, null), token);
-        if (!response.IsSuccessStatusCode)
-            throw new BadRequestException(await response.Content.ReadAsStringAsync(token));
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            logger.LogError("Error" + await response.Content.ReadAsStringAsync(token));
+            return null;
+        }
 
         var content = await response.Content.ReadFromJsonAsync<TOut>(token);
-        if (content == null) throw new NotFoundException("Value not found");
 
         return content;
     }

@@ -32,8 +32,8 @@ public class GateWayApiService(
         CancellationToken token = default)
         where TOut : BaseDto where TViewModel : BaseViewModel
     {
-        var models = await SendGetMessage<TOut>($"{valueId}", token);
-        return models.Map<TViewModel>(mapper);
+        var model= await SendGetMessage<TOut>($"{valueId}", token);
+        return model.Map<TViewModel>(mapper);
     }
 
     public async Task SendPostMessage<TMessage>(string? url, TMessage message, CancellationToken token)

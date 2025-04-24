@@ -166,7 +166,7 @@ else
                             <div class="form-group">
                                 <label>@Localizer.GetString("Status", "Task")</label>
                                 <select @bind="_task.TaskStatus" class="form-select">
-                                    @foreach (var value in Enum.GetValues<TaskStatus>().Take(_companyUserViewModel!.Permissions.HasFlag(Permission.TaskClosing) ? 4 : 3))
+                                    @foreach (var value in Enum.GetValues<TaskStatus>().Take(_companyUserViewModel!.Permissions.HasPermission(Permission.TaskClosing) ? 4 : 3))
                                     {
                                         <option value="@value">@value</option>
                                     }

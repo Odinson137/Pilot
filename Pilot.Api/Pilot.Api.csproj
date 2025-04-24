@@ -27,6 +27,7 @@
 
     <ItemGroup>
         <Folder Include="Data\Logs\"/>
+        <Folder Include="logs\" />
     </ItemGroup>
 
     <ItemGroup>
@@ -38,6 +39,10 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="logs\test-log.txt" />
     </ItemGroup>
 
 </Project>

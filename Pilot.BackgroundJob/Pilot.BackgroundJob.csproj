@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers" />
+    <Folder Include="logs\" />
     <Folder Include="Queries" />
     <Folder Include="Repository" />
     <Folder Include="Data/Enums" />
@@ -29,5 +30,8 @@
     <Content Include="..\.dockerignore">
       <Link>.dockerignore</Link>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="logs\test-log.txt" />
   </ItemGroup>
 </Project>

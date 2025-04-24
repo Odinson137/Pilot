@@ -16,7 +16,7 @@ public static class BaseLogService
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(new LoggerConfiguration()
             .WriteTo.Console()
-            .WriteTo.File("logs/test-log.txt")
+            // .WriteTo.File("logs/test-log.txt")
             .WriteTo.Debug()
             .CreateLogger());
         builder.Services.AddOpenTelemetry()

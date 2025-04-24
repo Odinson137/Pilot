@@ -11,7 +11,7 @@ public class UserHandler(IModelService modelService) : ModelQueryHandler<UserDto
 {
     private readonly IModelService _modelService1 = modelService;
 
-    public async Task<UserDto> Handle(GetUserQuery request, CancellationToken cancellationToken)
+    public async Task<UserDto?> Handle(GetUserQuery request, CancellationToken cancellationToken)
     {
         var userDto = await _modelService1.GetValueByIdAsync<UserDto>(request.UserId, cancellationToken);
         return userDto;

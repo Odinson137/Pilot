@@ -24,21 +24,25 @@ public class MessengerService : IMessengerService
     {
         var tokenResult = await _protectedSessionStore.GetAsync<string>(ClientConstants.Token);
         var token = tokenResult.Success ? tokenResult.Value : null;
-        
+
         if (string.IsNullOrEmpty(token))
         {
             _logger.LogWarning("Token is null or empty. Connection will not be established.");
             return;
         }
-        
+
         _connection = new HubConnectionBuilder()
             .WithUrl(_configuration["MessengerServerHub"] ?? throw new Exception("Hub URL not found in configuration"),
                 options => { options.AccessTokenProvider = () => Task.FromResult(token)!; })
             .WithAutomaticReconnect()
             .Build();
 
-        _connection.On<string>("ReceiveMessage", (message) => { OnMessageReceived?.Invoke(message); });
-        _connection.On<string>("ReceiveNotification", (message) => { OnReceiveNotification?.Invoke(message); });
+        _connection.On<string>("ReceiveMessage", message => { OnMessageReceived?.Invoke(message); });
+        _connection.On<string>("ReceiveNotification", message =>
+        {
+            OnReceiveNotification?.Invoke(message);
+            OnActionNotification?.Invoke(message);
+        });
 
         try
         {
@@ -63,4 +67,5 @@ public class MessengerService : IMessengerService
 
     public event Action<string>? OnMessageReceived;
     public event Action<string>? OnReceiveNotification;
+    public event Action<string>? OnActionNotification;
 }

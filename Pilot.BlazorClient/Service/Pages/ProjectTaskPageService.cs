@@ -10,8 +10,9 @@ public class ProjectTaskPageService(
     IBaseModelService<CompanyUserViewModel> companyUserService, 
     IBaseModelService<TaskInfoViewModel> taskInfoService,
     IBaseModelService<TeamViewModel> teamService,
+    IMessengerService messengerService,
     IBaseModelService<FileViewModel> fileService
-    ) : BasePageService<ProjectTaskViewModel>(projectTaskService), IProjectTaskPageService
+    ) : BasePageService<ProjectTaskViewModel>(projectTaskService, messengerService), IProjectTaskPageService
 {
 
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)

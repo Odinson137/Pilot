@@ -15,7 +15,8 @@ public class ChatPageService(
     IBaseModelService<InfoMessageViewModel> infoMessageViewService,
     IBaseModelService<CompanyUserViewModel> companyUserService,
     IBaseModelService<UserViewModel> userBaseService,
-    IUserService userService) : BasePageService<ChatViewModel>(chatService), IChatPageService
+    IMessengerService messengerService,
+    IUserService userService) : BasePageService<ChatViewModel>(chatService, messengerService), IChatPageService
 {
     private readonly IBaseModelService<ChatViewModel> _chatService = chatService;
 

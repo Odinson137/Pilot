@@ -3,6 +3,7 @@
 @using Pilot.BlazorClient.ViewModels
 @inject NavigationManager NavigationManager
 @inject ICompanyPageService CompanyPageService
+@inject IMessengerService MessengerService
 
 <div class="no-company-container">
     <div class="message-box">
@@ -47,9 +48,10 @@
                 Title = _newCompanyName
             };
 
-            await CompanyPageService.CreateValueAsync(company);
-            await Task.Delay(500);
-            NavigationManager.NavigateTo("/work");
+            await CompanyPageService.CreateValueAsync(company, _ =>
+            {
+                NavigationManager.Refresh(true);
+            });
         }
     }
 }
