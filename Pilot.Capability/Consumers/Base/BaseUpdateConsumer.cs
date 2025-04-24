@@ -43,11 +43,11 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         var entityEntry = repository.GetContext.Entry(existingModel);
         entityEntry.CurrentValues.SetValues(model);
         
-        model.ChangeAt = DateTime.Now;
-
-        await Repository.SaveAsync();
+        existingModel.ChangeAt = DateTime.Now;
 
         entityEntry.State = EntityState.Modified;
+        await Repository.SaveAsync();
+
         
         var message = new InfoMessageDto
         {

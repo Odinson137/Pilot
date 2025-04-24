@@ -85,17 +85,13 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=1DB789EA_002D452A_002D4EFD_002D9A72_002D965BE960974D/@EntryIndexedValue">60E7C4D5-0598-4E49-8C67-7F485D8CF5D1</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=51ad60bb_002De77b_002D4205_002Db04c_002D687983577b93/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;Or&gt;&#xD;
-    &lt;And&gt;&#xD;
-      &lt;Namespace&gt;Test.Api.MessengerService&lt;/Namespace&gt;&#xD;
-      &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Api" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" /&gt;&#xD;
-    &lt;/And&gt;&#xD;
-    &lt;TestAncestor&gt;&#xD;
-      &lt;TestId&gt;xUnit::3339E008-869D-43EF-8C1B-37EB495A2BD5::net9.0::Test.Capability.IntegrationTests.PostSkillTests.UpdateModelTest_ReturnOk&lt;/TestId&gt;&#xD;
-    &lt;/TestAncestor&gt;&#xD;
-  &lt;/Or&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=24611cba_002Dc2d6_002D4891_002Da137_002Ded43f69e2785/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Capability&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Capability" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Capability&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=729b7dcf_002Df1df_002D49cb_002D8114_002Ddae3d93f7ab2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Capability&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Capability" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Capability&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
 	
 	
 	

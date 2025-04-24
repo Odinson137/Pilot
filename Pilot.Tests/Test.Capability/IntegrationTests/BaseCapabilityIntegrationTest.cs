@@ -10,10 +10,8 @@ public class BaseCapabilityIntegrationTest : IClassFixture<CapabilityTestCapabil
 {
     protected readonly IPublishEndpoint PublishEndpoint;
 
-    protected readonly DataContext DataContext;
     protected readonly IServiceProvider CapabilityService;
     protected readonly HttpClient CapabilityClient;
-    protected readonly Pilot.Identity.Data.DataContext IdentityContext;
 
     protected readonly IServiceScope CapabilityScope;
     protected DataContext AssertContext 
@@ -29,7 +27,6 @@ public class BaseCapabilityIntegrationTest : IClassFixture<CapabilityTestCapabil
         CapabilityService = factory.Services;
         CapabilityScope = CapabilityService.CreateScope();
         PublishEndpoint = CapabilityScope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
-        DataContext = CapabilityScope.ServiceProvider.GetRequiredService<DataContext>();
 
         CapabilityClient = factory.CreateClient();
 

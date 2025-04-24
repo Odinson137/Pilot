@@ -19,23 +19,6 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
         AssertContext.Database.EnsureCreated();
     }
 
-    protected async Task<CompanyUser> CreateCompanyUser()
-    {
-        var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
-
-        var context = AssertReceiverContext;
-        await context.AddAsync(companyUser);
-        await context.SaveChangesAsync();
-
-        var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
-        user.Id = companyUser.Id;
-
-        await IdentityContext.AddRangeAsync(user);
-        await IdentityContext.SaveChangesAsync();
-
-        return companyUser;
-    }
-
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {
@@ -44,8 +27,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<T>(count: 2, listDepth: 0);
 
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
+        var dataContext = AssertReceiverContext;
+        await dataContext.AddRangeAsync(values);
+        await dataContext.SaveChangesAsync();
 
         #endregion
 
@@ -68,8 +52,9 @@ public abstract class BaseModelReceiverIntegrationTest<T, TDto> : BaseCapability
 
         var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
 
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
+        var dataContext = AssertReceiverContext;
+        await dataContext.AddRangeAsync(values);
+        await dataContext.SaveChangesAsync();
 
         var id = values.First().Id;
 

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Pilot.Capability.Consumers.Base;
 using Pilot.Capability.Interface;
 using Pilot.Capability.Models;
@@ -37,14 +36,16 @@ public class PostUpdatedConsumer(
 
         var entityEntry = repository.GetContext.Entry(existingModel);
         entityEntry.CurrentValues.SetValues(model);
-        
-        model.ChangeAt = DateTime.Now;
 
-        var skills = await skillRepository.GetSkillsAsync(model.Skills.Select(c => c.Id).ToArray()); 
+        existingModel.ChangeAt = DateTime.Now;
+
+        var skills = model.Skills.Count > 0
+            ? await skillRepository.GetSkillsAsync(model.Skills.Select(c => c.Id).ToArray())
+            : [];
         existingModel.Skills = skills;
-        
+
         await Repository.SaveAsync();
-        
+
         var message = new InfoMessageDto
         {
             MessagePriority = MessageInfo.Success | MessageInfo.Update,
