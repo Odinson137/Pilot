@@ -56,7 +56,7 @@ public class ChatPageService(
         var chatMember = await chatMemberService.GetValuesAsync(chat.ChatMembers.Select(c => c.Id).ToList());
         var memberIds = chatMember.Select(c => c.UserId).ToList();
         
-        var companyUserHas = await companyUserService.GetValuesAsync(c => c.Id, user.Id);
+        var companyUserHas = await companyUserService.GetValuesAsync(c => c.UserId, user.Id);
         if (companyUserHas.Count > 0)
         {
             var company = await companyService.GetValueAsync(companyUserHas.First().Company.Id);

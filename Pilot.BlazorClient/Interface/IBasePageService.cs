@@ -9,9 +9,9 @@ public interface IBasePageService<TViewModel> where TViewModel : BaseViewModel
 
     Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter baseFilter = null);
     
-    Task CreateValueAsync(TViewModel value, Action<string>? action = null);
+    Task CreateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null);
     
-    Task UpdateValueAsync(TViewModel value, Action<string>? action = null);
+    Task UpdateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null);
     
-    Task DeleteValueAsync(int id, Action<string>? action = null);
+    Task DeleteValueAsync(int id, Action<InfoMessageViewModel>? action = null);
 }

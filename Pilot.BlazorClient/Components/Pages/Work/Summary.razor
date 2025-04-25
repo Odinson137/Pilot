@@ -99,6 +99,7 @@ else
 @code {
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
+    [Parameter] public int CompanyUserId { get; set; }
 
     private bool _isLoading = true;
     private bool _isAdmin;
@@ -245,11 +246,11 @@ else
         await WorkPageService.FillProjectsIntoTeamsAsync(tasks);
 
         // Группируем задачи по проектам
-        var projectTasks = tasks.GroupBy(t => t.Team.Project)
+        var projectTasks = tasks.GroupBy(t => t.TeamEmployee!.Team.Project)
             .Select(g => new 
             { 
                 Project = g.Key, 
-                UserCompletedTasks = g.Count(t => t.CompanyUser.Id == UserId && t.TaskStatus == TaskStatus.Completed),
+                UserCompletedTasks = g.Count(t => t.TeamEmployee!.CompanyUser!.UserId == UserId && t.TaskStatus == TaskStatus.Completed),
                 TotalTasks = g.Count()
             })
             .ToList();
@@ -284,7 +285,7 @@ else
     private async Task InitializeEmployeeTasksChart()
     {
         var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
-        var employeeTasks = allTasks.GroupBy(t => t.CompanyUser.Id)
+        var employeeTasks = allTasks.GroupBy(t => t.TeamEmployee!.CompanyUser.Id)
             .Select(g => new { EmployeeId = g.Key, CompletedTasks = g.Count(t => t.TaskStatus == TaskStatus.Completed) })
             .ToList();
 

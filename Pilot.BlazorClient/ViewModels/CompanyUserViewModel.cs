@@ -6,6 +6,8 @@ namespace Pilot.BlazorClient.ViewModels;
 
 public class CompanyUserViewModel : BaseViewModel
 {
+    public int UserId { get; set; }
+
     [Required] public CompanyViewModel Company { get; set; } = null!;
 
     public int PostId { get; set; }

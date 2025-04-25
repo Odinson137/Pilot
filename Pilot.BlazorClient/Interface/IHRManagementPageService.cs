@@ -1,5 +1,4 @@
 ﻿using Pilot.BlazorClient.ViewModels;
-using Pilot.BlazorClient.ViewModels.HelperViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 

@@ -1,12 +1,6 @@
-﻿using System.Security.Authentication;
-using AutoMapper;
-using Pilot.BlazorClient.Interface;
+﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
-using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service.Pages;
 

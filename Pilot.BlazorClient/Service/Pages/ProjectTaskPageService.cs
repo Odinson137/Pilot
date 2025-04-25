@@ -6,6 +6,7 @@ namespace Pilot.BlazorClient.Service.Pages;
 
 public class ProjectTaskPageService(
     IBaseModelService<ProjectTaskViewModel> projectTaskService, 
+    IBaseModelService<TeamEmployeeViewModel> teamEmployeeService, 
     IBaseModelService<UserViewModel> userService, 
     IBaseModelService<CompanyUserViewModel> companyUserService, 
     IBaseModelService<TaskInfoViewModel> taskInfoService,
@@ -14,6 +15,13 @@ public class ProjectTaskPageService(
     IBaseModelService<FileViewModel> fileService
     ) : BasePageService<ProjectTaskViewModel>(projectTaskService, messengerService), IProjectTaskPageService
 {
+    public async Task<ProjectTaskViewModel> GetTaskAsync(int taskId)
+    {
+        var task = await projectTaskService.GetValueAsync(taskId);
+        var teamEmployee = await teamEmployeeService.GetValueAsync((c => c.Id, task.TeamEmployee!.Id));
+        task.TeamEmployee = teamEmployee;
+        return task;
+    }
 
     public async Task<CompanyUserViewModel> GetUserCompanyAsync(int userCompanyId)
     {
@@ -21,9 +29,10 @@ public class ProjectTaskPageService(
         return companyUserViewModel;
     }
 
-    public Task<CompanyUserViewModel> GetCompanyUserAsync(int userId)
+    public async Task<CompanyUserViewModel> GetCompanyUserAsync(int userId)
     {
-        return companyUserService.GetValueAsync(userId);
+        var users = await companyUserService.GetValuesAsync(c => c.UserId, userId);
+        return users.First();
     }
 
     public async Task<ICollection<UserViewModel>> GetUsersAsync(ICollection<int> ids)
@@ -38,9 +47,9 @@ public class ProjectTaskPageService(
         return taskInfoViewModels;
     }
     
-    public async Task AddTaskInfoAsync(TaskInfoViewModel taskInfo)
+    public async Task AddTaskInfoAsync(TaskInfoViewModel taskInfo, Action<InfoMessageViewModel>? action = null)
     {
-        await taskInfoService.CreateValueAsync(taskInfo);
+        await taskInfoService.CreateValueAsync(taskInfo, action);
     }
 
     public async Task UploadFileAsync(FileViewModel file)
@@ -48,13 +57,15 @@ public class ProjectTaskPageService(
         await fileService.CreateValueAsync(file);
     }
 
-    public async Task AddProjectTaskAsync(ProjectTaskViewModel task)
+    public async Task AddProjectTaskAsync(ProjectTaskViewModel task, int userId, int selectedTeamId, Action<InfoMessageViewModel>? action = null)
     {
-        await projectTaskService.CreateValueAsync(task);
+        var teamEmployee = await teamEmployeeService.GetValueAsync((c => c.Team.Id, selectedTeamId), (c => c.CompanyUser.UserId, userId));
+        task.TeamEmployee = teamEmployee;
+        await CreateValueAsync(task, action);
     }
 
     public async Task<ICollection<TeamViewModel>> GetProjectTeamsAsync(int projectId)
     {
-        return await teamService.GetValuesAsync(c => c.Project.Id, projectId);
+        return await teamService.GetValuesAsync(c => c.Project!.Id, projectId);
     }
 }

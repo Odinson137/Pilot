@@ -25,8 +25,8 @@ public sealed class DataContext : DbContext
             .WithMany(c => c.CompanyRoles);
 
         builder.Entity<ProjectTask>()
-            .HasOne(pt => pt.CompanyUser)
-            .WithMany(cu => cu.ProjectTasks)
+            .HasOne(pt => pt.TeamEmployee)
+            .WithMany()
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<ProjectTask>()
@@ -59,4 +59,5 @@ public sealed class DataContext : DbContext
     public DbSet<ProjectTask> ProjectTasks { get; set; }
     public DbSet<TaskInfo> TaskInfos { get; set; }
     public DbSet<Team> Teams { get; set; }
+    public DbSet<TeamEmployee> TeamEmployees { get; set; }
 }

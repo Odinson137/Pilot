@@ -63,7 +63,7 @@ else
                                 <h3>@Localizer.GetString("People", "Task")</h3>
                                 <div class="user-card">
                                     <span class="label">@Localizer.GetString("AssignedTo", "Task")</span>
-                                    <a href="@GetUserProfileLink(_task?.CompanyUser?.Id)" class="user-link">
+                                    <a href="@GetUserProfileLink(_task?.TeamEmployee?.CompanyUser.Id)" class="user-link">
                                         <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar" class="avatar"/>
                                         <span>@_userViewModel?.FullName</span>
                                     </a>
@@ -211,7 +211,7 @@ else
     private int _newTaskInfoTimeSpentMinutes = 5; // default
     private UserViewModel? _createdUserViewModel;
     private UserViewModel? _userViewModel;
-    private CompanyUserViewModel? _companyUserViewModel;
+    private CompanyUserViewModel _companyUserViewModel;
     private Dictionary<int, UserViewModel> _userViewModels = [];
 
     [Parameter] public int Id { get; set; }
@@ -225,22 +225,22 @@ else
         var user = await UserService.GetCurrentUserAsync();
         _companyUserViewModel = await ProjectTaskPageService.GetCompanyUserAsync(user.Id);
         
-        _task = await ProjectTaskPageService.GetValueAsync(Id);
+        _task = await ProjectTaskPageService.GetTaskAsync(Id);
         var userIds = new List<int>
         {
             _task.CreatedBy.Id,
-            _task.CompanyUser?.Id ?? throw new Exception("Database inconsistency: CompanyUser cannot be null")
+            _task.TeamEmployee?.CompanyUser.Id ?? throw new Exception("Database inconsistency: CompanyUser cannot be null")
         };
 
         var userViewModels = await ProjectTaskPageService.GetUsersAsync(userIds);
         _createdUserViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.CreatedBy.Id);
-        _userViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.CompanyUser?.Id);
+        _userViewModel = userViewModels.FirstOrDefault(c => c.Id == _task.TeamEmployee.CompanyUser.Id);
 
         var taskInfosIds = _task.TaskInfos.Select(c => c.Id).ToList();
         if (taskInfosIds.Any())
         {
             _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(taskInfosIds);
-            var taskInfoCreatedByIds = _task.TaskInfos.Select(c => c.CreatedBy.Id).ToList();
+            var taskInfoCreatedByIds = _task.TaskInfos.Select(c => c.CreatedBy!.Id).ToList();
             var taskInfoCreatedBy = await ProjectTaskPageService.GetUsersAsync(taskInfoCreatedByIds);
             foreach (var createdBy in taskInfoCreatedBy)
             {
@@ -295,8 +295,6 @@ else
             TimeSpent = TimeSpan.FromHours(_newTaskInfoTimeSpentHours) + TimeSpan.FromMinutes(_newTaskInfoTimeSpentMinutes)
         };
 
-        await ProjectTaskPageService.AddTaskInfoAsync(taskInfo);
-
         if (fileName is not null)
         {
             var file = new FileViewModel
@@ -307,15 +305,38 @@ else
                 ByteFormFile = _attachedFile?.Item2
             };
             await ProjectTaskPageService.UploadFileAsync(file);
+            await Task.Delay(500);
         }
 
-        _newTaskInfoDescription = string.Empty;
-        _newTaskInfoTimeSpentHours = 0;
-        _newTaskInfoTimeSpentMinutes = 5;
-        _attachedFile = null;
+        await ProjectTaskPageService.AddTaskInfoAsync(taskInfo, async void (message) =>
+        {
+            try
+            {
+                var newTaskInfo = new TaskInfoViewModel
+                {
+                    Id = message.EntityId!.Value,
+                    CreateAt = DateTime.Now,
+                    ProjectTask = _task,
+                    File = fileName,
+                    Description = _newTaskInfoDescription,
+                    CreatedBy = _companyUserViewModel,
+                    TimeSpent = TimeSpan.FromMinutes(_newTaskInfoTimeSpentMinutes).Add(TimeSpan.FromHours(_newTaskInfoTimeSpentHours))
+                };
+                var infos = _task.TaskInfos.ToList();
+                infos.Insert(0, newTaskInfo);
+                _task.TaskInfos = infos;
+                _newTaskInfoDescription = string.Empty;
+                _newTaskInfoTimeSpentHours = 0;
+                _newTaskInfoTimeSpentMinutes = 5;
+                _attachedFile = null;
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error with handler method {e.Message}");
+            }
+        });
 
-        _task.TaskInfos = await ProjectTaskPageService.GetTaskInfoAsync(_task.TaskInfos.Select(ti => ti.Id).Append(taskInfo.Id).ToList());
-        StateHasChanged();
     }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)

@@ -8,22 +8,26 @@ public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
 {
     Task<TViewModel> GetValueAsync(int valueId);
 
+    Task<TViewModel?>
+        GetValueAsync(params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples);
+
     Task<ICollection<TViewModel>> GetValuesAsync(int? skip = null, int? take = null);
 
     Task<ICollection<TViewModel>> GetValuesAsync<T>(Expression<Func<TViewModel, T>> predicate, T value,
         int? skip = null, int? take = null) where T : IConvertible;
 
+    Task<ICollection<TViewModel>> GetValuesAsync(
+        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples);
+
     Task<ICollection<TViewModel>> GetValuesAsync(ICollection<int> ids);
 
     Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter filter);
-    
-    Task CreateValueAsync(TViewModel value);
-    
-    Task UpdateValueAsync(TViewModel value);
-    
-    Task DeleteValueAsync(int id);
 
-    Task<ICollection<TViewModel>> GetQueryValuesAsync<TFullDto>(Expression<Func<TFullDto, TFullDto>> predicate);
+    Task CreateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null);
+
+    Task UpdateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null);
+
+    Task DeleteValueAsync(int id, Action<InfoMessageViewModel>? action = null);
 
     IGateWayApiService Client { get; }
 }

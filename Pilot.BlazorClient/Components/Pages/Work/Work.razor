@@ -68,25 +68,25 @@ else
                     <NoCompany/>
                     break;
                 case 1:
-                    <UserGreeting UserName="@_user.UserName" UserId="@_user.Id"/>
+                    <UserGreeting CompanyUserId="@_companyUser!.Id" UserName="@_user.UserName" UserId="@_user.Id"/>
                     break;
                 case 2:
-                    <Summary UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <Summary CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 3:
-                    <UserTask UserId="@_user.Id" ProjectId="@_projectId"/>
+                    <UserTask CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" ProjectId="@_projectId"/>
                     break;
                 case 7:
-                    <CompanyManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <CompanyManagement CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 8:
-                    <HRManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <HRManagement CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 11:
-                    <TaskManagement UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <TaskManagement CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
                 case 20:
-                    <Applications UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <Applications CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
             }
         }
@@ -112,7 +112,7 @@ else
         if (_companyUser != null)
         {
             _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
-            _taskCount = (await WorkPageService.GetUserTasksAsync(new List<int>(), null)).Count;
+            _taskCount = (await WorkPageService.GetUserTasksAsync(_companyUser.Id)).Count;
             _teamCount = (await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id)).Count;
             _vacancyCount = (await WorkPageService.GetPostsAsync(_companyUser.Company.Id)).Count;
             

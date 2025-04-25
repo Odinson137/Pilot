@@ -2,7 +2,7 @@
 
 public class TeamEmployeeViewModel : BaseViewModel
 {
-    public BaseViewModel Team { get; set; } = null!;
+    public TeamViewModel Team { get; set; } = null!;
 
-    public BaseViewModel CompanyUser { get; set; } = null!;
+    public CompanyUserViewModel CompanyUser { get; set; } = null!;
 }

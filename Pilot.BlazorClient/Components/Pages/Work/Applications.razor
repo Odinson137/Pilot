@@ -69,6 +69,7 @@
 @code {
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
+    [Parameter] public int CompanyUserId { get; set; }
 
     private ICollection<JobApplicationViewModel> _applications = [];
     private ICollection<CompanyUserViewModel> _users = [];

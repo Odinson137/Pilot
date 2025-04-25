@@ -14,7 +14,7 @@
     <div class="task-column">
         <h4>ToDo</h4>
         <div class="tasks-list">
-            @if (_tasks != null)
+            @if (_tasks != null && _tasks.Any())
             {
                 @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.ToDo))
                 {
@@ -36,7 +36,7 @@
     <div class="task-column">
         <h4>Work</h4>
         <div class="tasks-list">
-            @if (_tasks != null)
+            @if (_tasks != null && _tasks.Any())
             {
                 @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Work))
                 {
@@ -58,7 +58,7 @@
     <div class="task-column">
         <h4>Completed</h4>
         <div class="tasks-list">
-            @if (_tasks != null)
+            @if (_tasks != null && _tasks.Any())
             {
                 @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Completed))
                 {
@@ -78,19 +78,14 @@
 </div>
 
 @code {
-    private ICollection<ProjectTaskViewModel>? _tasks;
+    private ICollection<ProjectTaskViewModel> _tasks = [];
     [Parameter] public int UserId { get; set; }
     [Parameter] public int? ProjectId { get; set; }
+    [Parameter] public int CompanyUserId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
-        int? projectId = null;
-        var projectIdResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.SelectProject);
-        if (projectIdResult.Success)
-            projectId = projectIdResult.Value;
-
-        _tasks = await WorkPageService.GetUserTasksAsync(companyUser.ProjectTasks.Select(c => c.Id).ToList(), projectId);
+        _tasks = await WorkPageService.GetUserTasksAsync(CompanyUserId);
     }
 
 // Получение текста для приоритета задачи

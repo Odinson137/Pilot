@@ -62,6 +62,7 @@ public class Seed : ISeed
             await _context.CompanyUsers.AddAsync(ownerCompany);
             await _context.SaveChangesAsync(); // Save CompanyUser
 
+            ownerCompany.UserId = ownerCompany.Id; // пока так, для сида достаточно
             company.CreatedBy = ownerCompany; // Now set the CreatedBy relationship
             await _context.SaveChangesAsync(); // Save the updated Company
 
@@ -72,10 +73,14 @@ public class Seed : ISeed
                 var user = companyUsers[j];
                 user.Company = company;
                 user.PostId = postId + (j % 2); // Детерминированное значение
-                // user.CompanyRole = roles[roleIndex % roles.Count];
                 roleIndex++;
                 await _context.CompanyUsers.AddAsync(user);
             }
+            await _context.SaveChangesAsync();
+
+            foreach (var companyUser in companyUsers)
+                companyUser.UserId = companyUser.Id;
+            
             await _context.SaveChangesAsync();
 
             // Генерация 5 проектов
@@ -105,26 +110,30 @@ public class Seed : ISeed
                 team.Project = projectsDb[teamIndex % projectsDb.Count];
                 teamIndex++;
 
-                // Добавляем 2 пользователей в команду
+                // Добавляем 2 пользователей в команду через TeamEmployee
+                var teamEmployees = new List<TeamEmployee>();
                 for (var a = 0; a < 2; a++)
                 {
                     var user = users[(userIndex + a) % users.Count];
-                    if (!team.CompanyUsers.Contains(user))
+                    var teamEmployee = new TeamEmployee
                     {
-                        team.CompanyUsers.Add(user);
-                    }
+                        Team = team,
+                        CompanyUser = user
+                    };
+                    teamEmployees.Add(teamEmployee);
+                    _context.TeamEmployees.Add(teamEmployee);
                 }
                 userIndex++;
                 _context.Teams.Add(team);
+                await _context.SaveChangesAsync(); // Сохраняем команду и TeamEmployee
 
                 // Генерация 15 задач
                 var projectTasks = projectTaskFaker.Generate(15);
                 for (var k = 0; k < projectTasks.Count; k++)
                 {
                     var task = projectTasks[k];
-                    task.CompanyUser = users[taskIndex % users.Count];
+                    task.TeamEmployee = teamEmployees[k % teamEmployees.Count]; // Связываем с TeamEmployee
                     task.CreatedBy = users[(taskIndex + 1) % users.Count];
-                    task.Team = team;
                     _context.ProjectTasks.Add(task);
                     taskIndex++;
                 }
@@ -132,7 +141,7 @@ public class Seed : ISeed
             }
 
             var projectTasksDb = await _context.ProjectTasks
-                .Where(c => c.Team.Project.Company.Id == company.Id)
+                .Where(c => c.TeamEmployee.Team.Project.Company.Id == company.Id)
                 .ToListAsync();
 
             // Генерация 2 TaskInfo для каждой задачи

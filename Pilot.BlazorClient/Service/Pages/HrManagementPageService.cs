@@ -1,11 +1,6 @@
 ﻿using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
-using Pilot.BlazorClient.ViewModels.HelperViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
-using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.FullDto;
 
 namespace Pilot.BlazorClient.Service.Pages;
 

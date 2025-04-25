@@ -31,7 +31,7 @@ public class CompanyCommandHandler(
         
         var firstEmployee = new CompanyUser
         {
-            Id = request.UserId,
+            UserId = request.UserId,
             Company = model,
             Permissions = Permission.All
         };

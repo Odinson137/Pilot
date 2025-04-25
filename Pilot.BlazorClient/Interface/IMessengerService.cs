@@ -1,4 +1,6 @@
-﻿namespace Pilot.BlazorClient.Interface;
+﻿using Pilot.BlazorClient.ViewModels;
+
+namespace Pilot.BlazorClient.Interface;
 
 public interface IMessengerService
 {
@@ -7,6 +9,6 @@ public interface IMessengerService
     Task SendMessageAsync(int chatId, string messageText);
     
     event Action<string>? OnMessageReceived;
-    event Action<string>? OnReceiveNotification;
-    event Action<string>? OnActionNotification;
+    event Action<InfoMessageViewModel>? OnReceiveNotification;
+    event Action<InfoMessageViewModel>? OnActionNotification;
 }

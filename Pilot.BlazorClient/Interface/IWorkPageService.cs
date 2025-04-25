@@ -1,5 +1,4 @@
 ﻿using Pilot.BlazorClient.ViewModels;
-using Pilot.BlazorClient.ViewModels.HelperViewModels;
 
 namespace Pilot.BlazorClient.Interface;
 
@@ -17,8 +16,7 @@ public interface IWorkPageService
 
     Task FillCompanyUsersAsync(ICollection<ProjectViewModel> projects);
 
-    Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(ICollection<int> tasksIds,
-        int? projectId = null);
+    Task<ICollection<ProjectTaskViewModel>> GetUserTasksAsync(int companyUserId);
 
     Task<ICollection<CompanyUserViewModel>> GetCompanyEmployeesAsync(int companyId);
 

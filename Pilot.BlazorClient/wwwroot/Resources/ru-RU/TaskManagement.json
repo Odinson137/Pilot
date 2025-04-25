@@ -1,14 +1,17 @@
 ﻿{
   "TaskManagementTitle": "Управление задачами",
+  "AllTasks": "Все задачи",
+  "NoTasks": "Нет задач",
   "NoTasksFound": "Задачи не найдены",
+  "NoTasksForUser": "У пользователя нет задач в этом проекте",
   "UnknownUser": "Неизвестный пользователь",
   "AddTask": "Добавить задачу",
-  "CreatedAt": "Создано",
+  "CreatedAt": "Создано:",
   "TaskStatus_ToDo": "К выполнению",
   "TaskStatus_Work": "В работе",
   "TaskStatus_Completed": "Завершено",
-  "TaskStatus_Finished": "Проверено",
+  "TaskStatus_Finished": "Готово",
   "TaskPriority_Low": "Низкий",
-  "TaskPriority_Normal": "Нормальный",
+  "TaskPriority_Normal": "Обычный",
   "TaskPriority_High": "Высокий"
 }

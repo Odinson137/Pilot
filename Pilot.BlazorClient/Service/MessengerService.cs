@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using Pilot.BlazorClient.Data;
 using Pilot.BlazorClient.Interface;
+using Pilot.BlazorClient.ViewModels;
+using Pilot.Contracts.Services;
 
 namespace Pilot.BlazorClient.Service;
 
@@ -40,8 +42,9 @@ public class MessengerService : IMessengerService
         _connection.On<string>("ReceiveMessage", message => { OnMessageReceived?.Invoke(message); });
         _connection.On<string>("ReceiveNotification", message =>
         {
-            OnReceiveNotification?.Invoke(message);
-            OnActionNotification?.Invoke(message);
+            var infoMessage = message.FromJson<InfoMessageViewModel>();
+            OnReceiveNotification?.Invoke(infoMessage);
+            OnActionNotification?.Invoke(infoMessage);
         });
 
         try
@@ -66,6 +69,6 @@ public class MessengerService : IMessengerService
     }
 
     public event Action<string>? OnMessageReceived;
-    public event Action<string>? OnReceiveNotification;
-    public event Action<string>? OnActionNotification;
+    public event Action<InfoMessageViewModel>? OnReceiveNotification;
+    public event Action<InfoMessageViewModel>? OnActionNotification;
 }

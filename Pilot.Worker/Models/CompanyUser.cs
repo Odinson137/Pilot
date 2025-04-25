@@ -6,6 +6,8 @@ namespace Pilot.Worker.Models;
 
 public class CompanyUser : BaseModel
 {
+    [Required] public int UserId { get; set; }
+
     [Required] public Company Company { get; set; } = null!;
     
     [Required] public int PostId { get; set; }

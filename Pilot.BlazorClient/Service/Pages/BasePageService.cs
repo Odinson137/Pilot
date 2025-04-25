@@ -13,18 +13,18 @@ public abstract class BasePageService<TViewModel>(
         return baseModelService.GetValueAsync(valueId);
     }
 
-    public Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter baseFilter = null)
+    public Task<ICollection<TViewModel>> GetValuesAsync(BaseFilter? baseFilter = null)
     {
-        return baseModelService.GetValuesAsync(baseFilter);
+        return baseModelService.GetValuesAsync(baseFilter ?? new BaseFilter());
     }
 
-    public async Task CreateValueAsync(TViewModel value, Action<string>? action = null)
+    public async Task CreateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null)
     {
         try
         {
             if (action != null)
             {
-                void Handler(string message)
+                void Handler(InfoMessageViewModel message)
                 {
                     action(message);
                     messengerService.OnActionNotification -= Handler;
@@ -40,13 +40,13 @@ public abstract class BasePageService<TViewModel>(
         }
     }
 
-    public async Task UpdateValueAsync(TViewModel value, Action<string>? action = null)
+    public async Task UpdateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null)
     {
         try
         {
             if (action != null)
             {
-                void Handler(string message)
+                void Handler(InfoMessageViewModel message)
                 {
                     action(message);
                     messengerService.OnActionNotification -= Handler;
@@ -62,13 +62,13 @@ public abstract class BasePageService<TViewModel>(
         }
     }
 
-    public async Task DeleteValueAsync(int id, Action<string>? action = null)
+    public async Task DeleteValueAsync(int id, Action<InfoMessageViewModel>? action = null)
     {
         try
         {
             if (action != null)
             {
-                void Handler(string message)
+                void Handler(InfoMessageViewModel message)
                 {
                     action(message);
                     messengerService.OnActionNotification -= Handler;

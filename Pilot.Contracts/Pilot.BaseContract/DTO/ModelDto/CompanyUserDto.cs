@@ -7,6 +7,8 @@ namespace Pilot.Contracts.DTO.ModelDto;
 [FromService(ServiceName.WorkerServer)]
 public class CompanyUserDto : BaseDto
 {
+    public int UserId { get; set; }
+
     public BaseDto? Company { get; set; }
 
     public int PostId { get; set; }

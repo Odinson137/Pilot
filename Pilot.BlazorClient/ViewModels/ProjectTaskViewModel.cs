@@ -9,10 +9,12 @@ public class ProjectTaskViewModel : BaseViewModel
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] public TeamViewModel Team { get; set; } = null!;
+    // [Required] public TeamViewModel Team { get; set; } = null!;
+    //
+    // public CompanyUserViewModel? CompanyUser { get; set; }
 
-    public CompanyUserViewModel? CompanyUser { get; set; }
-
+    public TeamEmployeeViewModel? TeamEmployee { get; set; }
+    
     [Required] public CompanyUserViewModel CreatedBy { get; set; } = null!;
     
     public ICollection<TaskInfoViewModel> TaskInfos { get; set; } = [];

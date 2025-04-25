@@ -77,14 +77,14 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         return result.ToJson();
     }
 
-    private static IQueryable<T> GetFiltersLambda(IQueryable<T> query, ICollection<(string, object, Type)> list)
+    private static IQueryable<T> GetFiltersLambda(IQueryable<T> query, ICollection<(string, object, FilterType)> list)
     {
         foreach (var valueTuple in list)
             query = query.Where(GetFilterLambda(valueTuple));
         return query;
     }
 
-    private static Expression<Func<T, bool>> GetFilterLambda((string, object, Type) filter)
+    private static Expression<Func<T, bool>> GetFilterLambda((string, object, FilterType) filter)
     {
         var expNameParameter = Expression.Parameter(typeof(T), "e");
         var names = filter.Item1.Split('.');
@@ -95,7 +95,7 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         Expression expMember = expNameParameter;
         foreach (var name in names) expMember = Expression.Property(expMember, name);
         
-        var value = Convert.ChangeType(filter.Item2, expMember.Type);
+        var value = Convert.ChangeType(filter.Item2, WhereFilter.GetType(filter.Item3));
         var expValue = Expression.Constant(value);
 
         var eq = Expression.Equal(expMember!, expValue);

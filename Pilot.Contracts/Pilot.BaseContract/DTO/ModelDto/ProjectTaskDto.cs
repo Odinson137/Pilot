@@ -11,10 +11,8 @@ public class ProjectTaskDto : BaseDto
     [Required] [MaxLength(50)] public required string Name { get; set; }
 
     [MaxLength(500)] public string? Description { get; set; }
-
-    [Required] public BaseDto Team { get; set; } = null!;
-
-    public BaseDto? CompanyUser { get; set; } = null!;
+    
+    [Required] public BaseDto TeamEmployee { get; set; } = null!;
     
     public BaseDto? CreatedBy { get; set; } = null!;
     

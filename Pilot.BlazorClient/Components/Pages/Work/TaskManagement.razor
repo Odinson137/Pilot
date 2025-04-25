@@ -4,7 +4,6 @@
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
-@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
 @inject IWorkPageService WorkPageService
 @inject NavigationManager NavigationManager
 @inject IJsonLocalizationService Localization
@@ -14,7 +13,11 @@
 
     <!-- Кнопки фильтрации -->
     <div class="status-buttons">
-        @foreach (var status in Enum.GetValues<TaskStatus>())
+        <button class="status-btn @(_selectedStatus == null && !_showNoTasks ? "active" : "")"
+                @onclick="() => ToggleStatusFilter(null)">
+            @Localization.GetString("AllTasks", "TaskManagement")
+        </button>
+        @foreach (var status in Enum.GetValues<ProjectTaskStatus>())
         {
             var isActive = _selectedStatus == status;
             <button class="status-btn @(isActive ? "active" : "") status-@status.ToString().ToLower()"
@@ -22,72 +25,80 @@
                 @Localization.GetString($"TaskStatus_{status}", "TaskManagement")
             </button>
         }
+        <button class="status-btn @(_showNoTasks ? "active" : "") status-notasks"
+                @onclick="ToggleNoTasksFilter">
+            @Localization.GetString("NoTasks", "TaskManagement")
+        </button>
     </div>
 
     <!-- Список задач -->
-    @if (!_filteredTasks.Any())
+    @if (!_projectTaskData.Any())
     {
         <p class="no-tasks">@Localization.GetString("NoTasksFound", "TaskManagement")</p>
     }
     else
     {
-        @foreach (var project in Projects.OrderBy(p => p.Name))
+        @foreach (var projectData in _projectTaskData)
         {
-            var projectTasks = _filteredTasks.Where(t => t.Team?.Project?.Id == project.Id).ToList();
-            if (projectTasks.Any())
-            {
-                <div class="project-section">
-                    <div class="project-header" @onclick="() => ToggleProjectCollapse(project.Id)">
-                        <h3 class="project-title">
-                            <span class="collapse-icon">@(_collapsedProjects.Contains(project.Id) ? "▶" : "▼")</span>
-                            @project.Name
-                        </h3>
-                    </div>
-                    <div class="project-content"
-                         style="@(_collapsedProjects.Contains(project.Id) ? "max-height: 0; opacity: 0;" : "max-height: none; opacity: 1;")">
-                        @foreach (var userGroup in projectTasks.GroupBy(t => t.CompanyUser).OrderBy(g => g.Key?.User?.FullName ?? ""))
-                        {
-                            var user = userGroup.Key;
-                            var userTasks = userGroup.OrderBy(t => t.TaskStatus != TaskStatus.Completed).ThenBy(t => t.CreateAt).ToList();
-                            if (userTasks.Any())
+            <div class="project-section">
+                <div class="project-header" @onclick="() => ToggleProjectCollapse(projectData.Project.Id)">
+                    <h3 class="project-title">
+                        <span class="collapse-icon">@(_collapsedProjects.Contains(projectData.Project.Id) ? "▶" : "▼")</span>
+                        @projectData.Project.Name
+                    </h3>
+                </div>
+                <div class="project-content"
+                     style="@(_collapsedProjects.Contains(projectData.Project.Id) ? "max-height: 0; opacity: 0;" : "max-height: none; opacity: 1;")">
+                    @foreach (var teamData in projectData.TeamData)
+                    {
+                        <div class="team-section">
+                            <h4 class="team-title">@(teamData.Team?.Name ?? Localization.GetString("UnknownTeam", "TaskManagement"))</h4>
+                            @foreach (var userData in teamData.UserData)
                             {
                                 <div class="user-section">
                                     <div class="user-header">
-                                        <img class="user-avatar" src="@TempFileService.GetUrl(user?.User?.AvatarImage)"
+                                        <img class="user-avatar" src="@TempFileService.GetUrl(userData.User?.User?.AvatarImage)"
                                              alt="Avatar"/>
-                                        <h4 class="user-name">@(user?.User?.FullName ?? Localization.GetString("UnknownUser", "TaskManagement"))</h4>
-                                        <button class="add-task-btn" @onclick="() => NavigateToCreateTask(project.Id, user?.Id ?? 0)">
+                                        <h4 class="user-name">@(userData.User?.User?.FullName ?? Localization.GetString("UnknownUser", "TaskManagement"))</h4>
+                                        <button class="add-task-btn" @onclick="() => NavigateToCreateTask(projectData.Project.Id, teamData.Team!.Id, userData.User?.Id ?? 0)">
                                             @Localization.GetString("AddTask", "TaskManagement")
                                         </button>
                                     </div>
                                     <div class="task-list">
-                                        @foreach (var task in userTasks)
+                                        @if (userData.Tasks.Any())
                                         {
-                                            <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
-                                                <div class="task-header">
-                                                    <h5>@task.Name</h5>
-                                                    <span class="task-status @GetStatusClass(task.TaskStatus)">
-                                                        @Localization.GetString($"TaskStatus_{task.TaskStatus}", "TaskManagement")
-                                                    </span>
+                                            @foreach (var task in userData.Tasks)
+                                            {
+                                                <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                                                    <div class="task-header">
+                                                        <h5>@task.Name</h5>
+                                                        <span class="task-status @GetStatusClass(task.TaskStatus)">
+                                                            @Localization.GetString($"TaskStatus_{task.TaskStatus}", "TaskManagement")
+                                                        </span>
+                                                    </div>
+                                                    <p class="task-description">@(task.Description?.TakeOnly(80, "...") ?? "")</p>
+                                                    <div class="task-meta">
+                                                        <span class="task-priority @GetPriorityClass(task.Priority)">
+                                                            @Localization.GetString($"TaskPriority_{task.Priority}", "TaskManagement")
+                                                        </span>
+                                                        <span class="task-created">
+                                                            @Localization.GetString("CreatedAt", "TaskManagement") @(task.CreateAt!.Value.ToString("d"))
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                                <p class="task-description">@(task.Description?.TakeOnly(80, "...") ?? "")</p>
-                                                <div class="task-meta">
-                                                    <span class="task-priority @GetPriorityClass(task.Priority)">
-                                                        @Localization.GetString($"TaskPriority_{task.Priority}", "TaskManagement")
-                                                    </span>
-                                                    <span class="task-created">
-                                                        @Localization.GetString("CreatedAt", "TaskManagement") @(task.CreateAt!.Value.ToString("d"))
-                                                    </span>
-                                                </div>
-                                            </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="no-tasks-user">@Localization.GetString("NoTasksForUser", "TaskManagement")</p>
                                         }
                                     </div>
                                 </div>
                             }
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         }
     }
 </div>
@@ -95,40 +106,99 @@
 @code {
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyId { get; set; }
+    [Parameter] public int CompanyUserId { get; set; }
 
     private IEnumerable<ProjectViewModel> Projects { get; set; } = new List<ProjectViewModel>();
     private IEnumerable<ProjectTaskViewModel> AllTasks { get; set; } = new List<ProjectTaskViewModel>();
-    private IEnumerable<ProjectTaskViewModel> _filteredTasks { get; set; } = new List<ProjectTaskViewModel>();
-    private TaskStatus? _selectedStatus = TaskStatus.Completed;
+    private List<ProjectTaskData> _projectTaskData { get; set; } = new List<ProjectTaskData>();
+    private ProjectTaskStatus? _selectedStatus = null;
+    private bool _showNoTasks = false;
     private HashSet<int> _collapsedProjects = new HashSet<int>();
+
+    private class ProjectTaskData
+    {
+        public ProjectViewModel Project { get; set; } = null!;
+        public List<TeamTaskData> TeamData { get; set; } = new List<TeamTaskData>();
+    }
+
+    private class TeamTaskData
+    {
+        public TeamViewModel? Team { get; set; }
+        public List<UserTaskData> UserData { get; set; } = new List<UserTaskData>();
+    }
+
+    private class UserTaskData
+    {
+        public CompanyUserViewModel? User { get; set; }
+        public List<ProjectTaskViewModel> Tasks { get; set; } = new List<ProjectTaskViewModel>();
+    }
 
     protected override async Task OnInitializedAsync()
     {
         Projects = await WorkPageService.GetTaskManagementProjectsAsync(CompanyId);
         AllTasks = await WorkPageService.GetTaskManagementCompanyTasksAsync(CompanyId);
-        UpdateFilteredTasks();
+        await UpdateProjectTaskData();
     }
 
-    private void ToggleStatusFilter(TaskStatus status)
+    private async Task UpdateProjectTaskData()
     {
-        if (_selectedStatus == status)
-        {
-            _selectedStatus = null; // Отключаем фильтр
-        }
-        else
-        {
-            _selectedStatus = status; // Устанавливаем новый фильтр
-        }
+        _projectTaskData.Clear();
+        var filteredTasks = _showNoTasks ? new List<ProjectTaskViewModel>() :
+            _selectedStatus.HasValue ? AllTasks.Where(t => t.TaskStatus == _selectedStatus.Value).ToList() : AllTasks.ToList();
 
-        UpdateFilteredTasks();
-    }
+        foreach (var project in Projects.OrderBy(p => p.Name))
+        {
+            var projectTasks = filteredTasks.Where(t => t.TeamEmployee!.Team?.Project?.Id == project.Id).ToList();
+            var projectTeams = project.Teams?.ToList() ?? new List<TeamViewModel>();
+            var projectUsers = projectTeams.SelectMany(t => t.CompanyUsers).Distinct().ToList();
+            var usersWithTasks = projectTasks.Select(t => t.TeamEmployee!.CompanyUser).Distinct().ToList();
+            var usersToDisplay = _showNoTasks || _selectedStatus == null ? projectUsers : usersWithTasks;
 
-    private void UpdateFilteredTasks()
-    {
-        _filteredTasks = _selectedStatus.HasValue 
-            ? AllTasks.Where(t => t.TaskStatus == _selectedStatus.Value).ToList() 
-            : AllTasks;
+            var projectData = new ProjectTaskData { Project = project };
+            foreach (var team in projectTeams.OrderBy(t => t.Name))
+            {
+                var teamUsers = team.CompanyUsers.Where(u => usersToDisplay.Contains(u)).ToList();
+                if (!teamUsers.Any()) continue;
+
+                var teamData = new TeamTaskData { Team = team };
+                foreach (var user in teamUsers.OrderBy(u => u.User?.FullName ?? ""))
+                {
+                    var userTasks = projectTasks
+                        .Where(t => t.TeamEmployee!.CompanyUser?.Id == user.Id)
+                        .OrderBy(t => t.TaskStatus != ProjectTaskStatus.Completed)
+                        .ThenBy(t => t.CreateAt)
+                        .ToList();
+                    teamData.UserData.Add(new UserTaskData { User = user, Tasks = userTasks });
+                }
+                if (teamData.UserData.Any())
+                {
+                    projectData.TeamData.Add(teamData);
+                }
+            }
+
+            if (projectData.TeamData.Any())
+            {
+                _projectTaskData.Add(projectData);
+            }
+        }
         StateHasChanged();
+    }
+
+    private void ToggleStatusFilter(ProjectTaskStatus? status)
+    {
+        _showNoTasks = false;
+        _selectedStatus = status;
+        _ = UpdateProjectTaskData();
+    }
+
+    private void ToggleNoTasksFilter()
+    {
+        _showNoTasks = !_showNoTasks;
+        if (_showNoTasks)
+        {
+            _selectedStatus = null;
+        }
+        _ = UpdateProjectTaskData();
     }
 
     private void ToggleProjectCollapse(int projectId)
@@ -137,7 +207,6 @@
         {
             _collapsedProjects.Remove(projectId);
         }
-
         StateHasChanged();
     }
 
@@ -146,17 +215,17 @@
         NavigationManager.NavigateTo($"/task/{taskId}");
     }
 
-    private void NavigateToCreateTask(int projectId, int userId)
+    private void NavigateToCreateTask(int projectId, int teamId, int userId)
     {
-        NavigationManager.NavigateTo($"/create-task/{projectId}/{userId}");
+        NavigationManager.NavigateTo($"/create-task/{projectId}/{teamId}/{userId}");
     }
-    
-    private string GetStatusClass(TaskStatus status) => status switch
+
+    private string GetStatusClass(ProjectTaskStatus status) => status switch
     {
-        TaskStatus.Completed => "completed",
-        TaskStatus.Work => "work",
-        TaskStatus.ToDo => "todo",
-        TaskStatus.Finished => "todo",
+        ProjectTaskStatus.Completed => "completed",
+        ProjectTaskStatus.Work => "work",
+        ProjectTaskStatus.ToDo => "todo",
+        ProjectTaskStatus.Finished => "todo",
         _ => "todo"
     };
 
@@ -167,7 +236,6 @@
         TaskPriority.High => "high",
         _ => "normal"
     };
-
 }
 
 <style>
@@ -190,7 +258,6 @@
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
-    /* Кнопки фильтрации */
     .status-buttons {
         display: flex;
         gap: 1rem;
@@ -248,7 +315,11 @@
         border-color: var(--success);
     }
 
-    /* Секция проекта */
+    .status-btn.status-notasks.active {
+        background: #757575;
+        border-color: #757575;
+    }
+
     .project-section {
         background: var(--bg-white);
         border-radius: 12px;
@@ -290,7 +361,20 @@
         overflow: hidden;
     }
 
-    /* Секция пользователя */
+    .team-section {
+        margin-bottom: 1.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .team-title {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 500;
+        margin: 0 0 1rem 0;
+        padding-left: 0.5rem;
+        border-left: 3px solid var(--primary-color);
+    }
+
     .user-section {
         margin-bottom: 1.5rem;
         padding-bottom: 1.5rem;
@@ -327,7 +411,7 @@
     .add-task-btn {
         padding: 0.5rem 1rem;
         border-radius: 16px;
-        background: #1e88e5; /* Тёмно-синий для контраста вместо --primary-color */
+        background: #1e88e5;
         color: white;
         font-size: 0.9rem;
         font-weight: 500;
@@ -337,11 +421,10 @@
     }
 
     .add-task-btn:hover {
-        background: #1565c0; /* Чуть темнее для hover, вместо --secondary */
+        background: #1565c0;
         transform: translateY(-2px);
     }
 
-    /* Горизонтальный список задач */
     .task-list {
         display: flex;
         gap: 1.5rem;
@@ -469,6 +552,14 @@
         color: var(--text-secondary);
         font-size: 1.3rem;
         margin: 2rem 0;
+        font-style: italic;
+    }
+
+    .no-tasks-user {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin: 1rem 0;
         font-style: italic;
     }
 </style>

@@ -1,5 +1,7 @@
 ﻿using System.Linq.Expressions;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.Exception.ApiExceptions;
 
 namespace Pilot.Contracts.Base;
 
@@ -65,11 +67,11 @@ public class WhereFilter
     private void AddToList((string, object) queryParams)
     {
         List.Add(
-            new ValueTuple<string, object, Type>(queryParams.Item1, queryParams.Item2, queryParams.Item2.GetType()));
+            new ValueTuple<string, object, FilterType>(queryParams.Item1, queryParams.Item2,
+                GetFilterType(queryParams.Item2)));
     }
 
     public void Init<TValue, TViewModel>((Expression<Func<TViewModel, TValue>> predicate, TValue value) valueTuple)
-        where TValue : IConvertible
     {
         var fieldsName = valueTuple.predicate.Body.ToString().Split(".").Skip(1).ToList();
         if (valueTuple.value is null) throw new ArgumentNullException("Ты чёт попутал");
@@ -78,10 +80,41 @@ public class WhereFilter
         AddToList((names, valueTuple.value));
     }
 
-    public ICollection<(string, object, Type)> List { get; } = [];
+    public void Init<TValue, TViewModel>((Expression<Func<TViewModel, TValue>> predicate, object value) valueTuple)
+    {
+        var fieldsName = valueTuple.predicate.Body.ToString().Replace("Convert(", string.Empty)
+            .Replace(", Object)", string.Empty).Split(".").Skip(1).ToList();
+        if (valueTuple.value is null) throw new ArgumentNullException("Ты чёт попутал");
+
+        var names = string.Join(".", fieldsName);
+        AddToList((names, valueTuple.value));
+    }
+
+    public ICollection<(string, object, FilterType)> List { get; } = [];
 
     public string Key
     {
         get { return string.Join("*", List.Select(x => $"{x.Item1}|{x.Item2}")); }
     }
+
+    public static FilterType GetFilterType(object value)
+    {
+        if (value is int)
+            return FilterType.Int;
+
+        throw new NotFoundException("The filter type is not defined");
+    }
+
+    public static Type GetType(FilterType filterType)
+    {
+        if (filterType == FilterType.Int)
+            return typeof(int);
+
+        throw new NotFoundException("The type is not defined");
+    }
+}
+
+public enum FilterType
+{
+    Int
 }

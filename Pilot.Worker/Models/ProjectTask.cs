@@ -11,9 +11,7 @@ public class ProjectTask : BaseModel, IAddCompanyUser
 
     [MaxLength(500)] public string? Description { get; set; }
 
-    [Required] public Team Team { get; set; } = null!;
-
-    [Required] public CompanyUser CompanyUser { get; set; } = null!;
+    [Required] public TeamEmployee TeamEmployee { get; set; } = null!;
 
     [Required] public CompanyUser CreatedBy { get; set; } = null!;
     

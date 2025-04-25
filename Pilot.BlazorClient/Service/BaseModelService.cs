@@ -3,17 +3,25 @@ using AutoMapper;
 using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.Contracts.Base;
-using Serialize.Linq.Serializers;
 
 namespace Pilot.BlazorClient.Service;
 
-public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, IMapper mapper)
+public class BaseModelService<TDto, TViewModel>(
+    IGateWayApiService apiService,
+    IMessengerService messengerService,
+    IMapper mapper)
     : IBaseModelService<TViewModel>
     where TDto : BaseDto where TViewModel : BaseViewModel
 {
     public async Task<TViewModel> GetValueAsync(int valueId)
     {
         return await apiService.SendGetMessage<TDto, TViewModel>(valueId);
+    }
+
+    public async Task<TViewModel?> GetValueAsync(
+        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples)
+    {
+        return (await GetValuesAsync(valueTuples)).FirstOrDefault();
     }
 
     public async Task<ICollection<TViewModel>> GetValuesAsync(int? skip = null, int? take = null)
@@ -33,6 +41,19 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }
 
+    public async Task<ICollection<TViewModel>> GetValuesAsync(
+        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples)
+    {
+        var filter = new BaseFilter();
+        var whereFilter = new WhereFilter();
+        foreach (var valueTuple in valueTuples)
+            whereFilter.Init(valueTuple);
+
+        filter.WhereFilter = whereFilter;
+
+        return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
+    }
+
     public async Task<ICollection<TViewModel>> GetValuesAsync(ICollection<int> ids)
     {
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: new BaseFilter(ids));
@@ -42,40 +63,75 @@ public class BaseModelService<TDto, TViewModel>(IGateWayApiService apiService, I
     {
         return await apiService.SendGetMessages<TDto, TViewModel>(filter: filter);
     }
-    
-    public async Task<ICollection<TViewModel>> GetQueryValuesAsync<TFullDto>(Expression<Func<TFullDto, TFullDto>> predicate)
+
+    public async Task CreateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null)
     {
-        var filter = new BaseFilter
+        try
         {
-            SelectQuery = new ExpressionSerializer(new JsonSerializer()).SerializeText(predicate)
-        };
+            if (action != null)
+            {
+                void Handler(InfoMessageViewModel message)
+                {
+                    action(message);
+                    messengerService.OnActionNotification -= Handler;
+                }
 
-        var client = await apiService.GetClientAsync<TDto>();
-        
-        var response = await client.PostAsJsonAsync($"api/{BaseExpendMethods.GetModelName<TDto>()}/Query", filter);
+                messengerService.OnActionNotification += Handler;
+            }
 
-        if (!response.IsSuccessStatusCode)
-        {
-            var error = await response.Content.ReadAsStringAsync();
-            throw new Exception(error);
+            await apiService.SendPostMessage(null, message: mapper.Map<TDto>(value));
         }
-
-        return await response.Content.ReadFromJsonAsync<ICollection<TViewModel>>() ?? [];
-    }
-    
-    public async Task CreateValueAsync(TViewModel value)
-    {
-        await apiService.SendPostMessage(null, message: mapper.Map<TDto>(value));
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to update value {ex.Message}");
+        }
     }
 
-    public async Task UpdateValueAsync(TViewModel value)
+    public async Task UpdateValueAsync(TViewModel value, Action<InfoMessageViewModel>? action = null)
     {
-        await apiService.SendPutMessage(null, message: mapper.Map<TDto>(value));
+        try
+        {
+            if (action != null)
+            {
+                void Handler(InfoMessageViewModel message)
+                {
+                    action(message);
+                    messengerService.OnActionNotification -= Handler;
+                }
+
+                messengerService.OnActionNotification += Handler;
+            }
+
+            await apiService.SendPutMessage(null, message: mapper.Map<TDto>(value));
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to update value {ex.Message}");
+        }
     }
 
-    public async Task DeleteValueAsync(int id)
+    public async Task DeleteValueAsync(int id, Action<InfoMessageViewModel>? action = null)
     {
-        await apiService.SendDeleteMessage<TDto>(id.ToString());
+        try
+        {
+            if (action != null)
+            {
+                void Handler(InfoMessageViewModel message)
+                {
+                    action(message);
+                    messengerService.OnActionNotification -= Handler;
+                }
+
+                messengerService.OnActionNotification += Handler;
+            }
+
+            await apiService.SendDeleteMessage<TDto>(id.ToString());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to delete value {ex.Message}");
+        }
     }
 
     public IGateWayApiService Client { get; } = apiService;

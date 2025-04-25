@@ -1,5 +1,4 @@
-﻿@page "/create-task/{ProjectId:int}/{UserId:int}"
-@using System.Security.Claims
+﻿@page "/create-task/{ProjectId:int}/{TeamId:int}/{UserId:int}"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
@@ -293,6 +292,7 @@
 
 @code {
     [Parameter] public int ProjectId { get; set; }
+    [Parameter] public int TeamId { get; set; }
     [Parameter] public int UserId { get; set; }
 
     private ProjectTaskViewModel Task { get; set; } = new();
@@ -304,11 +304,10 @@
     protected override async Task OnInitializedAsync()
     {
         Teams = await ProjectTaskPageService.GetProjectTeamsAsync(ProjectId);
-        if (Teams.Count == 1) SelectedTeamId = Teams.First().Id;
+        SelectedTeamId = TeamId;
 
         Task = new ProjectTaskViewModel
         {
-            CompanyUser = new CompanyUserViewModel { Id = UserId },
             TaskStatus = ProjectTaskStatus.ToDo,
             Priority = TaskPriority.Normal
         };
@@ -330,9 +329,11 @@
         }
 
         ErrorMessage = null;
-        Task.Team = new TeamViewModel { Id = SelectedTeamId };
-        await ProjectTaskPageService.AddProjectTaskAsync(Task);
-        NavigationManager.NavigateTo("work");
+        // Task.Team = new TeamViewModel { Id = SelectedTeamId };
+        await ProjectTaskPageService.AddProjectTaskAsync(Task, UserId, SelectedTeamId, _ =>
+        {
+            NavigationManager.NavigateTo("work");
+        });
     }
 
     private void Cancel()
