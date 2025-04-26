@@ -165,8 +165,9 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
 
         if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser(user.Id);
 
-        await GetContext<TDto>().AddRangeAsync(value);
-        await GetContext<TDto>().SaveChangesAsync();
+        var dbContext = AssertContext;
+        await dbContext.AddRangeAsync(value);
+        await dbContext.SaveChangesAsync();
 
         var valueDto = Mapper.Map<TDto>(value);
 
@@ -194,8 +195,9 @@ public abstract class CapabilityTests<T, TDto> : BaseCapabilityServiceIntegratio
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GetContext<TDto>().AddRangeAsync(value);
-        await GetContext<TDto>().SaveChangesAsync();
+        var context = AssertContext;
+        await context.AddRangeAsync(value);
+        await context.SaveChangesAsync();
 
         #endregion
 

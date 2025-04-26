@@ -99,22 +99,27 @@ public class WhereFilter
 
     public static FilterType GetFilterType(object value)
     {
-        if (value is int)
-            return FilterType.Int;
-
-        throw new NotFoundException("The filter type is not defined");
+        return value switch
+        {
+            int => FilterType.Int,
+            ModelType => FilterType.ModelType,
+            _ => throw new NotFoundException("The filter type is not defined")
+        };
     }
 
     public static Type GetType(FilterType filterType)
     {
-        if (filterType == FilterType.Int)
-            return typeof(int);
-
-        throw new NotFoundException("The type is not defined");
+        return filterType switch
+        {
+            FilterType.Int => typeof(int),
+            FilterType.ModelType => typeof(ModelType),
+            _ => throw new NotFoundException("The type is not defined")
+        };
     }
 }
 
 public enum FilterType
 {
-    Int
+    Int,
+    ModelType
 }
