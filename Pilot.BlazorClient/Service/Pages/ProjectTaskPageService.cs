@@ -57,9 +57,9 @@ public class ProjectTaskPageService(
         await fileService.CreateValueAsync(file);
     }
 
-    public async Task AddProjectTaskAsync(ProjectTaskViewModel task, int userId, int selectedTeamId, Action<InfoMessageViewModel>? action = null)
+    public async Task AddProjectTaskAsync(ProjectTaskViewModel task, int companyUserId, int selectedTeamId, Action<InfoMessageViewModel>? action = null)
     {
-        var teamEmployee = await teamEmployeeService.GetValueAsync((c => c.Team.Id, selectedTeamId), (c => c.CompanyUser.UserId, userId));
+        var teamEmployee = await teamEmployeeService.GetValueAsync((c => c.Team.Id, selectedTeamId), (c => c.CompanyUser.Id, companyUserId));
         task.TeamEmployee = teamEmployee;
         await CreateValueAsync(task, action);
     }

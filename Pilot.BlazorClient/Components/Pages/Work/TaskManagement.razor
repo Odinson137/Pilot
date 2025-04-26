@@ -60,7 +60,7 @@
                                         <img class="user-avatar" src="@TempFileService.GetUrl(userData.User?.User?.AvatarImage)"
                                              alt="Avatar"/>
                                         <h4 class="user-name">@(userData.User?.User?.FullName ?? Localization.GetString("UnknownUser", "TaskManagement"))</h4>
-                                        <button class="add-task-btn" @onclick="() => NavigateToCreateTask(projectData.Project.Id, teamData.Team!.Id, userData.User?.Id ?? 0)">
+                                        <button class="add-task-btn" @onclick="() => NavigateToCreateTask(projectData.Project.Id, teamData.Team!.Id, userData.User!.Id)">
                                             @Localization.GetString("AddTask", "TaskManagement")
                                         </button>
                                     </div>
@@ -157,14 +157,14 @@
             var projectData = new ProjectTaskData { Project = project };
             foreach (var team in projectTeams.OrderBy(t => t.Name))
             {
-                var teamUsers = team.CompanyUsers.Where(u => usersToDisplay.Contains(u)).ToList();
+                var teamUsers = team.CompanyUsers.Where(u => usersToDisplay.Select(x => x.Id).Contains(u.Id)).ToList();
                 if (!teamUsers.Any()) continue;
 
                 var teamData = new TeamTaskData { Team = team };
                 foreach (var user in teamUsers.OrderBy(u => u.User?.FullName ?? ""))
                 {
                     var userTasks = projectTasks
-                        .Where(t => t.TeamEmployee!.CompanyUser?.Id == user.Id)
+                        .Where(t => t.TeamEmployee!.CompanyUser.UserId == user.Id && t.TeamEmployee!.Team?.Id == team.Id)
                         .OrderBy(t => t.TaskStatus != ProjectTaskStatus.Completed)
                         .ThenBy(t => t.CreateAt)
                         .ToList();
@@ -215,9 +215,9 @@
         NavigationManager.NavigateTo($"/task/{taskId}");
     }
 
-    private void NavigateToCreateTask(int projectId, int teamId, int userId)
+    private void NavigateToCreateTask(int projectId, int teamId, int companyUserId)
     {
-        NavigationManager.NavigateTo($"/create-task/{projectId}/{teamId}/{userId}");
+        NavigationManager.NavigateTo($"/create-task/{projectId}/{teamId}/{companyUserId}");
     }
 
     private string GetStatusClass(ProjectTaskStatus status) => status switch

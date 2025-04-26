@@ -1,5 +1,4 @@
-﻿@page "/create-task/{ProjectId:int}/{TeamId:int}/{UserId:int}"
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@page "/create-task/{ProjectId:int}/{TeamId:int}/{CompanyUserId:int}"
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using Pilot.BlazorClient.Service
@@ -8,7 +7,6 @@
 @inject IProjectTaskPageService ProjectTaskPageService
 @inject IJsonLocalizationService Localization
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthStateProvider
 
 <AuthCheck />
 
@@ -293,7 +291,7 @@
 @code {
     [Parameter] public int ProjectId { get; set; }
     [Parameter] public int TeamId { get; set; }
-    [Parameter] public int UserId { get; set; }
+    [Parameter] public int CompanyUserId { get; set; }
 
     private ProjectTaskViewModel Task { get; set; } = new();
     private ICollection<TeamViewModel> Teams { get; set; } = [];
@@ -330,7 +328,7 @@
 
         ErrorMessage = null;
         // Task.Team = new TeamViewModel { Id = SelectedTeamId };
-        await ProjectTaskPageService.AddProjectTaskAsync(Task, UserId, SelectedTeamId, _ =>
+        await ProjectTaskPageService.AddProjectTaskAsync(Task, CompanyUserId, SelectedTeamId, _ =>
         {
             NavigationManager.NavigateTo("work");
         });

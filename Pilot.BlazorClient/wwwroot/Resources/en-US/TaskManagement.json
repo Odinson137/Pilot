@@ -3,7 +3,7 @@
   "AllTasks": "All Tasks",
   "NoTasks": "No Tasks",
   "NoTasksFound": "No tasks found",
-  "NoTasksForUser": "This user has no tasks in this project",
+  "NoTasksForUser": "This user has no tasks in this team",
   "UnknownUser": "Unknown User",
   "AddTask": "Add Task",
   "CreatedAt": "Created:",

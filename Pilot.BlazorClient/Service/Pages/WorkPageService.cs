@@ -265,7 +265,7 @@ public class WorkPageService(
     public async Task<ICollection<ProjectViewModel>> GetTaskManagementProjectsAsync(int companyId)
     {
         var projectViewModels = await projectService.GetValuesAsync(
-            predicate: c => c.Company.Id,
+            c => c.Company.Id,
             companyId);
         var teams = await teamService.GetValuesAsync(
             projectViewModels.SelectMany(c => c.Teams.Select(x => x.Id)).ToList());
@@ -283,7 +283,7 @@ public class WorkPageService(
             foreach (var teamViewModel in projectViewModel.Teams)
             {
                 teamViewModel.CompanyUsers =
-                    employees.Where(c => c.Teams.Select(x => x.Id).Contains(c.Company.Id)).ToList();
+                    employees.Where(c => teamViewModel.CompanyUsers.Select(x => x.Id).Contains(c.Id)).ToList();
             }
         }
 
