@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ClickHouse.Client" Version="7.11.0" />
@@ -18,5 +19,10 @@
     <Folder Include="Data" />
     <Folder Include="Data/Enums" />
     <Folder Include="Queries\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\.dockerignore">
+      <Link>.dockerignore</Link>
+    </Content>
   </ItemGroup>
 </Project>
