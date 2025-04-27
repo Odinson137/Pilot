@@ -1,0 +1,21 @@
+﻿{
+  "VacancyDetails": "Vacancy Details",
+  "CompanyInfo": "Company Information",
+  "ViewCompanyPage": "View Company Page",
+  "Status": "Status",
+  "Open": "Open",
+  "Closed": "Closed",
+  "PostedOn": "Posted on",
+  "AdditionalRequirements": "Additional Requirements",
+  "RequiredSkills": "Required Skills",
+  "ExpectedSalary": "Expected Salary",
+  "RequiredExperience": "Required Experience",
+  "Applications": "Applications",
+  "SubmitApplication": "Submit Your Application",
+  "CoverLetterPlaceholder": "Write a cover letter...",
+  "SubmitButton": "Submit Application",
+  "NotAuthorized": "You must be logged in to apply. Please log in or register.",
+  "AlreadyInCompany": "You are already a member of the company and cannot apply.",
+  "VacancyNotFound": "Vacancy not found.",
+  "ApplicationSubmitted": "Application submitted successfully."
+}

@@ -1,93 +1,135 @@
 ﻿@page "/Vacancy"
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Service
 @inject ICompanyPostPageService PageService
 @inject NavigationManager Navigation
+@inject IJsonLocalizationService Localizer
 
-<div class="container mt-5" style="margin-bottom: 100px; display: grid">
-    <!-- Top section with brief description and photo -->
-    <div class="text-center mb-4">
-        <h2 class="mb-3" style="color: #1e3a8a;">Welcome to Our Collaborative Space</h2>
-        <p class="lead" style="color: #4a5568;">This page highlights the importance of communication and teamwork in
-            building successful companies and projects. Working together fosters innovation, productivity, and shared
-            success.</p>
-        <div style="width: 100%; height: 200px; overflow: hidden;">
-            <img src="/Images/Vacancy/tree.webp"
-                 alt="Teamwork Image"
-                 style="width: 100%; height: 100%; object-fit: cover;" />
+<!-- Main container with padding and centered content -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 3rem 1rem; margin-bottom: 100px;">
+    <!-- Header section with title and description -->
+    <!-- Purpose: Welcomes users and explains the page's purpose -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2 style="font-size: 2.25rem; font-weight: 700; color: #1e3a8a; margin-bottom: 1rem; animation: fadeIn 0.5s ease-out;">
+            @Localizer.GetString("ExploreCareerOpportunities", "Vacancy")
+        </h2>
+        <p style="font-size: 1.125rem; color: #4a5568; max-width: 32rem; margin: 0 auto;">
+            @Localizer.GetString("HeaderDescription", "Vacancy")
+        </p>
+    </div>
+
+    <!-- Search bar with enhanced description -->
+    <!-- Purpose: Allows filtering by title, company, or skills -->
+    <div style="max-width: 42rem; margin: 0 auto 2rem auto;">
+        <label style="display: block; font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem;">
+            @Localizer.GetString("SearchLabel", "Vacancy")
+        </label>
+        <div style="display: flex; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+            <input type="text"
+                   style="flex: 1; padding: 0.75rem 1rem; border: 1px solid #d1d5db; border-right: none; border-radius: 0.5rem 0 0 0.5rem; font-size: 1rem; outline: none; transition: all 0.3s;"
+                   placeholder="@Localizer.GetString("SearchPlaceholder", "Vacancy")"
+                   aria-label="@Localizer.GetString("SearchLabel", "Vacancy")"
+                   @bind="_searchQuery"
+                   @oninput="OnSearchInput"/>
+            <button
+                style="padding: 0.75rem 1rem; background-color: #1e3a8a; color: white; border-radius: 0 0.5rem 0.5rem 0; transition: background-color 0.3s;"
+                @onclick="SearchVacancies">
+                <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <!-- Loading indicator -->
+    <!-- Loading indicator using existing Loading component -->
+    <!-- Purpose: Shows while data is fetching -->
     @if (_isLoading)
     {
-        <div class="text-center">
-            <p class="text-info">Loading vacancy data...</p>
-            <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
+        <Loading/>
     }
-    else if (_companyPost != null)
+    else if (_filteringCompanyPosts.Any())
     {
-        <!-- Search bar -->
-        <div class="input-group mb-4" style="width: 700px; justify-self: center">
-            <input type="text" class="form-control" placeholder="Search vacancies..." aria-label="Search vacancies"
-                   @bind="_searchQuery">
-            <button class="btn btn-primary" @onclick="SearchVacancies">
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-
-        <!-- Vacancy list -->
-        <div class="row" style="width: 850px; justify-self: center">
-            @foreach (var vacancy in _companyPost!)
+        <!-- Vacancy list in a grid layout -->
+        <!-- Purpose: Displays vacancies with key details -->
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 1.5rem; max-width: 53rem; margin: 0 auto;">
+            @foreach (var vacancy in _filteringCompanyPosts)
             {
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">@vacancy.Post.Title</h5>
-                            <p class="card-text text-muted">@vacancy.Post.Description</p>
-                            @if (!string.IsNullOrWhiteSpace(vacancy.AdditionalRequirements))
-                            {
-                                <p class="text-secondary small"><strong>Additional
-                                        Requirements:</strong> @vacancy.AdditionalRequirements</p>
-                            }
-                            <div>
-                                <span class="badge bg-success">Applications: @vacancy.Applications.Count</span>
-                            </div>
-                                <button class="btn btn-outline-primary btn-sm mt-3" @onclick="() => ToVacancy(vacancy.Id)">View Details</button>
-                        </div>
+                <!-- Vacancy card with hover effects -->
+                <div
+                    style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 1.5rem; transition: all 0.3s; animation: fadeIn 0.5s ease-out;"
+                    onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(0, 0, 0, 0.15)';"
+                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';">
+                    <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.5rem;">@vacancy.Post.Title</h3>
+                    <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 0.75rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        @vacancy.Post.Description
+                    </p>
+                    <div style="font-size: 0.875rem; color: #4a5568; space-y: 0.25rem;">
+                        <p><span style="font-weight: 500;">@Localizer.GetString("Company", "Vacancy"):</span> @vacancy.Post.Company?.Title</p>
+                        @if (vacancy.ExpectedSalary.HasValue)
+                        {
+                            <p><span style="font-weight: 500;">@Localizer.GetString("Salary", "Vacancy"):</span>
+                                $@vacancy.ExpectedSalary.Value.ToString("N0") / year</p>
+                        }
+                        @if (vacancy.RequiredExperienceYears.HasValue)
+                        {
+                            <p><span style="font-weight: 500;">@Localizer.GetString("Experience", "Vacancy"):</span> @vacancy.RequiredExperienceYears.Value @(@vacancy.RequiredExperienceYears.Value == 1 ? Localizer.GetString("YearSingular", "Vacancy") : Localizer.GetString("YearPlural", "Vacancy"))</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(vacancy.AdditionalRequirements))
+                        {
+                            <p><span style="font-weight: 500;">@Localizer.GetString("Requirements", "Vacancy"):</span> @vacancy.AdditionalRequirements</p>
+                        }
+                        <p><span style="font-weight: 500;">@Localizer.GetString("Applications", "Vacancy"):</span> @vacancy.Applications.Count</p>
                     </div>
+                    <button
+                        style="margin-top: 1rem; padding: 0.5rem 1rem; background-color: #1e3a8a; color: white; border-radius: 0.375rem; transition: background-color 0.3s;"
+                        @onclick="() => ToVacancy(vacancy.Id)">
+                        @Localizer.GetString("ViewDetails", "Vacancy")
+                    </button>
                 </div>
             }
         </div>
 
-        <!-- Pagination -->
-        <nav>
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(_skip == 0 ? "disabled" : "")">
-                    <button class="page-link" @onclick="PreviousPage">&laquo; Previous</button>
-                </li>
-                <li class="page-item @(_companyPost.Count != Take ? "disabled" : "")">
-                    <button class="page-link" @onclick="NextPage">Next &raquo;</button>
-                </li>
-            </ul>
-        </nav>
+        @* <!-- Pagination controls --> *@
+        @* <!-- Purpose: Navigates through vacancy pages --> *@
+        @* <nav style="margin-top: 2rem; display: flex; justify-content: center;"> *@
+        @*     <ul style="display: flex; gap: 0.5rem;"> *@
+        @*         <li style="@(_skip == 0 ? "opacity: 0.5; cursor: not-allowed;" : "")"> *@
+        @*             <button style="padding: 0.5rem 1rem; background: #e5e7eb; color: #1f2937; border-radius: 0.375rem; transition: background 0.3s; @(_skip == 0 ? "opacity: 0.5; cursor: not-allowed;" : "")" *@
+        @*                     @onclick="PreviousPage" *@
+        @*                     disabled="@(_skip == 0)"> *@
+        @*                 @Localizer.GetString("Previous", "Vacancy") *@
+        @*             </button> *@
+        @*         </li> *@
+        @*         <li style="@(_companyPost.Count < Take ? "opacity: 0.5; cursor: not-allowed;" : "")"> *@
+        @*             <button style="padding: 0.5rem 1rem; background: #e5e7eb; color: #1f2937; border-radius: 0.375rem; transition: background 0.3s; @(_companyPost.Count < Take ? "opacity: 0.5; cursor: not-allowed;" : "")" *@
+        @*                     @onclick="NextPage" *@
+        @*                     disabled="@(_companyPost.Count < Take)"> *@
+        @*                 @Localizer.GetString("Next", "Vacancy") *@
+        @*             </button> *@
+        @*         </li> *@
+        @*     </ul> *@
+        @* </nav> *@
     }
     else
     {
-        <div class="text-center">
-            <p class="text-muted">No vacancies found. Try adjusting your search criteria.</p>
+        <!-- Empty state message -->
+        <!-- Purpose: Informs users when no vacancies are found -->
+        <div style="text-align: center; padding: 3rem 0;">
+            <p style="font-size: 1.125rem; color: #6b7280;">@Localizer.GetString("NoVacanciesFound", "Vacancy")</p>
         </div>
     }
 </div>
 
 @code {
-    private ICollection<CompanyPostViewModel>? _companyPost;
+    private ICollection<CompanyPostViewModel> _filteringCompanyPosts = [];
+    private ICollection<CompanyPostViewModel> _companyPosts = [];
     private bool _isLoading = true;
     private int _skip;
-    private const int Take = 10;
+    private const int Take = int.MaxValue;
     private string _searchQuery = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -100,36 +142,43 @@
         _isLoading = true;
         try
         {
-            _companyPost = await PageService.GetVacanciesAsync(_skip, Take, _searchQuery);
+            _companyPosts = await PageService.GetVacanciesAsync(_skip, Take, _searchQuery);
+            _filteringCompanyPosts = _companyPosts;
         }
         finally
         {
             _isLoading = false;
+            StateHasChanged();
         }
     }
 
     private async Task SearchVacancies()
     {
-        _skip = 0; // Reset pagination
-        await LoadVacanciesAsync();
-    }
-
-    private async Task PreviousPage()
-    {
-        if (_skip > 0)
+        _isLoading = true;
+        try
         {
-            _skip -= Take;
-            await LoadVacanciesAsync();
+            var searchString = _searchQuery.ToUpper();
+            _filteringCompanyPosts = _companyPosts.Where(c =>
+                c.Post.Title.ToUpper().Contains(searchString) || 
+                c.Post.Company!.Title.ToUpper().Contains(searchString) ||
+                c.Post.Skills.Any(x => x.Title.ToUpper().Contains(searchString)))
+                .ToList();
+            await Task.Delay(100);
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
         }
     }
 
-    private async Task NextPage()
+    private async Task OnSearchInput(ChangeEventArgs e)
     {
-        _skip += Take;
-        await LoadVacanciesAsync();
+        _searchQuery = e.Value?.ToString() ?? string.Empty;
+        await SearchVacancies();
     }
 
-    private async Task ToVacancy(int vacancyId)
+    private void ToVacancy(int vacancyId)
     {
         Navigation.NavigateTo($"/Vacancy/{vacancyId}");
     }

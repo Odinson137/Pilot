@@ -1,0 +1,15 @@
+﻿{
+  "ExploreCareerOpportunities": "Explore Career Opportunities",
+  "HeaderDescription": "Find roles that inspire collaboration and innovation. Search by vacancy title, company name, or required skills to discover your next opportunity.",
+  "SearchLabel": "Search by vacancy title, company name, or skills",
+  "SearchPlaceholder": "e.g., Software Engineer, Acme Corp, Python",
+  "Company": "Company",
+  "Salary": "Salary",
+  "Experience": "Experience",
+  "Requirements": "Requirements",
+  "Applications": "Applications",
+  "ViewDetails": "View Details",
+  "NoVacanciesFound": "No vacancies found. Try adjusting your search criteria.",
+  "YearSingular": "year",
+  "YearPlural": "years"
+}

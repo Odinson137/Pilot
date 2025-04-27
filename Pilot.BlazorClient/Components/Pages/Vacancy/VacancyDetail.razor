@@ -1,100 +1,137 @@
 ﻿@page "/Vacancy/{vacancyId:int}"
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
+@using Pilot.BlazorClient.Components.Helpers
 @inject ICompanyPostPageService PageService
 @inject NavigationManager Navigation
 @inject IUserService UserService
 @inject IToastService ToastService
+@inject IJsonLocalizationService Localizer
 
-<div class="container mt-5" style="width: 700px; margin-bottom: 200px">
+<!-- Main container with centered content -->
+<div style="max-width: 800px; margin: 0 auto; padding: 3rem 1rem; margin-bottom: 100px;">
     @if (_isLoading)
     {
-        <div class="text-center">
-            <p class="text-info">Loading vacancy details...</p>
-            <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
+        <!-- Loading state using existing Loading component -->
+        <div style="display: flex; justify-content: center; align-items: center; height: 16rem;">
+            <Loading />
         </div>
     }
     else if (_vacancy != null && _company != null)
     {
         <!-- Company Info Section -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body d-flex align-items-center">
-                <img src="@TempFileService.GetUrl(_company.Logo)" alt="Company Logo" class="rounded-circle me-3" style="width: 80px; height: 80px;" />
+        <!-- Purpose: Displays company logo and name with navigation to company page -->
+        <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
+            <div style="display: flex; align-items: center; padding: 1.5rem;">
+                <img src="@TempFileService.GetUrl(_company.Logo)" alt="@Localizer.GetString("CompanyInfo", "VacancyDetail")" 
+                     style="width: 80px; height: 80px; border-radius: 50%; margin-right: 1rem; object-fit: cover;" />
                 <div>
-                    <h4 class="card-title mb-1">@_company.Title</h4>
-                    <button class="btn btn-outline-primary btn-sm" @onclick="() => NavigateToCompany(_company.Id)">
-                        View Company Page
+                    <h4 style="font-size: 1.5rem; font-weight: 600; color: #1e3a8a; margin-bottom: 0.5rem;">@_company.Title</h4>
+                    <button style="padding: 0.5rem 1rem; border: 2px solid #1e3a8a; color: #1e3a8a; border-radius: 0.375rem; transition: all 0.3s;"
+                            @onclick="() => NavigateToCompany(_company.Id)"
+                            onmouseover="this.style.backgroundColor='#1e3a8a'; this.style.color='white';"
+                            onmouseout="this.style.backgroundColor='transparent'; this.style.color='#1e3a8a';">
+                        @Localizer.GetString("ViewCompanyPage", "VacancyDetail")
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Vacancy Info Section -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <h3 class="card-title text-primary">@_vacancy.Post.Title</h3>
-                <h6 class="text-secondary @(_vacancy.IsOpen ? "open" : "")">Status: @( _vacancy.IsOpen ? "Open" : "Closed")</h6>
-                <p class="card-text mt-3">@_vacancy.Post.Description</p>
+        <!-- Purpose: Shows vacancy details including new fields -->
+        <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
+            <div style="padding: 1.5rem;">
+                <h3 style="font-size: 1.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.5rem;">@_vacancy.Post.Title</h3>
+                <h6 style="font-size: 1rem; color: @(_vacancy.IsOpen ? "#16a34a" : "#dc2626"); margin-bottom: 1rem;">
+                    @Localizer.GetString("Status", "VacancyDetail"): @(_vacancy.IsOpen ? Localizer.GetString("Open", "VacancyDetail") : Localizer.GetString("Closed", "VacancyDetail"))
+                </h6>
+                <p style="font-size: 1rem; color: #4a5568; margin-bottom: 1rem;">@_vacancy.Post.Description</p>
                 @if (!string.IsNullOrEmpty(_vacancy.AdditionalRequirements))
                 {
-                    <div class="alert alert-warning">
-                        <strong>Additional Requirements:</strong> @_vacancy.AdditionalRequirements
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <strong>@Localizer.GetString("AdditionalRequirements", "VacancyDetail"):</strong> @_vacancy.AdditionalRequirements
                     </div>
                 }
-                <p class="text-muted mt-2">Posted on: @_vacancy.CreateAt!.Value.ToShortDateString()</p>
+                <div style="font-size: 0.875rem; color: #4a5568; space-y: 0.25rem;">
+                    <p>@Localizer.GetString("PostedOn", "VacancyDetail"): @_vacancy.CreateAt!.Value.ToShortDateString()</p>
+                    @if (_vacancy.ExpectedSalary.HasValue)
+                    {
+                        <p>@Localizer.GetString("ExpectedSalary", "VacancyDetail"): $@_vacancy.ExpectedSalary.Value.ToString("N0") / year</p>
+                    }
+                    @if (_vacancy.RequiredExperienceYears.HasValue)
+                    {
+                        <p>@Localizer.GetString("RequiredExperience", "VacancyDetail"): @_vacancy.RequiredExperienceYears.Value @(_vacancy.RequiredExperienceYears.Value == 1 ? "year" : "years")</p>
+                    }
+                    <p>@Localizer.GetString("Applications", "VacancyDetail"): @_vacancy.Applications.Count</p>
+                </div>
             </div>
         </div>
 
         <!-- Required Skills Section -->
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-primary">Required Skills:</h5>
-                <ul class="list-group list-group-flush">
-                    @foreach (var skill in _skills ?? Enumerable.Empty<SkillViewModel>())
-                    {
-                        <li class="list-group-item">
-                            <i class="bi bi-check-circle-fill text-success me-2"></i> @skill.Title
-                        </li>
-                    }
-                </ul>
+        <!-- Purpose: Lists required skills for the vacancy -->
+        <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
+            <div style="padding: 1.5rem;">
+                <h5 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 1rem;">@Localizer.GetString("RequiredSkills", "VacancyDetail"):</h5>
+                @if (_skills?.Any() == true)
+                {
+                    <ul style="list-style: none; padding: 0;">
+                        @foreach (var skill in _skills)
+                        {
+                            <li style="padding: 0.5rem 0; font-size: 1rem; color: #4a5568;">
+                                <span style="color: #16a34a; margin-right: 0.5rem;">✔</span> @skill.Title
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p style="font-size: 0.875rem; color: #6b7280; font-style: italic;">No specific skills required.</p>
+                }
             </div>
         </div>
 
         <!-- Application Form Section -->
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h5 class="card-title text-primary">Submit Your Application</h5>
-                <textarea class="form-control mb-3" rows="4" placeholder="Write a cover letter..." @bind="_coverLetter"></textarea>
-                <button class="btn btn-success" @onclick="SubmitApplication">
-                    <i class="bi bi-send-fill me-1"></i> Submit Application
-                </button>
+        <!-- Purpose: Allows users to submit applications, with restrictions for unauthorized or company members -->
+        <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); animation: fadeIn 0.5s ease-out;">
+            <div style="padding: 1.5rem;">
+                <h5 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 1rem;">@Localizer.GetString("SubmitApplication", "VacancyDetail")</h5>
+                @if (!_isAuthorized)
+                {
+                    <p style="font-size: 0.875rem; color: #dc2626; background: #fee2e2; padding: 1rem; border-radius: 0.5rem;">
+                        @Localizer.GetString("NotAuthorized", "VacancyDetail")
+                    </p>
+                }
+                else if (_isInCompany)
+                {
+                    <p style="font-size: 0.875rem; color: #dc2626; background: #fee2e2; padding: 1rem; border-radius: 0.5rem;">
+                        @Localizer.GetString("AlreadyInCompany", "VacancyDetail")
+                    </p>
+                }
+                else
+                {
+                    <textarea class="form-control" 
+                              style="width: 100%; min-height: 120px; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; margin-bottom: 1rem; transition: all 0.3s;"
+                              placeholder="@Localizer.GetString("CoverLetterPlaceholder", "VacancyDetail")" 
+                              @bind="_coverLetter"></textarea>
+                    <button style="padding: 0.75rem 1.5rem; background-color: #16a34a; color: white; border-radius: 0.5rem; transition: background-color 0.3s;"
+                            @onclick="SubmitApplication"
+                            onmouseover="this.style.backgroundColor='#15803d';"
+                            onmouseout="this.style.backgroundColor='#16a34a';">
+                        <span style="margin-right: 0.5rem;">➤</span> @Localizer.GetString("SubmitButton", "VacancyDetail")
+                    </button>
+                }
             </div>
         </div>
     }
     else
     {
-        <p class="text-danger">Vacancy not found.</p>
-    }
-</div>
-
-<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="messageModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="messageModalLabel">Тест</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Тест
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-            </div>
+        <!-- Error state for missing vacancy -->
+        <div style="text-align: center; padding: 3rem 0;">
+            <p style="font-size: 1.125rem; color: #dc2626;">@Localizer.GetString("VacancyNotFound", "VacancyDetail")</p>
         </div>
-    </div>
+    }
 </div>
 
 @code {
@@ -104,6 +141,8 @@
     private ICollection<SkillViewModel>? _skills;
     private CompanyViewModel? _company;
     private bool _isLoading = true;
+    private bool _isAuthorized;
+    private bool _isInCompany;
     private string _coverLetter = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -111,45 +150,51 @@
         _isLoading = true;
         try
         {
+            _isAuthorized = await UserService.IsUserAuthorizationAsync();
             _vacancy = await PageService.GetVacancyAsync(VacancyId);
             if (_vacancy != null)
             {
                 _skills = await PageService.GetPostSkillsAsync(_vacancy.Post);
                 _company = await PageService.GetCompanyAsync(_vacancy.Post.CompanyId);
+                if (_isAuthorized)
+                {
+                    _isInCompany = await PageService.IsUserInCompanyAsync(_vacancy.Post.CompanyId);
+                }
             }
         }
         finally
         {
             _isLoading = false;
+            StateHasChanged();
         }
     }
 
     private async Task SubmitApplication()
     {
-        if (_vacancy != null)
+        if (_vacancy != null && _isAuthorized && !_isInCompany)
         {
-            var isAuthorized = await UserService.IsUserAuthorizationAsync();
-            if (isAuthorized)
+            await PageService.SubmitApplicationAsync(VacancyId, _coverLetter, _ =>
             {
-                await PageService.SubmitApplicationAsync(VacancyId, _coverLetter);
                 Navigation.NavigateTo("/Vacancy");
-            }
-            else
-            {
-                ToastService.ShowWarning("You need to be authorized to submit an application.");
-            }
+            });
         }
     }
 
-    // private void ShowMessage(string title, string message)
-    // {
-    //     var modalElement = document.getElementById("messageModal");
-    //     var modal = new bootstrap.Modal(modalElement);
-    //     modal.show();
-    // }
-    
     private void NavigateToCompany(int companyId)
     {
         Navigation.NavigateTo($"/Company/{companyId}");
     }
 }
+
+<style>
+    .form-control:focus {
+        border-color: #1e3a8a;
+        box-shadow: 0 0 5px rgba(30, 58, 138, 0.3);
+        outline: none;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>

@@ -19,7 +19,7 @@ public class BaseModelService<TDto, TViewModel>(
     }
 
     public async Task<TViewModel?> GetValueAsync(
-        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples)
+        params (Expression<Func<TViewModel, object?>> predicate, object? value)[] valueTuples)
     {
         return (await GetValuesAsync(valueTuples)).FirstOrDefault();
     }
@@ -42,7 +42,7 @@ public class BaseModelService<TDto, TViewModel>(
     }
 
     public async Task<ICollection<TViewModel>> GetValuesAsync(
-        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples)
+        params (Expression<Func<TViewModel, object?>> predicate, object? value)[] valueTuples)
     {
         var filter = new BaseFilter();
         var whereFilter = new WhereFilter();

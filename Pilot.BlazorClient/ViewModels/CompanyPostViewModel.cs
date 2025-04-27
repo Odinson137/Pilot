@@ -19,4 +19,9 @@ public class CompanyPostViewModel : BaseViewModel
     [Required] public bool IsOpen { get; set; } = true;
     
     [MaxLength(500)] public string? AdditionalRequirements { get; set; }
+    
+    
+    [Range(0, 1000000)] public decimal? ExpectedSalary { get; set; }
+    
+    [Range(0, 50)] public int? RequiredExperienceYears { get; set; }
 }

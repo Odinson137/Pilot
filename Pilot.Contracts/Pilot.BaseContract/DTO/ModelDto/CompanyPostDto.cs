@@ -15,4 +15,8 @@ public class CompanyPostDto : BaseDto
     [Required] public bool IsOpen { get; set; } = true;
     
     [MaxLength(500)] public string? AdditionalRequirements { get; set; }
+    
+    public decimal? ExpectedSalary { get; set; }
+    
+    public int? RequiredExperienceYears { get; set; }
 }

@@ -9,6 +9,8 @@ public class PostViewModel : BaseViewModel
     [MaxLength(500)] public string? Description { get; set; }
 
     [Required] [Range(1, int.MaxValue)] public int CompanyId { get; set; }
+    
+    public CompanyViewModel? Company { get; set; }
 
     public ICollection<SkillViewModel> Skills { get; set; } = [];
 

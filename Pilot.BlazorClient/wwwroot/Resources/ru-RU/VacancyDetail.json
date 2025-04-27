@@ -1,0 +1,21 @@
+﻿{
+  "VacancyDetails": "Детали вакансии",
+  "CompanyInfo": "Информация о компании",
+  "ViewCompanyPage": "Посмотреть страницу компании",
+  "Status": "Статус",
+  "Open": "Открыта",
+  "Closed": "Закрыта",
+  "PostedOn": "Опубликовано",
+  "AdditionalRequirements": "Дополнительные требования",
+  "RequiredSkills": "Требуемые навыки",
+  "ExpectedSalary": "Ожидаемая зарплата",
+  "RequiredExperience": "Требуемый опыт",
+  "Applications": "Заявки",
+  "SubmitApplication": "Подать заявку",
+  "CoverLetterPlaceholder": "Напишите сопроводительное письмо...",
+  "SubmitButton": "Отправить заявку",
+  "NotAuthorized": "Вы должны быть авторизованы для подачи заявки. Пожалуйста, войдите или зарегистрируйтесь.",
+  "AlreadyInCompany": "Вы уже являетесь сотрудником компании и не можете подать заявку.",
+  "VacancyNotFound": "Вакансия не найдена.",
+  "ApplicationSubmitted": "Заявка успешно отправлена."
+}

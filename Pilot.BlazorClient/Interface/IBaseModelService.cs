@@ -9,7 +9,7 @@ public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
     Task<TViewModel> GetValueAsync(int valueId);
 
     Task<TViewModel?>
-        GetValueAsync(params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples);
+        GetValueAsync(params (Expression<Func<TViewModel, object?>> predicate, object? value)[] valueTuples);
 
     Task<ICollection<TViewModel>> GetValuesAsync(int? skip = null, int? take = null);
 
@@ -17,7 +17,7 @@ public interface IBaseModelService<TViewModel> where TViewModel : BaseViewModel
         int? skip = null, int? take = null) where T : IConvertible;
 
     Task<ICollection<TViewModel>> GetValuesAsync(
-        params (Expression<Func<TViewModel, object>> predicate, object value)[] valueTuples);
+        params (Expression<Func<TViewModel, object?>> predicate, object? value)[] valueTuples);
 
     Task<ICollection<TViewModel>> GetValuesAsync(ICollection<int> ids);
 

@@ -118,6 +118,7 @@ public class Seed : ISeed
 
     private async Task AssignPostsToCompaniesAsync(ICollection<Post> posts)
     {
+        var random = new Random();
         for (var companyId = 1; companyId <= 5; companyId++)
         {
             var randomPosts = posts.Skip(2 * (companyId - 1)).Take(2).ToList();
@@ -126,8 +127,9 @@ public class Seed : ISeed
             {
                 var companyPost = GetCompanyPostFaker().Generate();
                 companyPost.Post = post;
-                companyPost.IsOpen = true; // Все вакансии открыты по умолчанию
-
+                companyPost.IsOpen = true;
+                companyPost.ExpectedSalary = random.Next(5000, 10000);
+                companyPost.RequiredExperienceYears = random.Next(1, 10);
                 post.CompanyId = companyId;
 
                 await _context.AddAsync(companyPost);

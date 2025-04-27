@@ -6,6 +6,8 @@ namespace Pilot.BlazorClient.Service.Pages;
 public class CompanyPostPageService(
     IBaseModelService<CompanyPostViewModel> companyPostService,
     IBaseModelService<CompanyViewModel> companyService,
+    IBaseModelService<CompanyUserViewModel> companyUserService,
+    IUserService userService,
     IBaseModelService<SkillViewModel> skillService,
     IBaseModelService<JobApplicationViewModel> jobApplicationViewModelService,
     IMessengerService messengerService,
@@ -16,11 +18,16 @@ public class CompanyPostPageService(
 
     public async Task<ICollection<CompanyPostViewModel>> GetVacanciesAsync(int skip, int take, string? search = null)
     {
-        var companyPosts = await _companyPostService.GetValuesAsync(skip, take);
+        var companyPosts = await _companyPostService.GetValuesAsync(c => c.IsOpen, true);
         var posts = await postService.GetValuesAsync(companyPosts.Select(c => c.Id).ToArray());
+        var skills = await skillService.GetValuesAsync(posts.SelectMany(c => c.Skills.Select(x => x.Id)).ToArray());
+        var companies = await companyService.GetValuesAsync(posts.Select(c => c.CompanyId).ToArray());
         foreach (var companyPost in companyPosts)
         {
             companyPost.Post = posts.First(p => p.Id == companyPost.Post.Id);
+            companyPost.Post.Company = companies.First(p => p.Id == companyPost.Post.CompanyId);
+            companyPost.Post.Skills =
+                skills.Where(s => companyPost.Post.Skills.Select(x => x.Id).Contains(s.Id)).ToList();
         }
 
         return companyPosts;
@@ -46,14 +53,22 @@ public class CompanyPostPageService(
         return companyViewModel;
     }
 
-    public async Task SubmitApplicationAsync(int vacancyId, string letter)
+    public async Task SubmitApplicationAsync(int vacancyId, string letter, Action<InfoMessageViewModel>? callback = null)
     {
+        var user = await userService.GetCurrentUserAsync();
         var jobApplication = new JobApplicationViewModel
         {
             CompanyPost = new CompanyPostViewModel { Id = vacancyId },
             Message = letter
         };
 
-        await jobApplicationViewModelService.CreateValueAsync(jobApplication);
+        await jobApplicationViewModelService.CreateValueAsync(jobApplication, callback);
+    }
+
+    public async Task<bool> IsUserInCompanyAsync(int companyId)
+    {
+        var currentUser = await userService.GetCurrentUserAsync();
+        var companyUser = await companyUserService.GetValuesAsync((c => c.UserId, currentUser.Id));
+        return companyUser.Count != 0;
     }
 }

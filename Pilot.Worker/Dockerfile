@@ -9,7 +9,6 @@ WORKDIR /src
 COPY ["Pilot.Worker/Pilot.Worker.csproj", "Pilot.Worker/"]
 COPY ["Pilot.Contracts/Pilot.BaseContract/Pilot.BaseContract.csproj", "Pilot.Contracts/Pilot.BaseContract/"]
 COPY ["Pilot.Contracts/Pilot.SqrsControllerLibrary/Pilot.SqrsControllerLibrary.csproj", "Pilot.Contracts/Pilot.SqrsControllerLibrary/"]
-COPY ["Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/Pilot.InvalidationCacheRedisLibrary.csproj", "Pilot.Contracts/Pilot.InvalidationCacheRedisLibrary/"]
 RUN dotnet restore "Pilot.Worker/Pilot.Worker.csproj"
 COPY . .
 WORKDIR "/src/Pilot.Worker"

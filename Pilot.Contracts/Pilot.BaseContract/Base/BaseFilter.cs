@@ -80,7 +80,7 @@ public class WhereFilter
         AddToList((names, valueTuple.value));
     }
 
-    public void Init<TValue, TViewModel>((Expression<Func<TViewModel, TValue>> predicate, object value) valueTuple)
+    public void Init<TValue, TViewModel>((Expression<Func<TViewModel, TValue?>> predicate, object? value) valueTuple)
     {
         var fieldsName = valueTuple.predicate.Body.ToString().Replace("Convert(", string.Empty)
             .Replace(", Object)", string.Empty).Split(".").Skip(1).ToList();
@@ -103,6 +103,8 @@ public class WhereFilter
         {
             int => FilterType.Int,
             ModelType => FilterType.ModelType,
+            bool => FilterType.Bool,
+            DateTime => FilterType.DateTime,
             _ => throw new NotFoundException("The filter type is not defined")
         };
     }
@@ -113,6 +115,8 @@ public class WhereFilter
         {
             FilterType.Int => typeof(int),
             FilterType.ModelType => typeof(ModelType),
+            FilterType.Bool => typeof(bool),
+            FilterType.DateTime => typeof(DateTime),
             _ => throw new NotFoundException("The type is not defined")
         };
     }
@@ -121,5 +125,7 @@ public class WhereFilter
 public enum FilterType
 {
     Int,
-    ModelType
+    ModelType,
+    Bool,
+    DateTime,
 }
