@@ -5,8 +5,6 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <RootNamespace>Pilot.Messenger</RootNamespace>
-        <UserSecretsId>6adfc856-bcfc-4177-90a5-0000b9572b6d</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

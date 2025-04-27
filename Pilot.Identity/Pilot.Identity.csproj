@@ -4,9 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <InvariantGlobalization>true</InvariantGlobalization>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <UserSecretsId>2360c8dc-43a5-4e22-a04b-19d6477f36d7</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
