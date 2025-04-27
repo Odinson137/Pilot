@@ -12,10 +12,11 @@ COPY ["Pilot.Contracts/Pilot.SqrsControllerLibrary/Pilot.SqrsControllerLibrary.c
 RUN dotnet restore "Pilot.Worker/Pilot.Worker.csproj"
 COPY . .
 WORKDIR "/src/Pilot.Worker"
-RUN dotnet build "Pilot.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Pilot.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Pilot.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Pilot.Worker.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

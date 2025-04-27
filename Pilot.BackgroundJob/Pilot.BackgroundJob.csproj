@@ -27,11 +27,11 @@
     <Folder Include="Data/Enums" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="logs\test-log.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="..\.dockerignore">
       <Link>.dockerignore</Link>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="logs\test-log.txt" />
   </ItemGroup>
 </Project>

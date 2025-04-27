@@ -36,13 +36,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+      <None Remove="logs\test-log.txt" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="logs\test-log.txt" />
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>

@@ -13,11 +13,11 @@ COPY ["Pilot.Contracts/Pilot.SqrsControllerLibrary/Pilot.SqrsControllerLibrary.c
 RUN dotnet restore "Pilot.Messenger/Pilot.Messenger.csproj"
 COPY . .
 WORKDIR "/src/Pilot.Messenger"
-RUN dotnet build "Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Pilot.Messenger.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

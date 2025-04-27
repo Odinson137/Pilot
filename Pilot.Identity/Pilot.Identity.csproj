@@ -22,12 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <_ContentIncludedByDefault Remove="Data\Downloads\client_secret_73787158108-9qbqono78bv801lius5nqaohu1pp0sk0.apps.googleusercontent.com.json" />
       <_ContentIncludedByDefault Remove="Data\Downloads\pilot-433511-82bf33c3cee3.json" />
     </ItemGroup>
@@ -38,6 +32,12 @@
 
     <ItemGroup>
       <None Remove="logs\test-log.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
