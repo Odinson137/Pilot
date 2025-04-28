@@ -1,0 +1,334 @@
+﻿@using Pilot.BlazorClient.Components.Helpers
+@using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Service
+@using Pilot.BlazorClient.ViewModels
+@using Pilot.Contracts.Data.Enums
+@inject NavigationManager NavigationManager
+@inject INewUserApplicationPageService NewUserApplicationPageService
+@inject IJsonLocalizationService Localizer
+
+<div class="new-user-application-container">
+    @if (_isLoading)
+    {
+        <Loading />
+    }
+    else if (_applications.Any())
+    {
+        <div class="applications-header">
+            <h2>@Localizer.GetString("YourApplicationsTitle", "NewUserApplication")</h2>
+            <p>@Localizer.GetString("YourApplicationsSubtitle", "NewUserApplication")</p>
+        </div>
+        <div class="applications-grid">
+            @foreach (var application in _applications)
+            {
+                <div class="application-card">
+                    <div class="card-header">
+                        <h3>@application.CompanyPost.Post.Title</h3>
+                        <span class="status-badge status-@application.Status.ToString().ToLower()">
+                            @Localizer.GetString($"Status_{application.Status}", "NewUserApplication")
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>@Localizer.GetString("Company", "Vacancy"):</strong> @application.CompanyPost.Post.Company?.Title</p>
+                        <p><strong>@Localizer.GetString("Applied", "HRManagement"):</strong> @application.CreateAt</p>
+                        <p><strong>@Localizer.GetString("CoverLetter", "NewUserApplication"):</strong> @(application.Message?.Length > 100 ? application.Message[..100] + "..." : application.Message)</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" @onclick="() => NavigateToVacancy(application.CompanyPost!.Id)">
+                            @Localizer.GetString("ViewDetails", "Vacancy")
+                        </button>
+                        @if (application.Status is ApplicationStatus.Pending or ApplicationStatus.Reviewing)
+                        {
+                            <button class="btn btn-danger" @onclick="() => DeleteApplication(application.Id)">
+                                @Localizer.GetString("DeleteApplication", "NewUserApplication")
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="find-more">
+            <p>@Localizer.GetString("FindMoreVacancies", "NewUserApplication")</p>
+            <button class="btn btn-secondary" @onclick="NavigateToVacancies">
+                @Localizer.GetString("ViewVacancies", "NewUserApplication")
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="no-applications-container">
+            <div class="message-box">
+                <h2>@Localizer.GetString("NoApplicationsTitle", "NewUserApplication")</h2>
+                <p>@Localizer.GetString("NoApplicationsSubtitle", "NewUserApplication")</p>
+                <button class="btn btn-primary" @onclick="NavigateToVacancies">
+                    @Localizer.GetString("ViewVacancies", "NewUserApplication")
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _isLoading = true;
+    private ICollection<JobApplicationViewModel> _applications = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _applications = await NewUserApplicationPageService.GetUserJobApplicationsAsync();
+        _isLoading = false;
+    }
+
+    private void NavigateToVacancies()
+    {
+        NavigationManager.NavigateTo("/Vacancy");
+    }
+
+    private void NavigateToVacancy(int vacancyId)
+    {
+        NavigationManager.NavigateTo($"/Vacancy/{vacancyId}");
+    }
+
+    private async Task DeleteApplication(int applicationId)
+    {
+        await NewUserApplicationPageService.DeleteApplicationAsync(applicationId, async void (_) =>
+        {
+            _applications = await NewUserApplicationPageService.GetUserJobApplicationsAsync();
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+}
+
+<style>
+    :root {
+        --primary-color: #007bff;
+        --secondary-color: #6c757d;
+        --danger-color: #dc3545;
+        --bg-light: #f8f9fa;
+        --bg-white: #ffffff;
+        --text-primary: #333;
+        --text-secondary: #666;
+        --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        --gradient: linear-gradient(135deg, #007bff, #6c757d);
+    }
+
+    .new-user-application-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: var(--bg-light);
+        min-height: 100vh;
+    }
+
+    .applications-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .applications-header h2 {
+        font-size: 2rem;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .applications-header p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+    }
+
+    .applications-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .application-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: slideIn 0.5s ease-in;
+    }
+
+    .application-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: var(--gradient);
+        color: white;
+    }
+
+    .card-header h3 {
+        font-size: 1.25rem;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-pending {
+        background-color: #ffd700;
+        color: #333;
+    }
+
+    .status-reviewing {
+        background-color: #17a2b8;
+        color: white;
+    }
+
+    .status-approved {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-canceled {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .status-rejected {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        color: var(--text-primary);
+    }
+
+    .card-body p {
+        margin: 0.5rem 0;
+        font-size: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .card-body p strong {
+        color: var(--text-primary);
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        text-align: right;
+        background-color: #f8f9fa;
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
+
+    .find-more {
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .find-more p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .no-applications-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        animation: fadeIn 0.5s ease-in;
+    }
+
+    .message-box {
+        text-align: center;
+        max-width: 600px;
+        background: var(--bg-white);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .message-box h2 {
+        font-size: 1.8rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .message-box p {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @@keyframes slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@media (max-width: 768px) {
+        .applications-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-footer {
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
+</style>

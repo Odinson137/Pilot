@@ -59,7 +59,7 @@ public class BaseHttpService(
         var response = await client.GetAsync(GetFullUrl<TOut>(url, null), token);
         if (response.StatusCode != HttpStatusCode.OK)
         {
-            logger.LogError("Error" + await response.Content.ReadAsStringAsync(token));
+            logger.LogError("Error: " + await response.Content.ReadAsStringAsync(token));
             return null;
         }
 

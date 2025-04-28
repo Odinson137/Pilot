@@ -31,6 +31,8 @@ else
                 {
                     <li @onclick="() => SetActiveTab(0)"
                         class="@GetActiveClass(0)">@Localizer.GetString("JoinOrCreateCompany", "Work")</li>
+                    <li @onclick="() => SetActiveTab(4)"
+                        class="@GetActiveClass(4)">@Localizer.GetString("YourApplications", "Work")</li>
                 }
                 else
                 {
@@ -76,6 +78,9 @@ else
                 case 3:
                     <UserTask CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" ProjectId="@_projectId"/>
                     break;
+                case 4:
+                    <NewUserApplication/>
+                    break;
                 case 7:
                     <CompanyManagement CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
                     break;
@@ -115,17 +120,11 @@ else
             _taskCount = (await WorkPageService.GetUserTasksAsync(_companyUser.Id)).Count;
             _teamCount = (await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id)).Count;
             _vacancyCount = (await WorkPageService.GetPostsAsync(_companyUser.Company.Id)).Count;
-            
-            var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
-            if (currentTabStorageResult.Success)
-                _activeTab = currentTabStorageResult.Value;
-
-            var projectStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.SelectProject);
-            if (projectStorageResult.Success)
-                _projectId = projectStorageResult.Value;
         }
-        else
-            _activeTab = 0;
+
+        var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");
+        if (currentTabStorageResult.Success)
+            _activeTab = currentTabStorageResult.Value;
 
         _isLoading = false;
     }

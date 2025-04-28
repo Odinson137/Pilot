@@ -50,5 +50,7 @@
   "DeleteError": "Failed to delete item",
   "Pending": "Pending",
   "Approved": "Approved",
-  "Rejected": "Rejected"
+  "Rejected": "Rejected",
+  "Canceled": "Canceled",
+  "Reviewing": "Reviewing"
 }

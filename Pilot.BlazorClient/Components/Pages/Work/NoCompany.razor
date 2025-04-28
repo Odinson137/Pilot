@@ -1,29 +1,29 @@
-@page "/no-company"
 @using Pilot.BlazorClient.Interface
+@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
 @inject NavigationManager NavigationManager
 @inject ICompanyPageService CompanyPageService
-@inject IMessengerService MessengerService
+@inject IJsonLocalizationService Localizer
 
 <div class="no-company-container">
     <div class="message-box">
-        <h2>You are not a member of any company</h2>
-        <p>You can either join an existing company through vacancies or create your own company.</p>
+        <h2>@Localizer.GetString("NoCompanyTitle", "NoCompany")</h2>
+        <p>@Localizer.GetString("NoCompanySubtitle", "NoCompany")</p>
 
         <div class="options-container">
             <div class="option">
-                <h3>Find a Company</h3>
-                <p>Browse open positions in existing companies</p>
-                <button class="btn btn-primary" @onclick="NavigateToVacancies">View Vacancies</button>
+                <h3>@Localizer.GetString("FindCompanyTitle", "NoCompany")</h3>
+                <p>@Localizer.GetString("FindCompanyDescription", "NoCompany")</p>
+                <button class="btn btn-primary" @onclick="NavigateToVacancies">@Localizer.GetString("ViewVacancies", "NoCompany")</button>
             </div>
 
             <div class="option">
-                <h3>Create Your Company</h3>
-                <p>Start your own company</p>
+                <h3>@Localizer.GetString("CreateCompanyTitle", "NoCompany")</h3>
+                <p>@Localizer.GetString("CreateCompanyDescription", "NoCompany")</p>
                 <div class="create-company-form">
-                    <input type="text" @bind="_newCompanyName" placeholder="Enter company name" class="form-control" />
+                    <input type="text" @bind="_newCompanyName" placeholder="@Localizer.GetString("EnterCompanyName", "NoCompany")" class="form-control" />
                     <button class="btn btn-success" @onclick="CreateCompany" disabled="@string.IsNullOrWhiteSpace(_newCompanyName)">
-                        Create Company
+                        @Localizer.GetString("CreateCompanyButton", "NoCompany")
                     </button>
                 </div>
             </div>

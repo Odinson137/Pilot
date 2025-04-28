@@ -3,6 +3,8 @@
 public enum ApplicationStatus
 {
     Pending,    // Ожидание
+    Reviewing,    // Взятие вакансии в дело (здесь надо создать чат)
     Approved,   // Принята
-    Rejected    // Отклонена
+    Canceled,   // Отклонена (самим юзером)
+    Rejected    // Отклонена (работодателем)
 }

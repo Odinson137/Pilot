@@ -1,0 +1,20 @@
+﻿{
+  "PageTitle": "Chat Page",
+  "ChatsTitle": "Chats",
+  "AiAssistant": "AI Assistant",
+  "CreateChat": "Create Chat",
+  "ChatInfoTitle": "Chat Info",
+  "Description": "Description",
+  "Members": "Members",
+  "CreatedBy": "Created by",
+  "Participants": "Participants",
+  "Close": "Close",
+  "Update": "Update",
+  "Reminders": "Reminders",
+  "Settings": "Settings",
+  "PlaceholderTitle": "Welcome to Our Chat Page",
+  "PlaceholderSubtitle": "Here, you can communicate in real time with team members and engage in discussions.",
+  "PlaceholderPrompt": "Select a chat from the left panel or create a new one to start chatting. Stay connected, stay productive!",
+  "TypeMessage": "Type a message...",
+  "Send": "Send"
+}

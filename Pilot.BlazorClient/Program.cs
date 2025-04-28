@@ -40,6 +40,7 @@ services.AddScoped<ICompanyPostPageService, CompanyPostPageService>();
 services.AddScoped<ISummaryPageService, SummaryPageService>();
 services.AddScoped<ISkillPageService, SkillPageService>();
 services.AddScoped<IHrManagementPageService, HrManagementPageService>();
+services.AddScoped<INewUserApplicationPageService, NewUserApplicationPageService>();
 
 // Base model service registrations
 services.AddScoped<IBaseModelService<UserViewModel>, BaseModelService<UserDto, UserViewModel>>();

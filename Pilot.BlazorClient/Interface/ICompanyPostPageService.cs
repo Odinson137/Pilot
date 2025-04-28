@@ -15,4 +15,6 @@ public interface ICompanyPostPageService : IBasePageService<CompanyPostViewModel
     Task SubmitApplicationAsync(int vacancyId, string letter, Action<InfoMessageViewModel>? callback = null);
 
     Task<bool> IsUserInCompanyAsync(int companyId);
+    
+    Task<bool> IsAlreadySendAsync(int postId);
 }

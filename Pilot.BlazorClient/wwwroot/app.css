@@ -53,6 +53,8 @@ h1:focus {
     --text-muted: #6c757d;
     --border: #dee2e6;
     --border-radius: 10px;
+    --background: #f1f5f9;
     --card-bg: #ffffff;
+    --surface: #ffffff;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }

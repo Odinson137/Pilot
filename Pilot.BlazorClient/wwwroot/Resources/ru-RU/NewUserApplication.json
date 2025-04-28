@@ -1,0 +1,15 @@
+﻿{
+  "YourApplicationsTitle": "Ваши заявки на вакансии",
+  "YourApplicationsSubtitle": "Просмотрите все поданные вами заявки",
+  "NoApplicationsTitle": "Заявок пока нет",
+  "NoApplicationsSubtitle": "Вы еще не подали ни одной заявки. Изучите вакансии, чтобы начать!",
+  "ViewVacancies": "Посмотреть вакансии",
+  "FindMoreVacancies": "Хотите найти больше возможностей? Ознакомьтесь с доступными вакансиями!",
+  "CoverLetter": "Сопроводительное письмо",
+  "Status_Pending": "На рассмотрении",
+  "Status_Reviewing": "В рассмотрении",
+  "Status_Approved": "Одобрена",
+  "Status_Canceled": "Отменена",
+  "Status_Rejected": "Отклонена",
+  "DeleteApplication": "Удалить заявку"
+}

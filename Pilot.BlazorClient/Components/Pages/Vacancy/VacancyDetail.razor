@@ -4,11 +4,12 @@
 @using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.Components.Helpers
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ICompanyPostPageService PageService
 @inject NavigationManager Navigation
 @inject IUserService UserService
-@inject IToastService ToastService
 @inject IJsonLocalizationService Localizer
+@inject ProtectedSessionStorage ProtectedSessionStorage
 
 <!-- Main container with centered content -->
 <div style="max-width: 800px; margin: 0 auto; padding: 3rem 1rem; margin-bottom: 100px;">
@@ -22,7 +23,6 @@
     else if (_vacancy != null && _company != null)
     {
         <!-- Company Info Section -->
-        <!-- Purpose: Displays company logo and name with navigation to company page -->
         <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
             <div style="display: flex; align-items: center; padding: 1.5rem;">
                 <img src="@TempFileService.GetUrl(_company.Logo)" alt="@Localizer.GetString("CompanyInfo", "VacancyDetail")" 
@@ -40,7 +40,6 @@
         </div>
 
         <!-- Vacancy Info Section -->
-        <!-- Purpose: Shows vacancy details including new fields -->
         <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
             <div style="padding: 1.5rem;">
                 <h3 style="font-size: 1.75rem; font-weight: 700; color: #1e3a8a; margin-bottom: 0.5rem;">@_vacancy.Post.Title</h3>
@@ -62,7 +61,7 @@
                     }
                     @if (_vacancy.RequiredExperienceYears.HasValue)
                     {
-                        <p>@Localizer.GetString("RequiredExperience", "VacancyDetail"): @_vacancy.RequiredExperienceYears.Value @(_vacancy.RequiredExperienceYears.Value == 1 ? "year" : "years")</p>
+                        <p>@Localizer.GetString("RequiredExperience", "VacancyDetail"): @_vacancy.RequiredExperienceYears.Value @(_vacancy.RequiredExperienceYears.Value == 1 ? Localizer.GetString("Year", "VacancyDetail") : Localizer.GetString("Years", "VacancyDetail"))</p>
                     }
                     <p>@Localizer.GetString("Applications", "VacancyDetail"): @_vacancy.Applications.Count</p>
                 </div>
@@ -70,10 +69,9 @@
         </div>
 
         <!-- Required Skills Section -->
-        <!-- Purpose: Lists required skills for the vacancy -->
         <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-bottom: 1.5rem; animation: fadeIn 0.5s ease-out;">
             <div style="padding: 1.5rem;">
-                <h5 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 1rem;">@Localizer.GetString("RequiredSkills", "VacancyDetail"):</h5>
+                <h5 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 1rem;">@Localizer.GetString("RequiredSkills", "VacancyDetail")</h5>
                 @if (_skills?.Any() == true)
                 {
                     <ul style="list-style: none; padding: 0;">
@@ -87,13 +85,12 @@
                 }
                 else
                 {
-                    <p style="font-size: 0.875rem; color: #6b7280; font-style: italic;">No specific skills required.</p>
+                    <p style="font-size: 0.875rem; color: #6b7280; font-style: italic;">@Localizer.GetString("NoSkills", "VacancyDetail")</p>
                 }
             </div>
         </div>
 
         <!-- Application Form Section -->
-        <!-- Purpose: Allows users to submit applications, with restrictions for unauthorized or company members -->
         <div style="background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); animation: fadeIn 0.5s ease-out;">
             <div style="padding: 1.5rem;">
                 <h5 style="font-size: 1.25rem; font-weight: 600; color: #1e3a8a; margin-bottom: 1rem;">@Localizer.GetString("SubmitApplication", "VacancyDetail")</h5>
@@ -102,6 +99,18 @@
                     <p style="font-size: 0.875rem; color: #dc2626; background: #fee2e2; padding: 1rem; border-radius: 0.5rem;">
                         @Localizer.GetString("NotAuthorized", "VacancyDetail")
                     </p>
+                }
+                else if (_isAlreadySent)
+                {
+                    <div style="font-size: 0.875rem; color: #dc2626; background: #fee2e2; padding: 1rem; border-radius: 0.5rem;">
+                        <p style="margin-bottom: 1rem;">@Localizer.GetString("AlreadySent", "VacancyDetail")</p>
+                        <button style="padding: 0.75rem 1.5rem; background-color: #1e3a8a; color: white; border-radius: 0.5rem; transition: background-color 0.3s;"
+                                @onclick="NavigateToApplications"
+                                onmouseover="this.style.backgroundColor='#1d4ed8';"
+                                onmouseout="this.style.backgroundColor='#1e3a8a';">
+                            <span style="margin-right: 0.5rem;">➤</span> @Localizer.GetString("ViewApplications", "VacancyDetail")
+                        </button>
+                    </div>
                 }
                 else if (_isInCompany)
                 {
@@ -143,6 +152,7 @@
     private bool _isLoading = true;
     private bool _isAuthorized;
     private bool _isInCompany;
+    private bool _isAlreadySent;
     private string _coverLetter = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -161,6 +171,8 @@
                     _isInCompany = await PageService.IsUserInCompanyAsync(_vacancy.Post.CompanyId);
                 }
             }
+
+            _isAlreadySent = await PageService.IsAlreadySendAsync(VacancyId);
         }
         finally
         {
@@ -183,6 +195,12 @@
     private void NavigateToCompany(int companyId)
     {
         Navigation.NavigateTo($"/Company/{companyId}");
+    }
+
+    private async Task NavigateToApplications()
+    {
+        await ProtectedSessionStorage.SetAsync("work:currentTab", 4);
+        Navigation.NavigateTo("/Work");
     }
 }
 

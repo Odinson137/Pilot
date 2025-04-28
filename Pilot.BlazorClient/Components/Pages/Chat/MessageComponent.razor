@@ -1,17 +1,16 @@
-﻿<!-- MessageComponent.razor -->
-@using Pilot.BlazorClient.Data
+﻿@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @using Pilot.Contracts.Data.Enums
 
-<div class="message @(IsCurrentUser ? "sent" : "received")">
+<div class="message @(IsCurrentUser ? "sent" : "received")" @key="Message.Id">
     <div class="message-content">
         <div class="message-header">
-            <a href="@GetUserProfileLink(Message.UserId)">
-                <img src="@TempFileService.GetUrl(SenderImage)" alt="avatar"/>
+            <a href="@GetUserProfileLink(Message.UserId)" class="sender-link">
+                <img src="@TempFileService.GetUrl(SenderImage)" alt="@SenderName" class="sender-avatar" />
                 <span class="sender-name">@SenderName</span>
             </a>
-            <span class="message-time">@MessageTime</span>
+            <span class="message-time" style="margin-left: 5px;">@MessageTime</span>
         </div>
         <div class="message-text">
             @Message.Text
@@ -21,107 +20,106 @@
 
 @code {
     [Parameter] public MessageViewModel Message { get; set; } = null!;
-
     [Parameter] public ICollection<UserViewModel> Users { get; set; } = null!;
-
     [Parameter] public UserViewModel User { get; set; } = null!;
 
-    // непроизводительно и плохо - факт, я знаю
-    private string SenderName
+    private string SenderName => Message.UserId switch
     {
-        get
-        {
-            return Message.UserId switch
-            {
-                (int)ChatMemberId.Reminder => "Reminder",
-                (int)ChatMemberId.Ai => "AI Assistent",
-                _ => Users.Any() ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? "Unknown" : User.UserName ?? "Unknown"
-            };
-        }
-    }
+        (int)ChatMemberId.Reminder => "Reminder",
+        (int)ChatMemberId.Ai => "AI Assistant",
+        _ => Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? User.UserName ?? "Unknown"
+    };
 
-    private string SenderImage
+    private string SenderImage => Message.UserId switch
     {
-        get
-        {
-            return Message.UserId switch
-            {
-                (int)ChatMemberId.Reminder => "/Images/Chat/reminder.png",
-                (int)ChatMemberId.Ai => "/Images/Chat/ai.png",
-                _ => Users.Any() ? Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage ?? "/Images/Chat/default.jpg" : User.AvatarImage ?? "/Images/Chat/default.jpg",
-            };
-        }
-    }
+        (int)ChatMemberId.Reminder => "/Images/Chat/reminder.png",
+        (int)ChatMemberId.Ai => "/Images/Chat/ai.png",
+        _ => Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage ?? User.AvatarImage ?? "/Images/Chat/default.jpg"
+    };
 
     private bool IsCurrentUser => Message.UserId == User.Id;
-
-    private string MessageTime => Message.CreateAt!.Value.ToString("hh:mm tt"); // Формат времени
-
+    private string MessageTime => Message.CreateAt!.Value.ToString("hh:mm tt");
     private string GetUserProfileLink(int? userId) => $"/account/{userId}";
 }
 
 <style>
     .message {
-        margin: 10px 0;
-        padding: 10px;
-        border-radius: 10px;
+        display: flex;
         max-width: 70%;
-        word-wrap: break-word;
+        margin: 0.5rem 0;
+        animation: slideIn 0.3s ease;
     }
 
     .sent {
-        justify-self: right;
-        background-color: #007bff;
-        color: white;
         align-self: flex-end;
-        margin-right: 8px;
+        margin-right: 1rem;
     }
 
     .received {
-        justify-self: left;
-        background-color: #f1f1f1;
-        color: black;
         align-self: flex-start;
+        margin-left: 1rem;
     }
 
     .message-content {
-        display: flex;
-        flex-direction: column;
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+    }
+
+    .sent .message-content {
+        background: var(--gradient);
+        color: white;
+    }
+
+    .received .message-content {
+        background: var(--border);
+        color: var(--text);
     }
 
     .message-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         font-size: 0.85rem;
-        margin-bottom: 5px;
-        color: white;
+        margin-bottom: 0.5rem;
+    }
+
+    .sender-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .sender-link:hover .sender-name {
+        color: var(--secondary);
+    }
+
+    .sender-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
     }
 
     .sender-name {
-        font-weight: bold;
+        font-weight: 600;
     }
 
     .message-time {
-        color: #888;
+        color: var(--text-secondary);
     }
 
     .message-text {
         font-size: 1rem;
-        line-height: 1.4;
+        line-height: 1.5;
+        word-break: break-word;
     }
 
-    .message-header img {
-        object-fit: cover;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-    }
-
-    .sent a {
+    .sent .message-header, .sent .message-time {
         color: white;
-    }
-
-    .received a {
-        color: black;
     }
 </style>

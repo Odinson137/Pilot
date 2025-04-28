@@ -71,4 +71,11 @@ public class CompanyPostPageService(
         var companyUser = await companyUserService.GetValuesAsync((c => c.UserId, currentUser.Id));
         return companyUser.Count != 0;
     }
+
+    public async Task<bool> IsAlreadySendAsync(int postId)
+    {
+        var user = await userService.GetCurrentUserAsync();
+        var jobApplication = await jobApplicationViewModelService.GetValueAsync((c => c.UserId, user.Id), (c => c.CompanyPost.Id, postId));
+        return jobApplication != null;
+    }
 }

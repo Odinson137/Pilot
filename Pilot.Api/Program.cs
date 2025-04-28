@@ -22,22 +22,22 @@ var configuration = builder.Configuration;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-services.AddHttpClient(ServiceName.IdentityServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.IdentityServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
-services.AddHttpClient(ServiceName.WorkerServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.WorkerServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!); });
 
-services.AddHttpClient(ServiceName.MessengerServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.MessengerServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("MessengerServerUrl")!); });
 
-services.AddHttpClient(ServiceName.StorageServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.StorageServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("StorageServerUrl")!); });
 
-services.AddHttpClient(ServiceName.CapabilityServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.CapabilityServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("CapabilityServerUrl")!); });
 
-services.AddHttpClient(ServiceName.BackgroundJobService.ToString(),
+services.AddHttpClient(nameof(ServiceName.BackgroundJobService),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("BackgroundJobServiceUrl")!); });
 
 services.AddScoped<IModelService, ModelService>();

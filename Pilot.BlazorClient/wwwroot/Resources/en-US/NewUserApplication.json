@@ -1,0 +1,15 @@
+﻿{
+  "YourApplicationsTitle": "Your Job Applications",
+  "YourApplicationsSubtitle": "View all the job applications you've submitted",
+  "NoApplicationsTitle": "No Applications Yet",
+  "NoApplicationsSubtitle": "You haven't submitted any job applications. Explore vacancies to get started!",
+  "ViewVacancies": "View Vacancies",
+  "FindMoreVacancies": "Want to explore more opportunities? Check out available vacancies!",
+  "CoverLetter": "Cover Letter",
+  "Status_Pending": "Pending",
+  "Status_Reviewing": "Reviewing",
+  "Status_Approved": "Approved",
+  "Status_Canceled": "Canceled",
+  "Status_Rejected": "Rejected",
+  "DeleteApplication": "Delete Application"
+}

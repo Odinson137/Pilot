@@ -1,0 +1,11 @@
+﻿{
+  "NoCompanyTitle": "Вы не являетесь участником ни одной компании",
+  "NoCompanySubtitle": "Вы можете присоединиться к существующей компании через вакансии или создать свою собственную.",
+  "FindCompanyTitle": "Найти компанию",
+  "FindCompanyDescription": "Просмотрите открытые вакансии в существующих компаниях",
+  "ViewVacancies": "Посмотреть вакансии",
+  "CreateCompanyTitle": "Создать компанию",
+  "CreateCompanyDescription": "Начните свою собственную компанию",
+  "EnterCompanyName": "Введите название компании",
+  "CreateCompanyButton": "Создать компанию"
+}

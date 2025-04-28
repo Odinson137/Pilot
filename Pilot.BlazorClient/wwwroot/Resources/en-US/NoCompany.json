@@ -1,0 +1,11 @@
+﻿{
+  "NoCompanyTitle": "You are not a member of any company",
+  "NoCompanySubtitle": "You can either join an existing company through vacancies or create your own company.",
+  "FindCompanyTitle": "Find a Company",
+  "FindCompanyDescription": "Browse open positions in existing companies",
+  "ViewVacancies": "View Vacancies",
+  "CreateCompanyTitle": "Create Your Company",
+  "CreateCompanyDescription": "Start your own company",
+  "EnterCompanyName": "Enter company name",
+  "CreateCompanyButton": "Create Company"
+}
