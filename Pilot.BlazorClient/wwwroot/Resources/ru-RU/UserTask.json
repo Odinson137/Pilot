@@ -1,0 +1,14 @@
+﻿{
+  "ToDoTitle": "К выполнению",
+  "WorkTitle": "В работе",
+  "CompletedTitle": "Завершено",
+  "NoTasksToDo": "Нет задач для выполнения.",
+  "NoTasksInProgress": "Нет задач в процессе.",
+  "NoTasksCompleted": "Нет завершённых задач.",
+  "PriorityLow": "Низкий приоритет",
+  "PriorityNormal": "Средний приоритет",
+  "PriorityHigh": "Высокий приоритет",
+  "PriorityUnknown": "Неизвестный приоритет",
+  "LoadTasksError": "Не удалось загрузить задачи. Попробуйте позже.",
+  "UpdateStatusError": "Не удалось обновить статус задачи. Попробуйте снова."
+}

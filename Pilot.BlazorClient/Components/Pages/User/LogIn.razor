@@ -11,6 +11,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject TokenAuthenticationStateProvider AuthenticationStateProvider
+@inject ProtectedSessionStorage ProtectedSessionStorage
 
 <div
     style="max-width: 400px; margin: 100px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
@@ -122,6 +123,7 @@
             var auth = await UserPageService.Authorization(AuthorizationUser);
             await ProtectedSessionStore.SetAsync(ClientConstants.Token, auth.Token);
             await AuthenticationStateProvider.MarkUserAsAuthenticated(auth.Token, auth.UserId);
+            await ProtectedSessionStorage.DeleteAsync("work:currentTab");
             NavigationManager.NavigateTo("/Account", true);
         }
         catch (Exception ex)

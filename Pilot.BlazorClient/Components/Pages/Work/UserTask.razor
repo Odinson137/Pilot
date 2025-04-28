@@ -1,24 +1,24 @@
-﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
-@using Pilot.BlazorClient.Data
+﻿```razor
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
-@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
-@inject IWorkPageService WorkPageService;
-@inject NavigationManager NavigationManager;
-@inject ProtectedSessionStorage ProtectedSessionStorage;
+@inject IWorkPageService WorkPageService
+@inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStorage
+@inject IJsonLocalizationService Localizer
 
 <div class="task-board">
     <!-- Tasks to complete -->
-    <div class="task-column">
-        <h4>ToDo</h4>
+    <div class="task-column" ondragover="event.preventDefault();" @ondrop="() => HandleDrop(ProjectTaskStatus.ToDo)">
+        <h4>@Localizer.GetString("ToDoTitle", "UserTask")</h4>
         <div class="tasks-list">
-            @if (_tasks != null && _tasks.Any())
+            @if (_tasks != null && _tasks.Any(t => t.TaskStatus == ProjectTaskStatus.ToDo))
             {
-                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.ToDo))
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == ProjectTaskStatus.ToDo))
                 {
-                    <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                    <div class="task-card" draggable="true" @ondragstart="() => HandleDragStart(task.Id)" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
                         <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
@@ -27,20 +27,20 @@
             }
             else
             {
-                <div>There are no tasks to complete.</div>
+                <div>@Localizer.GetString("NoTasksToDo", "UserTask")</div>
             }
         </div>
     </div>
 
     <!-- Completing tasks -->
-    <div class="task-column">
-        <h4>Work</h4>
+    <div class="task-column" ondragover="event.preventDefault();" @ondrop="() => HandleDrop(ProjectTaskStatus.Work)">
+        <h4>@Localizer.GetString("WorkTitle", "UserTask")</h4>
         <div class="tasks-list">
-            @if (_tasks != null && _tasks.Any())
+            @if (_tasks != null && _tasks.Any(t => t.TaskStatus == ProjectTaskStatus.Work))
             {
-                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Work))
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == ProjectTaskStatus.Work))
                 {
-                    <div class="task-card" @onclick="() => NavigateToTask(task.Id)">
+                    <div class="task-card" draggable="true" @ondragstart="() => HandleDragStart(task.Id)" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
                         <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
@@ -49,20 +49,20 @@
             }
             else
             {
-                <div>There are no tasks to complete.</div>
+                <div>@Localizer.GetString("NoTasksInProgress", "UserTask")</div>
             }
         </div>
     </div>
 
     <!-- Finished tasks -->
-    <div class="task-column">
-        <h4>Completed</h4>
+    <div class="task-column" ondragover="event.preventDefault();" @ondrop="() => HandleDrop(ProjectTaskStatus.Completed)">
+        <h4>@Localizer.GetString("CompletedTitle", "UserTask")</h4>
         <div class="tasks-list">
-            @if (_tasks != null && _tasks.Any())
+            @if (_tasks != null && _tasks.Any(t => t.TaskStatus == ProjectTaskStatus.Completed))
             {
-                @foreach (var task in _tasks.Where(t => t.TaskStatus == TaskStatus.Completed))
+                @foreach (var task in _tasks.Where(t => t.TaskStatus == ProjectTaskStatus.Completed))
                 {
-                    <div class="task-card completed" @onclick="() => NavigateToTask(task.Id)">
+                    <div class="task-card completed" draggable="true" @ondragstart="() => HandleDragStart(task.Id)" @onclick="() => NavigateToTask(task.Id)">
                         <h4>@task.Name</h4>
                         <p class="task-priority">@GetPriorityLabel(task.Priority)</p>
                         <p>@task.Description?.TakeOnly(150, afterShorting: "...")</p>
@@ -71,49 +71,105 @@
             }
             else
             {
-                <div>No finished tasks</div>
+                <div>@Localizer.GetString("NoTasksCompleted", "UserTask")</div>
             }
         </div>
     </div>
 </div>
 
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <div class="error-message">@_errorMessage</div>
+}
+
 @code {
     private ICollection<ProjectTaskViewModel> _tasks = [];
+    private int? _draggedTaskId;
+    private string _errorMessage = string.Empty;
     [Parameter] public int UserId { get; set; }
     [Parameter] public int? ProjectId { get; set; }
     [Parameter] public int CompanyUserId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _tasks = await WorkPageService.GetUserTasksAsync(CompanyUserId);
+        try
+        {
+            _tasks = await WorkPageService.GetUserTasksAsync(CompanyUserId);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("LoadTasksError", "UserTask");
+        }
     }
 
-// Получение текста для приоритета задачи
+    // Получение текста для приоритета задачи
     private string GetPriorityLabel(TaskPriority priority)
     {
         return priority switch
         {
-            TaskPriority.Low => "Low Priority",
-            TaskPriority.Normal => "Middle Priority",
-            TaskPriority.High => "High Priority",
-            _ => "Unknown Priority"
+            TaskPriority.Low => Localizer.GetString("PriorityLow", "UserTask"),
+            TaskPriority.Normal => Localizer.GetString("PriorityNormal", "UserTask"),
+            TaskPriority.High => Localizer.GetString("PriorityHigh", "UserTask"),
+            _ => Localizer.GetString("PriorityUnknown", "UserTask")
         };
     }
 
-// Навигация на персональную страницу задачи
+    // Навигация на персональную страницу задачи
     private void NavigateToTask(int taskId)
     {
         NavigationManager.NavigateTo($"/task/{taskId}");
     }
 
+    // Обработка начала перетаскивания
+    private void HandleDragStart(int taskId)
+    {
+        _draggedTaskId = taskId;
+    }
+
+    // Обработка сброса задачи в столбец
+    private async Task HandleDrop(ProjectTaskStatus newStatus)
+    {
+        if (_draggedTaskId == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var task = _tasks.FirstOrDefault(t => t.Id == _draggedTaskId);
+            if (task == null)
+            {
+                return;
+            }
+            if (task.TaskStatus == newStatus)
+            {
+                return;
+            }
+
+            // Обновляем статус локально для немедленного отображения
+            task.TaskStatus = newStatus;
+            _draggedTaskId = null;
+
+            await WorkPageService.UpdateTaskStatusAsync(task);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("UpdateStatusError", "UserTask");
+
+            // Откатываем локальное изменение в случае ошибки
+            _tasks = await WorkPageService.GetUserTasksAsync(CompanyUserId);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
 }
 
-<!-- Стили для компактного отображения и прокрутки -->
 <style>
     .task-board {
         display: flex;
         justify-content: space-between;
         padding: 20px;
+        gap: 20px;
     }
 
     /* Общие настройки для колонок задач */
@@ -123,8 +179,13 @@
         padding: 10px;
         border-radius: 8px;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        max-height: 80vh; /* Ограничиваем высоту столбца */
-        overflow-y: auto;  /* Включаем вертикальную прокрутку */
+        max-height: 80vh;
+        overflow-y: auto;
+        transition: background-color 0.3s;
+    }
+
+    .task-column.drag-over {
+        background-color: #e0e7ff;
     }
 
     /* Список задач в колонке */
@@ -132,6 +193,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        min-height: 50px; /* Для пустых столбцов */
     }
 
     /* Блок задачи */
@@ -140,14 +202,21 @@
         padding: 10px;
         border-radius: 8px;
         box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-        transition: background-color 0.3s;
-        font-size: 0.85rem; /* Уменьшаем шрифт */
+        cursor: move;
+        transition: background-color 0.3s, transform 0.2s;
+        font-size: 0.85rem;
         line-height: 1.2rem;
+        user-select: none;
     }
 
     .task-card:hover {
         background-color: #d0d3d4;
+        transform: translateY(-2px);
+    }
+
+    .task-card.dragging {
+        opacity: 0.5;
+        transform: scale(0.98);
     }
 
     .completed {
@@ -173,4 +242,54 @@
     .task-card p {
         margin: 0;
     }
+
+    /* Сообщение об ошибке */
+    .error-message {
+        color: #dc3545;
+        font-size: 0.9rem;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #f8d7da;
+        border-radius: 8px;
+        text-align: center;
+    }
 </style>
+
+<script>
+    // Добавляем класс dragging во время перетаскивания
+    document.addEventListener('dragstart', (e) => {
+        if (e.target.classList.contains('task-card')) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', e.target.dataset.taskId || '');
+        }
+    });
+
+    document.addEventListener('dragend', (e) => {
+        if (e.target.classList.contains('task-card')) {
+            e.target.classList.remove('dragging');
+        }
+    });
+
+    // Подсветка столбца при наведении
+    document.addEventListener('dragover', (e) => {
+        const column = e.target.closest('.task-column');
+        if (column) {
+            column.classList.add('drag-over');
+            e.preventDefault(); // Разрешаем drop
+        }
+    });
+
+    document.addEventListener('dragleave', (e) => {
+        const column = e.target.closest('.task-column');
+        if (column) {
+            column.classList.remove('drag-over');
+        }
+    });
+
+    document.addEventListener('drop', (e) => {
+        const column = e.target.closest('.task-column');
+        if (column) {
+            column.classList.remove('drag-over');
+        }
+    });
+</script>

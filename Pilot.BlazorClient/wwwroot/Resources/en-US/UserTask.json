@@ -1,0 +1,14 @@
+﻿{
+  "ToDoTitle": "To Do",
+  "WorkTitle": "In Progress",
+  "CompletedTitle": "Completed",
+  "NoTasksToDo": "There are no tasks to complete.",
+  "NoTasksInProgress": "There are no tasks in progress.",
+  "NoTasksCompleted": "No finished tasks.",
+  "PriorityLow": "Low Priority",
+  "PriorityNormal": "Middle Priority",
+  "PriorityHigh": "High Priority",
+  "PriorityUnknown": "Unknown Priority",
+  "LoadTasksError": "Failed to load tasks. Please try again later.",
+  "UpdateStatusError": "Failed to update task status. Please try again."
+}

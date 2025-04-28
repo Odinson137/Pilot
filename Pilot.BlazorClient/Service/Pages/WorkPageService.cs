@@ -2,6 +2,7 @@
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
@@ -348,5 +349,10 @@ public class WorkPageService(
     public async Task UploadFileAsync(FileViewModel file)
     {
         await fileService.CreateValueAsync(file);
+    }
+
+    public async Task UpdateTaskStatusAsync(ProjectTaskViewModel task)
+    {
+        await projectTaskService.UpdateValueAsync(task);
     }
 }

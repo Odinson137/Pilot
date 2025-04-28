@@ -1,4 +1,5 @@
 ﻿using Pilot.BlazorClient.ViewModels;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.Interface;
 
@@ -59,4 +60,6 @@ public interface IWorkPageService
     Task UpdateEmployeeAsync(CompanyUserViewModel companyUser);
 
     Task UploadFileAsync(FileViewModel file);
+    
+    Task UpdateTaskStatusAsync(ProjectTaskViewModel task);
 }
