@@ -27,4 +27,8 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\FromAnotherService\" />
+    </ItemGroup>
 </Project>

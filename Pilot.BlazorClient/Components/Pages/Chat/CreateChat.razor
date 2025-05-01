@@ -3,46 +3,79 @@
 @using Pilot.BlazorClient.ViewModels
 @inject NavigationManager NavigationManager
 @inject IChatPageService ChatPageService
+@inject IJsonLocalizationService Localizer
+@inject IJSRuntime JsRuntime
 
-<PageTitle>Create New Chat</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", "CreateChat")</PageTitle>
 
-<div style="display: grid">
-    <div class="chat">
-        <h3>Create New Chat</h3>
+<div class="create-chat-container">
+    <div class="create-chat-card">
+        <h3 class="create-chat-header">@Localizer.GetString("Header", "CreateChat")</h3>
 
-        <EditForm Model="_newChat" OnValidSubmit="HandleSubmit">
+        <EditForm Model="_newChat" OnValidSubmit="HandleSubmit" class="create-chat-form">
+            <DataAnnotationsValidator/>
 
-            <div class="form-group">
-                <label for="Title">Title</label>
-                <InputText id="Title" @bind-Value="_newChat.Title" class="form-control"/>
+            <div class="create-chat-form-group">
+                <label for="Title"
+                       class="create-chat-form-label">@Localizer.GetString("TitleLabel", "CreateChat")</label>
+                <InputText id="Title" @bind-Value="_newChat.Title" class="create-chat-form-input"
+                           placeholder="@Localizer.GetString("TitlePlaceholder", "CreateChat")"/>
+                <ValidationMessage For="@(() => _newChat.Title)" class="create-chat-form-error"/>
             </div>
 
-            <div class="form-group">
-                <label for="Description">Description</label>
-                <InputTextArea id="Description" @bind-Value="_newChat.Description" class="form-control"/>
+            <div class="create-chat-form-group">
+                <label for="Description"
+                       class="create-chat-form-label">@Localizer.GetString("DescriptionLabel", "CreateChat")</label>
+                <InputTextArea id="Description" @bind-Value="_newChat.Description" class="create-chat-form-textarea"
+                               placeholder="@Localizer.GetString("DescriptionPlaceholder", "CreateChat")"/>
+                <ValidationMessage For="@(() => _newChat.Description)" class="create-chat-form-error"/>
             </div>
 
-            <div class="buttons">
-                <button type="submit" class="btn btn-primary">Create Chat</button>
-                <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+            <div class="create-chat-form-buttons">
+                <button type="submit" class="create-chat-btn create-chat-btn-primary" disabled="@_isSubmitting" @onclick="HandleSubmit">
+                    @if (_isSubmitting)
+                    {
+                        <span class="create-chat-spinner"></span>
+                    }
+                    @Localizer.GetString("CreateButton", "CreateChat")
+                </button>
+                <button type="button" class="create-chat-btn create-chat-btn-secondary"
+                        @onclick="GoBack">@Localizer.GetString("CancelButton", "CreateChat")</button>
             </div>
         </EditForm>
 
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="create-chat-error-message" @ref="_errorElement">
+                @_errorMessage
+            </div>
+        }
     </div>
 </div>
 
-
 @code {
     private ChatViewModel _newChat = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-    }
+    private bool _isSubmitting;
+    private string _errorMessage = string.Empty;
+    private ElementReference _errorElement;
 
     private async Task HandleSubmit()
     {
-        await ChatPageService.CreateValueAsync(_newChat);
-        NavigationManager.NavigateTo("/chat");
+        _isSubmitting = true;
+        _errorMessage = string.Empty;
+        try
+        {
+            await ChatPageService.CreateValueAsync(_newChat, c => { GoBack(); });
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("SubmitError", "CreateChat");
+            await JsRuntime.InvokeVoidAsync("scrollToElement", _errorElement);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
     }
 
     private void GoBack()
@@ -53,65 +86,186 @@
 }
 
 <style>
-    .chat {
-        height: 630px;
-        width: 500px;
-        justify-self: center;
-        margin-bottom: 100px;
-    }
-
-    .buttons {
-        margin-top: 20px;
-    }
-
-    .employee-list {
-        max-height: 430px; /* Adjust height as needed */
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-
-    .employee-item {
+    .create-chat-container {
+        min-height: 80vh;
+        margin-bottom: 10vh;
+        background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
         display: flex;
         align-items: center;
-        padding: 8px;
-        border-bottom: 1px solid #eee;
+        justify-content: center;
+        padding: 1rem;
     }
 
-    .employee-item:last-child {
-        border-bottom: none;
+    .create-chat-card {
+        max-width: 400px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        animation: create-chat-fadeIn 0.5s ease-in;
     }
 
-    .employee-checkbox {
-        margin-right: 10px;
+    .create-chat-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 
-    .avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 10px;
+    .create-chat-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
     }
 
-    .employee-info {
+    .create-chat-form-group {
         display: flex;
         flex-direction: column;
     }
 
-    .employee-name {
-        font-weight: bold;
+    .create-chat-form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
     }
 
-    .employee-username {
-        color: #777;
-        font-size: 0.9em;
+    .create-chat-form-input,
+    .create-chat-form-textarea {
+        padding: 0.75rem 1rem;
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: #1f2937;
+        transition: all 0.3s ease;
     }
 
-    #Description {
-        min-height: 110px;
+    .create-chat-form-input:focus,
+    .create-chat-form-textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
 
+    .create-chat-form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .create-chat-form-error {
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .create-chat-form-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .create-chat-btn {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .create-chat-btn-primary {
+        background: linear-gradient(to right, #6366f1, #4f46e5);
+        color: #ffffff;
+        border: none;
+    }
+
+    .create-chat-btn-primary:hover:not(:disabled) {
+        background: linear-gradient(to right, #4f46e5, #4338ca);
+        transform: translateY(-2px);
+    }
+
+    .create-chat-btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .create-chat-btn-secondary {
+        background: #d1d5db;
+        color: #1f2937;
+        border: none;
+    }
+
+    .create-chat-btn-secondary:hover {
+        background: #b3b8c2;
+        transform: translateY(-2px);
+    }
+
+    .create-chat-spinner {
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: create-chat-spin 0.75s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    .create-chat-error-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        animation: create-chat-fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes create-chat-fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes create-chat-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .create-chat-card {
+            padding: 1.5rem;
+        }
+
+        .create-chat-header {
+            font-size: 1.25rem;
+        }
+
+        .create-chat-form-buttons {
+            flex-direction: column;
+        }
+
+        .create-chat-btn {
+            width: 100%;
+        }
+    }
 </style>
+
+<script>
+    window.scrollToElement = async (element) => {
+        if (element) {
+            element.scrollIntoView({behavior: 'smooth', block: 'center'});
+        }
+    };
+</script>

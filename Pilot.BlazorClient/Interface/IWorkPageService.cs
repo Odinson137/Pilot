@@ -1,5 +1,4 @@
 ﻿using Pilot.BlazorClient.ViewModels;
-using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.Interface;
 

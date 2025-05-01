@@ -27,6 +27,7 @@
     {
         (int)ChatMemberId.Reminder => "Reminder",
         (int)ChatMemberId.Ai => "AI Assistant",
+        (int)ChatMemberId.System => "System",
         _ => Users.FirstOrDefault(u => u.Id == Message.UserId)?.UserName ?? User.UserName ?? "Unknown"
     };
 
@@ -34,6 +35,7 @@
     {
         (int)ChatMemberId.Reminder => "/Images/Chat/reminder.png",
         (int)ChatMemberId.Ai => "/Images/Chat/ai.png",
+        (int)ChatMemberId.System => "/Images/Chat/ai.png",
         _ => Users.FirstOrDefault(u => u.Id == Message.UserId)?.AvatarImage ?? User.AvatarImage ?? "/Images/Chat/default.jpg"
     };
 

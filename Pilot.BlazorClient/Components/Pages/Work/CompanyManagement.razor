@@ -1,7 +1,6 @@
 ﻿@page "/company-management/{CompanyId:int}"
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
-@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.Data
 @using Pilot.Contracts.Base
@@ -935,8 +934,8 @@
 
     private void ShowAssignTeamForm(int employeeId)
     {
-        var employee = _employees?.FirstOrDefault(c => c.Id == employeeId)?.User;
-        _assignTeamModel = new AssignTeamModel { EmployeeFullName = employee?.FullName, EmployeeId = employee?.Id ?? 0 };
+        var employee = _employees?.FirstOrDefault(c => c.Id == employeeId);
+        _assignTeamModel = new AssignTeamModel { EmployeeFullName = employee?.User?.FullName, EmployeeId = employee?.Id ?? 0 };
         _showAssignTeamForm = true;
     }
 

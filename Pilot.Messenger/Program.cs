@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Interfaces;
 using Pilot.Messenger.Data;
 using Pilot.Messenger.Hubs;
@@ -18,6 +19,12 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var configuration = builder.Configuration;
 
+services.AddHttpClient(nameof(ServiceName.WorkerServer),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("ReceiverServerUrl")!); });
+
+services.AddHttpClient(nameof(ServiceName.CapabilityServer),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("CapabilityServerUrl")!); });
+
 services.AddScoped<IMessageService, MessageService>();
 services.AddScoped<IBaseMassTransitService, BaseMassTransitService>();
 
@@ -29,6 +36,7 @@ services.AddScoped<IBaseValidatorService, MessengerValidateService>();
 services.AddScoped<INotificationService, NotificationService>();
 
 services.AddSignalR();
+services.AddRedis(configuration);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -37,6 +45,7 @@ services.AddSwaggerGen();
 services.AddControllers();
 
 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+services.AddScoped<IModelService, ModelService>();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 services.AddRedis(configuration);

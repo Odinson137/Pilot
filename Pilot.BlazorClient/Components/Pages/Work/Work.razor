@@ -6,7 +6,6 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
-@using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
 @inject IWorkPageService WorkPageService
 @inject ProtectedSessionStorage ProtectedSessionStorage
@@ -38,6 +37,8 @@ else
                 {
                     <li @onclick="() => SetActiveTab(1)"
                         class="@GetActiveClass(1)">@Localizer.GetString("Dashboard", "Work")</li>
+                    @* <li @onclick="() => SetActiveTab(2)" *@
+                    @*     class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li> *@
                     @* <li @onclick="() => SetActiveTab(2)" class="@GetActiveClass(2)">@Localizer.GetString("Summary", "Work")</li> *@
                     <li @onclick="() => SetActiveTab(3)"
                         class="@GetActiveClass(3)">@Localizer.GetString("Tasks", "Work")</li>
@@ -73,7 +74,7 @@ else
                     <UserGreeting CompanyUserId="@_companyUser!.Id" UserName="@_user.UserName" UserId="@_user.Id"/>
                     break;
                 case 2:
-                    <Summary CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"/>
+                    <Summary CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" CompanyId="@_companyUser!.Company.Id"></Summary>
                     break;
                 case 3:
                     <UserTask CompanyUserId="@_companyUser!.Id" UserId="@_user.Id" ProjectId="@_projectId"/>
@@ -99,7 +100,7 @@ else
 }
 
 @code {
-    private int _activeTab = 1;
+    private int _activeTab = 0;
     private bool _isLoading = true;
     private UserViewModel? _user;
     private CompanyUserViewModel? _companyUser;
@@ -120,6 +121,7 @@ else
             _taskCount = (await WorkPageService.GetUserTasksAsync(_companyUser.Id)).Count;
             _teamCount = (await WorkPageService.GetCompanyEmployeesAsync(_companyUser.Company.Id)).Count;
             _vacancyCount = (await WorkPageService.GetPostsAsync(_companyUser.Company.Id)).Count;
+            _activeTab = 1;
         }
 
         var currentTabStorageResult = await ProtectedSessionStorage.GetAsync<int>("work:currentTab");

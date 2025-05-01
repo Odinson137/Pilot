@@ -1,6 +1,5 @@
 ﻿@using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
-@using Pilot.BlazorClient.Service
 @using Pilot.BlazorClient.ViewModels
 @using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
@@ -111,7 +110,7 @@
     private IEnumerable<ProjectViewModel> Projects { get; set; } = new List<ProjectViewModel>();
     private IEnumerable<ProjectTaskViewModel> AllTasks { get; set; } = new List<ProjectTaskViewModel>();
     private List<ProjectTaskData> _projectTaskData { get; set; } = new List<ProjectTaskData>();
-    private ProjectTaskStatus? _selectedStatus = null;
+    private ProjectTaskStatus? _selectedStatus = ProjectTaskStatus.Completed;
     private bool _showNoTasks = false;
     private HashSet<int> _collapsedProjects = new HashSet<int>();
 
@@ -164,7 +163,7 @@
                 foreach (var user in teamUsers.OrderBy(u => u.User?.FullName ?? ""))
                 {
                     var userTasks = projectTasks
-                        .Where(t => t.TeamEmployee!.CompanyUser.UserId == user.Id && t.TeamEmployee!.Team?.Id == team.Id)
+                        .Where(t => t.TeamEmployee!.CompanyUser.Id == user.Id && t.TeamEmployee!.Team?.Id == team.Id)
                         .OrderBy(t => t.TaskStatus != ProjectTaskStatus.Completed)
                         .ThenBy(t => t.CreateAt)
                         .ToList();

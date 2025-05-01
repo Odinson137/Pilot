@@ -1,0 +1,11 @@
+﻿{
+  "PageTitle": "Create New Chat",
+  "Header": "Create New Chat",
+  "TitleLabel": "Chat Title",
+  "TitlePlaceholder": "Enter chat title",
+  "DescriptionLabel": "Description",
+  "DescriptionPlaceholder": "Enter chat description (optional)",
+  "CreateButton": "Create Chat",
+  "CancelButton": "Cancel",
+  "SubmitError": "Failed to create chat. Please try again."
+}

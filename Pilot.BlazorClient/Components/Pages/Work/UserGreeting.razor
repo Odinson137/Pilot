@@ -1,42 +1,156 @@
 ﻿@using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.LineChart
+@using ChartJs.Blazor.Util
+@using Pilot.Contracts.Data.Enums
+@using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
+@using Pilot.BlazorClient.Components.Helpers
 @inject IWorkPageService WorkPageService
 @inject IUserService UserService
+@inject IJsonLocalizationService Localizer
+@inject IJSRuntime JSRuntime
 
-<div class="user-greeting">
-    <h2>@GetGreetingMessage(), @UserName! 🌟</h2>
+<div class="work-greeting-container">
+    <!-- User Greeting Section -->
+    <div class="work-greeting-card">
+        <h2 class="work-greeting-title">@GetGreetingMessage(), @UserName! <span class="work-greeting-emoji">🌟</span></h2>
 
-    @if (_companyUser != null && _company != null)
-    {
-        <p>You have been working at <strong>@_company?.Title</strong> for <strong>@_daysInCompany</strong> days.</p>
-        
-        <div class="today-activity">
-            <h3>Today's Activity</h3>
-            @if (todayActivities.Count > 0)
+        @if (_companyUser != null && _company != null)
+        {
+            <p class="work-greeting-company-info">
+                You're thriving at <strong>@_company.Title</strong> for <strong>@_daysInCompany</strong> days!
+            </p>
+
+            <div class="work-greeting-today-activity">
+                <h3 class="work-greeting-section-title">@Localizer.GetString("TodayActivity", "Summary")</h3>
+                @if (todayActivities.Count > 0)
+                {
+                    <div class="work-greeting-activity-scroll">
+                        @foreach (var activity in todayActivities)
+                        {
+                            <div class="work-greeting-activity-item">
+                                <span>@activity</span>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="work-greeting-no-activity">@Localizer.GetString("NoActivity", "Summary")</p>
+                }
+            </div>
+
+            @if (_projects != null)
             {
-                <div class="today-activity-scroll">
-                    @foreach (var activity in todayActivities)
+                <p class="work-greeting-project-info">
+                    You're rocking <strong>@_projects.Count</strong> project(s)!
+                </p>
+            }
+        }
+    </div>
+
+    <!-- Summary Section -->
+    <div class="work-greeting-summary-section">
+        @if (_isLoading)
+        {
+            <Loading />
+        }
+        else if (_isAdmin)
+        {
+            <h1 class="work-greeting-section-title">@Localizer.GetString("CompanyPerformanceTitle", "Summary")</h1>
+            <p class="work-greeting-section-description">@Localizer.GetString("CompanyPerformanceDescription", "Summary")</p>
+
+            <div class="work-greeting-charts-container">
+                <div class="work-greeting-chart-card">
+                    <h4 class="work-greeting-chart-title">@Localizer.GetString("CompletedTasksByEmployees", "Summary")</h4>
+                    @if (_employeeTasksConfig != null)
                     {
-                        <div class="activity-item">
-                            <span>@activity</span>
+                        <Chart Config="_employeeTasksConfig" />
+                    }
+                </div>
+                <div class="work-greeting-chart-card">
+                    <h4 class="work-greeting-chart-title">@Localizer.GetString("TaskDistributionByPriority", "Summary")</h4>
+                    @if (_companyPriorityConfig != null)
+                    {
+                        <Chart Config="_companyPriorityConfig" />
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <h1 class="work-greeting-section-title">@Localizer.GetString("PersonalSummaryTitle", "Summary")</h1>
+            <p class="work-greeting-section-description">@Localizer.GetString("PersonalSummaryDescription", "Summary")</p>
+
+            <div class="work-greeting-daily-hours">
+                <h3 class="work-greeting-section-subtitle">@Localizer.GetString("DailyHoursWorked", "Summary")</h3>
+                <div class="work-greeting-chart-card work-greeting-full-width">
+                    @if (_dailyHoursConfig != null)
+                    {
+                        <Chart Config="_dailyHoursConfig" />
+                    }
+                </div>
+            </div>
+
+            <div class="work-greeting-personal-summary">
+                <h3 class="work-greeting-section-subtitle">@Localizer.GetString("TaskOverview", "Summary")</h3>
+                <div class="work-greeting-charts-container">
+                    <div class="work-greeting-chart-card">
+                        <h4 class="work-greeting-chart-title">@Localizer.GetString("TaskCategories", "Summary")</h4>
+                        @if (_categoryConfig != null)
+                        {
+                            <Chart Config="_categoryConfig" />
+                        }
+                    </div>
+                    <div class="work-greeting-chart-card">
+                        <h4 class="work-greeting-chart-title">@Localizer.GetString("TaskPriorities", "Summary")</h4>
+                        @if (_priorityConfig != null)
+                        {
+                            <Chart Config="_priorityConfig" />
+                        }
+                    </div>
+                    <div class="work-greeting-chart-card">
+                        <h4 class="work-greeting-chart-title">@Localizer.GetString("TaskStatus", "Summary")</h4>
+                        @if (_statusConfig != null)
+                        {
+                            <Chart Config="_statusConfig" />
+                        }
+                    </div>
+                </div>
+
+                <h3 class="work-greeting-section-subtitle">@Localizer.GetString("ContributionOverview", "Summary")</h3>
+                <div class="work-greeting-charts-container">
+                    @foreach (var projectConfig in _projectContributionConfigs)
+                    {
+                        <div class="work-greeting-chart-card">
+                            <h4 class="work-greeting-chart-title">@projectConfig.Value.Item2</h4>
+                            <Chart Config="projectConfig.Value.Item1" />
                         </div>
                     }
                 </div>
-            }
-            else
-            {
-                <p>No activities recorded today.</p>
-            }
-        </div>
-        
-        @if (_projects != null)
-        {
-            <p>You are participating in <strong>@_projects.Count</strong> project(s)</p>
+
+                <div class="work-greeting-report-section">
+                    <h3 class="work-greeting-section-subtitle">@Localizer.GetString("GenerateReport", "Summary")</h3>
+                    <div class="work-greeting-report-buttons">
+                        <button class="work-greeting-btn work-greeting-btn-primary" @onclick="GenerateWordReport">@Localizer.GetString("WordReport", "Summary")</button>
+                        <button class="work-greeting-btn work-greeting-btn-success" @onclick="GenerateExcelReport">@Localizer.GetString("ExcelReport", "Summary")</button>
+                    </div>
+                </div>
+            </div>
         }
+    </div>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="work-greeting-error-message">
+            @_errorMessage
+        </div>
     }
 </div>
 
 @code {
+    [Parameter] public int CompanyId { get; set; }
     [Parameter] public string? UserName { get; set; }
     [Parameter] public int UserId { get; set; }
     [Parameter] public int CompanyUserId { get; set; }
@@ -45,53 +159,568 @@
     private CompanyViewModel? _company;
     private int _daysInCompany;
     private ICollection<ProjectViewModel>? _projects;
-    private ICollection<TeamViewModel>? _teams;
     private List<string> todayActivities = [];
-    
+    private bool _isLoading = true;
+    private bool _isAdmin;
+    private LineConfig? _dailyHoursConfig;
+    private PieConfig? _categoryConfig;
+    private PieConfig? _priorityConfig;
+    private PieConfig? _statusConfig;
+    private Dictionary<int, (PieConfig, string)> _projectContributionConfigs = new();
+    private PieConfig? _employeeTasksConfig;
+    private PieConfig? _companyPriorityConfig;
+    private string _errorMessage = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        _companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
-        _company = await WorkPageService.GetCompanyAsync(_companyUser.Company.Id);
+        try
+        {
+            _companyUser = await WorkPageService.GetUserCompanyAsync(UserId);
+            _company = await WorkPageService.GetCompanyAsync(_companyUser.Company.Id);
+            _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
+            _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
 
-        _daysInCompany = (DateTime.Now - _companyUser.CreateAt!.Value).Days;
+            var currentUser = await UserService.GetCurrentUserAsync();
+            _isAdmin = currentUser.Role is Role.Owner or Role.Director;
 
-        _projects = await WorkPageService.GetProjectsAsync(_companyUser.Company.Id);
+            if (_isAdmin)
+            {
+                await InitializeCompanyCharts();
+            }
+            else
+            {
+                await InitializePersonalCharts();
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("LoadError", "Summary");
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
     private string GetGreetingMessage()
     {
         var hour = DateTime.Now.Hour;
-        return hour < 12 ? "Good morning" :
-            hour < 18 ? "Good afternoon" : "Good evening";
+        return Localizer.GetString(hour < 12 ? "MorningGreeting" : hour < 18 ? "AfternoonGreeting" : "EveningGreeting", "Summary");
+    }
+
+    private async Task InitializePersonalCharts()
+    {
+        try
+        {
+            await InitializeProjectContributionCharts();
+            await InitializeDailyHoursChart();
+            await InitializeCategoryChart();
+            await InitializePriorityChart();
+            await InitializeStatusChart();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("ChartError", "Summary");
+            Console.WriteLine($"Chart Error: {ex.Message}");
+        }
+    }
+
+    private async Task InitializeCompanyCharts()
+    {
+        try
+        {
+            await InitializeEmployeeTasksChart();
+            await InitializeCompanyPriorityChart();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("ChartError", "Summary");
+            Console.WriteLine($"Chart Error: {ex.Message}");
+        }
+    }
+
+    private async Task InitializeDailyHoursChart()
+    {
+        _dailyHoursConfig = new LineConfig
+        {
+            Options = new LineOptions
+            {
+                Responsive = true
+            }
+        };
+
+        var random = new Random();
+        var days = Enumerable.Range(1, 7).Select(i => Localizer.GetString($"Day{i}", "Summary")).ToList();
+        var hours = Enumerable.Range(1, 7).Select(_ => random.Next(1, 10)).ToList();
+
+        foreach (var day in days)
+        {
+            _dailyHoursConfig.Data.Labels.Add(day);
+        }
+
+        _dailyHoursConfig.Data.Datasets.Add(new LineDataset<int>(hours)
+        {
+            Label = Localizer.GetString("WorkHoursLabel", "Summary"),
+            BorderColor = "#4a90e2",
+            BackgroundColor = "#4a90e230",
+            Fill = true
+        });
+    }
+
+    private async Task InitializeCategoryChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var inProgress = userTasks.Count(t => t.TaskStatus == TaskStatus.Work);
+        var pending = userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo);
+
+        _categoryConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        foreach (var value in new[] { "Completed", "InProgress", "Pending" })
+        {
+            _categoryConfig.Data.Labels.Add(Localizer.GetString(value, "Summary"));
+        }
+
+        _categoryConfig.Data.Datasets.Add(new PieDataset<int>(new[] { completed, inProgress, pending })
+        {
+            BackgroundColor = new[] { "#4BC0C0", "#FF9F40", "#9966FF" }
+        });
+    }
+
+    private async Task InitializePriorityChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var high = userTasks.Count(t => t is { Priority: TaskPriority.High, TaskStatus: TaskStatus.Completed });
+        var medium = userTasks.Count(t => t is { Priority: TaskPriority.Normal, TaskStatus: TaskStatus.Completed });
+        var low = userTasks.Count(t => t is { Priority: TaskPriority.Low, TaskStatus: TaskStatus.Completed });
+
+        _priorityConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        foreach (var value in new[] { "High", "Medium", "Low" })
+        {
+            _priorityConfig.Data.Labels.Add(Localizer.GetString(value, "Summary"));
+        }
+
+        _priorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { high, medium, low })
+        {
+            BackgroundColor = new[] { "#FF6384", "#FFCD56", "#36A2EB" }
+        });
+    }
+
+    private async Task InitializeStatusChart()
+    {
+        var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+        var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+        var inProgress = userTasks.Count(t => t.TaskStatus == TaskStatus.Work);
+        var remaining = userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo);
+
+        _statusConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        foreach (var value in new[] { "Completed", "InProgress", "Remaining" })
+        {
+            _statusConfig.Data.Labels.Add(Localizer.GetString(value, "Summary"));
+        }
+
+        _statusConfig.Data.Datasets.Add(new PieDataset<int>(new[] { completed, inProgress, remaining })
+        {
+            BackgroundColor = new[] { "#4BC0C0", "#FF9F40", "#9966FF" }
+        });
+    }
+
+    private async Task InitializeProjectContributionCharts()
+    {
+        var allProjects = await WorkPageService.GetProjectsAsync(CompanyId);
+        var tasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        await WorkPageService.FillProjectsIntoTeamsAsync(tasks);
+
+        var projectTasks = tasks.GroupBy(t => t.TeamEmployee!.Team.Project)
+            .Select(g => new
+            {
+                Project = g.Key,
+                UserCompletedTasks = g.Count(t => t.TeamEmployee!.CompanyUser!.UserId == UserId && t.TaskStatus == TaskStatus.Completed),
+                TotalTasks = g.Count()
+            })
+            .ToList();
+
+        _projectContributionConfigs.Clear();
+        foreach (var project in allProjects)
+        {
+            var projectTask = projectTasks.FirstOrDefault(pt => pt.Project.Id == project.Id);
+            var userCompleted = projectTask?.UserCompletedTasks ?? 0;
+            var totalTasks = projectTask?.TotalTasks ?? 0;
+            var othersCompleted = totalTasks - userCompleted;
+
+            var config = new PieConfig
+            {
+                Options = new PieOptions { Responsive = true }
+            };
+
+            foreach (var value in new[] { "YourContribution", "Others" })
+                config.Data.Labels.Add(Localizer.GetString(value, "Summary"));
+
+            config.Data.Datasets.Add(new PieDataset<int>([userCompleted, othersCompleted])
+            {
+                BackgroundColor = new[] { "#4BC0C0", "#FF9F40" }
+            });
+
+            _projectContributionConfigs[project.Id] = (config, project.Name);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task InitializeEmployeeTasksChart()
+    {
+        var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        var employeeTasks = allTasks.GroupBy(t => t.TeamEmployee!.CompanyUser.Id)
+            .Select(g => new { EmployeeId = g.Key, CompletedTasks = g.Count(t => t.TaskStatus == TaskStatus.Completed) })
+            .ToList();
+
+        _employeeTasksConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        var labels = employeeTasks.Select(e => Localizer.GetString("EmployeeLabel", "Summary")).ToList();
+        var data = employeeTasks.Select(e => e.CompletedTasks).ToList();
+
+        foreach (var label in labels)
+        {
+            _employeeTasksConfig.Data.Labels.Add(label);
+        }
+
+        _employeeTasksConfig.Data.Datasets.Add(new PieDataset<int>(data)
+        {
+            BackgroundColor = data.Select((_, i) => ColorUtil.ColorHexString((byte)(80 + i * 40), 160, (byte)(220 - i * 25))).ToArray()
+        });
+    }
+
+    private async Task InitializeCompanyPriorityChart()
+    {
+        var allTasks = await WorkPageService.GetCompanyTasksAsync(CompanyId);
+        var high = allTasks.Count(t => t.Priority == TaskPriority.High);
+        var medium = allTasks.Count(t => t.Priority == TaskPriority.Normal);
+        var low = allTasks.Count(t => t.Priority == TaskPriority.Low);
+
+        _companyPriorityConfig = new PieConfig
+        {
+            Options = new PieOptions { Responsive = true }
+        };
+
+        foreach (var value in new[] { "High", "Medium", "Low" })
+        {
+            _companyPriorityConfig.Data.Labels.Add(Localizer.GetString(value, "Summary"));
+        }
+
+        _companyPriorityConfig.Data.Datasets.Add(new PieDataset<int>(new[] { high, medium, low })
+        {
+            BackgroundColor = new[] { "#FF6384", "#FFCD56", "#36A2EB" }
+        });
+    }
+
+    private async Task GenerateWordReport()
+    {
+        try
+        {
+            var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+            var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+            var content = $"Personal Summary Report\n\nCompleted Tasks: {completed}\nIn Progress: {userTasks.Count(t => t.TaskStatus == TaskStatus.Work)}\nPending: {userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo)}";
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+            await JSRuntime.InvokeVoidAsync("saveAsFile", "SummaryReport.docx", Convert.ToBase64String(bytes));
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("ReportError", "Summary");
+            Console.WriteLine($"Report Error: {ex.Message}");
+        }
+    }
+
+    private async Task GenerateExcelReport()
+    {
+        try
+        {
+            var userTasks = await WorkPageService.GetUserProjectTasksAsync(UserId);
+            var completed = userTasks.Count(t => t.TaskStatus == TaskStatus.Completed);
+            var content = $"Task Status,Count\nCompleted,{completed}\nIn Progress,{userTasks.Count(t => t.TaskStatus == TaskStatus.Work)}\nPending,{userTasks.Count(t => t.TaskStatus == TaskStatus.ToDo)}";
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(content);
+            await JSRuntime.InvokeVoidAsync("saveAsFile", "SummaryReport.csv", Convert.ToBase64String(bytes));
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("ReportError", "Summary");
+            Console.WriteLine($"Report Error: {ex.Message}");
+        }
     }
 }
 
-
 <style>
-    .user-greeting {
-        padding: 20px;
-        background-color: #f5f6f8;
-        border-radius: 10px;
-        color: #2d3e50;
-        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-        font-size: 16px;
+    .work-greeting-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
     }
 
-    .user-greeting h2 {
-        margin-bottom: 10px;
-        color: #34495e;
+    .work-greeting-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        animation: work-greeting-fadeIn 0.5s ease-in;
     }
 
-    .user-greeting ul {
-        list-style-type: none;
-        padding-left: 0;
+    .work-greeting-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
-    .user-greeting li {
-        margin: 5px 0;
-        padding: 10px;
-        background-color: #ecf0f1;
-        border-radius: 5px;
+    .work-greeting-emoji {
+        font-size: 1.5rem;
     }
 
+    .work-greeting-company-info,
+    .work-greeting-project-info {
+        font-size: 1rem;
+        color: #4b5563;
+        margin-bottom: 1rem;
+    }
+
+    .work-greeting-today-activity {
+        margin-top: 1.5rem;
+    }
+
+    .work-greeting-section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .work-greeting-activity-scroll {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db #f9fafb;
+    }
+
+    .work-greeting-activity-scroll::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .work-greeting-activity-scroll::-webkit-scrollbar-track {
+        background: #f9fafb;
+        border-radius: 4px;
+    }
+
+    .work-greeting-activity-scroll::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 4px;
+    }
+
+    .work-greeting-activity-item {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 1rem;
+        min-width: 200px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .work-greeting-activity-item:hover {
+        transform: translateY(-4px);
+    }
+
+    .work-greeting-no-activity {
+        font-size: 0.875rem;
+        color: #6b7280;
+        font-style: italic;
+    }
+
+    .work-greeting-summary-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .work-greeting-section-description {
+        font-size: 1rem;
+        color: #4b5563;
+        margin-bottom: 1.5rem;
+    }
+
+    .work-greeting-section-subtitle {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .work-greeting-charts-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .work-greeting-chart-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        animation: work-greeting-slideIn 0.5s ease-in;
+    }
+
+    .work-greeting-full-width {
+        grid-column: span 2;
+    }
+
+    .work-greeting-chart-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    .work-greeting-daily-hours,
+    .work-greeting-personal-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .work-greeting-report-section {
+        margin-top: 2rem;
+    }
+
+    .work-greeting-report-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .work-greeting-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: center;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .work-greeting-btn-primary {
+        background: linear-gradient(to right, #6366f1, #4f46e5);
+        color: #ffffff;
+    }
+
+    .work-greeting-btn-primary:hover {
+        background: linear-gradient(to right, #4f46e5, #4338ca);
+        transform: translateY(-2px);
+    }
+
+    .work-greeting-btn-success {
+        background: linear-gradient(to right, #22c55e, #16a34a);
+        color: #ffffff;
+    }
+
+    .work-greeting-btn-success:hover {
+        background: linear-gradient(to right, #16a34a, #15803d);
+        transform: translateY(-2px);
+    }
+
+    .work-greeting-error-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        animation: work-greeting-fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes work-greeting-fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes work-greeting-slideIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@media (max-width: 1024px) {
+        .work-greeting-charts-container {
+            grid-template-columns: 1fr;
+        }
+
+        .work-greeting-full-width {
+            grid-column: auto;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .work-greeting-container {
+            padding: 1rem;
+        }
+
+        .work-greeting-card {
+            padding: 1.5rem;
+        }
+
+        .work-greeting-title {
+            font-size: 1.5rem;
+        }
+
+        .work-greeting-section-title {
+            font-size: 1.25rem;
+        }
+
+        .work-greeting-report-buttons {
+            flex-direction: column;
+        }
+
+        .work-greeting-btn {
+            width: 100%;
+        }
+
+        .work-greeting-activity-scroll {
+            flex-direction: column;
+        }
+
+        .work-greeting-activity-item {
+            min-width: auto;
+            width: 100%;
+        }
+    }
 </style>
+
+<script>
+    window.saveAsFile = (filename, base64String) => {
+        const link = document.createElement('a');
+        link.href = 'data:application/octet-stream;base64,' + base64String;
+        link.download = filename;
+        link.click();
+    };
+</script>

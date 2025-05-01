@@ -9,8 +9,17 @@ public class JobApplicationViewModel : BaseViewModel
     [Required] public CompanyPostViewModel CompanyPost { get; set; } = null!;
 
     [Required] public int UserId { get; set; }
-    
-    public UserViewModel? User { get; set; }
+
+    private UserViewModel? _user; 
+    public UserViewModel? User
+    {
+        get => _user;
+        set
+        {
+            UserId = value?.Id ?? 0;
+            _user = value;
+        }
+    }
     
     public string? ResumeFileId { get; set; }
 

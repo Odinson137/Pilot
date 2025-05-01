@@ -5,4 +5,5 @@ namespace Pilot.Capability.Interface;
 
 public interface IJobApplication : IBaseRepository<JobApplication>
 {
+    Task<Tuple<int, int>?> GetJobApplicationCompanyAndPostIdsAsync(int companyPostId);
 }

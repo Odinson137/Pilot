@@ -3,7 +3,6 @@
 @using Pilot.BlazorClient.Data
 @using Pilot.BlazorClient.Interface
 @using Pilot.BlazorClient.ViewModels
-@using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
 @using Pilot.Contracts.Services
 @inject IHrManagementPageService HrManagementPageService
@@ -570,6 +569,7 @@
             if (_selectedApplication != null)
             {
                 await HrManagementPageService.UpdateApplicationStatusAsync(_selectedApplication);
+                await Task.Delay(500);
                 await LoadData();
                 await FilterApplications();
                 CloseStatusModal();

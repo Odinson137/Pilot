@@ -1,0 +1,11 @@
+﻿{
+  "PageTitle": "Создать новый чат",
+  "Header": "Создать новый чат",
+  "TitleLabel": "Название чата",
+  "TitlePlaceholder": "Введите название чата",
+  "DescriptionLabel": "Описание",
+  "DescriptionPlaceholder": "Введите описание чата (необязательно)",
+  "CreateButton": "Создать чат",
+  "CancelButton": "Отмена",
+  "SubmitError": "Не удалось создать чат. Попробуйте снова."
+}

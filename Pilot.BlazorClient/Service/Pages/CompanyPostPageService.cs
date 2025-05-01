@@ -75,6 +75,7 @@ public class CompanyPostPageService(
     public async Task<bool> IsAlreadySendAsync(int postId)
     {
         var user = await userService.GetCurrentUserAsync();
+        if (user == null) return false;
         var jobApplication = await jobApplicationViewModelService.GetValueAsync((c => c.UserId, user.Id), (c => c.CompanyPost.Id, postId));
         return jobApplication != null;
     }

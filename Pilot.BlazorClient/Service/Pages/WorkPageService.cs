@@ -2,7 +2,6 @@
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
@@ -122,7 +121,7 @@ public class WorkPageService(
         var companyUsers =
             await companyUserService.GetValuesAsync(predicate: c => c.Company.Id, companyId);
         var users =
-            await userBaseService.GetValuesAsync(companyUsers.Select(c => c.Id).ToArray());
+            await userBaseService.GetValuesAsync(companyUsers.Select(c => c.UserId).ToArray());
         var company = await companyService.GetValueAsync(companyId);
 
         foreach (var companyUser in companyUsers)
@@ -302,6 +301,10 @@ public class WorkPageService(
         foreach (var task in tasks)
             task.TeamEmployee = teamEmployee.Single(c => c.Id == task.TeamEmployee!.Id);
 
+        // var teamEmployee = await teamEmployeeService.GetValuesAsync(tasks.Select(c => c.TeamEmployee!.Id).ToList());
+        // foreach (var task in tasks)
+        //     task.TeamEmployee = teamEmployee.Single(c => c.Id == task.TeamEmployee!.Id);
+        
         var teamIds = tasks.Select(t => t.TeamEmployee!.Team.Id).Select(id => id).Distinct().ToList();
         var userIds = tasks.Select(t => t.TeamEmployee!.CompanyUser.Id).Select(id => id).Distinct()
             .ToList();

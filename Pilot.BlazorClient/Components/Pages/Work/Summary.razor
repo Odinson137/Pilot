@@ -6,13 +6,13 @@
 @inject IUserService UserService
 @inject IJsonLocalizationService Localizer
 @using ChartJs.Blazor.Util
-@using Pilot.BlazorClient.Service
 @using Pilot.Contracts.Data.Enums
 @using TaskStatus = Pilot.Contracts.Data.Enums.ProjectTaskStatus
+@using Pilot.BlazorClient.Components.Helpers
 
 @if (_isLoading)
 {
-    <div>Loading...</div>
+    <Loading></Loading>
 }
 else if (_isAdmin)
 {

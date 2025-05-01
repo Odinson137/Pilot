@@ -1,0 +1,14 @@
+﻿{
+  "PageTitle": "Обновить чат",
+  "Header": "Обновить чат",
+  "TitleLabel": "Название чата",
+  "TitlePlaceholder": "Введите название чата",
+  "DescriptionLabel": "Описание",
+  "DescriptionPlaceholder": "Введите описание чата (необязательно)",
+  "MembersLabel": "Участники чата",
+  "NoEmployees": "Нет доступных сотрудников",
+  "UpdateButton": "Обновить чат",
+  "CancelButton": "Отмена",
+  "LoadError": "Не удалось загрузить данные чата. Попробуйте снова.",
+  "SubmitError": "Не удалось обновить чат. Попробуйте снова."
+}

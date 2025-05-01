@@ -1,0 +1,14 @@
+﻿{
+  "PageTitle": "Update Chat",
+  "Header": "Update Chat",
+  "TitleLabel": "Chat Title",
+  "TitlePlaceholder": "Enter chat title",
+  "DescriptionLabel": "Description",
+  "DescriptionPlaceholder": "Enter chat description (optional)",
+  "MembersLabel": "Chat Members",
+  "NoEmployees": "No employees available",
+  "UpdateButton": "Update Chat",
+  "CancelButton": "Cancel",
+  "LoadError": "Failed to load chat details. Please try again.",
+  "SubmitError": "Failed to update chat. Please try again."
+}

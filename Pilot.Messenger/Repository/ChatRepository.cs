@@ -21,4 +21,12 @@ public class ChatRepository(DataContext context, IMapper mapper)
 
         return await query.ToListAsync(token);
     }
+
+    public async Task<Chat?> GetChatAsync(int chatCreatorId, int userId, CancellationToken token)
+    {
+        return await DbSet
+            .Where(c => c.CreatedBy == chatCreatorId && c.ChatMembers
+                .Any(x => x.UserId == userId))
+            .FirstOrDefaultAsync(token);
+    }
 }

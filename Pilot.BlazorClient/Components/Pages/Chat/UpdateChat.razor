@@ -6,144 +6,384 @@
 @using Pilot.BlazorClient.ViewModels.UserViewModels
 @inject NavigationManager NavigationManager
 @inject IChatPageService ChatPageService
+@inject IJsonLocalizationService Localizer
+@inject IJSRuntime JsRuntime
 
-<PageTitle>Update New Chat</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", "UpdateChat")</PageTitle>
 
-<div style="display: grid">
-    <div class="chat">
-        <h3>Update New Chat</h3>
+<div class="update-chat-container">
+    <div class="update-chat-card">
+        <h3 class="update-chat-header">@Localizer.GetString("Header", "UpdateChat")</h3>
 
-        <EditForm Model="_chat" OnValidSubmit="HandleSubmit">
+        <EditForm Model="_chat" OnValidSubmit="HandleSubmit" class="update-chat-form">
+            <DataAnnotationsValidator />
 
-            <div class="form-group">
-                <label for="Title">Title</label>
-                <InputText id="Title" @bind-Value="_chat.Title" class="form-control"/>
+            <div class="update-chat-form-group">
+                <label for="Title" class="update-chat-form-label">@Localizer.GetString("TitleLabel", "UpdateChat")</label>
+                <InputText id="Title" @bind-Value="_chat.Title" class="update-chat-form-input" placeholder="@Localizer.GetString("TitlePlaceholder", "UpdateChat")" />
+                <ValidationMessage For="@(() => _chat.Title)" class="update-chat-form-error" />
             </div>
 
-            <div class="form-group">
-                <label for="Description">Description</label>
-                <InputTextArea id="Description" @bind-Value="_chat.Description" class="form-control"/>
+            <div class="update-chat-form-group">
+                <label for="Description" class="update-chat-form-label">@Localizer.GetString("DescriptionLabel", "UpdateChat")</label>
+                <InputTextArea id="Description" @bind-Value="_chat.Description" class="update-chat-form-textarea" placeholder="@Localizer.GetString("DescriptionPlaceholder", "UpdateChat")" />
+                <ValidationMessage For="@(() => _chat.Description)" class="update-chat-form-error" />
             </div>
 
-            <div class="employee-list">
-                @foreach (var user in _multySelect)
+            <div class="update-chat-employee-list">
+                <h4 class="update-chat-employee-list-title">@Localizer.GetString("MembersLabel", "UpdateChat")</h4>
+                @if (_multySelect.Any())
                 {
-                    <div class="employee-item">
-                        @if (user.Value.Id == _chat.CreatedBy)
-                        {
-                            <input type="checkbox" class="employee-checkbox" checked disabled/>
-                        }
-                        else
-                        {
-                            <input type="checkbox" @bind="@(user.IsSelected)" class="employee-checkbox"/>
-                        }
-                        <img src="@TempFileService.GetUrl(user.Value.AvatarImage)" alt="User Avatar" class="avatar"/>
-                        <div class="employee-info">
-                            <div class="employee-name">@user.Value.FullName</div>
-                            <div class="employee-username">@user.Value.UserName</div>
+                    @foreach (var user in _multySelect)
+                    {
+                        <div class="update-chat-employee-item">
+                            @if (user.Value.Id == _chat.CreatedBy)
+                            {
+                                <input type="checkbox" class="update-chat-employee-checkbox" checked disabled />
+                            }
+                            else
+                            {
+                                <input type="checkbox" @bind="@(user.IsSelected)" class="update-chat-employee-checkbox" />
+                            }
+                            <img src="@TempFileService.GetUrl(user.Value.AvatarImage)" alt="User Avatar" class="update-chat-avatar" />
+                            <div class="update-chat-employee-info">
+                                <div class="update-chat-employee-name">@user.Value.FullName</div>
+                                <div class="update-chat-employee-username">@user.Value.UserName</div>
+                            </div>
                         </div>
-                    </div>
+                    }
+                }
+                else
+                {
+                    <div class="update-chat-no-employees">@Localizer.GetString("NoEmployees", "UpdateChat")</div>
                 }
             </div>
 
-            <div class="buttons">
-                <button type="submit" class="btn btn-primary">Update Chat</button>
-                <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+            <div class="update-chat-form-buttons">
+                <button type="submit" class="update-chat-btn update-chat-btn-primary" disabled="@_isSubmitting">
+                    @if (_isSubmitting)
+                    {
+                        <span class="update-chat-spinner"></span>
+                    }
+                    @Localizer.GetString("UpdateButton", "UpdateChat")
+                </button>
+                <button type="button" class="update-chat-btn update-chat-btn-secondary" @onclick="GoBack">@Localizer.GetString("CancelButton", "UpdateChat")</button>
             </div>
         </EditForm>
 
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <div class="update-chat-error-message" @ref="_errorElement">
+                @_errorMessage
+            </div>
+        }
     </div>
 </div>
-
 
 @code {
     [Parameter] public int Id { get; set; }
 
     private ChatViewModel _chat = new();
-
     private ICollection<MultySelectViewModel<UserViewModel>> _multySelect = [];
-
+    private bool _isSubmitting;
+    private string _errorMessage = string.Empty;
+    private ElementReference _errorElement;
 
     protected override async Task OnInitializedAsync()
     {
-        _chat = await ChatPageService.GetValueAsync(Id);
-        _multySelect = await ChatPageService.GetAllEmployeesAsync(_chat);
+        try
+        {
+            _chat = await ChatPageService.GetValueAsync(Id);
+            _multySelect = await ChatPageService.GetAllEmployeesAsync(_chat);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("LoadError", "UpdateChat");
+        }
     }
 
     private async Task HandleSubmit()
     {
-        _chat.ChatMembers = _multySelect.Where(c => c.IsSelected)
-            .Select(c => new ChatMemberViewModel { UserId = c.Value.Id }).ToList();
-        await ChatPageService.UpdateValueAsync(_chat);
-        NavigationManager.NavigateTo("/chat");
+        _isSubmitting = true;
+        _errorMessage = string.Empty;
+        try
+        {
+            _chat.ChatMembers = _multySelect.Where(c => c.IsSelected)
+                .Select(c => new ChatMemberViewModel { UserId = c.Value.Id }).ToList();
+            await ChatPageService.UpdateValueAsync(_chat);
+            NavigationManager.NavigateTo("/chat");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("SubmitError", "UpdateChat");
+            await JsRuntime.InvokeVoidAsync("scrollToElement", _errorElement);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
     }
 
     private void GoBack()
     {
         NavigationManager.NavigateTo("/chat");
     }
-
 }
 
 <style>
-    .chat {
-        width: 500px;
-        justify-self: center;
-        margin-bottom: 100px;
-    }
-
-    .buttons {
-        margin-top: 20px;
-    }
-
-    .employee-list {
-        max-height: 400px; /* Adjust height as needed */
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-
-    .employee-item {
+    .update-chat-container {
+        min-height: 80vh;
+        margin-bottom: 10vh;
+        background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
         display: flex;
         align-items: center;
-        padding: 8px;
-        border-bottom: 1px solid #eee;
+        justify-content: center;
+        padding: 1rem;
     }
 
-    .employee-item:last-child {
-        border-bottom: none;
+    .update-chat-card {
+        max-width: 500px;
+        width: 100%;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        animation: update-chat-fadeIn 0.5s ease-in;
     }
 
-    .employee-checkbox {
-        margin-right: 10px;
+    .update-chat-header {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 
-    .avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 10px;
+    .update-chat-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
     }
 
-    .employee-info {
+    .update-chat-form-group {
         display: flex;
         flex-direction: column;
     }
 
-    .employee-name {
-        font-weight: bold;
+    .update-chat-form-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin-bottom: 0.5rem;
     }
 
-    .employee-username {
-        color: #777;
-        font-size: 0.9em;
+    .update-chat-form-input,
+    .update-chat-form-textarea {
+        padding: 0.75rem 1rem;
+        background: #f9fafb;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: #1f2937;
+        transition: all 0.3s ease;
     }
 
-    #Description {
-        min-height: 110px;
+    .update-chat-form-input:focus,
+    .update-chat-form-textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
     }
 
+    .update-chat-form-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .update-chat-form-error {
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+
+    .update-chat-employee-list {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 0.75rem;
+        background: #f9fafb;
+        margin-top: 1rem;
+    }
+
+    .update-chat-employee-list-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.75rem;
+    }
+
+    .update-chat-employee-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+        transition: background 0.2s ease;
+    }
+
+    .update-chat-employee-item:last-child {
+        border-bottom: none;
+    }
+
+    .update-chat-employee-item:hover {
+        background: #e5e7eb;
+    }
+
+    .update-chat-employee-checkbox {
+        margin-right: 0.75rem;
+        width: 1.25rem;
+        height: 1.25rem;
+        cursor: pointer;
+    }
+
+    .update-chat-employee-checkbox:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    .update-chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 0.75rem;
+        border: 2px solid #e5e7eb;
+    }
+
+    .update-chat-employee-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .update-chat-employee-name {
+        font-weight: 600;
+        color: #1f2937;
+        font-size: 0.875rem;
+    }
+
+    .update-chat-employee-username {
+        color: #6b7280;
+        font-size: 0.75rem;
+    }
+
+    .update-chat-no-employees {
+        color: #6b7280;
+        font-size: 0.875rem;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .update-chat-form-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .update-chat-btn {
+        flex: 1;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .update-chat-btn-primary {
+        background: linear-gradient(to right, #6366f1, #4f46e5);
+        color: #ffffff;
+        border: none;
+    }
+
+    .update-chat-btn-primary:hover:not(:disabled) {
+        background: linear-gradient(to right, #4f46e5, #4338ca);
+        transform: translateY(-2px);
+    }
+
+    .update-chat-btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .update-chat-btn-secondary {
+        background: #d1d5db;
+        color: #1f2937;
+        border: none;
+    }
+
+    .update-chat-btn-secondary:hover {
+        background: #b3b8c2;
+        transform: translateY(-2px);
+    }
+
+    .update-chat-spinner {
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid #ffffff;
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: update-chat-spin 0.75s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    .update-chat-error-message {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        animation: update-chat-fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes update-chat-fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes update-chat-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @@media (max-width: 640px) {
+        .update-chat-card {
+            padding: 1.5rem;
+        }
+
+        .update-chat-header {
+            font-size: 1.25rem;
+        }
+
+        .update-chat-form-buttons {
+            flex-direction: column;
+        }
+
+        .update-chat-btn {
+            width: 100%;
+        }
+
+        .update-chat-employee-list {
+            max-height: 300px;
+        }
+    }
 </style>
+
+<script>
+    window.scrollToElement = async (element) => {
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+</script>
