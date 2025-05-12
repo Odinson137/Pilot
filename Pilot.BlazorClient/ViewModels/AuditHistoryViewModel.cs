@@ -1,15 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Pilot.Contracts.Attributes;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 
-namespace Pilot.Contracts.DTO.ModelDto;
+namespace Pilot.BlazorClient.ViewModels;
 
 [FromService(ServiceName.AuditHistoryService)]
-public class AuditHistoryDto : BaseDto
+public class AuditHistoryViewModel : BaseViewModel
 {
-    public override string IdString => Guid.NewGuid().ToString(); // TODO костыыыыыыыыыыль
-    
     public int UserId { get; set; }
 
     public int EntityId { get; set; }

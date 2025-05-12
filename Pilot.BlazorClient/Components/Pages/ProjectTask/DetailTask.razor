@@ -7,9 +7,11 @@
 @using Pilot.BlazorClient.Components.Pages.User
 @using Pilot.BlazorClient.Components.Helpers
 @using Pilot.BlazorClient.Data
+@using System.Text.Json
 @inject IProjectTaskPageService ProjectTaskPageService
 @inject IJsonLocalizationService Localizer
 @inject IUserService UserService
+@inject IJSRuntime JSRuntime
 
 <PageTitle>@Localizer.GetString("TaskTitle", "Task") @(_task?.Id ?? 0)</PageTitle>
 
@@ -38,8 +40,7 @@ else
             <button @onclick="() => SetTab(Tab.Edit)" class="tab-button @(CurrentTab == Tab.Edit ? "active" : "")">
                 @Localizer.GetString("EditTab", "Task")
             </button>
-            <button @onclick="() => SetTab(Tab.History)"
-                    class="tab-button @(CurrentTab == Tab.History ? "active" : "")">
+            <button @onclick="() => SetTab(Tab.History)" class="tab-button @(CurrentTab == Tab.History ? "active" : "")">
                 @Localizer.GetString("HistoryTab", "Task")
             </button>
         </div>
@@ -53,15 +54,9 @@ else
                             <div class="task-section">
                                 <h3>@Localizer.GetString("Details", "Task")</h3>
                                 <div class="task-meta">
-                                    <p><span class="label">@Localizer.GetString("Priority", "Task")</span> <span
-                                            style="color: @GetPriorityColor(_task.Priority)">@GetPriorityLabel(_task.Priority)</span>
-                                    </p>
-                                    <p><span class="label">@Localizer.GetString("Status", "Task")</span> <span
-                                            style="color: @GetStatusColor(_task.TaskStatus)">@_task.TaskStatus</span>
-                                    </p>
-                                    <p><span
-                                            class="label">@Localizer.GetString("CreatedOn", "Task")</span> @_task.CreateAt
-                                    </p>
+                                    <p><span class="label">@Localizer.GetString("Priority", "Task")</span> <span style="color: @GetPriorityColor(_task.Priority)">@GetPriorityLabel(_task.Priority)</span></p>
+                                    <p><span class="label">@Localizer.GetString("Status", "Task")</span> <span style="color: @GetStatusColor(_task.TaskStatus)">@_task.TaskStatus</span></p>
+                                    <p><span class="label">@Localizer.GetString("CreatedOn", "Task")</span> @_task.CreateAt</p>
                                 </div>
                             </div>
 
@@ -69,18 +64,15 @@ else
                                 <h3>@Localizer.GetString("People", "Task")</h3>
                                 <div class="user-card">
                                     <span class="label">@Localizer.GetString("AssignedTo", "Task")</span>
-                                    <a href="@GetUserProfileLink(_task?.TeamEmployee?.CompanyUser.Id)"
-                                       class="user-link">
-                                        <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar"
-                                             class="avatar"/>
+                                    <a href="@GetUserProfileLink(_task?.TeamEmployee?.CompanyUser.Id)" class="user-link">
+                                        <img src="@TempFileService.GetUrl(_userViewModel?.AvatarImage)" alt="avatar" class="avatar"/>
                                         <span>@_userViewModel?.FullName</span>
                                     </a>
                                 </div>
                                 <div class="user-card">
                                     <span class="label">@Localizer.GetString("CreatedBy", "Task")</span>
                                     <a href="@GetUserProfileLink(_task?.CreatedBy.Id)" class="user-link">
-                                        <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)"
-                                             alt="avatar" class="avatar"/>
+                                        <img src="@TempFileService.GetUrl(_createdUserViewModel?.AvatarImage)" alt="avatar" class="avatar"/>
                                         <span>@_createdUserViewModel?.FullName</span>
                                     </a>
                                 </div>
@@ -90,9 +82,7 @@ else
                         <div class="task-section progress-section">
                             <h3>@Localizer.GetString("AddProgressUpdate", "Task")</h3>
                             <div class="progress-input">
-                                <textarea @bind="_newTaskInfoDescription"
-                                          placeholder="@Localizer.GetString("EnterTaskUpdate", "Task")"
-                                          class="form-textarea"></textarea>
+                                <textarea @bind="_newTaskInfoDescription" placeholder="@Localizer.GetString("EnterTaskUpdate", "Task")" class="form-textarea"></textarea>
                                 <div class="time-input">
                                     <select @bind="_newTaskInfoTimeSpentHours" class="form-select">
                                         @for (int i = 0; i <= 23; i++)
@@ -121,8 +111,7 @@ else
                                         <span class="material-icons">attach_file</span>
                                         <InputFile OnChange="HandleFileUpload" class="file-input" multiple/>
                                     </label>
-                                    <button class="btn btn-primary"
-                                            @onclick="AddNewTaskInfo">@Localizer.GetString("AddUpdate", "Task")</button>
+                                    <button class="btn btn-primary" @onclick="AddNewTaskInfo">@Localizer.GetString("AddUpdate", "Task")</button>
                                 </div>
                             </div>
                         </div>
@@ -137,25 +126,16 @@ else
                                         <p class="progress-description">@info.Description</p>
                                         @if (_tempAttachedFile != null && info.File == _tempAttachedFile.Value.Item1)
                                         {
-                                            <img
-                                                src="@($"data:image/png;base64,{Convert.ToBase64String(_tempAttachedFile.Value.Item2)}")"
-                                                alt="file" class="progress-image"/>
+                                            <img src="@($"data:image/png;base64,{Convert.ToBase64String(_tempAttachedFile.Value.Item2)}")" alt="file" class="progress-image"/>
                                         }
                                         else if (!string.IsNullOrEmpty(info.File))
                                         {
-                                            <img src="@TempFileService.GetUrl(info.File)" alt="file"
-                                                 class="progress-image"/>
+                                            <img src="@TempFileService.GetUrl(info.File)" alt="file" class="progress-image"/>
                                         }
                                         <div class="progress-meta">
-                                            <p><span
-                                                    class="label">@Localizer.GetString("AddedBy", "Task")</span> @_userViewModels[info.CreatedBy!.Id].FullName
-                                            </p>
-                                            <p><span
-                                                    class="label">@Localizer.GetString("Date", "Task")</span> @info.CreateAt
-                                            </p>
-                                            <p><span
-                                                    class="label">@Localizer.GetString("TimeSpent", "Task")</span> @info.TimeSpent.ToString("hh\\:mm")
-                                            </p>
+                                            <p><span class="label">@Localizer.GetString("AddedBy", "Task")</span> @_userViewModels[info.CreatedBy!.Id].FullName</p>
+                                            <p><span class="label">@Localizer.GetString("Date", "Task")</span> @info.CreateAt</p>
+                                            <p><span class="label">@Localizer.GetString("TimeSpent", "Task")</span> @info.TimeSpent.ToString("hh\\:mm")</p>
                                         </div>
                                     </div>
                                 }
@@ -173,14 +153,11 @@ else
                         <EditForm Model="_task" class="edit-form">
                             <div class="form-group">
                                 <label>@Localizer.GetString("TaskName", "Task")</label>
-                                <input @bind="_task.Name" placeholder="@Localizer.GetString("EnterTaskName", "Task")"
-                                       class="form-input"/>
+                                <input @bind="_task.Name" placeholder="@Localizer.GetString("EnterTaskName", "Task")" class="form-input"/>
                             </div>
                             <div class="form-group">
                                 <label>@Localizer.GetString("Description", "Task")</label>
-                                <textarea @bind="_task.Description"
-                                          placeholder="@Localizer.GetString("EnterTaskDescription", "Task")"
-                                          class="form-textarea"></textarea>
+                                <textarea @bind="_task.Description" placeholder="@Localizer.GetString("EnterTaskDescription", "Task")" class="form-textarea"></textarea>
                             </div>
                             <div class="form-group">
                                 <label>@Localizer.GetString("Priority", "Task")</label>
@@ -201,10 +178,8 @@ else
                                 </select>
                             </div>
                             <div class="form-actions">
-                                <button type="button" class="btn btn-success"
-                                        @onclick="Save">@Localizer.GetString("Save", "Task")</button>
-                                <button type="button" class="btn btn-secondary"
-                                        @onclick="() => SetTab(Tab.View)">@Localizer.GetString("Cancel", "Task")</button>
+                                <button type="button" class="btn btn-success" @onclick="Save">@Localizer.GetString("Save", "Task")</button>
+                                <button type="button" class="btn btn-secondary" @onclick="() => SetTab(Tab.View)">@Localizer.GetString("Cancel", "Task")</button>
                             </div>
                         </EditForm>
                     </div>
@@ -213,40 +188,83 @@ else
                 case Tab.History:
                     <div class="task-history">
                         <h3>@Localizer.GetString("TaskHistory", "Task")</h3>
-                        <div class="history-list">
-                            <div class="history-card">
-                                <p><span class="label">@Localizer.GetString("User", "Task")</span> John Doe</p>
-                                <p><span class="label">@Localizer.GetString("Date", "Task")</span> 2025-03-20 14:30</p>
-                                <p><span class="label">@Localizer.GetString("Change", "Task")</span> Changed status to
-                                    "Work"</p>
+                        @if (_historyLoading)
+                        {
+                            <div class="history-loading">
+                                <div class="history-spinner"></div>
+                                <p>@Localizer.GetString("LoadingHistory", "Task")</p>
                             </div>
-                            <div class="history-card">
-                                <p><span class="label">@Localizer.GetString("User", "Task")</span> Jane Smith</p>
-                                <p><span class="label">@Localizer.GetString("Date", "Task")</span> 2025-03-21 09:15</p>
-                                <p><span class="label">@Localizer.GetString("Change", "Task")</span> Updated description
-                                </p>
+                        }
+                        else if (_auditHistory.Any())
+                        {
+                            <div class="history-list">
+                                @foreach (var history in _auditHistory)
+                                {
+                                    <div class="history-card">
+                                        <p><span class="label">@Localizer.GetString("User", "Task")</span> @_userViewModels[history.UserId].FullName</p>
+                                        <p><span class="label">@Localizer.GetString("Date", "Task")</span> @history.CreateAt</p>
+                                        <p><span class="label">@Localizer.GetString("Action", "Task")</span> @Localizer.GetString($"Action_{history.ActionState}", "Task")</p>
+                                        <p><span class="label">@Localizer.GetString("Changes", "Task")</span> @GetChangeDescription(history, _auditHistory.ElementAtOrDefault(_auditHistory.IndexOf(history) + 1))</p>
+                                        <button class="btn btn-primary btn-view-task" @onclick="() => ShowTaskModal(history)">@Localizer.GetString("ViewTask", "Task")</button>
+                                    </div>
+                                }
                             </div>
-                        </div>
+                        }
+                        else
+                        {
+                            <p class="no-data">@Localizer.GetString("NoHistory", "Task")</p>
+                        }
                     </div>
                     break;
             }
         </div>
     </div>
+
+    @if (_showModal && _selectedHistory != null)
+    {
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>@Localizer.GetString("TaskSnapshot", "Task")</h3>
+                    <button class="modal-close" @onclick="CloseTaskModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="task-snapshot">
+                        <p><span class="label">@Localizer.GetString("TaskName", "Task")</span> @_taskSnapshot.Name</p>
+                        <p><span class="label">@Localizer.GetString("Description", "Task")</span> @_taskSnapshot.Description</p>
+                        <p><span class="label">@Localizer.GetString("Priority", "Task")</span> <span style="color: @GetPriorityColor(_taskSnapshot.Priority)">@GetPriorityLabel(_taskSnapshot.Priority)</span></p>
+                        <p><span class="label">@Localizer.GetString("Status", "Task")</span> <span style="color: @GetStatusColor(_taskSnapshot.TaskStatus)">@_taskSnapshot.TaskStatus</span></p>
+                        <p><span class="label">@Localizer.GetString("CreatedOn", "Task")</span> @_taskSnapshot.CreateAt</p>
+                        @* <p><span class="label">@Localizer.GetString("CreatedBy", "Task")</span> @_userViewModels[_taskSnapshot.CreatedBy.Id].FullName</p> *@
+                        @* <p><span class="label">@Localizer.GetString("AssignedTo", "Task")</span> @_userViewModels[_taskSnapshot.TeamEmployee.CompanyUser.Id].FullName</p> *@
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseTaskModal">@Localizer.GetString("Close", "Task")</button>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
     private bool _isLoading = true;
+    private bool _historyLoading = true;
     private ProjectTaskViewModel? _task;
     private (string, byte[])? _attachedFile;
     private (string, byte[])? _tempAttachedFile;
     private string _newTaskInfoDescription = string.Empty;
     private int _newTaskInfoTimeSpentHours;
-    private int _newTaskInfoTimeSpentMinutes = 5; // default
+    private int _newTaskInfoTimeSpentMinutes = 5;
     private UserViewModel? _createdUserViewModel;
     private UserViewModel? _userViewModel;
     private UserViewModel? _currentUserViewModel;
     private CompanyUserViewModel? _companyUserViewModel;
     private Dictionary<int, UserViewModel> _userViewModels = new();
+    private List<AuditHistoryViewModel> _auditHistory = new();
+    private bool _showModal;
+    private AuditHistoryViewModel? _selectedHistory;
+    private ProjectTaskViewModel _taskSnapshot;
 
     [Parameter] public int Id { get; set; }
 
@@ -293,6 +311,26 @@ else
             }
         }
 
+        // Загрузка истории изменений
+        try
+        {
+            _auditHistory = await ProjectTaskPageService.GetHistoryAsync(Id);
+            var historyUserIds = _auditHistory.Select(h => h.UserId).Distinct().ToList();
+            var historyUsers = await ProjectTaskPageService.GetUsersAsync(historyUserIds);
+            foreach (var user in historyUsers)
+            {
+                _userViewModels[user.Id] = user;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading audit history: {ex.Message}");
+        }
+        finally
+        {
+            _historyLoading = false;
+        }
+
         _isLoading = false;
     }
 
@@ -328,6 +366,43 @@ else
             TaskStatus.Finished => "#17a2b8",
             _ => "#000000"
         };
+    }
+
+    private string GetChangeDescription(AuditHistoryViewModel current, AuditHistoryViewModel? previous)
+    {
+        var currentTask = JsonSerializer.Deserialize<ProjectTaskViewModel>(current.NewValue);
+        if (previous == null)
+        {
+            return Localizer.GetString("TaskCreated", "Task");
+        }
+
+        var previousTask = JsonSerializer.Deserialize<ProjectTaskViewModel>(previous.NewValue);
+        var changes = new List<string>();
+
+        if (currentTask.Name != previousTask.Name)
+        {
+            changes.Add(Localizer.GetString("ChangedName", "Task"));
+        }
+        if (currentTask.Description != previousTask.Description)
+        {
+            changes.Add(Localizer.GetString("ChangedDescription", "Task"));
+        }
+        if (currentTask.Priority != previousTask.Priority)
+        {
+            changes.Add(Localizer.GetString("ChangedPriority", "Task"));
+        }
+        if (currentTask.TaskStatus != previousTask.TaskStatus)
+        {
+            changes.Add(Localizer.GetString("ChangedStatus", "Task"));
+        }
+        if (currentTask.TeamEmployee?.Id != previousTask.TeamEmployee?.Id)
+        {
+            // var prevUser = previousTask.TeamEmployee != null ? _userViewModels[previousTask.TeamEmployee.CompanyUser.Id].FullName : "None";
+            // var currUser = currentTask.TeamEmployee != null ? _userViewModels[currentTask.TeamEmployee.CompanyUser.Id].FullName : "None";
+            // changes.Add(currUser);
+        }
+
+        return changes.Any() ? string.Join("; ", changes) : Localizer.GetString("NoSignificantChanges", "Task");
     }
 
     private async Task AddNewTaskInfo()
@@ -394,7 +469,7 @@ else
             var file = e.File;
             if (file != null)
             {
-                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+                await using var stream = file.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
                 using var ms = new MemoryStream();
                 await stream.CopyToAsync(ms);
                 _attachedFile = (file.Name, ms.ToArray());
@@ -430,7 +505,20 @@ else
         StateHasChanged();
     }
 
-    [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
+    private void ShowTaskModal(AuditHistoryViewModel history)
+    {
+        _selectedHistory = history;
+        _taskSnapshot = JsonSerializer.Deserialize<ProjectTaskViewModel>(_selectedHistory.NewValue)!;
+        _showModal = true;
+        StateHasChanged();
+    }
+
+    private void CloseTaskModal()
+    {
+        _showModal = false;
+        _selectedHistory = null;
+        StateHasChanged();
+    }
 }
 
 <style>
@@ -805,16 +893,111 @@ else
         transform: translateY(-5px);
     }
 
-    /* Анимация */
+    .history-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .history-spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #d1d5db;
+        border-top: 3px solid var(--primary);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .btn-view-task {
+        margin-top: 10px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+
+    /* Модальное окно */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        max-width: 500px;
+        width: 100%;
+        max-height: 80vh;
+        overflow-y: auto;
+        animation: slideIn 0.3s ease-in-out;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .modal-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #333;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #666;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .modal-close:hover {
+        color: var(--danger);
+    }
+
+    .modal-body {
+        padding: 15px;
+    }
+
+    .task-snapshot p {
+        margin: 10px 0;
+        font-size: 1rem;
+    }
+
+    .modal-footer {
+        padding: 15px;
+        border-top: 1px solid #e0e0e0;
+        text-align: right;
+    }
+
+    /* Анимации */
     @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes slideIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     /* Адаптивность */
@@ -843,6 +1026,11 @@ else
 
         .form-select {
             width: 100%;
+        }
+
+        .modal-content {
+            margin: 10px;
+            max-height: 90vh;
         }
     }
 </style>

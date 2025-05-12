@@ -34,6 +34,7 @@ public class AutoMapperProfile : Profile
         Mapping<JobApplicationViewModel, JobApplicationDto>();
         Mapping<FileViewModel, FileDto>();
         Mapping<TeamEmployeeViewModel, TeamEmployeeDto>();
+        Mapping<AuditHistoryViewModel, AuditHistoryDto>();
     }
     
     private void Mapping<TViewModel, TDto>() where TViewModel : BaseViewModel, new() where TDto : BaseDto

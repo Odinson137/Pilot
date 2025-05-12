@@ -23,4 +23,6 @@ public interface IProjectTaskPageService : IBasePageService<ProjectTaskViewModel
         Action<InfoMessageViewModel>? action = null);
     
     Task<ICollection<TeamViewModel>> GetProjectTeamsAsync(int projectId);
+    
+    Task<List<AuditHistoryViewModel>> GetHistoryAsync(int projectTaskId);
 }

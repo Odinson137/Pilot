@@ -25,7 +25,7 @@ public class ApprovedJobApplicationConsumer(
             Company = new BaseDto {Id = context.Message.CompanyId},
             PostId = context.Message.PostId,
         };
-        throw new Exception("Test");
+        // throw new Exception("Test");
         var command = new CreateEntityCommand<CompanyUserDto>(newEmployee, context.Message.ChangerUserId);
         var model = await mediator.Send(command, context.CancellationToken);
 

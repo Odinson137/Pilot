@@ -1,6 +1,9 @@
-﻿using Pilot.BlazorClient.Interface;
+﻿using Docker.DotNet.Models;
+using Pilot.BlazorClient.Interface;
 using Pilot.BlazorClient.ViewModels;
 using Pilot.BlazorClient.ViewModels.UserViewModels;
+using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 
 namespace Pilot.BlazorClient.Service.Pages;
 
@@ -11,6 +14,7 @@ public class ProjectTaskPageService(
     IBaseModelService<CompanyUserViewModel> companyUserService, 
     IBaseModelService<TaskInfoViewModel> taskInfoService,
     IBaseModelService<TeamViewModel> teamService,
+    IBaseModelService<AuditHistoryViewModel> auditHistoryService,
     IMessengerService messengerService,
     IBaseModelService<FileViewModel> fileService
     ) : BasePageService<ProjectTaskViewModel>(projectTaskService, messengerService), IProjectTaskPageService
@@ -67,5 +71,17 @@ public class ProjectTaskPageService(
     public async Task<ICollection<TeamViewModel>> GetProjectTeamsAsync(int projectId)
     {
         return await teamService.GetValuesAsync(c => c.Project!.Id, projectId);
+    }
+
+    public async Task<List<AuditHistoryViewModel>> GetHistoryAsync(int projectTaskId)
+    {
+        var filter = new BaseFilter
+        {
+            WhereFilter = new WhereFilter()
+        };
+        filter.WhereFilter.Init<int, AuditHistoryViewModel>((c => c.EntityId, projectTaskId));
+        filter.WhereFilter.Init<ModelType, AuditHistoryViewModel>((c => c.EntityType, ModelType.ProjectTask));
+        var result = await auditHistoryService.GetValuesAsync(filter);
+        return result.ToList();
     }
 }

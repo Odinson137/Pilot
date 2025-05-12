@@ -40,6 +40,9 @@ services.AddHttpClient(nameof(ServiceName.CapabilityServer),
 services.AddHttpClient(nameof(ServiceName.BackgroundJobService),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("BackgroundJobServiceUrl")!); });
 
+services.AddHttpClient(nameof(ServiceName.AuditHistoryService),
+    c => { c.BaseAddress = new Uri(configuration.GetValue<string>("AuditHistoryServiceUrl")!); });
+
 services.AddScoped<IModelService, ModelService>();
 services.AddScoped<IBaseHttpService, BaseHttpService>();
 services.AddScoped<IHttpIdentityService, HttpIdentityService>();

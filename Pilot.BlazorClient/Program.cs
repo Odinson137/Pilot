@@ -64,6 +64,7 @@ services.AddScoped<IBaseModelService<TeamViewModel>, BaseModelService<TeamDto, T
 services.AddScoped<IBaseModelService<UserSkillViewModel>, BaseModelService<UserSkillDto, UserSkillViewModel>>();
 services.AddScoped<IBaseModelService<FileViewModel>, BaseModelService<FileDto, FileViewModel>>();
 services.AddScoped<IBaseModelService<TeamEmployeeViewModel>, BaseModelService<TeamEmployeeDto, TeamEmployeeViewModel>>();
+services.AddScoped<IBaseModelService<AuditHistoryViewModel>, BaseModelService<AuditHistoryDto, AuditHistoryViewModel>>();
 
 services.AddSingleton<IJsonLocalizationService, JsonLocalizationService>();
 services.AddScoped<IAiService, AiService>();
