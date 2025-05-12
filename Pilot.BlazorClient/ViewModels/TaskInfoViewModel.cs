@@ -4,7 +4,7 @@ namespace Pilot.BlazorClient.ViewModels;
 
 public class TaskInfoViewModel : BaseViewModel
 {
-    [Required] public BaseViewModel ProjectTask { get; set; } = null!;
+    [Required] public ProjectTaskViewModel ProjectTask { get; set; } = null!;
 
     public string? File { get; set; }
     

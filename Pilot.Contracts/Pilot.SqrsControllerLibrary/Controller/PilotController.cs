@@ -15,7 +15,7 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [ProducesResponseType(400)]
     public virtual async Task<IActionResult> AddValue([FromBody] TDto valueDto, CancellationToken token)
     {
-        await Mediator.Send(new CreateCommand<TDto>(valueDto, UserId), token);
+        await Mediator.Send(new CreateCommand<TDto>(valueDto, UserId, Guid.NewGuid()), token);
         return Ok($"The {typeof(TDto).Name} will be adding soon");
     }
 
@@ -37,7 +37,7 @@ public abstract class PilotController<TDto>(IMediator mediator)
     [ProducesResponseType(404)]
     public virtual async Task<IActionResult> DeleteValue(int valueId, CancellationToken token)
     {
-        await Mediator.Send(new DeleteCommand<TDto>(valueId, UserId), token);
+        await Mediator.Send(new DeleteCommand<TDto>(valueId, UserId, Guid.NewGuid()), token);
         return Ok($"The {typeof(TDto).Name} will delete soon");
     }
 }

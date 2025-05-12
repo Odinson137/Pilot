@@ -3,73 +3,293 @@
 @using Pilot.BlazorClient.ViewModels
 @inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
+@inject IJsonLocalizationService Localizer
 
-<PageTitle>Reminders</PageTitle>
+<PageTitle>@Localizer.GetString("PageTitle", "Reminders")</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h3>Reminders</h3>
-    <div>
-        <button class="btn btn-sm btn-secondary" @onclick="() => EditReminder()">Create Reminder</button>
+<div class="reminder-page-container">
+    <div class="reminder-page-header">
+        <h3 class="reminder-page-title">@Localizer.GetString("RemindersTitle", "Reminders")</h3>
+        <button class="reminder-page-btn reminder-page-btn-create" @onclick="() => EditReminder()">
+            @Localizer.GetString("CreateReminder", "Reminders")
+        </button>
     </div>
-</div>
 
-@if (_isLoading)
-{
-    <p>Loading reminders...</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Chat</th>
-            <th>Time</th>
-            <th>Days</th>
-            <th>Message</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var reminder in _reminders)
-        {
-            <tr>
-                <td>@reminder.ChatId</td>
-                <td>@reminder.Time</td>
-                <td>@string.Join(", ", reminder.DayOfWeeks)</td>
-                <td>@reminder.Message</td>
-                <td>@reminder.ReminderStatus</td>
-                <td>
-                    <button class="btn btn-warning" @onclick="() => EditReminder(reminder.Id)">Edit</button>
-                    <button class="btn btn-danger" @onclick="() => DeleteReminder(reminder.Id)">Delete</button>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+    @if (_isLoading)
+    {
+        <div class="reminder-page-spinner">
+            <div class="reminder-page-spinner-icon"></div>
+            <p>@Localizer.GetString("Loading", "Reminders")</p>
+        </div>
+    }
+    else if (_reminders.Any())
+    {
+        <div class="reminder-page-grid">
+            @foreach (var reminder in _reminders)
+            {
+                <div class="reminder-page-card">
+                    <div class="reminder-page-card-content">
+                        <h4 class="reminder-page-card-title">@Localizer.GetString("Chat", "Reminders") #@reminder.ChatId</h4>
+                        <p><strong>@Localizer.GetString("Time", "Reminders"):</strong> @reminder.Time</p>
+                        <p><strong>@Localizer.GetString("Days", "Reminders"):</strong> @string.Join(", ", reminder.DayOfWeeks.Select(d => Localizer.GetString(d.ToString(), "Reminders")))</p>
+                        <p><strong>@Localizer.GetString("Message", "Reminders"):</strong> @reminder.Message</p>
+                        <p><strong>@Localizer.GetString("Status", "Reminders"):</strong> @Localizer.GetString(reminder.ReminderStatus.ToString(), "Reminders")</p>
+                    </div>
+                    <div class="reminder-page-card-actions">
+                        <button class="reminder-page-btn reminder-page-btn-edit" @onclick="() => EditReminder(reminder.Id)">
+                            @Localizer.GetString("Edit", "Reminders")
+                        </button>
+                        <button class="reminder-page-btn reminder-page-btn-delete" @onclick="() => DeleteReminder(reminder.Id)">
+                            @Localizer.GetString("Delete", "Reminders")
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="reminder-page-empty">@Localizer.GetString("NoReminders", "Reminders")</p>
+    }
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="reminder-page-error">
+            @_errorMessage
+        </div>
+    }
+</div>
 
 @code {
     private ICollection<ChatReminderViewModel> _reminders = [];
     private bool _isLoading = true;
-    
+    private string _errorMessage = string.Empty;
+
     [Parameter]
     public int ChatId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _reminders = await ReminderService.GetReminderAsync(ChatId);
-        _isLoading = false;
+        try
+        {
+            _reminders = await ReminderService.GetReminderAsync(ChatId);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("LoadError", "Reminders");
+            Console.WriteLine($"Error loading reminders: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
-    private async Task EditReminder(int? id = null)
+    private void EditReminder(int? id = null)
     {
         NavigationManager.NavigateTo($"/reminder/{id}");
     }
 
     private async Task DeleteReminder(int id)
     {
-        await ReminderService.DeleteValueAsync(id);
-        _reminders = await ReminderService.GetValuesAsync();
+        try
+        {
+            await ReminderService.DeleteValueAsync(id);
+            _reminders = await ReminderService.GetReminderAsync(ChatId);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("DeleteError", "Reminders");
+            Console.WriteLine($"Error deleting reminder: {ex.Message}");
+        }
     }
 }
+
+<style>
+    .reminder-page-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .reminder-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .reminder-page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .reminder-page-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .reminder-page-btn-create {
+        background: linear-gradient(to right, #22c55e, #16a34a);
+        color: #ffffff;
+    }
+
+    .reminder-page-btn-create:hover {
+        background: linear-gradient(to right, #16a34a, #15803d);
+        transform: translateY(-2px);
+    }
+
+    .reminder-page-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .reminder-page-spinner-icon {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #d1d5db;
+        border-top: 4px solid #4a90e2;
+        border-radius: 50%;
+        animation: reminder-page-spin 1s linear infinite;
+    }
+
+    .reminder-page-spinner p {
+        font-size: 1rem;
+        color: #4b5563;
+    }
+
+    .reminder-page-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .reminder-page-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        animation: reminder-page-fadeIn 0.5s ease-in;
+    }
+
+    .reminder-page-card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .reminder-page-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .reminder-page-card-content p {
+        font-size: 0.875rem;
+        color: #4b5563;
+    }
+
+    .reminder-page-card-content p strong {
+        color: #1f2937;
+    }
+
+    .reminder-page-card-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+    }
+
+    .reminder-page-btn-edit {
+        background: linear-gradient(to right, #facc15, #eab308);
+        color: #1f2937;
+    }
+
+    .reminder-page-btn-edit:hover {
+        background: linear-gradient(to right, #eab308, #ca8a04);
+        transform: translateY(-2px);
+    }
+
+    .reminder-page-btn-delete {
+        background: linear-gradient(to right, #ef4444, #dc2626);
+        color: #ffffff;
+    }
+
+    .reminder-page-btn-delete:hover {
+        background: linear-gradient(to right, #dc2626, #b91c1c);
+        transform: translateY(-2px);
+    }
+
+    .reminder-page-empty {
+        font-size: 1rem;
+        color: #6b7280;
+        text-align: center;
+        margin-top: 2rem;
+        font-style: italic;
+    }
+
+    .reminder-page-error {
+        padding: 1rem;
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        animation: reminder-page-fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes reminder-page-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @@keyframes reminder-page-fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@media (max-width: 640px) {
+        .reminder-page-container {
+            padding: 1rem;
+        }
+
+        .reminder-page-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .reminder-page-btn {
+            width: 100%;
+        }
+
+        .reminder-page-card-actions {
+            flex-direction: column;
+        }
+
+        .reminder-page-btn-edit,
+        .reminder-page-btn-delete {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    window.confirmDelete = () => {
+        return confirm('Are you sure you want to delete this reminder?');
+    };
+</script>

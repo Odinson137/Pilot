@@ -250,13 +250,33 @@
             }
         };
 
-        var random = new Random();
-        var days = Enumerable.Range(1, 7).Select(i => Localizer.GetString($"Day{i}", "Summary")).ToList();
-        var hours = Enumerable.Range(1, 7).Select(_ => random.Next(1, 10)).ToList();
-
-        foreach (var day in days)
+        // Получаем активности за последние 7 дней
+        var activities = await WorkPageService.GetDaylyAcitvityAsync(CompanyUserId);
+    
+        // Определяем диапазон последних 7 дней
+        var today = DateTime.Today;
+        var days = Enumerable.Range(0, 7)
+            .Select(i => today.AddDays(-i))
+            .Reverse()
+            .ToList();
+    
+        // Метки для графика (понедельник, вторник и т.д.)
+        var dayLabels = days.Select(d => Localizer.GetString($"Day{(int)d.DayOfWeek + 1}", "Summary")).ToList();
+    
+        // Суммируем TimeSpent (в часах) по дням
+        var hours = days.Select(day =>
         {
-            _dailyHoursConfig.Data.Labels.Add(day);
+            var dailyActivities = activities
+                .Where(a => a.CreateAt?.Date == day.Date)
+                .ToList();
+            var totalHours = dailyActivities
+                .Sum(a => a.TimeSpent.TotalHours);
+            return (int)Math.Round(totalHours, 0); // Округляем до целых часов
+        }).ToList();
+
+        foreach (var label in dayLabels)
+        {
+            _dailyHoursConfig.Data.Labels.Add(label);
         }
 
         _dailyHoursConfig.Data.Datasets.Add(new LineDataset<int>(hours)

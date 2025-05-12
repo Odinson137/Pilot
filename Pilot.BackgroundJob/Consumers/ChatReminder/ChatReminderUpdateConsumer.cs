@@ -45,7 +45,7 @@ public class ChatReminderUpdateConsumer(
         
         foreach (var day in model.DayOfWeeks)
         {
-            var time = model.Time.AddHours(3); // TODO про это не забыть
+            var time = model.Time.AddHours(-3); // TODO про это не забыть
             var cronExpression = GetCronExpression(day, time);
             var jobId = $"chatReminder-{model.Id}-{day}";
             job.AddReminderRecurringJob(

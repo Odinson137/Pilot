@@ -4,79 +4,121 @@
 @using Pilot.Contracts.Data.Enums
 @using BlazorBootstrap
 @using Pilot.BlazorClient.Data
-@inject ProtectedSessionStorage ProtectedSessionStorage;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStorage
 @inject IReminderPageService ReminderService
 @inject NavigationManager NavigationManager
+@inject IJsonLocalizationService Localizer
 
-<PageTitle>Edit Reminder</PageTitle>
+<PageTitle>@Localizer.GetString(ReminderId.HasValue ? "EditPageTitle" : "CreatePageTitle", "ReminderEdit")</PageTitle>
 
-<h3>@(ReminderId.HasValue ? "Edit Reminder" : "Create Reminder")</h3>
+<div class="reminder-edit-container">
+    <div class="reminder-edit-card">
+        <h3 class="reminder-edit-title">@Localizer.GetString(ReminderId.HasValue ? "EditTitle" : "CreateTitle", "ReminderEdit")</h3>
 
-<EditForm Model="_reminder" OnValidSubmit="SaveReminder">
-    <DataAnnotationsValidator/>
-    <ValidationSummary/>
+        @if (_isLoading)
+        {
+            <div class="reminder-edit-spinner">
+                <div class="reminder-edit-spinner-icon"></div>
+                <p>@Localizer.GetString("Loading", "ReminderEdit")</p>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="_reminder" OnValidSubmit="SaveReminder">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="reminder-edit-validation" />
 
-    <div class="mb-3">
-        <label for="time" class="form-label">Time</label>
-        <TimeInput id="time" @bind-Value="@_reminder.Time"/>
-    </div>
+                <div class="reminder-edit-field">
+                    <label for="time" class="reminder-edit-label">@Localizer.GetString("Time", "ReminderEdit")</label>
+                    <TimeInput id="time" @bind-Value="@_reminder.Time" class="reminder-edit-input" />
+                </div>
 
-    <div class="mb-3">
-        <label for="days" class="form-label">Days of Week</label>
-        <InputSelect id="days" class="form-control" @bind-Value="_selectedDay">
-            @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
-            {
-                <option value="@day">@day</option>
-            }
-        </InputSelect>
-        <ul>
-            @foreach (var day in _reminder.DayOfWeeks)
-            {
-                <li style="margin-top: 5px">
-                    @day
-                    <button type="button" class="btn btn-sm btn-danger" @onclick="() => RemoveDay(day)"
-                            style="margin-left: 5px">Remove
+                <div class="reminder-edit-field">
+                    <label for="days" class="reminder-edit-label">@Localizer.GetString("DaysOfWeek", "ReminderEdit")</label>
+                    <InputSelect id="days" class="reminder-edit-input" @bind-Value="_selectedDay">
+                        @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                        {
+                            <option value="@day">@Localizer.GetString(day.ToString(), "ReminderEdit")</option>
+                        }
+                    </InputSelect>
+                    <button type="button" class="reminder-edit-btn reminder-edit-btn-add" @onclick="AddDay">
+                        @Localizer.GetString("AddDay", "ReminderEdit")
                     </button>
-                </li>
-            }
-        </ul>
-        <button type="button" class="btn btn-secondary" @onclick="AddDay">Add</button>
-    </div>
+                    <div class="reminder-edit-chips">
+                        @foreach (var day in _reminder.DayOfWeeks)
+                        {
+                            <div class="reminder-edit-chip">
+                                @Localizer.GetString(day.ToString(), "ReminderEdit")
+                                <button type="button" class="reminder-edit-chip-remove" @onclick="() => RemoveDay(day)">
+                                    ×
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
 
-    <div class="mb-3">
-        <label for="message" class="form-label">Message</label>
-        <InputTextArea id="message" class="form-control" @bind-Value="_reminder.Message" style="height: 200px"/>
-    </div>
+                <div class="reminder-edit-field">
+                    <label for="message" class="reminder-edit-label">@Localizer.GetString("Message", "ReminderEdit")</label>
+                    <InputTextArea id="message" class="reminder-edit-input reminder-edit-textarea" @bind-Value="_reminder.Message" />
+                </div>
 
-    <div class="mb-3">
-        <label for="status" class="form-label">Status</label>
-        <InputSelect id="status" class="form-control" @bind-Value="_reminder.ReminderStatus">
-            @foreach (ReminderStatus status in Enum.GetValues(typeof(ReminderStatus)))
+                <div class="reminder-edit-field">
+                    <label for="status" class="reminder-edit-label">@Localizer.GetString("Status", "ReminderEdit")</label>
+                    <InputSelect id="status" class="reminder-edit-input" @bind-Value="_reminder.ReminderStatus">
+                        @foreach (ReminderStatus status in Enum.GetValues(typeof(ReminderStatus)))
+                        {
+                            <option value="@status">@Localizer.GetString(status.ToString(), "ReminderEdit")</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="reminder-edit-actions">
+                    <button type="submit" class="reminder-edit-btn reminder-edit-btn-save">
+                        @Localizer.GetString("Save", "ReminderEdit")
+                    </button>
+                    <button type="button" class="reminder-edit-btn reminder-edit-btn-cancel" @onclick="Cancel">
+                        @Localizer.GetString("Cancel", "ReminderEdit")
+                    </button>
+                </div>
+            </EditForm>
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
             {
-                <option value="@status">@status</option>
+                <div class="reminder-edit-error">
+                    @_errorMessage
+                </div>
             }
-        </InputSelect>
+        }
     </div>
-
-    <div style="margin-bottom: 100px">
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
-    </div>
-</EditForm>
+</div>
 
 @code {
     [Parameter] public int? ReminderId { get; set; }
 
     private ChatReminderViewModel _reminder = new();
     private DayOfWeek _selectedDay;
+    private bool _isLoading = false;
+    private string _errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         if (ReminderId.HasValue)
         {
-            // Загружаем данные для редактирования
-            _reminder = await ReminderService.GetValueAsync(ReminderId.Value);
+            _isLoading = true;
+            try
+            {
+                _reminder = await ReminderService.GetValueAsync(ReminderId.Value);
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = Localizer.GetString("LoadError", "ReminderEdit");
+                Console.WriteLine($"Error loading reminder: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
     }
 
@@ -95,26 +137,258 @@
 
     private async Task SaveReminder()
     {
-        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
-        _reminder.ChatId = currentChatStorageResult.Value;
-        if (ReminderId.HasValue)
+        try
         {
-            // Обновление существующего напоминания
-            await ReminderService.UpdateValueAsync(_reminder);
+            var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
+            _reminder.ChatId = currentChatStorageResult.Value;
+            if (ReminderId.HasValue)
+            {
+                await ReminderService.UpdateValueAsync(_reminder);
+                await Task.Delay(500);
+            }
+            else
+            {
+                await ReminderService.CreateValueAsync(_reminder);
+                await Task.Delay(500);
+            }
+            NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
         }
-        else
+        catch (Exception ex)
         {
-            // Создание нового напоминания
-            await ReminderService.CreateValueAsync(_reminder);
+            _errorMessage = Localizer.GetString("SaveError", "ReminderEdit");
+            Console.WriteLine($"Error saving reminder: {ex.Message}");
         }
-
-        NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
     }
 
     private async Task Cancel()
     {
-        var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
-        NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
+        try
+        {
+            var currentChatStorageResult = await ProtectedSessionStorage.GetAsync<int>(ClientConstants.CurrentChat);
+            NavigationManager.NavigateTo($"/reminders/{currentChatStorageResult.Value}");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = Localizer.GetString("CancelError", "ReminderEdit");
+            Console.WriteLine($"Error cancelling: {ex.Message}");
+        }
+    }
+}
+
+<style>
+    .reminder-edit-container {
+        min-height: 100vh;
+        background: linear-gradient(to bottom right, #f3f4f6, #e5e7eb);
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
     }
 
-}
+    .reminder-edit-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 600px;
+        animation: reminder-edit-fadeIn 0.5s ease-in;
+    }
+
+    .reminder-edit-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .reminder-edit-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .reminder-edit-spinner-icon {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #d1d5db;
+        border-top: 4px solid #4a90e2;
+        border-radius: 50%;
+        animation: reminder-edit-spin 1s linear infinite;
+    }
+
+    .reminder-edit-spinner p {
+        font-size: 1rem;
+        color: #4b5563;
+    }
+
+    .reminder-edit-field {
+        margin-bottom: 1.5rem;
+    }
+
+    .reminder-edit-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .reminder-edit-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .reminder-edit-input:focus {
+        outline: none;
+        border-color: #4a90e2;
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .reminder-edit-textarea {
+        height: 150px;
+        resize: vertical;
+    }
+
+    .reminder-edit-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .reminder-edit-btn-add {
+        background: linear-gradient(to right, #22c55e, #16a34a);
+        color: #ffffff;
+        margin-top: 0.75rem;
+    }
+
+    .reminder-edit-btn-add:hover {
+        background: linear-gradient(to right, #16a34a, #15803d);
+        transform: translateY(-2px);
+    }
+
+    .reminder-edit-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .reminder-edit-chip {
+        display: flex;
+        align-items: center;
+        background: #e5e7eb;
+        color: #1f2937;
+        padding: 0.5rem 1rem;
+        border-radius: 16px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        animation: reminder-edit-chipIn 0.3s ease-in;
+    }
+
+    .reminder-edit-chip-remove {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-size: 1rem;
+        margin-left: 0.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .reminder-edit-chip-remove:hover {
+        color: #dc2626;
+    }
+
+    .reminder-edit-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    .reminder-edit-btn-save {
+        background: linear-gradient(to right, #6366f1, #4f46e5);
+        color: #ffffff;
+    }
+
+    .reminder-edit-btn-save:hover {
+        background: linear-gradient(to right, #4f46e5, #4338ca);
+        transform: translateY(-2px);
+    }
+
+    .reminder-edit-btn-cancel {
+        background: linear-gradient(to right, #6b7280, #4b5563);
+        color: #ffffff;
+    }
+
+    .reminder-edit-btn-cancel:hover {
+        background: linear-gradient(to right, #4b5563, #374151);
+        transform: translateY(-2px);
+    }
+
+    .reminder-edit-validation {
+        color: #b91c1c;
+        font-size: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .reminder-edit-error {
+        padding: 1rem;
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-top: 1rem;
+        animation: reminder-edit-fadeIn 0.5s ease-in;
+    }
+
+    @@keyframes reminder-edit-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @@keyframes reminder-edit-fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes reminder-edit-chipIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    @@media (max-width: 640px) {
+        .reminder-edit-container {
+            padding: 1rem;
+        }
+
+        .reminder-edit-card {
+            padding: 1.5rem;
+        }
+
+        .reminder-edit-title {
+            font-size: 1.5rem;
+        }
+
+        .reminder-edit-actions {
+            flex-direction: column;
+        }
+
+        .reminder-edit-btn-save,
+        .reminder-edit-btn-cancel {
+            width: 100%;
+        }
+    }
+</style>

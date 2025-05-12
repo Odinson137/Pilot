@@ -335,7 +335,7 @@ else
         var fileName = _attachedFile?.Item2 is null ? null : Guid.NewGuid().ToString();
         var taskInfo = new TaskInfoViewModel
         {
-            ProjectTask = new BaseViewModel { Id = _task!.Id },
+            ProjectTask = new ProjectTaskViewModel { Id = _task!.Id },
             File = fileName,
             Description = _newTaskInfoDescription,
             TimeSpent = TimeSpan.FromHours(_newTaskInfoTimeSpentHours) + TimeSpan.FromMinutes(_newTaskInfoTimeSpentMinutes)

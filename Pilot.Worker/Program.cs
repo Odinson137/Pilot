@@ -1,3 +1,4 @@
+using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Contracts.Base;
@@ -15,6 +16,7 @@ using Pilot.SqrsControllerLibrary.NotificationHandlers;
 using Pilot.SqrsControllerLibrary.Notifications;
 using Pilot.SqrsControllerLibrary.Services;
 using Pilot.Worker.Behaviors;
+using Pilot.Worker.Consumers.ApprovedJobApplicationConsumer;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -36,10 +38,18 @@ services.AddScoped<IMessageService, MessageService>();
 
 services.AddScoped<IModelService, ModelService>();
 
+// builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+// var consumers = new[]
+// {
+//     Tuple.Create("approved-job-application_fault", (Action<IBusRegistrationContext, IReceiveEndpointConfigurator>)((ctx, e) =>
+//     {
+//         e.ConfigureConsumer<FaultApprovedJobApplicationConsumer>(ctx);
+//     }))
+// };
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
 builder.AddUnitOfWork<UnitOfWork>();
 
-services.AddHttpClient(ServiceName.IdentityServer.ToString(),
+services.AddHttpClient(nameof(ServiceName.IdentityServer),
     c => { c.BaseAddress = new Uri(configuration.GetValue<string>("IdentityServerUrl")!); });
 
 services.AddEndpointsApiExplorer();
@@ -62,26 +72,26 @@ var app = builder.Build();
 
 await app.Services.CreateScope().ServiceProvider.GetRequiredService<ISeed>().Seeding();
 
-app.UseExceptionHandler(errorApp =>
-{
-    errorApp.Run(async context =>
-    {
-        var error = context.Features.Get<IExceptionHandlerFeature>();
-
-        if (error != null)
-        {
-            context.Response.StatusCode = error.Error switch
-            {
-                BadRequestException => 400,
-                NotFoundException => 404,
-                _ => 500
-            };
-
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(error.Error.Message);
-        }
-    });
-});
+// app.UseExceptionHandler(errorApp =>
+// {
+//     errorApp.Run(async context =>
+//     {
+//         var error = context.Features.Get<IExceptionHandlerFeature>();
+//
+//         if (error != null)
+//         {
+//             context.Response.StatusCode = error.Error switch
+//             {
+//                 BadRequestException => 400,
+//                 NotFoundException => 404,
+//                 _ => 500
+//             };
+//
+//             context.Response.ContentType = "application/json";
+//             await context.Response.WriteAsync(error.Error.Message);
+//         }
+//     });
+// });
 
 
 app.UseSwagger();

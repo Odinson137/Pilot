@@ -38,7 +38,7 @@ public class ChatReminderCreatedConsumer(
         logger.LogInformation($"days of week of {string.Join(",", reminder.DayOfWeeks)}");
         foreach (var day in reminder.DayOfWeeks)
         {
-            var time = reminder.Time.AddHours(3); // UTC +3 for my country TODO придумать потом лучший способ
+            var time = reminder.Time.AddHours(-3); // UTC +3 for my country TODO придумать потом лучший способ
             var cronExpression = GetCronExpression(day, time);
 
             // TODO потом перенести куда-то в константы. А на часах 00... поэтому мне лень)

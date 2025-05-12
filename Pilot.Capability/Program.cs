@@ -1,6 +1,7 @@
 using Pilot.Capability.Data;
 using Pilot.Capability.Interface;
 using Pilot.Capability.Repository;
+using Pilot.Capability.Saga;
 using Pilot.Capability.Service;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
@@ -19,6 +20,7 @@ builder.Services.AddSwaggerGen();
 services.AddControllers();
 
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+// builder.AddBaseServices<DataContext, AutoMapperProfile, Program>(sagas: typeof(JobApplicationSaga));
 
 #region Repository realization
 

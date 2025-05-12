@@ -5,30 +5,37 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry.Trace;
+using Pilot.AuditHistory.Data;
 using Pilot.Contracts.Data;
-using Pilot.Worker.Data;
-using Test.Base.IntegrationBase;
 
-namespace Test.Api.AuditHistoryService.Factory;
+namespace Test.Base.IntegrationBase.Factories;
 
-public class AuditHistoryTestWorkerFactory : WebApplicationFactory<Pilot.Worker.Program>
+public class TestAuditHistoryFactory : WebApplicationFactory<Pilot.AuditHistory.Program>, IAsyncLifetime
 {
+    public async Task InitializeAsync()
+    {
+    }
+
+    public new async Task DisposeAsync()
+    {
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
-        
+
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
-
-            services.RemoveAll<DbContextOptions<DataContext>>();
             
-            services.AddDbContext<DataContext>(options =>
+            services.RemoveAll<DbContextOptions<ClickHouseContext>>();
+            
+            services.AddDbContext<ClickHouseContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
-            
+
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
         });

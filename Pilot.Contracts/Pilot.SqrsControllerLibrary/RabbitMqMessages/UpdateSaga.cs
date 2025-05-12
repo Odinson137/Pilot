@@ -21,7 +21,7 @@ public class UpdateSaga<TDto> : MassTransitStateMachine<UpdateSagaState<TDto>>
     {
         InstanceState(x => x.CurrentState);
 
-        Event(() => UpdateRequested, x => x.CorrelateById(context => context.Message.SagaId));
+        Event(() => UpdateRequested, x => x.CorrelateById(context => context.Message.CorrelationId));
         Event(() => UpdatedEvent, x => x.CorrelateById(context => context.Message.SagaId));
         Event(() => UpdateFailedEvent, x => x.CorrelateById(context => context.Message.SagaId));
         Event(() => AuditRecorded, x => x.CorrelateById(context => context.Message.SagaId));
@@ -32,7 +32,7 @@ public class UpdateSaga<TDto> : MassTransitStateMachine<UpdateSagaState<TDto>>
                 {
                     context.Saga.NewValue = context.Message.ValueDto;
                     context.Saga.UserId = context.Message.UserId;
-                    context.Saga.CorrelationId = context.Message.SagaId;
+                    context.Saga.CorrelationId = context.Message.CorrelationId;
                 })
                 .Publish(context =>
                     new RecordAuditCommandMessage<TDto>(

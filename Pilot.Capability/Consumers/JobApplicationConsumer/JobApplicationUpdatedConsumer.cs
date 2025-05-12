@@ -6,8 +6,8 @@ using Pilot.Capability.Models;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.DTO.TransferServiceDto;
 using Pilot.Contracts.Interfaces;
+using Pilot.SqrsControllerLibrary.Commands;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Capability.Consumers.JobApplicationConsumer;
@@ -34,15 +34,14 @@ public class JobApplicationUpdatedConsumer(
                     await repository.GetJobApplicationCompanyAndPostIdsAsync(jobApplicationDto.CompanyPost.Id);
                 if (companyAndPost == null) throw new Exception("Job Application Not Found");
 
-                await massTransitService.Publish(new BaseCommandMessage<AppliedStatusDto>(new AppliedStatusDto
-                    {
-                        CompanyId = companyAndPost!.Item1,
-                        UserId = context.Message.Value.UserId,
-                        PostId = companyAndPost.Item2,
-                    },
-                    context.Message.UserId));
+                await massTransitService.Publish(new ApprovedJobApplicationCommand(
+                    jobApplicationDto.Id,
+                    companyAndPost.Item1,
+                    context.Message.Value.UserId, companyAndPost.Item2, context.Message.UserId,
+                    context.CorrelationId ?? Guid.NewGuid()));
                 break;
             }
+
             case ApplicationStatus.Reviewing:
             // {
             //     await massTransitService.Publish(new BaseCommandMessage<ReviewingStatusDto>(new ReviewingStatusDto

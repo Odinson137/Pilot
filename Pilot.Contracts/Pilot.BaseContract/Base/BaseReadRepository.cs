@@ -49,6 +49,12 @@ public class BaseReadRepository<T>(DbContext context, IMapper mapper) : IBaseRea
         if (filter.WhereFilter != null)
             query = GetFiltersLambda(query, filter.WhereFilter.List);
         
+        if (filter.StartDate != null)
+            query = query.Where(c => c.CreateAt!.Value.Date >= filter.StartDate);
+        
+        if (filter.EndDate != null)
+            query = query.Where(c => c.CreateAt!.Value.Date <= filter.EndDate);
+        
         return await query
             .ProjectTo<TOut>(mapper.ConfigurationProvider)
             .ToListAsync(token);

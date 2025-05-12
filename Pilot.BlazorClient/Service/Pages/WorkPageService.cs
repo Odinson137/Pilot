@@ -11,6 +11,7 @@ public class WorkPageService(
     IBaseModelService<ProjectTaskViewModel> projectTaskService,
     IBaseModelService<UserViewModel> userBaseService,
     IBaseModelService<TeamViewModel> teamService,
+    IBaseModelService<TaskInfoViewModel> taskInfoService,
     IBaseModelService<JobApplicationViewModel> jobApplicationService,
     IBaseModelService<CompanyPostViewModel> companyPostService,
     IBaseModelService<PostViewModel> postService,
@@ -242,6 +243,19 @@ public class WorkPageService(
     {
         var result =
             await projectTaskService.GetValuesAsync(c => c.TeamEmployee!.CompanyUser.Id, userId);
+        return result;
+    }
+
+    public async Task<ICollection<TaskInfoViewModel>> GetDaylyAcitvityAsync(int companyUserId)
+    {
+        var filter = new BaseFilter
+        {
+            WhereFilter = new WhereFilter(),
+            StartDate = DateTime.UtcNow.Date.AddDays(-7).Date,
+            EndDate = DateTime.UtcNow.Date
+        };
+        filter.WhereFilter.Init<int, TaskInfoViewModel>((c => c.ProjectTask.TeamEmployee!.CompanyUser.Id, companyUserId));
+        var result = await taskInfoService.GetValuesAsync(filter);
         return result;
     }
 

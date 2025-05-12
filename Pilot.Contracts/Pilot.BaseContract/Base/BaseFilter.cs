@@ -40,10 +40,14 @@ public class BaseFilter(int skip, int take)
 
     public WhereFilter? WhereFilter { get; set; }
 
+    public DateTime? StartDate { get; set; }
+    
+    public DateTime? EndDate { get; set; }
+
     public string GetKey<TDto>()
     {
         var ids = Ids?.Distinct().ToList() ?? [];
-        return $"{typeof(TDto).Name}-{Skip}:{Take}:{string.Join('*', ids)}:{WhereFilter?.Key}:";
+        return $"{typeof(TDto).Name}-{Skip}:{Take}:{string.Join('*', ids)}:{WhereFilter?.Key}:{StartDate}:{EndDate}";
     }
 }
 

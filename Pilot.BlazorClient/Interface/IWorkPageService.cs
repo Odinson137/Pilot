@@ -34,6 +34,8 @@ public interface IWorkPageService
     Task AddProjectAsync(ProjectViewModel project);
 
     Task<ICollection<ProjectTaskViewModel>> GetUserProjectTasksAsync(int userId);
+    
+    Task<ICollection<TaskInfoViewModel>> GetDaylyAcitvityAsync(int companyUserId);
 
     Task<ICollection<ProjectTaskViewModel>> FillProjectsIntoTeamsAsync(ICollection<ProjectTaskViewModel> projectTasks);
 

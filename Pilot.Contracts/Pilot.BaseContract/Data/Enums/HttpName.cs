@@ -2,6 +2,8 @@
 
 public enum ServiceName
 {
+    None = -1,
+    
     ApiServer = 0,
     
     IdentityServer = 1,

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using JetBrains.Annotations;
+using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Services;
 

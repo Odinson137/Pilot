@@ -47,7 +47,6 @@ public abstract class BaseUpdateConsumer<T, TDto>(
 
         entityEntry.State = EntityState.Modified;
         await Repository.SaveAsync();
-
         
         var message = new InfoMessageDto
         {
