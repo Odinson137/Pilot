@@ -8,4 +8,4 @@ public record RevertJobApplicationCommand(int CompanyId, int UserId, int PostId,
 
 public record SendNotificationCommand(int UserId, int PostId, ApplicationStatus Status, Guid CorrelationId);
 
-public record RevertStatusCommand(int JobApplicationId, ApplicationStatus PreviousStatus, Guid CorrelationId);
+public record RevertStatusCommand(int JobApplicationId, int ChangerUserId, int UserId, int PostId, Guid CorrelationId);

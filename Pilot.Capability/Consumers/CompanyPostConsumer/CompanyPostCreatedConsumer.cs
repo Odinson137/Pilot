@@ -7,8 +7,8 @@ using Pilot.Contracts.Interfaces;
 
 namespace Pilot.Capability.Consumers.CompanyPostConsumer;
 
-public class CompanyPostConsumer(
-    ILogger<CompanyPostConsumer> logger,
+public class CompanyPostCreatedConsumer(
+    ILogger<CompanyPostCreatedConsumer> logger,
     ICompanyPost repository,
     IMessageService messageService,
     IValidatorService validate,

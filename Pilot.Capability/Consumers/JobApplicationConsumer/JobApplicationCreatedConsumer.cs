@@ -7,8 +7,8 @@ using Pilot.Contracts.Interfaces;
 
 namespace Pilot.Capability.Consumers.JobApplicationConsumer;
 
-public class JobApplicationConsumerConsumer(
-    ILogger<JobApplicationConsumerConsumer> logger,
+public class JobApplicationCreatedConsumer(
+    ILogger<JobApplicationCreatedConsumer> logger,
     IJobApplication repository,
     IMessageService messageService,
     IValidatorService validate,

@@ -25,7 +25,7 @@ public class InfoMessageDto : BaseDto
     }
 
     [MaxLength(500)] public string Description => $"Успешное {Action} сущности {EntityType}";
-
+    
     [Required] public MessageInfo MessagePriority { get; set; }
 
     public ModelType? EntityType { get; set; }

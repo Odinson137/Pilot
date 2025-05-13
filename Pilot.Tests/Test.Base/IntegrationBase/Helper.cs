@@ -6,6 +6,6 @@ public static class Helper
     // А ещё нормально использовать debug, имея в запасе i кликов в нём
     public static async Task Wait()
     {
-        for (var i = 0; i < 40; i++) await Task.Delay(200);
+        for (var i = 0; i < 40; i++) await Task.Delay(100);
     }
 }

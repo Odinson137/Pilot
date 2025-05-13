@@ -7,8 +7,8 @@ using Pilot.Contracts.Interfaces;
 
 namespace Pilot.Capability.Consumers.UserSkillConsumer;
 
-public class UserSkillConsumer(
-    ILogger<UserSkillConsumer> logger,
+public class UserSkillCreatedConsumer(
+    ILogger<UserSkillCreatedConsumer> logger,
     IUserSkill repository,
     IMessageService messageService,
     IValidatorService validate,
