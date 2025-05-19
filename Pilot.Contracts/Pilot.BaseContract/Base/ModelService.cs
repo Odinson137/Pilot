@@ -22,18 +22,21 @@ public class ModelService : BaseHttpService, IModelService
         _redis = redis;
     }
 
-    public virtual async Task<TDto?> GetValueByIdAsync<TDto>(string url, CancellationToken token = default)
+    public virtual async Task<TDto?> GetValueByUrlAsync<TDto>(string url, CancellationToken token = default)
         where TDto : BaseDto
     {
         _logger.LogInformation($"Getting value by url - {url}");
 
-        var cacheValue = await _redis.GetValueAsync($"{BaseExpendMethods.GetModelName<TDto>()}-{url}");
+        var cacheKey = $"{BaseExpendMethods.GetModelName<TDto>()}-{url}";
+        var cacheValue = await _redis.GetValueAsync(cacheKey);
 
         TDto? valueDto;
         if (string.IsNullOrEmpty(cacheValue))
         {
             _logger.LogInformation("Get value from db");
             valueDto = await SendGetMessage<TDto>(url, token);
+            if (valueDto != null)
+                await _redis.SetValueAsync(cacheKey, valueDto);
         }
         else
         {
@@ -48,7 +51,7 @@ public class ModelService : BaseHttpService, IModelService
     public virtual Task<TDto?> GetValueByIdAsync<TDto>(int valueId, CancellationToken token = default)
         where TDto : BaseDto
     {
-        return GetValueByIdAsync<TDto>($"{valueId}", token);
+        return GetValueByUrlAsync<TDto>($"{valueId}", token);
     }
 
     public virtual async Task<ICollection<TDto>> GetValuesAsync<TDto>(string url, BaseFilter filter,
@@ -57,20 +60,20 @@ public class ModelService : BaseHttpService, IModelService
         _logger.LogInformation("Getting values list");
         _logger.LogClassInfo(filter);
 
-        var cacheValue = await _redis.GetValuesAsync<TDto>(filter.GetKey<TDto>());
-
-        ICollection<TDto> valueDto;
-        if (cacheValue == null)
-        {
-            _logger.LogInformation("Get values from db");
-            valueDto = await SendGetMessages<TDto>(url, filter, token);
-            await _redis.SetValuesAsync(filter.GetKey<TDto>(), valueDto);
-        }
-        else
-        {
-            _logger.LogInformation("Get values from cache");
-            valueDto = cacheValue.FromJson<List<TDto>>();
-        }
+        // var cacheValue = await _redis.GetValuesAsync<TDto>(filter.GetKey<TDto>());
+        //
+        // ICollection<TDto> valueDto;
+        // if (cacheValue == null)
+        // {
+        //     _logger.LogInformation("Get values from db");
+        var valueDto = await SendGetMessages<TDto>(url, filter, token);
+        //     await _redis.SetValuesAsync(filter.GetKey<TDto>(), valueDto);
+        // }
+        // else
+        // {
+        //     _logger.LogInformation("Get values from cache");
+        //     valueDto = cacheValue.FromJson<List<TDto>>();
+        // }
 
         _logger.LogClassInfo(valueDto);
         return valueDto;

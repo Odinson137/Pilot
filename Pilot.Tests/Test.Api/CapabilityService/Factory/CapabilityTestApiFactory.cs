@@ -18,11 +18,11 @@ public class CapabilityTestApiFactory : WebApplicationFactory<Program>, IAsyncLi
     private readonly RedisContainer _redisContainer = new RedisBuilder()
         .WithImage("redis:latest")
         .Build();
-    
+
     private readonly RabbitMqContainer _rabbitContainer = new RabbitMqBuilder()
         .WithImage("rabbitmq:3")
         .Build();
-    
+
     public async Task InitializeAsync()
     {
         await _rabbitContainer.StartAsync();
@@ -41,20 +41,19 @@ public class CapabilityTestApiFactory : WebApplicationFactory<Program>, IAsyncLi
 
         Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
             _rabbitContainer.GetConnectionString());
-        
-        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
-            _redisContainer.GetConnectionString());
+
+        Environment.SetEnvironmentVariable("RedisCache:Endpoints", _redisContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
-            
-            services.RemoveAll<IBaseHttpService>(); 
+
+            services.RemoveAll<IBaseHttpService>();
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
-            services.RemoveAll<IModelService>(); 
+            services.RemoveAll<IModelService>();
             services.AddScoped<IModelService, ModelServiceFaker>();
-            
+
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
         });

@@ -2,7 +2,7 @@
 
 public interface IModelService
 {
-    public Task<TDto?> GetValueByIdAsync<TDto>(string url, CancellationToken token = default) where TDto : BaseDto;
+    public Task<TDto?> GetValueByUrlAsync<TDto>(string url, CancellationToken token = default) where TDto : BaseDto;
     
     public Task<TDto?> GetValueByIdAsync<TDto>(int valueId, CancellationToken token = default) where TDto : BaseDto;
 

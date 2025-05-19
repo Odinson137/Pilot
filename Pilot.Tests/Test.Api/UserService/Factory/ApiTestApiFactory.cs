@@ -33,7 +33,7 @@ public class ApiTestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
-        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+        Environment.SetEnvironmentVariable("RedisCache:Endpoints",
             _redisContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>

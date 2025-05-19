@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   api_server:
     container_name: api-server
@@ -5,71 +7,204 @@ services:
       context: .
       dockerfile: Pilot.Api/Dockerfile
     ports:
-    - 8010:8080
+      - 8010:8080
     depends_on:
+      redis-1:
+        condition: service_healthy
+      redis-2:
+        condition: service_healthy
+      redis-3:
+        condition: service_healthy
+      redis-4:
+        condition: service_healthy
       worker_server:
         condition: service_started
+    networks:
+      - pilot-net
+
   identity_server:
     build:
       context: .
       dockerfile: Pilot.Identity/Dockerfile
     ports:
-    - 8020:8080
+      - 8020:8080
     depends_on:
       pilot_identity_mysql:
         condition: service_healthy
+    networks:
+      - pilot-net
+
   worker_server:
     build:
       context: .
       dockerfile: Pilot.Worker/Dockerfile
     ports:
-    - 8030:8080
+      - 8030:8080
     depends_on:
       pilot_mysql:
         condition: service_healthy
+    networks:
+      - pilot-net
+
   messenger_server:
     build:
       context: .
       dockerfile: Pilot.Messenger/Dockerfile
     ports:
-    - 8040:8080
+      - 8040:8080
     depends_on:
       pilot_messenger_mysql:
         condition: service_healthy
+    networks:
+      - pilot-net
+
   storage_server:
     build:
       context: .
       dockerfile: Pilot.Storage/Dockerfile
     ports:
-    - 8050:8080
+      - 8050:8080
     depends_on:
       pilot_storage_mysql:
         condition: service_healthy
+    networks:
+      - pilot-net
+
   capability_server:
     build:
       context: .
       dockerfile: Pilot.Capability/Dockerfile
     ports:
-    - 8060:8080
+      - 8060:8080
     depends_on:
       pilot_capability_mysql:
         condition: service_healthy
+    networks:
+      - pilot-net
+
   rabbitmq:
     container_name: pilot-rabbitmq
     image: rabbitmq:3-management
     ports:
-    - 5672:5672
-    - 15672:15672
-  redis:
-    container_name: pilot-redis
-    image: redis
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - pilot-net
+
+  checker:
+    container_name: checker
+    image: redis:7.0.15
+    volumes:
+      - ./init-redis-cluster.sh:/init-redis-cluster.sh
+    entrypoint: ["/bin/bash", "-c", "/init-redis-cluster.sh && redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes"]
+    
+  redis-1:
+    container_name: pilot-redis-1
+    image: redis:7.0.15
+    command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-1:/data
     ports:
-    - 6379:6379
+      - "6379:6379"
+      - "16379:16379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-1", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+
+  redis-2:
+    container_name: pilot-redis-2
+    image: redis:7.0.15
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-2:/data
+    ports:
+      - "6380:6380"
+      - "16380:16380"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-2", "-p", "6380", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+
+  redis-3:
+    container_name: pilot-redis-3
+    image: redis:7.0.15
+    command: redis-server --port 6381 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-3:/data
+    ports:
+      - "6381:6381"
+      - "16381:16381"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-3", "-p", "6381", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+
+  redis-4:
+    container_name: pilot-redis-4
+    image: redis:7.0.15
+    command: redis-server --port 6382 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-4:/data
+    ports:
+      - "6382:6382"
+      - "16382:16382"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-4", "-p", "6382", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+
+  redis-5:
+    container_name: pilot-redis-5
+    image: redis:7.0.15
+    command: redis-server --port 6383 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-5:/data
+    ports:
+      - "6383:6383"
+      - "16383:16383"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-5", "-p", "6383", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+
+  redis-6:
+    container_name: pilot-redis-6
+    image: redis:7.0.15
+    command: redis-server --port 6384 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis-data-6:/data
+    ports:
+      - "6384:6384"
+      - "16384:16384"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "pilot-redis-6", "-p", "6384", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pilot-net
+      
   pilot_identity_mysql:
     container_name: pilot-identity-mysql
     image: mysql:8.0
     ports:
-    - "3308:3306"
+      - "3308:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -77,11 +212,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   pilot_mysql:
     container_name: pilot-mysql
     image: mysql:8.0
     ports:
-    - "3309:3306"
+      - "3309:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -89,11 +227,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   pilot_messenger_mysql:
     container_name: pilot-messenger-mysql
     image: mysql:8.0
     ports:
-    - "3310:3306"
+      - "3310:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -101,11 +242,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   pilot_storage_mysql:
     container_name: pilot-storage-mysql
     image: mysql:8.0
     ports:
-    - "3311:3306"
+      - "3311:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -113,11 +257,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   pilot_capability_mysql:
     container_name: pilot-capability-mysql
     image: mysql:8.0
     ports:
-    - "3312:3306"
+      - "3312:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -125,6 +272,9 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   backgroundjob_service:
     build:
       context: .
@@ -133,12 +283,15 @@ services:
       pilot_capability_mysql:
         condition: service_healthy
     ports:
-    - 8070:8080
+      - 8070:8080
+    networks:
+      - pilot-net
+
   pilot_backgroundjob_mysql:
     container_name: pilot-backgroundjob-mysql
     image: mysql:8.0
     ports:
-    - "3313:3306"
+      - "3313:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
@@ -146,14 +299,17 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
   pilot_backgroundjob_hangfire_mssql:
     container_name: pilot-backgroundjob-hangfire-mssql
     image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
-    - 1433:1433
+      - 1433:1433
     environment:
-    - ACCEPT_EULA=Y
-    - MSSQL_SA_PASSWORD=S3cur3P@ssW0rd!
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=S3cur3P@ssW0rd!
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
@@ -161,33 +317,56 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
+    networks:
+      - pilot-net
+
   jaeger:
     container_name: jaeger
     image: jaegertracing/all-in-one:1.44
     ports:
-    - "5775:5775/udp"
-    - "6831:6831/udp"
-    - "6832:6832/udp"
-    - "16686:16686"
-    - "14268:14268"
-    - "14250:14250"
-    - "9411:9411"
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    networks:
+      - pilot-net
+
   audithistory_service:
     build:
       context: .
       dockerfile: Pilot.AuditHistory/Dockerfile
     ports:
-    - 8090:8080
+      - 8090:8080
     depends_on:
       - clickhouse
+    networks:
+      - pilot-net
+
   clickhouse:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse-server
     ports:
       - "8123:8123"
-      - "9000:9000" 
+      - "9000:9000"
     environment:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=default
-...
+    networks:
+      - pilot-net
+
+networks:
+  pilot-net:
+    driver: bridge
+
+volumes:
+  redis-data-1:
+  redis-data-2:
+  redis-data-3:
+  redis-data-4:
+  redis-data-5:
+  redis-data-6:
+

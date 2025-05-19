@@ -39,7 +39,7 @@ public class MessengerTestApiFactory : WebApplicationFactory<Program>, IAsyncLif
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
 
-        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+        Environment.SetEnvironmentVariable("RedisCache:Endpoints",
             _redisContainer.GetConnectionString());
         
         Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",

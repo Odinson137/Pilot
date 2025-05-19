@@ -41,7 +41,7 @@ public class TestApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         Environment.SetEnvironmentVariable("RabbitMQ:ConnectionString",
             _rabbitContainer.GetConnectionString());
         
-        Environment.SetEnvironmentVariable("RedisCache:ConnectionString",
+        Environment.SetEnvironmentVariable("RedisCache:Endpoints",
             _redisContainer.GetConnectionString());
 
         builder.ConfigureTestServices(services =>
