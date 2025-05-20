@@ -26,6 +26,7 @@ public abstract class BaseIntegrationTest : IDisposable
         return (DbContext)_serviceScopes[serviceName].CreateScope().ServiceProvider.GetRequiredService(contextType);
     }
 
+
     protected BaseIntegrationTest(ServiceTestConfiguration? apiConfiguration = null,
         IEnumerable<ServiceTestConfiguration>? configurations = null)
     {
@@ -57,6 +58,16 @@ public abstract class BaseIntegrationTest : IDisposable
         {
             client.Dispose();
         }
+        
+        foreach (var serviceName in _contextTypes.Keys)
+        {
+            var contextType = _contextTypes[serviceName];
+            var dbContext = (DbContext)_serviceScopes[serviceName].CreateScope().ServiceProvider.GetRequiredService(contextType);
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+        }
+
+        HttpSingleTone.Dispose();
     }
 }
 

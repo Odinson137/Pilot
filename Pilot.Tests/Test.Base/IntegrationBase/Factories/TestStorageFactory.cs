@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Pilot.Storage.Data;
@@ -12,6 +14,16 @@ namespace Test.Base.IntegrationBase.Factories;
 
 public class TestStorageFactory : WebApplicationFactory<Pilot.Storage.Program>, IAsyncLifetime
 {
+    public async Task InitializeAsync()
+    {
+        await TestContainerManager.InitializeAsync();
+    }
+
+    public new async Task DisposeAsync()
+    {
+        await TestContainerManager.DisposeAsync();
+    }
+    
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Test");
@@ -33,11 +45,16 @@ public class TestStorageFactory : WebApplicationFactory<Pilot.Storage.Program>, 
         });
     }
 
-    public async Task InitializeAsync()
+    protected override IHost CreateHost(IHostBuilder builder)
     {
-    }
-
-    public new async Task DisposeAsync()
-    {
+        builder.ConfigureHostConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "RabbitMQ:ConnectionString", TestContainerManager.RabbitMqConnectionString },
+                { "RedisCache:Endpoints", TestContainerManager.RedisConnectionString },
+            }!);
+        });
+        return base.CreateHost(builder);
     }
 }

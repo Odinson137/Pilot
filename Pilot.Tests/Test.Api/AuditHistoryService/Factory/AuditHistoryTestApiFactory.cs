@@ -8,6 +8,7 @@ using Pilot.Api;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
+using Test.Base.IntegrationBase.Fakers;
 using Testcontainers.RabbitMq;
 using Testcontainers.Redis;
 

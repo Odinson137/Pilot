@@ -9,6 +9,7 @@ using Pilot.Api.Interfaces;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
+using Test.Base.IntegrationBase.Fakers;
 using Testcontainers.Redis;
 
 namespace Test.Api.UserService.Factory;

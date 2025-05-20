@@ -12,6 +12,7 @@ using Pilot.BackgroundJob.Data;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Test.Base.IntegrationBase;
+using Test.Base.IntegrationBase.Fakers;
 
 namespace Test.Api.BackgroundJobService.Factory;
 

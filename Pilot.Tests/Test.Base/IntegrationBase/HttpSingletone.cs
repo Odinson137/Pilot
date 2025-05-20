@@ -11,4 +11,5 @@ public class HttpSingleTone
     }
 
     public static HttpSingleTone Init => _httpSingleTone ??= new HttpSingleTone();
+    public static void Dispose() => _httpSingleTone?.HttpClients.Clear();
 }

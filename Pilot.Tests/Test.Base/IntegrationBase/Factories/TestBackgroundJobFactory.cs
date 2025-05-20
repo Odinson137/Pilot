@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using Pilot.BackgroundJob.Data;
 using Pilot.Contracts.Data;
@@ -48,9 +50,24 @@ public class TestBackgroundJobFactory : WebApplicationFactory<Pilot.BackgroundJo
 
     public async Task InitializeAsync()
     {
+        await TestContainerManager.InitializeAsync();
     }
 
     public new async Task DisposeAsync()
     {
+        await TestContainerManager.DisposeAsync();
+    }
+    
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.ConfigureHostConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "RabbitMQ:ConnectionString", TestContainerManager.RabbitMqConnectionString },
+                { "RedisCache:Endpoints", TestContainerManager.RedisConnectionString },
+            }!);
+        });
+        return base.CreateHost(builder);
     }
 }
