@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Test.Capability.IntegrationTests;
 
-public class CompanyPostSkillTests(
+public class CompanyPostTests(
     TestIdentityFactory identityFactory,
     TestStorageFactory storageFactory,
     TestWorkerFactory workerFactory,

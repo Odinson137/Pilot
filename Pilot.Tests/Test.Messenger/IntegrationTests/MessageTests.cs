@@ -1,21 +1,48 @@
 ﻿using System.Net.Http.Json;
 using Pilot.Contracts.Data;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
+using Pilot.Identity.Models;
 using Pilot.Messenger.Models;
 using Test.Base.IntegrationBase;
+using Test.Base.IntegrationBase.Factories;
 using Test.Messenger.IntegrationTests.Factories;
+using Xunit.Abstractions;
 
 namespace Test.Messenger.IntegrationTests;
 
-public class MessageTests(MessageTestMessageFactory factory, MessageTestIdentityFactory identityFactory)
-    : BaseModelTest<Message, MessageDto>(factory, identityFactory)
+public class MessageTests(
+    TestIdentityFactory identityFactory,
+    TestMessengerFactory messengerFactory,
+    ITestOutputHelper testOutputHelper)
+    : BaseServiceModelTests<InfoMessage, InfoMessageDto>(testOutputHelper, ServiceName.MessengerServer,
+            configurations:
+            [
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.IdentityServer,
+                    ServiceProvider = identityFactory.Services,
+                    DbContextType = typeof(Pilot.Identity.Data.DataContext),
+                    HttpClient = identityFactory.CreateClient()
+                },
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.MessengerServer,
+                    ServiceProvider = messengerFactory.Services,
+                    DbContextType = typeof(Pilot.Messenger.Data.DataContext),
+                    HttpClient = messengerFactory.CreateClient(),
+                    IsMainService = true
+                },
+            ]),
+        IClassFixture<TestIdentityFactory>,
+        IClassFixture<TestMessengerFactory>
 {
     [Fact]
     public virtual async Task GetUserChatsTest_ReturnOk()
     {
         #region Arrange
 
-        var user = await CreateUser();
+        var user = (User)await CreateUser(); // TODO мне не нравится, сделать получше
 
         const int count = 2;
         var chat = GenerateTestEntity.CreateEntities<Chat>(count: 1, listDepth: 0).First();
@@ -24,14 +51,15 @@ public class MessageTests(MessageTestMessageFactory factory, MessageTestIdentity
         chat.AddUser(user.Id);
 
         chat.Messages = values;
-        
-        await DataContext.AddRangeAsync(chat);
-        await DataContext.SaveChangesAsync();
+
+        var dataContext = GetContext(ServiceName.MessengerServer);
+        await dataContext.AddRangeAsync(chat);
+        await dataContext.SaveChangesAsync();
 
         #endregion
 
         // Act
-        var result = await MessengerClient.GetAsync($"api/{nameof(Message)}/{Urls.ChatMessages}/{chat.Id}");
+        var result = await Client.GetAsync($"api/{nameof(Message)}/{Urls.ChatMessages}/{chat.Id}");
 
         // Assert
         Assert.True(result.IsSuccessStatusCode);

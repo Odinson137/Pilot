@@ -36,7 +36,10 @@ public abstract class BaseIntegrationTest : IDisposable
 
         if (configurations == null) return;
 
-        var serviceTestConfigurations = configurations.ToList();
+        var testConfigurations = configurations as ServiceTestConfiguration[] ?? configurations.ToArray();
+        if (testConfigurations.All(c => c.IsMainService == false)) throw new Exception("Нет выбран главный сервис");
+        
+        var serviceTestConfigurations = testConfigurations.ToList();
         foreach (var config in serviceTestConfigurations)
         {
             _serviceScopes[config.ServiceName] = config.ServiceProvider;

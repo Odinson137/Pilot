@@ -3,25 +3,41 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Base;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Services;
+using Pilot.Identity.Data;
+using Pilot.Identity.Interfaces;
 using Pilot.Identity.Models;
-using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Serialize.Linq.Serializers;
 using Test.Base.IntegrationBase;
-using Test.Identity.IntegrationTests.Factories;
+using Test.Base.IntegrationBase.Factories;
+using Xunit.Abstractions;
 
 namespace Test.Identity.IntegrationTests;
 
-public class IdentityIntegrationTests : BaseIdentityIntegrationTest
+public class IdentityIntegrationTests(
+    TestIdentityFactory identityFactory,
+    ITestOutputHelper testOutputHelper)
+    : BaseServiceModelTests<User, UserDto>(testOutputHelper, ServiceName.IdentityServer,
+            configurations:
+            [
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.IdentityServer,
+                    ServiceProvider = identityFactory.Services,
+                    DbContextType = typeof(DataContext),
+                    HttpClient = identityFactory.CreateClient(),
+                    IsMainService = true
+                }
+            ]),
+        IClassFixture<TestIdentityFactory>
 {
-    
-    public IdentityIntegrationTests(IntegrationIdentityTestWebAppFactory factory)
-        : base(factory) { }
-    
-    
+    private IPasswordCoder CoderService => identityFactory.Services.GetRequiredService<IPasswordCoder>();
+
     [Fact]
     public async Task Registration_AddedUserToDb_ShouldReturnOK()
     {
@@ -37,12 +53,13 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         // Act
         var request = await Client.PostAsJsonAsync("Registration", user);
         var _ = await request.Content.ReadAsStringAsync();
-        
+
         // Assert
         Assert.True(request.IsSuccessStatusCode);
-        
-        var userInDb = await AssertReceiverContext.Users.Where(c => c.UserName == user.UserName).FirstOrDefaultAsync();
-        
+
+        var userInDb = await ((DataContext)GetContext(ServiceName.IdentityServer)).Users
+            .Where(c => c.UserName == user.UserName).FirstOrDefaultAsync();
+
         Assert.NotNull(userInDb);
 
         Assert.Equal(user.UserName, userInDb.UserName);
@@ -50,7 +67,7 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         Assert.Equal(user.Name, userInDb.Name);
         Assert.Equal(CoderService.ComparePasswordAndSalt(user.Password, userInDb.Salt), userInDb.Password);
     }
-    
+
     [Fact]
     public async Task Registration_UserAlreadyExist_ShouldReturnBadRequest()
     {
@@ -65,10 +82,11 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
             Password = coder.Item1,
             Salt = coder.Item2
         };
-        
-        await DataContext.AddAsync(userInDb);
-        await DataContext.SaveChangesAsync();
-        
+
+        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
+        await dataContext.AddAsync(userInDb);
+        await dataContext.SaveChangesAsync();
+
         var user = new RegistrationUserDto
         {
             UserName = "Test",
@@ -76,10 +94,10 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
             LastName = "Test",
             Password = pas
         };
-        
+
         // Act
         var request = await Client.PostAsJsonAsync("Registration", user);
-        
+
         // Assert
         Assert.False(request.IsSuccessStatusCode);
         Assert.True(request.StatusCode == HttpStatusCode.BadRequest);
@@ -106,16 +124,17 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
             Password = pas
         };
 
-        await DataContext.AddAsync(user);
-        await DataContext.SaveChangesAsync();
-        
+        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
+        await dataContext.AddAsync(user);
+        await dataContext.SaveChangesAsync();
+
         // Act
         var request = await Client.PostAsJsonAsync("Authorization", authUser);
-        
+
         // Assert
         Assert.True(request.IsSuccessStatusCode);
     }
-    
+
     [Fact]
     public async Task Authorization_UserIsNotExist_ShouldReturnNotFound()
     {
@@ -128,13 +147,13 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
 
         // Act
         var request = await Client.PostAsJsonAsync("Authorization", authUser);
-        
+
         // Assert
         Assert.True(!request.IsSuccessStatusCode);
         Assert.True(request.StatusCode == HttpStatusCode.NotFound);
     }
 
-        [Fact]
+    [Fact]
     public virtual async Task GetAllValuesTest_FilterWithIds_ReturnOk()
     {
         #region Arrange
@@ -142,8 +161,9 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
 
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
+        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
+        await dataContext.AddRangeAsync(values);
+        await dataContext.SaveChangesAsync();
 
         var filter = new BaseFilter
         {
@@ -170,8 +190,9 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
 
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
+        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
+        await dataContext.AddRangeAsync(values);
+        await dataContext.SaveChangesAsync();
 
         var filter = new BaseFilter
         {
@@ -198,8 +219,9 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         const int count = 3;
         var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
 
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
+        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
+        await dataContext.AddRangeAsync(values);
+        await dataContext.SaveChangesAsync();
 
         Expression<Func<User, object>> projection = c => new { c.Id };
         var filter = new BaseFilter
@@ -220,118 +242,9 @@ public class IdentityIntegrationTests : BaseIdentityIntegrationTest
         Assert.True(resultContent.Count >= count);
     }
 
-    [Fact]
-    public virtual async Task GetAllValuesTest_ReturnOk()
+    [Fact(Skip = "Не нужен. Создание происходит через процесс регистрации")]
+    public override Task CreateModel_ReturnOk()
     {
-        #region Arrange
-
-        const int count = 2;
-        var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
-
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{nameof(User)}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<UserDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count >= count);
+        return Task.CompletedTask;
     }
-
-    [Fact]
-    public virtual async Task GetValue_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 1;
-
-        var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
-
-        await DataContext.AddRangeAsync(values);
-        await DataContext.SaveChangesAsync();
-
-        var id = values.First().Id;
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{nameof(User)}/{id}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<UserDto>();
-        Assert.NotNull(content);
-        Assert.Equal(id, content.Id);
-    }
-
-    [Fact]
-    public virtual async Task UpdateModelTest_ReturnOk()
-    {
-        #region Arrange
-
-        var user = await CreateUser();
-        var value = GenerateTestEntity.CreateEntities<User>(count: 1, listDepth: 0).First();
-
-        await DataContext.AddAsync(value);
-        await DataContext.SaveChangesAsync();
-
-        var valueDto = Mapper.Map<UserDto>(value);
-
-        #endregion
-
-        // Act
-
-        await PublishEndpoint.Publish(new UpdateCommandMessage<UserDto>(valueDto, user.Id));
-        await Helper.Wait();
-
-        // Assert
-
-        var result = await AssertReceiverContext.Set<User>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-
-        Assert.NotNull(result);
-        Assert.NotNull(result.ChangeAt);
-    }
-    
-    [Fact]
-    public virtual async Task DeleteModelTest_ReturnOk()
-    {
-        #region Arrange
-    
-        var user = await CreateUser();
-    
-        var value = GenerateTestEntity.CreateEntities<User>(count: 1, listDepth: 0).First();
-    
-        await DataContext.AddAsync(value);
-        await DataContext.SaveChangesAsync();
-    
-        #endregion
-    
-        // Act
-    
-        await PublishEndpoint.Publish(new DeleteCommandMessage<UserDto>(value.Id, user.Id));
-        await Helper.Wait();
-    
-        // Assert
-    
-        var result = await AssertReceiverContext.Set<User>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-    
-        Assert.Null(result);
-    }
-
-    protected async Task<User> CreateUser()
-    {
-        var companyUser = GenerateTestEntity.CreateEntities<User>(count: 1, listDepth: 0).First();
-
-        await DataContext.AddAsync(companyUser);
-        await DataContext.SaveChangesAsync();
-
-        return companyUser;
-    }
-
 }
-
