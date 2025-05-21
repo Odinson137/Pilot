@@ -45,8 +45,8 @@ public class TestMessengerFactory : WebApplicationFactory<Program>, IAsyncLifeti
             
             services.RemoveAll<IBaseHttpService>(); 
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
-            services.RemoveAll<IModelService>(); 
-            services.AddScoped<IModelService, ModelServiceFaker>();
+            // services.RemoveAll<IModelService>(); 
+            // services.AddScoped<IModelService, ModelServiceFaker>();
             
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);

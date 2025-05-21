@@ -42,11 +42,11 @@ public class TestCapabilityFactory : WebApplicationFactory<Program>, IAsyncLifet
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
-            
-            services.RemoveAll<IBaseHttpService>(); 
-            services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
-            services.RemoveAll<IModelService>(); 
-            services.AddScoped<IModelService, ModelServiceFaker>();
+            //
+            // services.RemoveAll<IBaseHttpService>(); 
+            // services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
+            // services.RemoveAll<IModelService>(); 
+            // services.AddScoped<IModelService, ModelServiceFaker>();
             
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
