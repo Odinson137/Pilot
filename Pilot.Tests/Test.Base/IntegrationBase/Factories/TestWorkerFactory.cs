@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using Pilot.Contracts.Data;
 using Pilot.Worker.Data;
-using Testcontainers.RabbitMq;
-using Testcontainers.Redis;
 
 namespace Test.Base.IntegrationBase.Factories;
 

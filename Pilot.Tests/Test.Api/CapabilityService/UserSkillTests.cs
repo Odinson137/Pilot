@@ -94,7 +94,7 @@ public class UserSkillTests(
         #endregion
     
         // Act
-        var result = await ApiClient.GetAsync($"api/{EntityName}/{Urls.UserSkills}/{userSkill.UserId}");
+        var result = await Client.GetAsync($"api/{EntityName}/{Urls.UserSkills}/{userSkill.UserId}");
         _testOutputHelper1.WriteLine($"Status Code: {result.StatusCode}");
         _testOutputHelper1.WriteLine($"Response: {await result.Content.ReadAsStringAsync()}");
         

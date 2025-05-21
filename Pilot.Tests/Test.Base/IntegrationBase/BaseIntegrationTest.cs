@@ -1,24 +1,22 @@
-﻿using System.Reflection;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using AutoMapper;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pilot.Api.Interfaces;
-using Pilot.Contracts.Attributes;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 
 namespace Test.Base.IntegrationBase;
 
 public abstract class BaseIntegrationTest : IDisposable
 {
-    protected readonly HttpClient ApiClient;
+    protected readonly HttpClient Client;
     protected readonly IMapper Mapper;
     protected readonly IToken TokenService;
 
     private readonly Dictionary<ServiceName, IServiceProvider> _serviceScopes = new();
     private readonly Dictionary<ServiceName, Type> _contextTypes = new();
     private readonly Dictionary<ServiceName, HttpClient> _httpClients = new();
+    protected readonly IPublishEndpoint Publisher;
 
     protected DbContext GetContext(ServiceName serviceName)
     {
@@ -32,13 +30,14 @@ public abstract class BaseIntegrationTest : IDisposable
     {
         if (apiConfiguration != null)
         {
-            ApiClient = apiConfiguration.HttpClient;
+            Client = apiConfiguration.HttpClient;
             TokenService = apiConfiguration.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IToken>();
         }
 
         if (configurations == null) return;
 
-        foreach (var config in configurations)
+        var serviceTestConfigurations = configurations.ToList();
+        foreach (var config in serviceTestConfigurations)
         {
             _serviceScopes[config.ServiceName] = config.ServiceProvider;
             _httpClients[config.ServiceName] = config.HttpClient;
@@ -48,8 +47,14 @@ public abstract class BaseIntegrationTest : IDisposable
             HttpSingleTone.Init.HttpClients[config.ServiceName.ToString()] = config.HttpClient;
 
             if (config.IsMainService)
+            {
                 Mapper = config.ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IMapper>();
+                if (apiConfiguration == null)
+                    Client = config.HttpClient;
+            }
         }
+
+        Publisher = serviceTestConfigurations.First().ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IPublishEndpoint>();
     }
 
     public void Dispose()

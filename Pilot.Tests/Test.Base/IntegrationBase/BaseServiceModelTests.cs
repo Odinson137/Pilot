@@ -1,10 +1,12 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Identity.Models;
 using Pilot.Messenger.Interfaces;
+using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Pilot.Worker.Models;
 using Pilot.Worker.Models.ModelHelpers;
 using Xunit.Abstractions;
@@ -12,12 +14,12 @@ using Xunit.Abstractions;
 namespace Test.Base.IntegrationBase;
 
 [Collection(nameof(SequentialCollectionDefinition))]
-public abstract class BaseApiModelTests<T, TDto> : BaseIntegrationTest where T : BaseModel where TDto : BaseDto
+public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where T : BaseModel where TDto : BaseDto
 {
     private readonly ServiceName _serviceName;
     private readonly ITestOutputHelper _testOutputHelper;
 
-    public BaseApiModelTests(
+    public BaseServiceModelTests(
         ITestOutputHelper testOutputHelper, ServiceName serviceName,
         ServiceTestConfiguration? apiConfiguration = null,
         IEnumerable<ServiceTestConfiguration>? configurations = null) : base(apiConfiguration, configurations)
@@ -147,92 +149,81 @@ public abstract class BaseApiModelTests<T, TDto> : BaseIntegrationTest where T :
     }
 
     [Fact]
-    public async Task CreateValue_ReturnOk()
+    public virtual async Task CreateModel_ReturnOk()
     {
         #region Arrange
 
-        var dbContext = GetContext(_serviceName);
-        await CreateUser(true);
+        var valueModel = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        var type = typeof(T);
+        await GenerateTestEntity.FillChildren(valueModel, GetContext(_serviceName));
+
+        var value = Mapper.Map<TDto>(valueModel);
+
+        #endregion
+
+        // Act
+
+        await Publisher.Publish(new CreateCommandMessage<TDto>(value, 1));
+        await Helper.Wait();
+
+        // Assert
+
+        var result = await GetContext(_serviceName).Set<T>().Where(c => c.CreateAt == value.CreateAt)
+            .FirstOrDefaultAsync<T>();
+
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public virtual async Task UpdateModelTest_ReturnOk()
+    {
+        #region Arrange
 
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        await GenerateTestEntity.FillChildren(value, dbContext);
+        var workerContext = GetContext(_serviceName);
+        await workerContext.AddAsync(value);
+        await workerContext.SaveChangesAsync();
 
         var valueDto = Mapper.Map<TDto>(value);
 
         #endregion
 
         // Act
-        var result = await Client.PostAsJsonAsync($"api/{type.Name}", valueDto);
+
+        await Publisher.Publish(new UpdateCommandMessage<TDto>(valueDto, 1));
         await Helper.Wait();
 
         // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await GetContext(_serviceName).Set<T>().Where(c => c.CreateAt == value.CreateAt)
-            .FirstOrDefaultAsync();
-        Assert.NotNull(content);
+
+        var result = await GetContext(_serviceName).Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.NotNull(result);
+        Assert.NotNull(result.ChangeAt);
     }
 
     [Fact]
-    public async Task UpdateValue_ReturnOk()
+    public virtual async Task DeleteModelTest_ReturnOk()
     {
         #region Arrange
 
-        var dbContext = GetContext(_serviceName);
-        var user = await CreateUser(needCreateCompanyUser: true);
-
-        var type = typeof(T);
-
         var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
 
-        if (value is IAddCompanyUser addCompanyUser) addCompanyUser.AddCompanyUser((CompanyUser)user);
-        if (value is IAddUser addUser) addUser.AddUser(((User)user).Id);
-
-        await dbContext.AddRangeAsync(value);
-        await dbContext.SaveChangesAsync();
-
-        var valueDto = Mapper.Map<TDto>(value);
+        var workerContext = GetContext(_serviceName);
+        await workerContext.AddAsync(value);
+        await workerContext.SaveChangesAsync();
 
         #endregion
 
         // Act
-        var result = await Client.PutAsJsonAsync($"api/{type.Name}", valueDto);
-        await Helper.Wait();
 
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await GetContext(_serviceName).Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-        Assert.NotNull(content);
-        Assert.NotNull(content.ChangeAt);
-    }
-
-    [Fact]
-    public async Task DeleteValue_ReturnOk()
-    {
-        #region Arrange
-
-        var dbContext = GetContext(_serviceName);
-        await CreateUser(true);
-
-        var type = typeof(T);
-
-        var value = GenerateTestEntity.CreateEntities<T>(count: 1, listDepth: 0).First();
-
-        await dbContext.AddRangeAsync(value);
-        await dbContext.SaveChangesAsync();
-
-        #endregion
-
-        // Act
-        var result = await Client.DeleteAsync($"api/{type.Name}/{value.Id}");
+        await Publisher.Publish(new DeleteCommandMessage<TDto>(value.Id, 1));
         await Helper.Wait();
 
         // Assert
 
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await GetContext(_serviceName).Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
-        Assert.Null(content);
+        var result = await GetContext(_serviceName).Set<T>().Where(c => c.Id == value.Id).FirstOrDefaultAsync();
+
+        Assert.Null(result);
     }
 }

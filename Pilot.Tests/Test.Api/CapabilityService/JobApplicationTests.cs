@@ -94,7 +94,7 @@ public class JobApplicationTests(
         #endregion
     
         // Act
-        var result = await ApiClient.PutAsJsonAsync($"api/{type.Name}", valueDto);
+        var result = await Client.PutAsJsonAsync($"api/{type.Name}", valueDto);
         await Helper.Wait();
     
         // Assert
@@ -116,7 +116,7 @@ public class JobApplicationTests(
         if (withAuthorization)
         {
             var token = TokenService.GenerateToken(user.Id, Role.Junior);
-            ApiClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         return user;
