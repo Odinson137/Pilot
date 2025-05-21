@@ -6,7 +6,6 @@ using Pilot.Identity.Models;
 using Pilot.Messenger.Models;
 using Test.Base.IntegrationBase;
 using Test.Base.IntegrationBase.Factories;
-using Test.Messenger.IntegrationTests.Factories;
 using Xunit.Abstractions;
 
 namespace Test.Messenger.IntegrationTests;
@@ -15,7 +14,7 @@ public class MessageTests(
     TestIdentityFactory identityFactory,
     TestMessengerFactory messengerFactory,
     ITestOutputHelper testOutputHelper)
-    : BaseServiceModelTests<InfoMessage, InfoMessageDto>(testOutputHelper, ServiceName.MessengerServer,
+    : BaseServiceModelTests<Message, MessageDto>(testOutputHelper, ServiceName.MessengerServer,
             configurations:
             [
                 new ServiceTestConfiguration
@@ -42,7 +41,7 @@ public class MessageTests(
     {
         #region Arrange
 
-        var user = (User)await CreateUser(); // TODO мне не нравится, сделать получше
+        var user = (User)await CreateUser(false); // TODO мне не нравится, сделать получше
 
         const int count = 2;
         var chat = GenerateTestEntity.CreateEntities<Chat>(count: 1, listDepth: 0).First();

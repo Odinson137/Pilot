@@ -6,7 +6,6 @@ using Pilot.Identity.Models;
 using Pilot.Messenger.Models;
 using Test.Base.IntegrationBase;
 using Test.Base.IntegrationBase.Factories;
-using Test.Messenger.IntegrationTests.Factories;
 using Xunit.Abstractions;
 
 namespace Test.Messenger.IntegrationTests;

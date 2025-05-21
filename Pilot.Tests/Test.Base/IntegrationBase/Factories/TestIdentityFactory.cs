@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
+using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Identity;
 using Pilot.Identity.Data;
+using Test.Base.IntegrationBase.Fakers;
 
 namespace Test.Base.IntegrationBase.Factories;
 
@@ -40,6 +42,11 @@ public class TestIdentityFactory : WebApplicationFactory<Program>, IAsyncLifetim
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
+            
+            services.RemoveAll<IBaseHttpService>(); 
+            services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
+            services.RemoveAll<IModelService>(); 
+            services.AddScoped<IModelService, ModelServiceFaker>();
             
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);

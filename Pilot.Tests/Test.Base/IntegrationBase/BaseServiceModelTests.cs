@@ -169,7 +169,7 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         // Assert
 
         var result = await GetContext(_serviceName).Set<T>().Where(c => c.CreateAt == value.CreateAt)
-            .FirstOrDefaultAsync<T>();
+            .FirstOrDefaultAsync();
 
         Assert.NotNull(result);
     }
