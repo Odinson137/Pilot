@@ -4,6 +4,7 @@ using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
 using Pilot.Messenger.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
@@ -50,11 +51,11 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         }
     }
 
-    protected async Task<object> CreateUser(bool withAuthorization = true, bool needCreateCompanyUser = false) 
+    protected async Task<BaseModel> CreateUser(bool withAuthorization = true) 
     {
         var user = GenerateTestEntity.CreateEntities<User>(count: 1).First();
 
-        if (needCreateCompanyUser)
+        if (ExistServiceContext(ServiceName.WorkerServer))
         {
             var companyUser = GenerateTestEntity.CreateEntities<CompanyUser>(count: 1, listDepth: 0).First();
             
@@ -68,7 +69,7 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
             await identityContext.AddRangeAsync(user);
             await identityContext.SaveChangesAsync();
             
-            if (withAuthorization)
+            if (withAuthorization && TokenService != null)
             {
                 var token = TokenService.GenerateToken(companyUser.Id, Role.Junior);
                 Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -89,6 +90,67 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         
         return user;
         
+    }
+    
+    [Fact]
+    public virtual async Task GetAllValuesTest_FilterWithIds_ReturnOk()
+    {
+        #region Arrange
+    
+        const int count = 3;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        FillUser(values);
+    
+        var context = GetContext(_serviceName);
+        await context.AddRangeAsync(values);
+        await context.SaveChangesAsync();
+    
+        var filter = new BaseFilter
+        {
+            Ids = values.Select(c => c.Id).ToList(),
+        };
+    
+        #endregion
+    
+        // Act
+        var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+    
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count >= count);
+    }
+
+
+    [Fact]
+    public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
+    {
+        #region Arrange
+    
+        const int count = 3;
+        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+        FillUser(values);
+
+        var workerContext = GetContext(_serviceName);
+        await workerContext.AddRangeAsync(values);
+        await workerContext.SaveChangesAsync();
+    
+        var filter = new BaseFilter
+        {
+            WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
+        };
+    
+        #endregion
+    
+        // Act
+        var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+    
+        // Assert
+        Assert.True(result.IsSuccessStatusCode);
+        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+        Assert.NotNull(content);
+        Assert.True(content.Count == 1);
     }
     
     [Fact]
@@ -149,7 +211,7 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
     }
 
     [Fact]
-    public virtual async Task CreateModel_ReturnOk()
+    public virtual async Task CreateModelTest_ReturnOk()
     {
         #region Arrange
 

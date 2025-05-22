@@ -91,13 +91,13 @@ services:
     networks:
       - pilot-net
 
-  checker:
-    container_name: checker
-    image: redis:7.0.15
-    volumes:
-      - ./init-redis-cluster.sh:/init-redis-cluster.sh
-    entrypoint: ["/bin/bash", "-c", "/init-redis-cluster.sh && redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes"]
-    
+#  checker:
+#    container_name: checker
+#    image: redis:7.0.15
+#    volumes:
+#      - ./init-redis-cluster.sh:/init-redis-cluster.sh
+#    entrypoint: ["/bin/bash", "-c", "/init-redis-cluster.sh && redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes"]
+#    
   redis-1:
     container_name: pilot-redis-1
     image: redis:7.0.15
@@ -312,6 +312,7 @@ services:
       - MSSQL_SA_PASSWORD=S3cur3P@ssW0rd!
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - hangfire-mssql-data:/data
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "S3cur3P@ssW0rd!" -Q "SELECT 1" || exit 1
       timeout: 3s
@@ -363,6 +364,7 @@ networks:
     driver: bridge
 
 volumes:
+  hangfire-mssql-data:/data:
   redis-data-1:
   redis-data-2:
   redis-data-3:

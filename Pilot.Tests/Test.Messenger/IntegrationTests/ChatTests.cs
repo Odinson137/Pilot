@@ -41,7 +41,7 @@ public class ChatTests(
     {
         #region Arrange
 
-        var user = (User)await CreateUser(false);
+        var user = await CreateUser(false);
 
         const int count = 2;
         var values = GenerateTestEntity.CreateEntities<Chat>(count: 2, listDepth: 0);

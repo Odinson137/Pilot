@@ -154,64 +154,6 @@ public class IdentityIntegrationTests(
     }
 
     [Fact]
-    public virtual async Task GetAllValuesTest_FilterWithIds_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 3;
-        var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
-
-        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
-        await dataContext.AddRangeAsync(values);
-        await dataContext.SaveChangesAsync();
-
-        var filter = new BaseFilter
-        {
-            Ids = values.Select(c => c.Id).ToList(),
-        };
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{nameof(User)}?filter={filter.ToJson()}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<UserDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count >= count);
-    }
-
-    [Fact]
-    public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
-    {
-        #region Arrange
-
-        const int count = 3;
-        var values = GenerateTestEntity.CreateEntities<User>(count: count, listDepth: 0);
-
-        var dataContext = (DataContext)GetContext(ServiceName.IdentityServer);
-        await dataContext.AddRangeAsync(values);
-        await dataContext.SaveChangesAsync();
-
-        var filter = new BaseFilter
-        {
-            WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
-        };
-
-        #endregion
-
-        // Act
-        var result = await Client.GetAsync($"api/{nameof(User)}?filter={filter.ToJson()}");
-
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<UserDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count == 1);
-    }
-
-    [Fact]
     public virtual async Task GetAllValuesTest_WithSelectQuery_ReturnOk()
     {
         #region Arrange
@@ -243,7 +185,7 @@ public class IdentityIntegrationTests(
     }
 
     [Fact(Skip = "Не нужен. Создание происходит через процесс регистрации")]
-    public override Task CreateModel_ReturnOk()
+    public override Task CreateModelTest_ReturnOk()
     {
         return Task.CompletedTask;
     }

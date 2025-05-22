@@ -54,13 +54,13 @@ public class InfoMessageTests(
     }
 
     [Fact(Skip = "У InfoMessage не будет возможности изменять сообщение и удалять их, только создание")]
-    public override async Task CreateModel_ReturnOk()
+    public override async Task CreateModelTest_ReturnOk()
     {
         #region Arrange
 
         var valueModel = GenerateTestEntity.CreateEntities<InfoMessageDto>(count: 1, listDepth: 0).First();
 
-        var user = (User)await CreateUser();
+        var user = await CreateUser();
 
         #endregion
 

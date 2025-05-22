@@ -1,24 +1,60 @@
 ﻿using System.Net.Http.Json;
+using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Worker.Models;
 using Test.Base.IntegrationBase;
-using Test.Worker.IntegrationTests.Factories;
+using Test.Base.IntegrationBase.Factories;
+using Xunit.Abstractions;
 
 namespace Test.Worker.IntegrationTests;
 
-public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto>
+public class CompanyTests(
+    TestIdentityFactory identityFactory,
+    TestStorageFactory storageFactory,
+    TestWorkerFactory workerFactory,
+    TestMessengerFactory messengerFactory,
+    ITestOutputHelper testOutputHelper)
+    : BaseServiceModelTests<Company, CompanyDto>(testOutputHelper, ServiceName.WorkerServer,
+            configurations:
+            [
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.IdentityServer,
+                    ServiceProvider = identityFactory.Services,
+                    DbContextType = typeof(Pilot.Identity.Data.DataContext),
+                    HttpClient = identityFactory.CreateClient()
+                },
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.WorkerServer,
+                    ServiceProvider = workerFactory.Services,
+                    DbContextType = typeof(Pilot.Worker.Data.DataContext),
+                    HttpClient = workerFactory.CreateClient(),
+                    IsMainService = true
+                },
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.MessengerServer,
+                    ServiceProvider = messengerFactory.Services,
+                    DbContextType = typeof(Pilot.Messenger.Data.DataContext),
+                    HttpClient = messengerFactory.CreateClient()
+                },
+                new ServiceTestConfiguration
+                {
+                    ServiceName = ServiceName.StorageServer,
+                    DbContextType = typeof(Pilot.Storage.Data.DataContext),
+                    ServiceProvider = storageFactory.Services,
+                    HttpClient = storageFactory.CreateClient()
+                }
+            ]),
+        IClassFixture<TestIdentityFactory>,
+        IClassFixture<TestStorageFactory>,
+        IClassFixture<TestMessengerFactory>,
+        IClassFixture<TestWorkerFactory>
 {
-    /// <inheritdoc />
-    public CompanyTests(WorkerTestWorkerFactory workerTestWorkerFactory, WorkerTestIdentityFactory identityFactory,
-        WorkerTestStorageFactory storageFactory,
-        WorkerTestAuditHistoryFactory auditHistoryFactory
-        ) :
-        base(workerTestWorkerFactory, identityFactory, storageFactory, auditHistoryFactory)
-    {
-    }
-
+    
     [Fact]
-    public override async Task GetValue_ReturnOk()
+    public override async Task GetValueTest_ReturnOk()
     {
         #region Arrange
 
@@ -28,8 +64,9 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
         var projects = GenerateTestEntity.CreateEntities<Project>(count: count, listDepth: 0);
         values.First().Projects = projects;
 
-        await WorkerContext.AddRangeAsync(values);
-        await WorkerContext.SaveChangesAsync();
+        var workerContext = GetContext(ServiceName.WorkerServer);
+        await workerContext.AddRangeAsync(values);
+        await workerContext.SaveChangesAsync();
 
         var id = values.First().Id;
 
@@ -44,14 +81,4 @@ public class CompanyTests : BaseModelReceiverIntegrationTest<Company, CompanyDto
         Assert.NotNull(content);
         Assert.Equal(id, content.Id);
     }
-
-    // TODO потом просто сделать так, как я сделал в тестировании fileurl для всех моделей
-    // protected override async ValueTask GetArrangeDop(ICollection<Company> values)
-    // {
-    //     foreach (var company in values)
-    //     {
-    //         company.LogoId = 1;
-    //         company.InsideImagesId = [2];
-    //     }
-    // }
 }
