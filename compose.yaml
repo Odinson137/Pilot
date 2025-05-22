@@ -82,14 +82,74 @@ services:
     networks:
       - pilot-net
 
-  rabbitmq:
-    container_name: pilot-rabbitmq
+  rabbitmq-1:
+    container_name: pilot-rabbitmq-1
     image: rabbitmq:3-management
+    hostname: rabbitmq-1
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=secretcookie
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - rabbitmq-data-1:/var/lib/rabbitmq
     networks:
       - pilot-net
+
+  rabbitmq-2:
+    container_name: pilot-rabbitmq-2
+    image: rabbitmq:3-management
+    hostname: rabbitmq-2
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=secretcookie
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - rabbitmq-data-2:/var/lib/rabbitmq
+    depends_on:
+      - rabbitmq-1
+    networks:
+      - pilot-net
+#    entrypoint: ["/bin/bash", "-c", "rabbitmq-server-start & sleep 10 && rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app && tail -f /var/log/rabbitmq/log/*"]
+
+  rabbitmq-3:
+    container_name: pilot-rabbitmq-3
+    image: rabbitmq:3-management
+    hostname: rabbitmq-3
+    ports:
+      - "5674:5672"
+      - "15674:15672"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=secretcookie
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - rabbitmq-data-3:/var/lib/rabbitmq
+    depends_on:
+      - rabbitmq-1
+    networks:
+      - pilot-net
+#    entrypoint: ["/bin/bash", "-c", "rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app"]
 
 #  checker:
 #    container_name: checker
@@ -364,7 +424,10 @@ networks:
     driver: bridge
 
 volumes:
-  hangfire-mssql-data:/data:
+  hangfire-mssql-data:
+  rabbitmq-data-1:
+  rabbitmq-data-2:
+  rabbitmq-data-3:
   redis-data-1:
   redis-data-2:
   redis-data-3:

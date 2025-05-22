@@ -1,6 +1,4 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
-
-namespace Pilot.AuditHistory.Interface;
+﻿namespace Pilot.AuditHistory.Interface;
 
 public interface IClickHouseService
 {

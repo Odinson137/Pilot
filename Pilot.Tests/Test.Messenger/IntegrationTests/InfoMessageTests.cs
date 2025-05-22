@@ -1,12 +1,9 @@
-﻿using MassTransit.Transports;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Identity.Models;
 using Pilot.Messenger.Models;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
-using Pilot.SqrsControllerLibrary.Services;
 using Test.Base.IntegrationBase;
 using Test.Base.IntegrationBase.Factories;
 using Xunit.Abstractions;

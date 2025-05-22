@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using Pilot.Capability.Models;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
@@ -7,7 +6,6 @@ using Pilot.Contracts.Services;
 using Test.Base.IntegrationBase;
 using Test.Base.IntegrationBase.Factories;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Test.AuditHistory.IntegrationTests;
 

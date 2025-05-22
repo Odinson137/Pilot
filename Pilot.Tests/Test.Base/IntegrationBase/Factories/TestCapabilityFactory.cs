@@ -8,9 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using Pilot.Capability.Data;
-using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
-using Test.Base.IntegrationBase.Fakers;
 using Program = Pilot.Capability.Program;
 
 namespace Test.Base.IntegrationBase.Factories;

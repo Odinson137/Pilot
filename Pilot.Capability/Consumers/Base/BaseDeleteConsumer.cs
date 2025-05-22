@@ -4,7 +4,6 @@ using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
 using Pilot.Contracts.Services;
-using Pilot.SqrsControllerLibrary.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Capability.Consumers.Base;

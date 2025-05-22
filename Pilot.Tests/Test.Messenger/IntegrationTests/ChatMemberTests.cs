@@ -1,5 +1,4 @@
-﻿using Pilot.Capability.Models;
-using Pilot.Contracts.Data.Enums;
+﻿using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Messenger.Models;
 using Test.Base.IntegrationBase;

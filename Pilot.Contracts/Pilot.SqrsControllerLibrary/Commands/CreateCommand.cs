@@ -1,5 +1,4 @@
-﻿using MySqlConnector;
-using Pilot.Contracts.Base;
+﻿using Pilot.Contracts.Base;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;

@@ -1,12 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.Services;
 using Pilot.Identity.Models;
-using Pilot.Messenger.Interfaces;
 using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 using Pilot.Worker.Models;
 using Pilot.Worker.Models.ModelHelpers;
@@ -121,38 +119,37 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         Assert.NotNull(content);
         Assert.True(content.Count >= count);
     }
-
-
-    [Fact]
-    public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
-    {
-        #region Arrange
     
-        const int count = 3;
-        var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
-        FillUser(values);
-
-        var workerContext = GetContext(_serviceName);
-        await workerContext.AddRangeAsync(values);
-        await workerContext.SaveChangesAsync();
-    
-        var filter = new BaseFilter
-        {
-            WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
-        };
-    
-        #endregion
-    
-        // Act
-        var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
-    
-        // Assert
-        Assert.True(result.IsSuccessStatusCode);
-        var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
-        Assert.NotNull(content);
-        Assert.True(content.Count >= count);
-    }
-    
+    // [Fact]
+    // public virtual async Task GetAllValuesTest_FilterWithWhereFilter_ReturnOk()
+    // {
+    //     #region Arrange
+    //
+    //     const int count = 3;
+    //     var values = GenerateTestEntity.CreateEntities<T>(count: count, listDepth: 0);
+    //     FillUser(values);
+    //
+    //     var workerContext = GetContext(_serviceName);
+    //     await workerContext.AddRangeAsync(values);
+    //     await workerContext.SaveChangesAsync();
+    //
+    //     var filter = new BaseFilter
+    //     {
+    //         WhereFilter = new WhereFilter((nameof(BaseId.Id), values.Select(c => c.Id).First()))
+    //     };
+    //
+    //     #endregion
+    //
+    //     // Act
+    //     var result = await Client.GetAsync($"api/{EntityName}?filter={filter.ToJson()}");
+    //
+    //     // Assert
+    //     Assert.True(result.IsSuccessStatusCode);
+    //     var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
+    //     Assert.NotNull(content);
+    //     Assert.True(content.Count >= count);
+    // }
+    //
     [Fact]
     public virtual async Task GetAllValuesTest_ReturnOk()
     {

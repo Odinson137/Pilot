@@ -1,12 +1,8 @@
-﻿using MassTransit;
-using Pilot.Capability.Consumers.Base;
+﻿using Pilot.Capability.Consumers.Base;
 using Pilot.Capability.Interface;
 using Pilot.Capability.Models;
-using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Services;
-using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Capability.Consumers.SkillConsumer;
 

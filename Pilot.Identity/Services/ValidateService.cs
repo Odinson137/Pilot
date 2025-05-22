@@ -1,6 +1,5 @@
 ﻿using Pilot.Contracts.Base;
 using Pilot.Identity.Data;
-using Pilot.Identity.Interfaces;
 
 namespace Pilot.Identity.Services;
 

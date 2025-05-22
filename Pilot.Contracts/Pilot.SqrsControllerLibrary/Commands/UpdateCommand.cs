@@ -1,5 +1,4 @@
 ﻿using Pilot.Contracts.Base;
-using Pilot.Contracts.Data.Enums;
 using Pilot.SqrsControllerLibrary.Interfaces;
 
 namespace Pilot.SqrsControllerLibrary.Commands;

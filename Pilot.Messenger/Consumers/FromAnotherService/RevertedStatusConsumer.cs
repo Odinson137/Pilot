@@ -2,11 +2,9 @@
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Contracts.Services;
 using Pilot.Messenger.Interfaces;
 using Pilot.Messenger.Models;
 using Pilot.SqrsControllerLibrary.Commands;
-using Pilot.SqrsControllerLibrary.RabbitMqMessages;
 
 namespace Pilot.Messenger.Consumers.FromAnotherService;
 

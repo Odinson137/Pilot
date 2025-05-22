@@ -9,7 +9,6 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
-using Test.Base.IntegrationBase.Fakers;
 using DataContext = Pilot.Messenger.Data.DataContext;
 using Program = Pilot.Messenger.Program;
 

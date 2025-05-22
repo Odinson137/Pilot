@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pilot.AuditHistory.Data;
 using Pilot.AuditHistory.Interface;
-using Pilot.Contracts.DTO.ModelDto;
 
 namespace Pilot.AuditHistory.Service;
 

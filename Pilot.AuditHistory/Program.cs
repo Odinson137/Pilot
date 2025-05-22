@@ -1,4 +1,3 @@
-using ClickHouse.Client.ADO.Parameters;
 using ClickHouse.EntityFrameworkCore.Extensions;
 using Pilot.AuditHistory.Data;
 using Pilot.AuditHistory.Interface;

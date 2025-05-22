@@ -1,10 +1,7 @@
-using MassTransit;
 using MediatR;
-using Microsoft.AspNetCore.Diagnostics;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.Exception.ApiExceptions;
 using Pilot.Contracts.Interfaces;
 using Pilot.Worker.Data;
 using Pilot.Worker.Interface;
@@ -16,7 +13,6 @@ using Pilot.SqrsControllerLibrary.NotificationHandlers;
 using Pilot.SqrsControllerLibrary.Notifications;
 using Pilot.SqrsControllerLibrary.Services;
 using Pilot.Worker.Behaviors;
-using Pilot.Worker.Consumers.ApprovedJobApplicationConsumer;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Pilot.Contracts.Base;
 using Pilot.Contracts.Exception.ApiExceptions;
-using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.Queries;
 
 namespace Pilot.SqrsControllerLibrary.Handlers;

@@ -3,11 +3,7 @@ using System.Reflection;
 using MassTransit.Internals;
 using Pilot.Contracts.Attributes;
 using Pilot.Contracts.Base;
-using Pilot.Contracts.Data;
-using Pilot.Contracts.Data.Enums;
-using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Contracts.Interfaces;
-using Pilot.Contracts.Services;
 using Pilot.Contracts.Services.LogService;
 using Pilot.SqrsControllerLibrary.Interfaces;
 

@@ -2,7 +2,6 @@
 using Pilot.Contracts.Data;
 using Pilot.Contracts.Data.Enums;
 using Pilot.Contracts.DTO.ModelDto;
-using Pilot.Identity.Models;
 using Pilot.Messenger.Models;
 using Test.Base.IntegrationBase;
 using Test.Base.IntegrationBase.Factories;

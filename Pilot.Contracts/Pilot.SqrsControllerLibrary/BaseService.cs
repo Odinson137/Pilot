@@ -1,13 +1,10 @@
-﻿using System.Reflection;
-using AutoMapper;
+﻿using AutoMapper;
 using MassTransit;
-using MassTransit.Configuration;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Pilot.Contracts.DTO.ModelDto;
 using Pilot.SqrsControllerLibrary.Interfaces;
 using Pilot.SqrsControllerLibrary.Repositories;
 
@@ -46,7 +43,18 @@ public static class AddBaseService
             
             x.UsingRabbitMq((ctx, cfg) =>
             {
-                cfg.Host(configuration["RabbitMQ:ConnectionString"]);
+                cfg.Host(configuration["RabbitMQ:ConnectionString"], h =>
+                {
+                    if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Test")
+                    {
+                        h.UseCluster(c =>
+                        {
+                            c.Node("pilot-rabbitmq-1");
+                            c.Node("pilot-rabbitmq-2");
+                            c.Node("pilot-rabbitmq-3");
+                        });   
+                    }
+                });
                 if (consumers != null)
                 {
                     foreach (var consumer in consumers)
