@@ -16,7 +16,7 @@ public class TestAuditHistoryFactory : WebApplicationFactory<Pilot.AuditHistory.
 {
     public async Task InitializeAsync()
     {
-        await TestContainerManager.InitializeAsync();
+        await TestContainerManager.InitializeAsync(runClickHouse: true);
     }
 
     public new async Task DisposeAsync()
@@ -33,12 +33,12 @@ public class TestAuditHistoryFactory : WebApplicationFactory<Pilot.AuditHistory.
             services.RemoveAll<ISeed>(); // must remove if you don't to call the seed code in your tests
             services.AddTransient<ISeed, TestSeed>();
             
-            services.RemoveAll<DbContextOptions<ClickHouseContext>>();
-            
-            services.AddDbContext<ClickHouseContext>(options =>
-            {
-                options.UseInMemoryDatabase("TestDatabase");
-            });
+            // services.RemoveAll<DbContextOptions<ClickHouseContext>>();
+            //
+            // services.AddDbContext<ClickHouseContext>(options =>
+            // {
+            //     options.UseInMemoryDatabase("TestDatabase");
+            // });
 
             services.RemoveAll<TracerProvider>();
             services.AddSingleton(TracerProvider.Default);
@@ -53,6 +53,7 @@ public class TestAuditHistoryFactory : WebApplicationFactory<Pilot.AuditHistory.
             {
                 { "RabbitMQ:ConnectionString", TestContainerManager.RabbitMqConnectionString },
                 { "RedisCache:Endpoints", TestContainerManager.RedisConnectionString },
+                { "ClickHouse:ConnectionString", TestContainerManager.ClickHouseConnectionString },
             }!);
         });
         return base.CreateHost(builder);

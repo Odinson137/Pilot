@@ -75,6 +75,9 @@ public abstract class BaseIntegrationTest : IDisposable
             var contextType = _contextTypes[serviceName];
             var dbContext = (DbContext)_serviceScopes[serviceName].CreateScope().ServiceProvider
                 .GetRequiredService(contextType);
+            
+            if (serviceName == ServiceName.AuditHistoryService) continue;
+            
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
         }

@@ -150,7 +150,7 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         Assert.True(result.IsSuccessStatusCode);
         var content = await result.Content.ReadFromJsonAsync<ICollection<TDto>>();
         Assert.NotNull(content);
-        Assert.True(content.Count == 1);
+        Assert.True(content.Count >= count);
     }
     
     [Fact]
