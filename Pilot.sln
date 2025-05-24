@@ -50,6 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yaml = compose.yaml
 		init-redis-cluster.sh = init-redis-cluster.sh
 		init.sql = init.sql
+		haproxy.cfg = haproxy.cfg
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.BackgroundJob", "Pilot.BackgroundJob\Pilot.BackgroundJob.csproj", "{937FBC87-1FAF-4951-B02E-4AD5EFEBF15B}"
