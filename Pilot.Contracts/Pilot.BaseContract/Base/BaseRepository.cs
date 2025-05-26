@@ -11,7 +11,7 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
 
     public async Task<T> AddValueToContextAsync(T value, CancellationToken token = default)
     {
-        await DbSet.AddAsync(value, token);
+        await Context.AddAsync(value, token);
         return value;
     }
 
@@ -22,7 +22,8 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
 
     public async Task<int> FastDeleteAsync(int modelId, CancellationToken token = default)
     {
-        return await DbSet.Where(c => c.Id == modelId).ExecuteDeleteAsync(token);
+        var dbSet = Context.Set<T>();
+        return await dbSet.Where(c => c.Id == modelId).ExecuteDeleteAsync(token);
     }
 
     public void Delete(T model)

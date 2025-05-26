@@ -36,12 +36,17 @@ public class TestWorkerFactory : WebApplicationFactory<Pilot.Worker.Program>, IA
             services.AddTransient<ISeed, TestSeed>();
             
             services.RemoveAll<DbContextOptions<DataContext>>();
+            services.RemoveAll<DbContextOptions<ReadOnlyDataContext>>();
             
             services.AddDbContext<DataContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase");
             });
-
+            services.AddDbContext<ReadOnlyDataContext>(options =>
+            {
+                options.UseInMemoryDatabase("TestDatabase");
+            });
+            
             services.RemoveAll<IBaseHttpService>(); 
             services.AddScoped<IBaseHttpService, BaseHttpServiceFaker>();
             services.RemoveAll<IModelService>(); 
