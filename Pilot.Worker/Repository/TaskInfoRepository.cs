@@ -6,6 +6,7 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Repository;
 
-public class TaskInfoRepository(DataContext context, IMapper mapper) : BaseRepository<TaskInfo>(context, mapper), ITaskInfo
+public class TaskInfoRepository(DataContext context, ReadOnlyDataContext readOnlyDataContext, IMapper mapper)
+    : BaseReadWriteSplitRepository<TaskInfo>(context, readOnlyDataContext, mapper), ITaskInfo
 {
 }

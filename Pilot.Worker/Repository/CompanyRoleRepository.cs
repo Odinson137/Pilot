@@ -6,6 +6,7 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Repository;
 
-public class CompanyRoleRepository(DataContext context, IMapper mapper) : BaseRepository<CompanyRole>(context, mapper), ICompanyRole
+public class CompanyRoleRepository(DataContext context, ReadOnlyDataContext readOnlyDataContext, IMapper mapper)
+    : BaseReadWriteSplitRepository<CompanyRole>(context, readOnlyDataContext, mapper), ICompanyRole
 {
 }

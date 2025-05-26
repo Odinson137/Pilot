@@ -40,7 +40,7 @@ services:
     expose:
       - "8080"
     depends_on:
-      pilot_mysql:
+      pilot_worker_mysql_master:
         condition: service_healthy
     networks:
       - pilot-net
@@ -162,7 +162,7 @@ services:
       - rabbitmq-1
     networks:
       - pilot-net
-#    entrypoint: ["/bin/bash", "-c", "rabbitmq-server-start & sleep 10 && rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app && tail -f /var/log/rabbitmq/log/*"]
+  #    entrypoint: ["/bin/bash", "-c", "rabbitmq-server-start & sleep 10 && rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app && tail -f /var/log/rabbitmq/log/*"]
 
   rabbitmq-3:
     container_name: pilot-rabbitmq-3
@@ -186,21 +186,21 @@ services:
       - rabbitmq-1
     networks:
       - pilot-net
-#    entrypoint: ["/bin/bash", "-c", "rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app"]
+  #    entrypoint: ["/bin/bash", "-c", "rabbitmqctl stop_app && rabbitmqctl join_cluster rabbit@rabbitmq-1 && rabbitmqctl start_app"]
+  
+  #  checker:
+  #    container_name: checker
+  #    image: redis:7.0.15
+  #    volumes:
+  #      - ./init-redis-cluster.sh:/init-redis-cluster.sh
+  #    entrypoint: ["/bin/bash", "-c", "/init-redis-cluster.sh && redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes"]
 
-#  checker:
-#    container_name: checker
-#    image: redis:7.0.15
-#    volumes:
-#      - ./init-redis-cluster.sh:/init-redis-cluster.sh
-#    entrypoint: ["/bin/bash", "-c", "/init-redis-cluster.sh && redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes"]
-#    
   redis-1:
     container_name: pilot-redis-1
     image: redis:7.0.15
     command: redis-server --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-1:/data
+    volumes:
+      - redis-data-1:/data
     ports:
       - "6379:6379"
       - "16379:16379"
@@ -216,8 +216,8 @@ services:
     container_name: pilot-redis-2
     image: redis:7.0.15
     command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-2:/data
+    volumes:
+      - redis-data-2:/data
     ports:
       - "6380:6380"
       - "16380:16380"
@@ -233,8 +233,8 @@ services:
     container_name: pilot-redis-3
     image: redis:7.0.15
     command: redis-server --port 6381 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-3:/data
+    volumes:
+      - redis-data-3:/data
     ports:
       - "6381:6381"
       - "16381:16381"
@@ -250,8 +250,8 @@ services:
     container_name: pilot-redis-4
     image: redis:7.0.15
     command: redis-server --port 6382 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-4:/data
+    volumes:
+      - redis-data-4:/data
     ports:
       - "6382:6382"
       - "16382:16382"
@@ -267,8 +267,8 @@ services:
     container_name: pilot-redis-5
     image: redis:7.0.15
     command: redis-server --port 6383 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-5:/data
+    volumes:
+      - redis-data-5:/data
     ports:
       - "6383:6383"
       - "16383:16383"
@@ -284,8 +284,8 @@ services:
     container_name: pilot-redis-6
     image: redis:7.0.15
     command: redis-server --port 6384 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
-#    volumes:
-#      - redis-data-6:/data
+    volumes:
+      - redis-data-6:/data
     ports:
       - "6384:6384"
       - "16384:16384"
@@ -296,7 +296,7 @@ services:
       retries: 5
     networks:
       - pilot-net
-      
+  
   pilot_identity_mysql:
     container_name: pilot-identity-mysql
     image: mysql:8.0
@@ -305,6 +305,8 @@ services:
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - identity-mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -312,18 +314,41 @@ services:
     networks:
       - pilot-net
 
-  pilot_mysql:
-    container_name: pilot-mysql
+  pilot_worker_mysql_master:
+    container_name: pilot-mysql-master
     image: mysql:8.0
     ports:
       - "3309:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - mysql-master-data:/var/lib/mysql
+      - ./mysql-master.cnf:/etc/mysql/conf.d/master.cnf:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 10
+    networks:
+      - pilot-net
+
+  pilot_worker_mysql_replica:
+    container_name: pilot-mysql-replica
+    image: mysql:8.0
+    ports:
+      - "3310:3306"
+    environment:
+      MYSQL_DATABASE: PilotDb
+      MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - mysql-replica-data:/var/lib/mysql
+      - ./mysql-replica.cnf:/etc/mysql/conf.d/replica.cnf:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 10
+    depends_on:
+      - pilot_worker_mysql_master
     networks:
       - pilot-net
 
@@ -331,10 +356,12 @@ services:
     container_name: pilot-messenger-mysql
     image: mysql:8.0
     ports:
-      - "3310:3306"
+      - "3311:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - messenger-mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -346,10 +373,12 @@ services:
     container_name: pilot-storage-mysql
     image: mysql:8.0
     ports:
-      - "3311:3306"
+      - "3312:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - storage-mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -361,10 +390,12 @@ services:
     container_name: pilot-capability-mysql
     image: mysql:8.0
     ports:
-      - "3312:3306"
+      - "3313:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - capability-mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -388,10 +419,12 @@ services:
     container_name: pilot-backgroundjob-mysql
     image: mysql:8.0
     ports:
-      - "3313:3306"
+      - "3314:3306"
     environment:
       MYSQL_DATABASE: PilotDb
       MYSQL_ROOT_PASSWORD: 12345678
+    volumes:
+      - backgroundjob-mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
@@ -429,6 +462,8 @@ services:
       - "14268:14268"
       - "14250:14250"
       - "9411:9411"
+    volumes:
+      - jaeger-data:/tmp
     networks:
       - pilot-net
 
@@ -453,6 +488,8 @@ services:
       - CLICKHOUSE_DB=default
       - CLICKHOUSE_USER=default
       - CLICKHOUSE_PASSWORD=default
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
     networks:
       - pilot-net
 
@@ -465,10 +502,18 @@ volumes:
   rabbitmq-data-1:
   rabbitmq-data-2:
   rabbitmq-data-3:
-#  redis-data-1:
-#  redis-data-2:
-#  redis-data-3:
-#  redis-data-4:
-#  redis-data-5:
-#  redis-data-6:
-
+  redis-data-1:
+  redis-data-2:
+  redis-data-3:
+  redis-data-4:
+  redis-data-5:
+  redis-data-6:
+  mysql-master-data:
+  mysql-replica-data:
+  identity-mysql-data:
+  messenger-mysql-data:
+  storage-mysql-data:
+  capability-mysql-data:
+  backgroundjob-mysql-data:
+  jaeger-data:
+  clickhouse-data:

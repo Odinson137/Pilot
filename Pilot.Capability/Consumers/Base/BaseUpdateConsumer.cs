@@ -40,7 +40,7 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         if (existingModel == null)
             throw new Exception("Entity not found");
 
-        var entityEntry = repository.GetContext.Entry(existingModel);
+        var entityEntry = repository.Context.Entry(existingModel);
         entityEntry.CurrentValues.SetValues(model);
         
         existingModel.ChangeAt = DateTime.Now;

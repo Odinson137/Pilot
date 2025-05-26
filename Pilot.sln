@@ -51,17 +51,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		init-redis-cluster.sh = init-redis-cluster.sh
 		init.sql = init.sql
 		haproxy.cfg = haproxy.cfg
+		mysql-master.cnf = mysql-master.cnf
+		mysql-replica.cnf = mysql-replica.cnf
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.BackgroundJob", "Pilot.BackgroundJob\Pilot.BackgroundJob.csproj", "{937FBC87-1FAF-4951-B02E-4AD5EFEBF15B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.BackgroundJob", "Pilot.Tests\Test.BackgroundJob\Test.BackgroundJob.csproj", "{B396E903-DB81-4418-A355-2D8E9383FF0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewModelGenerate", "NewModelGenerate\NewModelGenerate.csproj", "{931AD799-8B18-4AB5-8EBE-EA965EB9297D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pilot.AuditHistory", "Pilot.AuditHistory\Pilot.AuditHistory.csproj", "{E29E0B37-746C-418C-A296-A8172E1C2310}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.AuditHistory", "Pilot.Tests\Test.AuditHistory\Test.AuditHistory.csproj", "{29AC1740-B31E-4DAB-BD54-A6B8701ED998}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewModelGenerate", "Utils\NewModelGenerate\NewModelGenerate.csproj", "{5893AB8E-7A5F-4DFE-9F71-531E196D265A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,10 +155,10 @@ Global
 		{64CFB23E-3EA1-430B-B952-76A57004ABF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64CFB23E-3EA1-430B-B952-76A57004ABF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64CFB23E-3EA1-430B-B952-76A57004ABF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{931AD799-8B18-4AB5-8EBE-EA965EB9297D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{931AD799-8B18-4AB5-8EBE-EA965EB9297D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{931AD799-8B18-4AB5-8EBE-EA965EB9297D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{931AD799-8B18-4AB5-8EBE-EA965EB9297D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5893AB8E-7A5F-4DFE-9F71-531E196D265A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5893AB8E-7A5F-4DFE-9F71-531E196D265A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5893AB8E-7A5F-4DFE-9F71-531E196D265A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5893AB8E-7A5F-4DFE-9F71-531E196D265A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +180,6 @@ Global
 		{3339E008-869D-43EF-8C1B-37EB495A2BD5} = {D9F9AFD5-CE30-4950-8B16-A285EBEF5008}
 		{64CFB23E-3EA1-430B-B952-76A57004ABF0} = {D22D9E31-7610-4E50-B3E0-F85D61E3466B}
 		{2B1BAD40-46C4-4426-8934-8581EAFAAEDD} = {26302DF8-31F3-449B-A500-9FAE93D47D16}
-		{931AD799-8B18-4AB5-8EBE-EA965EB9297D} = {D22D9E31-7610-4E50-B3E0-F85D61E3466B}
+		{5893AB8E-7A5F-4DFE-9F71-531E196D265A} = {D22D9E31-7610-4E50-B3E0-F85D61E3466B}
 	EndGlobalSection
 EndGlobal

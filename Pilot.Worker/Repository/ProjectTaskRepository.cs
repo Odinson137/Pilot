@@ -6,7 +6,7 @@ using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Repository;
 
-public class ProjectTaskRepository(DataContext context, IMapper mapper)
-    : BaseRepository<ProjectTask>(context, mapper), IProjectTask
+public class ProjectTaskRepository(DataContext context, ReadOnlyDataContext readOnlyDataContext, IMapper mapper)
+    : BaseReadWriteSplitRepository<ProjectTask>(context, readOnlyDataContext, mapper), IProjectTask
 {
 }

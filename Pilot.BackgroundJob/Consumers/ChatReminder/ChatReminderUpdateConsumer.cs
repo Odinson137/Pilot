@@ -34,8 +34,8 @@ public class ChatReminderUpdateConsumer(
         
         model.ChangeAt = DateTime.Now;
 
-        repository.GetContext.Attach(model);
-        repository.GetContext.Entry(model).State = EntityState.Modified;
+        repository.Context.Attach(model);
+        repository.Context.Entry(model).State = EntityState.Modified;
 
         foreach (var dayOfWeek in Enum.GetValues<DayOfWeek>())
         {

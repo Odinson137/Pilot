@@ -7,6 +7,8 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
     : BaseReadRepository<T>(context, mapper), IBaseRepository<T>
     where T : BaseModel
 {
+    public virtual DbContext Context { get; } = context;
+
     public async Task<T> AddValueToContextAsync(T value, CancellationToken token = default)
     {
         await DbSet.AddAsync(value, token);
@@ -15,7 +17,7 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
 
     public async Task SaveAsync(CancellationToken token = default)
     {
-        await GetContext.SaveChangesAsync(token);
+        await Context.SaveChangesAsync(token);
     }
 
     public async Task<int> FastDeleteAsync(int modelId, CancellationToken token = default)
@@ -25,8 +27,6 @@ public abstract class BaseRepository<T>(DbContext context, IMapper mapper)
 
     public void Delete(T model)
     {
-        GetContext.Remove(model);
+        Context.Remove(model);
     }
-    
-    public DbContext GetContext { get; } = context;
 }

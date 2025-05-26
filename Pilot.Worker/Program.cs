@@ -43,6 +43,7 @@ services.AddScoped<IModelService, ModelService>();
 //     }))
 // };
 builder.AddBaseServices<DataContext, AutoMapperProfile, Program>();
+builder.AddDbContext<ReadOnlyDataContext>("MySql:ReadOnlyConnectionString");
 builder.AddUnitOfWork<UnitOfWork>();
 
 services.AddHttpClient(nameof(ServiceName.IdentityServer),

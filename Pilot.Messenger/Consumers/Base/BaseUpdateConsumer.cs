@@ -40,8 +40,8 @@ public abstract class BaseUpdateConsumer<T, TDto>(
         
         model.ChangeAt = DateTime.Now;
 
-        Repository.GetContext.Attach(model);
-        Repository.GetContext.Entry(model).State = EntityState.Modified;
+        Repository.Context.Attach(model);
+        Repository.Context.Entry(model).State = EntityState.Modified;
 
         await Repository.SaveAsync();
 

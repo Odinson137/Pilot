@@ -26,7 +26,7 @@ public static class AddBaseService
             cfg.NotificationPublisherType = typeof(TaskWhenAllPublisher);
         });
 
-        AddDbContext<TDb>(services, configuration);
+        AddDbContext<TDb>(builder);
 
         builder.AddBaseLogService<TProgram>();
 
@@ -115,11 +115,11 @@ public static class AddBaseService
         services.AddAutoMapper(typeof(TMapper));
     }
 
-    private static void AddDbContext<TDbContext>(IServiceCollection services, ConfigurationManager configuration)
+    public static void AddDbContext<TDbContext>(this WebApplicationBuilder builder, string connectionString = "MySql:ConnectionString")
         where TDbContext : DbContext
     {
-        services.AddDbContext<TDbContext>(option => option.UseMySql(
-                configuration["MySql:ConnectionString"],
+        builder.Services.AddDbContext<TDbContext>(option => option.UseMySql(
+                builder.Configuration[connectionString],
                 new MySqlServerVersion(new Version(8, 0, 11))
             )
             .EnableSensitiveDataLogging()

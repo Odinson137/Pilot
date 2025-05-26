@@ -6,7 +6,7 @@ using Pilot.Contracts.Base;
 
 namespace Pilot.Worker.Repository;
 
-public class TeamEmployeeRepository(DataContext context, IMapper mapper) : BaseRepository<TeamEmployee>(context, mapper), ITeamEmployee
+public class TeamEmployeeRepository(DataContext context, ReadOnlyDataContext readOnlyDataContext, IMapper mapper)
+    : BaseReadWriteSplitRepository<TeamEmployee>(context, readOnlyDataContext, mapper), ITeamEmployee
 {
-
 }

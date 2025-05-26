@@ -6,7 +6,7 @@ using Pilot.Worker.Interface;
 
 namespace Pilot.Worker.Repository;
 
-public class CompanyRepository(DataContext context, IMapper mapper) : BaseRepository<Models.Company>(context, mapper), ICompany
+public class CompanyRepository(DataContext context, ReadOnlyDataContext readOnlyDataContext, IMapper mapper) : BaseReadWriteSplitRepository<Models.Company>(context, readOnlyDataContext, mapper), ICompany
 {
     public async Task<bool> CheckCompanyTitleExistAsync(string title)
     {
