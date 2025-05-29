@@ -73,10 +73,10 @@ public abstract class BaseIntegrationTest : IDisposable
         foreach (var serviceName in _contextTypes.Keys)
         {
             var contextType = _contextTypes[serviceName];
+            if (contextType == null || serviceName == ServiceName.AuditHistoryService) continue;
+            
             var dbContext = (DbContext)_serviceScopes[serviceName].CreateScope().ServiceProvider
                 .GetRequiredService(contextType);
-            
-            if (serviceName == ServiceName.AuditHistoryService) continue;
             
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
