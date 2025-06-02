@@ -1,16 +1,18 @@
-﻿using Pilot.Contracts.DTO.ModelDto;
+﻿using Pilot.Contracts.Data.Enums;
+using Pilot.Contracts.DTO.ModelDto;
 using Pilot.Worker.Models;
-using Test.Api.AuditHistoryService.Factory;
+using Test.Base.IntegrationBase.Factories;
 
 namespace Test.Api.AuditHistoryService;
 
 public class ProjectTaskTest(
-    AuditHistoryTestApiFactory apiFactory,
-    AuditHistoryTestAuditHistoryFactory auditHistoryFactory,
-    AuditHistoryTestWorkerFactory workerFactory,
-    AuditHistoryTestIdentityFactory identityFactory
-    )
-    : AuditHistoryServiceIntegrationTest<ProjectTask, ProjectTaskDto>(apiFactory, auditHistoryFactory, workerFactory, identityFactory)
+    TestApiFactory apiFactory,
+    TestAuditHistoryFactory auditHistoryFactory,
+    TestWorkerFactory workerFactory,
+    TestIdentityFactory identityFactory
+)
+    : AuditHistoryServiceIntegrationTest<ProjectTask, ProjectTaskDto>(ServiceName.WorkerServer, apiFactory, auditHistoryFactory, workerFactory,
+        identityFactory)
 {
     [Fact]
     public override Task Consume_UpdateValue_ReturnOk()

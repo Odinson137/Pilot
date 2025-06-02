@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Pilot.Worker.Models;
 
 namespace Pilot.Worker.Data;
