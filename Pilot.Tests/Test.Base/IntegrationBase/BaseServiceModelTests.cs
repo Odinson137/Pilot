@@ -218,11 +218,13 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
 
         var value = Mapper.Map<TDto>(valueModel);
 
+        var userModel = await CreateUser(withAuthorization: false);
+        
         #endregion
 
         // Act
 
-        await Publisher.Publish(new CreateCommandMessage<TDto>(value, 1));
+        await Publisher.Publish(new CreateCommandMessage<TDto>(value, userModel.Id));
         await Helper.Wait();
 
         // Assert
@@ -245,12 +247,13 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         await workerContext.SaveChangesAsync();
 
         var valueDto = Mapper.Map<TDto>(value);
+        var userModel = await CreateUser(withAuthorization: false);
 
         #endregion
 
         // Act
 
-        await Publisher.Publish(new UpdateCommandMessage<TDto>(valueDto, 1));
+        await Publisher.Publish(new UpdateCommandMessage<TDto>(valueDto, userModel.Id));
         await Helper.Wait();
 
         // Assert
@@ -272,11 +275,13 @@ public abstract class BaseServiceModelTests<T, TDto> : BaseIntegrationTest where
         await workerContext.AddAsync(value);
         await workerContext.SaveChangesAsync();
 
+        var userModel = await CreateUser(withAuthorization: false);
+
         #endregion
 
         // Act
 
-        await Publisher.Publish(new DeleteCommandMessage<TDto>(value.Id, 1));
+        await Publisher.Publish(new DeleteCommandMessage<TDto>(value.Id, userModel.Id));
         await Helper.Wait();
 
         // Assert

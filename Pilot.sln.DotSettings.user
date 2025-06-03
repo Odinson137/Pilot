@@ -118,10 +118,16 @@
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestProjectMapping/=2C250F33_002D3846_002D4A08_002DA9BB_002D5A66A051B403/@EntryIndexedValue">9FE35C0D-4D64-4E9E-8475-29ECB4568D27</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/CreateUnitTestDialog/TestTemplateMapping/=xUnit/@EntryIndexedValue">33ff99d8-b1ad-4ed5-a4fd-376b97c2c841</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=845ff124_002Dbf51_002D4b77_002Dbea4_002D2f9dc9b785a8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Session" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;And&gt;&#xD;
-    &lt;ProjectFolder&gt;3FDF7F7B-66DA-452F-8404-D28BCD642E5F/d:AuditHistoryService&lt;/ProjectFolder&gt;&#xD;
-    &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Api" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" /&gt;&#xD;
-  &lt;/And&gt;&#xD;
+  &lt;Or&gt;&#xD;
+    &lt;And&gt;&#xD;
+      &lt;ProjectFolder&gt;3FDF7F7B-66DA-452F-8404-D28BCD642E5F/d:AuditHistoryService&lt;/ProjectFolder&gt;&#xD;
+      &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Api" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" /&gt;&#xD;
+    &lt;/And&gt;&#xD;
+    &lt;And&gt;&#xD;
+      &lt;ProjectFolder&gt;3FDF7F7B-66DA-452F-8404-D28BCD642E5F/d:WorkerService&lt;/ProjectFolder&gt;&#xD;
+      &lt;Project Location="C:\Users\buryy\RiderProjects\Pilot\Pilot.Tests\Test.Api" Presentation="&amp;lt;Pilot.Tests&amp;gt;\&amp;lt;Test.Api&amp;gt;" /&gt;&#xD;
+    &lt;/And&gt;&#xD;
+  &lt;/Or&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	

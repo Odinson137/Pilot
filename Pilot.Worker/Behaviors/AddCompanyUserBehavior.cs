@@ -30,6 +30,7 @@ public class AddCompanyUserBehavior<TRequest, TResponse>
             if (response is not IAddCompanyUser addUser)
                 return response;
 
+            // TODO костыыыыыыыль
             var entityCommand = (dynamic)request;
             var user = await _companyUser.GetByIdAsync(entityCommand.UserId, cancellationToken);
             if (user == null)
